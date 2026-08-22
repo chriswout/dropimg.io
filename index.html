@@ -74,32 +74,26 @@
             "@type": "HowTo",
             "@id": "https://dropimg.io/#howto",
             "name": "How to share a temporary image link with dropimg.io",
-            "description": "Upload a screenshot or image and get a temporary shareable URL that expires after 24 hours.",
+            "description": "Drop an image, copy the link, and share it. Links expire after 24 hours.",
             "totalTime": "PT1M",
             "step": [
               {
                 "@type": "HowToStep",
                 "position": 1,
-                "name": "Paste or drop your image",
-                "text": "Use the clipboard, drag and drop, or choose a PNG, JPEG, WebP, or GIF file up to 10 MB."
+                "name": "Drop image",
+                "text": "Paste, drop, or choose a PNG, JPEG, WebP, or GIF."
               },
               {
                 "@type": "HowToStep",
                 "position": 2,
-                "name": "Copy the link",
-                "text": "dropimg.io generates a short URL and copies it to your clipboard when possible."
+                "name": "Copy link",
+                "text": "dropimg.io creates a short URL and copies it when possible."
               },
               {
                 "@type": "HowToStep",
                 "position": 3,
-                "name": "Share it anywhere",
-                "text": "Send the link in chat, email, tickets, or pull requests."
-              },
-              {
-                "@type": "HowToStep",
-                "position": 4,
-                "name": "It disappears automatically",
-                "text": "Images expire 24 hours after upload, or delete them early with the private delete control."
+                "name": "Share it",
+                "text": "Send the link in chat, email, tickets, or wherever you need it."
               }
             ]
           },
@@ -107,14 +101,6 @@
             "@type": "FAQPage",
             "@id": "https://dropimg.io/#faq",
             "mainEntity": [
-              {
-                "@type": "Question",
-                "name": "What is dropimg.io?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "dropimg.io is a temporary image-sharing service that lets users paste, drag, or upload an image and instantly create a shareable link that expires after 24 hours."
-                }
-              },
               {
                 "@type": "Question",
                 "name": "How long do images stay online?",
@@ -125,18 +111,10 @@
               },
               {
                 "@type": "Question",
-                "name": "Do I need an account to use dropimg.io?",
+                "name": "Do I need an account?",
                 "acceptedAnswer": {
                   "@type": "Answer",
                   "text": "No. dropimg.io does not require an account to upload or share an image."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Are uploaded images searchable?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Anyone with the unique link can view the image until it expires. dropimg.io does not provide a public image gallery, and temporary image pages are excluded from search indexing."
                 }
               },
               {
@@ -145,22 +123,6 @@
                 "acceptedAnswer": {
                   "@type": "Answer",
                   "text": "Yes. After upload, dropimg.io provides a private delete control so you can remove an image before it expires."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "What image formats are supported?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "dropimg.io supports PNG, JPEG, WebP, and GIF uploads up to 10 MB."
-                }
-              },
-              {
-                "@type": "Question",
-                "name": "Does dropimg remove photo metadata?",
-                "acceptedAnswer": {
-                  "@type": "Answer",
-                  "text": "Yes. dropimg.io strips EXIF and similar metadata (including GPS when present) from JPEG, PNG, and WebP uploads before storing the image."
                 }
               }
             ]
@@ -186,15 +148,9 @@
         <section class="hero" aria-label="Upload">
           <h1 class="tagline">Drop an image. Get a link.</h1>
           <p class="sub">
-            Paste a screenshot or choose a file. Get a temporary shareable link —
-            no account, expires in 24 hours.
+            Paste, drop, or choose an image.<br />
+            No account. Expires in 24 hours.
           </p>
-
-          <ul class="trust-chips" aria-label="Product highlights">
-            <li>No account</li>
-            <li>24h expiry</li>
-            <li>Metadata removed</li>
-          </ul>
 
           <section
             id="dropzone"
@@ -319,149 +275,55 @@
             </div>
           </section>
 
+          <ul class="trust-chips" aria-label="Product highlights">
+            <li>No account</li>
+            <li>24h expiry</li>
+            <li>Metadata stripped</li>
+          </ul>
+
           <section id="recent" class="recent" hidden>
             <h2>Recent drops</h2>
             <ul id="recent-list"></ul>
           </section>
         </section>
 
-        <section class="marketing" aria-label="About dropimg.io">
-          <p class="entity">
-            dropimg.io is a temporary image-sharing service that lets users paste,
-            drag, or upload an image and instantly create a shareable link that
-            expires after 24 hours.
-          </p>
-
-          <section class="block">
-            <h2>Temporary image hosting for screenshots</h2>
-            <p class="lead">
-              Screenshot → link. Done.<br />
-              <strong>Fast</strong>. <strong>Temporary</strong>.
-              <strong>No account</strong>.
-            </p>
-            <div class="feature-grid">
-              <article class="feature">
-                <h3>Fast</h3>
-                <p>Paste a screenshot and get a shareable link in seconds.</p>
-              </article>
-              <article class="feature">
-                <h3>Temporary</h3>
-                <p>Images automatically expire after 24 hours.</p>
-              </article>
-              <article class="feature">
-                <h3>Private by default</h3>
-                <p>No account, no public gallery, no searchable uploads.</p>
-              </article>
-              <article class="feature">
-                <h3>Simple</h3>
-                <p>PNG, JPEG, WebP and GIF. Up to 10&nbsp;MB.</p>
-              </article>
-            </div>
-          </section>
-
-          <section class="block">
-            <h2>How to share a temporary image link</h2>
-            <ol class="steps">
+        <section class="below" aria-label="About dropimg.io">
+          <section class="howto-compact" aria-labelledby="howto-heading">
+            <h2 id="howto-heading">How it works</h2>
+            <ol class="flow">
               <li>
-                <span class="step-num" aria-hidden="true">1</span>
-                <div>
-                  <strong>Paste or drop your image</strong>
-                  <p>Use the clipboard, drag and drop, or choose a file.</p>
-                </div>
+                <strong>Drop image</strong>
+                <span>Paste, drop, or choose a file</span>
               </li>
               <li>
-                <span class="step-num" aria-hidden="true">2</span>
-                <div>
-                  <strong>Copy the link</strong>
-                  <p>dropimg.io generates a short URL and copies it when possible.</p>
-                </div>
+                <strong>Copy link</strong>
+                <span>Short URL, ready to send</span>
               </li>
               <li>
-                <span class="step-num" aria-hidden="true">3</span>
-                <div>
-                  <strong>Share it anywhere</strong>
-                  <p>Send the link in chat, email, tickets, or pull requests.</p>
-                </div>
-              </li>
-              <li>
-                <span class="step-num" aria-hidden="true">4</span>
-                <div>
-                  <strong>It disappears automatically</strong>
-                  <p>Images expire 24 hours after upload — or delete them early.</p>
-                </div>
+                <strong>Share it</strong>
+                <span>Chat, email, tickets — done</span>
               </li>
             </ol>
           </section>
 
-          <section class="block">
-            <h2>Share screenshots on Discord, Slack, and GitHub</h2>
-            <p class="lead">
-              Built for quick sharing — Discord, Slack, Reddit, GitHub, email, and
-              support chats.
-            </p>
-            <ul class="share-list">
-              <li>Discord</li>
-              <li>Slack</li>
-              <li>Reddit</li>
-              <li>GitHub</li>
-              <li>Email</li>
-              <li>Support chats</li>
-            </ul>
-          </section>
-
-          <section class="block faq" id="faq">
-            <h2>Frequently asked questions</h2>
+          <section class="faq-compact" id="faq" aria-labelledby="faq-heading">
+            <h2 id="faq-heading">FAQ</h2>
             <div class="faq-list">
-              <details open>
-                <summary>What is dropimg.io?</summary>
-                <p>
-                  dropimg.io is a temporary image-sharing service that lets users
-                  paste, drag, or upload an image and instantly create a shareable
-                  link that expires after 24 hours.
-                </p>
-              </details>
               <details>
                 <summary>How long do images stay online?</summary>
                 <p>
-                  Images uploaded to dropimg.io expire automatically 24 hours after
-                  upload.
+                  Images expire automatically 24 hours after upload.
                 </p>
               </details>
               <details>
-                <summary>Do I need an account to use dropimg.io?</summary>
-                <p>
-                  No. dropimg.io does not require an account to upload or share an
-                  image.
-                </p>
-              </details>
-              <details>
-                <summary>Are uploaded images searchable?</summary>
-                <p>
-                  Anyone with the unique link can view the image until it expires.
-                  dropimg.io does not provide a public image gallery, and temporary
-                  image pages are excluded from search indexing.
-                </p>
+                <summary>Do I need an account?</summary>
+                <p>No. Upload and share without signing up.</p>
               </details>
               <details>
                 <summary>Can I delete an image early?</summary>
                 <p>
-                  Yes. After upload, dropimg.io provides a private delete control so
-                  you can remove an image before it expires.
-                </p>
-              </details>
-              <details>
-                <summary>What image formats are supported?</summary>
-                <p>
-                  dropimg.io supports PNG, JPEG, WebP, and GIF uploads up to
-                  10&nbsp;MB.
-                </p>
-              </details>
-              <details>
-                <summary>Does dropimg remove photo metadata?</summary>
-                <p>
-                  Yes. dropimg.io strips EXIF and similar metadata (including GPS
-                  when present) from JPEG, PNG, and WebP uploads before storing the
-                  image.
+                  Yes. After upload you get a private delete control to remove it
+                  before expiry.
                 </p>
               </details>
             </div>
@@ -470,13 +332,18 @@
       </main>
 
       <footer class="foot">
-        <a href="/privacy.html">Privacy</a>
-        <span aria-hidden="true">·</span>
-        <a href="/terms.html">Terms</a>
-        <span aria-hidden="true">·</span>
-        <a href="/abuse">Abuse</a>
-        <span aria-hidden="true">·</span>
-        <span>Images expire after 24 hours</span>
+        <div class="foot-legal">
+          <a href="/privacy.html">Privacy</a>
+          <span aria-hidden="true">·</span>
+          <a href="/terms.html">Terms</a>
+          <span aria-hidden="true">·</span>
+          <a href="/abuse">Abuse</a>
+        </div>
+        <nav class="foot-seo" aria-label="Learn more">
+          <a href="/temporary-image-hosting">Temporary image hosting</a>
+          <a href="/paste-screenshot-online">Paste screenshot online</a>
+          <a href="/share-image-with-link">Share image with a link</a>
+        </nav>
       </footer>
     </div>
 
