@@ -8,3 +8,9 @@ dist
 *.log
 .vite
 worker-configuration.d.ts
+test-results
+playwright-report
+tests/e2e/.fixtures
+cloudflare token
+.cloudflare-api-token
+*.pem

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { inspectImage } from "../../src/lib/inspect";
-import { stripMetadata } from "../../src/lib/strip";
+import { resolveIpHashSecret } from "../../src/lib/secrets";
+import { StripMetadataError, stripMetadata } from "../../src/lib/strip";
 import { generateSlug, isValidSlug } from "../../src/lib/slug";
 import {
   generateDeleteToken,
@@ -8,14 +9,14 @@ import {
   verifyDeleteToken,
 } from "../../src/lib/tokens";
 
-/** Minimal valid 1×1 PNG */
+/** Minimal valid 1×1 PNG (complete IHDR/IDAT/IEND) */
 const PNG_1x1 = Uint8Array.from([
   0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49,
   0x48, 0x44, 0x52, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x08, 0x02,
   0x00, 0x00, 0x00, 0x90, 0x77, 0x53, 0xde, 0x00, 0x00, 0x00, 0x0c, 0x49, 0x44,
-  0x41, 0x54, 0x78, 0x9c, 0x63, 0xf8, 0x0f, 0x00, 0x00, 0x01, 0x01, 0x00, 0x05,
-  0x18, 0xd8, 0x4e, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44, 0xae, 0x42,
-  0x60, 0x82,
+  0x41, 0x54, 0x78, 0xda, 0x63, 0xf8, 0xcf, 0xc0, 0x00, 0x00, 0x03, 0x01, 0x01,
+  0x00, 0xf7, 0x03, 0x41, 0x43, 0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4e, 0x44,
+  0xae, 0x42, 0x60, 0x82,
 ]);
 
 /** Minimal GIF 1×1 */
@@ -91,28 +92,61 @@ describe("stripMetadata", () => {
   });
 
   it("removes JPEG APP1 (Exif) segments", () => {
-    // FF D8 FF E1 00 10 "Exif\0\0...." then SOF0-ish minimal — build tiny jpeg-like
     const parts: number[] = [0xff, 0xd8];
-    // APP1 Exif
     parts.push(0xff, 0xe1, 0x00, 0x10);
     for (let i = 0; i < 14; i++) parts.push(0x00);
-    // COM
     parts.push(0xff, 0xfe, 0x00, 0x04, 0x41, 0x42);
-    // SOF0 with 1x1
     parts.push(
       0xff, 0xc0, 0x00, 0x0b, 0x08, 0x00, 0x01, 0x00, 0x01, 0x01, 0x01, 0x11, 0x00,
     );
-    // SOS + a few bytes + EOI
     parts.push(0xff, 0xda, 0x00, 0x08, 0x01, 0x01, 0x00, 0x00, 0x3f, 0x00, 0x00, 0xff, 0xd9);
     const jpeg = new Uint8Array(parts).buffer;
     const stripped = new Uint8Array(stripMetadata(jpeg, "image/jpeg"));
-    // Should not contain Exif marker sequence after SOI in APP1
-    const hasApp1 =
-      stripped.includes(0xe1) &&
-      [...stripped].some((_, i) => stripped[i] === 0xff && stripped[i + 1] === 0xe1);
+    const hasApp1 = [...stripped].some(
+      (_, i) => stripped[i] === 0xff && stripped[i + 1] === 0xe1,
+    );
     expect(hasApp1).toBe(false);
     const r = inspectImage(stripped.buffer);
     expect(r.ok).toBe(true);
+  });
+
+  it("fails closed on truncated PNG", () => {
+    const truncated = PNG_1x1.slice(0, 20).buffer;
+    expect(() => stripMetadata(truncated, "image/png")).toThrow(StripMetadataError);
+  });
+
+  it("leaves GIF unchanged", () => {
+    const out = stripMetadata(GIF_1x1.buffer, "image/gif");
+    expect(new Uint8Array(out)).toEqual(GIF_1x1);
+  });
+});
+
+describe("resolveIpHashSecret", () => {
+  it("allows placeholder only in development", () => {
+    expect(
+      resolveIpHashSecret({ ENVIRONMENT: "development", IP_HASH_SECRET: "" }),
+    ).toEqual({ ok: true, secret: "dev-ip-hash-secret-change-me" });
+  });
+
+  it("fails closed in production without a real secret", () => {
+    expect(
+      resolveIpHashSecret({ ENVIRONMENT: "production", IP_HASH_SECRET: "" }),
+    ).toEqual({ ok: false });
+    expect(
+      resolveIpHashSecret({
+        ENVIRONMENT: "staging",
+        IP_HASH_SECRET: "dev-ip-hash-secret-change-me",
+      }),
+    ).toEqual({ ok: false });
+  });
+
+  it("accepts a real production secret", () => {
+    expect(
+      resolveIpHashSecret({
+        ENVIRONMENT: "production",
+        IP_HASH_SECRET: "real-secret-value",
+      }),
+    ).toEqual({ ok: true, secret: "real-secret-value" });
   });
 });
 

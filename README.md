@@ -47,7 +47,9 @@ npx wrangler secret put ADMIN_TOKEN --env production
 | `npm run build` | Production build (default env) |
 | `npm run deploy:staging` | Build + deploy staging |
 | `npm run deploy:production` | Build + deploy production |
-| `npm test` | Unit tests (inspect / strip / slug / tokens) |
+| `npm test` | Unit + Worker integration tests |
+| `npm run test:e2e` | Playwright homepage upload happy path |
+| `npm run waf:apply` | Apply minimal WAF rules (needs Zone WAF Edit token) |
 | `npm run types` | Generate `worker-configuration.d.ts` from Wrangler |
 
 ## Ops notes

@@ -13,6 +13,16 @@ type Env = {
 
 const app = new Hono<Env>();
 
+/** Canonicalize www → apex so analytics and share URLs stay on one host. */
+app.use("*", async (c, next) => {
+  const url = new URL(c.req.url);
+  if (url.hostname === "www.dropimg.io") {
+    url.hostname = "dropimg.io";
+    return c.redirect(url.toString(), 301);
+  }
+  await next();
+});
+
 app.get("/health", (c) => c.json({ ok: true, service: "dropimg" }));
 
 app.route("/", uploadRoutes);

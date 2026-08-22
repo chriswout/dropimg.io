@@ -32,7 +32,12 @@ jobs:
           cache: npm
 
       - run: npm ci
+      - name: Create local secrets for tests
+        run: |
+          printf 'IP_HASH_SECRET=ci-integration-secret\nADMIN_TOKEN=ci-admin-token\n' > .dev.vars
       - run: npm test
+      - run: npx playwright install --with-deps chromium
+      - run: npm run test:e2e
 
       - name: Apply D1 migrations (staging)
         if: env.TARGET == 'staging'

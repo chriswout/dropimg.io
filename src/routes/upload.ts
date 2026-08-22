@@ -3,8 +3,9 @@ import type { Context } from "hono";
 import { track } from "../lib/analytics";
 import { inspectImage } from "../lib/inspect";
 import { clientIp, hashIp } from "../lib/ip";
+import { resolveIpHashSecret } from "../lib/secrets";
 import { generateSlug } from "../lib/slug";
-import { stripMetadata } from "../lib/strip";
+import { StripMetadataError, stripMetadata } from "../lib/strip";
 import {
   generateDeleteToken,
   hashDeleteToken,
@@ -33,9 +34,19 @@ uploadRoutes.post("/api/upload", async (c) => {
     return fail(c, 413, "too_large", "File exceeds 10 MB limit");
   }
 
-  const secret = c.env.IP_HASH_SECRET || "dev-ip-hash-secret-change-me";
+  const secretResolved = resolveIpHashSecret(c.env);
+  if (!secretResolved.ok) {
+    track(c.env.ANALYTICS, "upload_fail", { reason: "misconfigured_secret" });
+    return fail(
+      c,
+      500,
+      "server_error",
+      "Upload temporarily unavailable",
+      "misconfigured_secret",
+    );
+  }
   const ip = clientIp(c.req.raw);
-  const ipHash = await hashIp(ip, secret);
+  const ipHash = await hashIp(ip, secretResolved.secret);
 
   // Burst rate limit (Workers Rate Limiting binding) — skip if unbound (local)
   const limiter = c.env.UPLOAD_LIMIT;
@@ -116,7 +127,16 @@ uploadRoutes.post("/api/upload", async (c) => {
   let slug = generateSlug();
   let inserted = false;
 
-  const storeBytes = stripMetadata(bytes, inspected.mime);
+  let storeBytes: ArrayBuffer;
+  try {
+    storeBytes = stripMetadata(bytes, inspected.mime);
+  } catch (err) {
+    const msg =
+      err instanceof StripMetadataError
+        ? err.message
+        : "Could not strip image metadata";
+    return fail(c, 422, "invalid_image", msg, "strip_failed");
+  }
   const storeSize = storeBytes.byteLength;
 
   try {

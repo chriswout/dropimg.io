@@ -36,19 +36,22 @@ imageRoutes.get("/i/:slug", async (c) => {
     return c.text("Not found", 404);
   }
 
-  const etag = object.httpEtag;
-  const inm = c.req.header("if-none-match");
-  if (etag && inm && inm === etag) {
-    return new Response(null, { status: 304, headers: { ETag: etag } });
-  }
-
   const mime = row.mime as AllowedMime;
+  const etag = object.httpEtag;
   const headers = imageResponseHeaders({
     mime,
     slug,
     ext: mimeToExt(mime),
     etag,
   });
+
+  const inm = c.req.header("if-none-match");
+  if (etag && inm && inm === etag) {
+    // Keep security/cache headers on 304 — browsers still apply them.
+    headers.delete("Content-Type");
+    headers.delete("Content-Disposition");
+    return new Response(null, { status: 304, headers });
+  }
 
   return new Response(object.body, { status: 200, headers });
 });

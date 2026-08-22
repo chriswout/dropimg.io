@@ -1,6 +1,17 @@
-/** Strip EXIF/XMP/text metadata. On parse failure, returns original bytes. */
+/**
+ * Strip EXIF/XMP/text metadata.
+ * Fail closed: parse/strip errors throw so uploads are rejected rather than
+ * storing original bytes after advertising metadata removal.
+ */
 
 import type { AllowedMime } from "../types";
+
+export class StripMetadataError extends Error {
+  constructor(message = "Could not strip image metadata") {
+    super(message);
+    this.name = "StripMetadataError";
+  }
+}
 
 export function stripMetadata(
   bytes: ArrayBuffer,
@@ -17,21 +28,26 @@ export function stripMetadata(
       case "image/gif":
         return bytes; // GIF has no EXIF; leave as-is
     }
-  } catch {
-    return bytes;
+  } catch (err) {
+    if (err instanceof StripMetadataError) throw err;
+    throw new StripMetadataError();
   }
 }
 
 function stripJpeg(bytes: ArrayBuffer): ArrayBuffer {
   const u8 = new Uint8Array(bytes);
-  if (u8.length < 4 || u8[0] !== 0xff || u8[1] !== 0xd8) return bytes;
+  if (u8.length < 4 || u8[0] !== 0xff || u8[1] !== 0xd8) {
+    throw new StripMetadataError("Invalid JPEG while stripping metadata");
+  }
 
   const out: number[] = [0xff, 0xd8];
   let i = 2;
+  let sawSos = false;
   while (i < u8.length) {
     if (u8[i] !== 0xff) {
       // Entropy-coded data — copy rest
       for (let j = i; j < u8.length; j++) out.push(u8[j]!);
+      sawSos = true;
       break;
     }
     // Skip fill bytes
@@ -50,9 +66,13 @@ function stripJpeg(bytes: ArrayBuffer): ArrayBuffer {
       continue;
     }
 
-    if (i + 1 >= u8.length) break;
+    if (i + 1 >= u8.length) {
+      throw new StripMetadataError("Truncated JPEG marker while stripping");
+    }
     const len = (u8[i]! << 8) | u8[i + 1]!;
-    if (len < 2 || i + len > u8.length) break;
+    if (len < 2 || i + len > u8.length) {
+      throw new StripMetadataError("Malformed JPEG segment while stripping");
+    }
 
     // Drop APP1 (Exif/XMP) and COM
     const drop = marker === 0xe1 || marker === 0xfe;
@@ -65,8 +85,12 @@ function stripJpeg(bytes: ArrayBuffer): ArrayBuffer {
     // After SOS, remaining is scan data
     if (marker === 0xda) {
       for (let j = i; j < u8.length; j++) out.push(u8[j]!);
+      sawSos = true;
       break;
     }
+  }
+  if (!sawSos && out.length < 4) {
+    throw new StripMetadataError("JPEG strip produced empty output");
   }
   return new Uint8Array(out).buffer;
 }
@@ -77,21 +101,32 @@ function stripPng(bytes: ArrayBuffer): ArrayBuffer {
   const u8 = new Uint8Array(bytes);
   const sig = [137, 80, 78, 71, 13, 10, 26, 10];
   for (let i = 0; i < 8; i++) {
-    if (u8[i] !== sig[i]) return bytes;
+    if (u8[i] !== sig[i]) {
+      throw new StripMetadataError("Invalid PNG while stripping metadata");
+    }
   }
 
   const parts: Uint8Array[] = [u8.slice(0, 8)];
   let i = 8;
+  let sawIend = false;
   while (i + 12 <= u8.length) {
     const len = readU32(u8, i);
     const type = String.fromCharCode(u8[i + 4]!, u8[i + 5]!, u8[i + 6]!, u8[i + 7]!);
     const chunkEnd = i + 12 + len;
-    if (chunkEnd > u8.length) return bytes;
+    if (chunkEnd > u8.length) {
+      throw new StripMetadataError("Truncated PNG chunk while stripping");
+    }
     if (!PNG_DROP.has(type)) {
       parts.push(u8.slice(i, chunkEnd));
     }
     i = chunkEnd;
-    if (type === "IEND") break;
+    if (type === "IEND") {
+      sawIend = true;
+      break;
+    }
+  }
+  if (!sawIend) {
+    throw new StripMetadataError("PNG missing IEND while stripping");
   }
   return concat(parts);
 }
@@ -109,7 +144,7 @@ function stripWebp(bytes: ArrayBuffer): ArrayBuffer {
     u8[10] !== 0x42 ||
     u8[11] !== 0x50
   ) {
-    return bytes;
+    throw new StripMetadataError("Invalid WebP while stripping metadata");
   }
 
   const kept: Uint8Array[] = [];
@@ -121,11 +156,16 @@ function stripWebp(bytes: ArrayBuffer): ArrayBuffer {
     size = size >>> 0;
     const padded = size + (size % 2);
     const end = i + 8 + padded;
-    if (end > u8.length) return bytes;
+    if (end > u8.length) {
+      throw new StripMetadataError("Truncated WebP chunk while stripping");
+    }
     if (fourcc !== "EXIF" && fourcc !== "XMP ") {
       kept.push(u8.slice(i, end));
     }
     i = end;
+  }
+  if (kept.length === 0) {
+    throw new StripMetadataError("WebP strip removed all chunks");
   }
 
   const body = concat(kept);
