@@ -1,0 +1,144 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "dropimg",
+  "main": "./src/index.ts",
+  "compatibility_date": "2026-08-21",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*", "/i/*", "/d/*", "/abuse", "/health"]
+  },
+  "ratelimits": [
+    {
+      "name": "UPLOAD_LIMIT",
+      "namespace_id": "1001",
+      "simple": {
+        "limit": 10,
+        "period": 60
+      }
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "BUCKET",
+      "bucket_name": "dropimg-images",
+      "preview_bucket_name": "dropimg-images-preview"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "dropimg",
+      "database_id": "local-dropimg-placeholder",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "analytics_engine_datasets": [
+    {
+      "binding": "ANALYTICS",
+      "dataset": "dropimg_events"
+    }
+  ],
+  "triggers": {
+    "crons": ["*/5 * * * *"]
+  },
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "ENVIRONMENT": "development"
+  },
+  "env": {
+    "staging": {
+      "name": "dropimg-staging",
+      "workers_dev": true,
+      "preview_urls": true,
+      "vars": {
+        "ENVIRONMENT": "staging"
+      },
+      "ratelimits": [
+        {
+          "name": "UPLOAD_LIMIT",
+          "namespace_id": "1001",
+          "simple": {
+            "limit": 10,
+            "period": 60
+          }
+        }
+      ],
+      "triggers": {
+        "crons": ["*/5 * * * *"]
+      },
+      "r2_buckets": [
+        {
+          "binding": "BUCKET",
+          "bucket_name": "dropimg-images-staging"
+        }
+      ],
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "dropimg-staging",
+          "database_id": "1e169c73-f6dd-4a90-8633-11071667cb96",
+          "migrations_dir": "migrations"
+        }
+      ],
+      "analytics_engine_datasets": [
+        {
+          "binding": "ANALYTICS",
+          "dataset": "dropimg_events_staging"
+        }
+      ]
+    },
+    "production": {
+      "name": "dropimg",
+      "vars": {
+        "ENVIRONMENT": "production"
+      },
+      "ratelimits": [
+        {
+          "name": "UPLOAD_LIMIT",
+          "namespace_id": "1002",
+          "simple": {
+            "limit": 10,
+            "period": 60
+          }
+        }
+      ],
+      "triggers": {
+        "crons": ["*/5 * * * *"]
+      },
+      "routes": [
+        {
+          "pattern": "dropimg.io",
+          "custom_domain": true
+        },
+        {
+          "pattern": "www.dropimg.io",
+          "custom_domain": true
+        }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "BUCKET",
+          "bucket_name": "dropimg-images"
+        }
+      ],
+      "d1_databases": [
+        {
+          "binding": "DB",
+          "database_name": "dropimg",
+          "database_id": "0adba959-a9d1-42ee-af0c-e62f96e3e0c1",
+          "migrations_dir": "migrations"
+        }
+      ],
+      "analytics_engine_datasets": [
+        {
+          "binding": "ANALYTICS",
+          "dataset": "dropimg_events"
+        }
+      ]
+    }
+  }
+}

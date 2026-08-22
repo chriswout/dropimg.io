@@ -1,0 +1,33 @@
+{
+  "name": "dropimg",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "build:staging": "CLOUDFLARE_ENV=staging vite build",
+    "build:production": "CLOUDFLARE_ENV=production vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && wrangler deploy",
+    "deploy:staging": "CLOUDFLARE_ENV=staging vite build && CLOUDFLARE_ENV=staging wrangler deploy",
+    "deploy:production": "CLOUDFLARE_ENV=production vite build && CLOUDFLARE_ENV=production wrangler deploy",
+    "types": "wrangler types",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:migrate:local": "wrangler d1 migrations apply dropimg --local",
+    "db:migrate:staging": "wrangler d1 migrations apply dropimg-staging --remote --env staging",
+    "db:migrate:production": "wrangler d1 migrations apply dropimg --remote --env production"
+  },
+  "dependencies": {
+    "hono": "^4.9.0"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "^1.13.0",
+    "@types/node": "^26.2.0",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.0",
+    "vitest": "^3.2.4",
+    "wrangler": "^4.32.0"
+  }
+}

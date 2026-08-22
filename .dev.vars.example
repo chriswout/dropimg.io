@@ -1,0 +1,5 @@
+# Copy to .dev.vars for local development
+IP_HASH_SECRET=dev-ip-hash-secret-change-me
+ADMIN_TOKEN=dev-admin-token-change-me
+# Optional: IndexNow key for notifying Bing when marketing pages change
+# INDEXNOW_KEY=

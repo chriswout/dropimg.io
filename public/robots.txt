@@ -1,0 +1,14 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /i/
+Disallow: /d/
+
+# Allow ChatGPT search discovery of marketing pages.
+User-agent: OAI-SearchBot
+Allow: /
+
+# Share HTML pages (/:slug) are crawlable so noindex can be observed.
+# Do not Disallow them in robots.txt.
+
+Sitemap: https://dropimg.io/sitemap.xml
