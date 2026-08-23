@@ -14,5 +14,13 @@
     "jsx": "react-jsx",
     "jsxImportSource": "hono/jsx"
   },
-  "include": ["src", "client", "worker-configuration.d.ts", "vite.config.ts"]
+  "include": [
+    "src",
+    "client",
+    "marketing",
+    "scripts",
+    "tests",
+    "worker-configuration.d.ts",
+    "vite.config.ts"
+  ]
 }

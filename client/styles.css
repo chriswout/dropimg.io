@@ -134,9 +134,194 @@ body {
 .top {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   max-width: 920px;
   width: 100%;
   margin: 0 auto 2rem;
+}
+
+/* --- Language selector --- */
+
+.lang {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.lang-details {
+  position: relative;
+}
+
+.lang-summary {
+  list-style: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  cursor: pointer;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.45rem 0.7rem;
+  min-height: 44px;
+  user-select: none;
+}
+
+.lang-summary::-webkit-details-marker {
+  display: none;
+}
+
+.lang-summary:hover {
+  color: var(--text);
+  border-color: var(--border-strong);
+}
+
+.lang-summary:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.lang-globe {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.lang-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.35rem);
+  margin: 0;
+  padding: 0.35rem;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-md);
+  min-width: 11.5rem;
+  z-index: 40;
+}
+
+.lang-menu a {
+  display: block;
+  padding: 0.55rem 0.75rem;
+  border-radius: 8px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 550;
+}
+
+.lang-menu a:hover {
+  background: var(--surface-soft);
+}
+
+.lang-menu a:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 0;
+}
+
+.lang-menu a[aria-current="page"] {
+  color: var(--blue);
+}
+
+.lang-suggest {
+  max-width: 920px;
+  margin: 0 auto 1rem;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.lang-suggest-msg {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text);
+  font-weight: 550;
+}
+
+.lang-suggest-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.lang-suggest .btn {
+  min-height: 40px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.88rem;
+}
+
+/* --- SEO landing article --- */
+
+.page-seo .seo-hero {
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+.seo-lede {
+  max-width: 36rem;
+}
+
+.seo-article {
+  max-width: 40rem;
+  margin: 2.5rem auto 0;
+  color: var(--text-secondary);
+  font-size: 1.02rem;
+  line-height: 1.55;
+}
+
+.seo-article h2 {
+  margin: 1.75rem 0 0.65rem;
+  color: var(--text);
+  font-size: 1.15rem;
+  letter-spacing: -0.02em;
+}
+
+.seo-article p {
+  margin: 0 0 0.85rem;
+}
+
+.seo-article ul,
+.seo-article ol {
+  margin: 0 0 1rem;
+  padding-left: 1.25rem;
+}
+
+.seo-article li {
+  margin: 0.35rem 0;
+}
+
+.seo-more {
+  max-width: 40rem;
+  margin: 2rem auto 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 0.65rem;
+  font-size: 0.88rem;
+}
+
+.seo-more a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.seo-more a:hover {
+  color: var(--blue);
+}
+
+.seo-more a:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+  border-radius: 3px;
 }
 
 .brand {
@@ -791,6 +976,27 @@ kbd {
 
   .top {
     margin-bottom: 1.25rem;
+  }
+
+  .lang-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  .lang-summary {
+    padding: 0.45rem 0.65rem;
+  }
+
+  .lang-suggest {
+    margin-left: 0;
+    margin-right: 0;
   }
 
   .tagline {

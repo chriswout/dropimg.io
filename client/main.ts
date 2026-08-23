@@ -1,9 +1,19 @@
 import "./styles.css";
+import { matchBrowserLocale } from "../marketing/locales";
+import { pagePath, pathToPageId, type PageId } from "../marketing/pages";
+import { resolveLocale, t, type UiStrings } from "../marketing/ui";
 import type { RecentDrop, UploadErrorResponse, UploadResponse } from "../src/types";
 
 const MAX_BYTES = 10 * 1024 * 1024;
 const RECENT_KEY = "dropimg:recent";
+const LOCALE_KEY = "dropimg:locale";
+const LOCALE_DISMISS_KEY = "dropimg:locale-suggest-dismissed";
 const RECENT_LIMIT = 8;
+
+const locale = resolveLocale(
+  document.documentElement.dataset.locale || document.documentElement.lang,
+);
+const ui: UiStrings = t(locale);
 
 const dropzone = el<HTMLElement>("dropzone");
 const fileInput = el<HTMLInputElement>("file-input");
@@ -37,7 +47,6 @@ function el<T extends HTMLElement>(id: string): T {
 
 function announce(message: string) {
   statusLive.textContent = "";
-  // Force a DOM change so screen readers re-announce
   requestAnimationFrame(() => {
     statusLive.textContent = message;
   });
@@ -50,10 +59,7 @@ function setState(state: UiState) {
   dropzone.style.pointerEvents = state === "uploading" ? "none" : "";
   dropzone.classList.toggle("is-busy", state === "uploading");
   dropzone.classList.toggle("is-done", state === "success" || state === "error");
-  dropzone.setAttribute(
-    "aria-busy",
-    state === "uploading" ? "true" : "false",
-  );
+  dropzone.setAttribute("aria-busy", state === "uploading" ? "true" : "false");
 }
 
 function clearPreview() {
@@ -64,13 +70,19 @@ function clearPreview() {
   preview.removeAttribute("src");
 }
 
+function mapUploadError(body: UploadErrorResponse | null, status: number): string {
+  if (body?.code && ui.errors[body.code]) return ui.errors[body.code]!;
+  if (body?.error) return body.error;
+  return `${ui.uploadFailed} (${status})`;
+}
+
 async function handleFile(file: File) {
   if (!file.type.startsWith("image/") && !/\.(png|jpe?g|webp|gif)$/i.test(file.name)) {
-    showError("Please choose a PNG, JPEG, WebP, or GIF image.");
+    showError(ui.invalidFormat);
     return;
   }
   if (file.size > MAX_BYTES) {
-    showError("File exceeds the 10 MB limit.");
+    showError(ui.tooLarge);
     return;
   }
 
@@ -81,7 +93,7 @@ async function handleFile(file: File) {
   progressLabel.textContent = "0%";
   progressWrap.setAttribute("aria-valuenow", "0");
   setState("uploading");
-  announce("Uploading");
+  announce(ui.uploading);
 
   try {
     const result = await uploadWithProgress(file, (pct) => {
@@ -94,7 +106,7 @@ async function handleFile(file: File) {
     const copied = await tryCopy(result.url);
     showSuccess(result, copied);
   } catch (err) {
-    const msg = err instanceof Error ? err.message : "Upload failed";
+    const msg = err instanceof Error ? err.message : ui.uploadFailed;
     showError(msg);
   }
 }
@@ -120,11 +132,11 @@ function uploadWithProgress(
         return;
       }
       const body = xhr.response as UploadErrorResponse | null;
-      reject(new Error(body?.error || `Upload failed (${xhr.status})`));
+      reject(new Error(mapUploadError(body, xhr.status)));
     };
 
-    xhr.onerror = () => reject(new Error("Network error during upload"));
-    xhr.onabort = () => reject(new Error("Upload aborted"));
+    xhr.onerror = () => reject(new Error(ui.networkError));
+    xhr.onabort = () => reject(new Error(ui.uploadAborted));
 
     file.arrayBuffer().then((buf) => xhr.send(buf), reject);
   });
@@ -140,11 +152,11 @@ async function tryCopy(text: string): Promise<boolean> {
 }
 
 function showSuccess(result: UploadResponse, copied: boolean) {
-  const title = copied ? "Uploaded. Link copied." : "Uploaded.";
+  const title = copied ? ui.uploadedCopied : ui.uploaded;
   successTitle.textContent = title;
   shareUrl.value = result.url;
   btnOpen.href = result.url;
-  expiresLabel.textContent = `Expires ${formatExpiry(result.expiresAt)}`;
+  expiresLabel.textContent = `${ui.expiresPrefix} ${formatExpiry(result.expiresAt)}`;
   setState("success");
   announce(title);
   if (!copied) {
@@ -157,17 +169,17 @@ function showSuccess(result: UploadResponse, copied: boolean) {
 function showError(message: string) {
   errorMessage.textContent = message;
   setState("error");
-  announce(`Upload failed. ${message}`);
+  announce(`${ui.uploadFailed}. ${message}`);
 }
 
 function formatExpiry(expiresAt: number): string {
   const ms = expiresAt * 1000 - Date.now();
-  if (ms <= 0) return "soon";
+  if (ms <= 0) return ui.expiresSoon;
   const hours = Math.floor(ms / 3_600_000);
   const mins = Math.floor((ms % 3_600_000) / 60_000);
-  if (hours >= 23) return `in about 24 hours`;
-  if (hours > 0) return `in ${hours}h ${mins}m`;
-  return `in ${mins}m`;
+  if (hours >= 23) return ui.expiresAbout24h;
+  if (hours > 0) return ui.expiresInHours(hours, mins);
+  return ui.expiresInMins(mins);
 }
 
 function loadRecent(): RecentDrop[] {
@@ -221,7 +233,7 @@ function renderRecent() {
     a.textContent = item.url.replace(/^https?:\/\//, "");
     const del = document.createElement("button");
     del.type = "button";
-    del.textContent = "Delete";
+    del.textContent = ui.delete;
     del.addEventListener("click", async () => {
       try {
         const res = await fetch(`/api/i/${item.slug}`, {
@@ -252,7 +264,7 @@ function resetToIdle() {
 function setDragging(active: boolean) {
   dropzone.classList.toggle("dragover", active);
   if (active) {
-    idleTitle.textContent = "Drop it here";
+    idleTitle.textContent = ui.dropItHere;
   } else {
     idleTitle.innerHTML = idleTitleHtml;
   }
@@ -271,6 +283,90 @@ function pickImageFromClipboard(e: ClipboardEvent): File | null {
     return files[0]!;
   }
   return null;
+}
+
+function rememberLocaleChoice(code: string) {
+  try {
+    localStorage.setItem(LOCALE_KEY, code);
+  } catch {
+    // ignore
+  }
+}
+
+function setupLanguageLinks() {
+  document.querySelectorAll(".lang-menu a").forEach((node) => {
+    node.addEventListener("click", () => {
+      const hrefLang = node.getAttribute("hreflang");
+      if (hrefLang) rememberLocaleChoice(hrefLang === "pt-BR" ? "pt-BR" : hrefLang);
+    });
+  });
+}
+
+function setupLangSuggest() {
+  const banner = document.getElementById("lang-suggest");
+  const dataEl = document.getElementById("lang-suggest-data");
+  if (!banner || !dataEl || locale !== "en") return;
+
+  // Skip bots / non-browser
+  const ua = navigator.userAgent;
+  if (/bot|crawl|spider|slurp|facebookexternalhit/i.test(ua)) return;
+
+  let preferred: string | null = null;
+  try {
+    preferred = localStorage.getItem(LOCALE_KEY);
+  } catch {
+    preferred = null;
+  }
+  if (preferred && preferred !== "en") return;
+
+  let dismissed: string | null = null;
+  try {
+    dismissed = localStorage.getItem(LOCALE_DISMISS_KEY);
+  } catch {
+    dismissed = null;
+  }
+  if (dismissed === "1") return;
+
+  const tags = navigator.languages?.length
+    ? [...navigator.languages]
+    : [navigator.language];
+  let match: ReturnType<typeof matchBrowserLocale> = null;
+  for (const tag of tags) {
+    match = matchBrowserLocale(tag);
+    if (match && match !== "en") break;
+    match = null;
+  }
+  if (!match) return;
+
+  let messages: Record<string, string> = {};
+  try {
+    messages = JSON.parse(dataEl.textContent || "{}") as Record<string, string>;
+  } catch {
+    return;
+  }
+  const msg = messages[match];
+  if (!msg) return;
+
+  const pageId: PageId = pathToPageId(location.pathname) ?? "home";
+  const target = pagePath(pageId, match);
+
+  const msgEl = document.getElementById("lang-suggest-msg");
+  const switchEl = document.getElementById("lang-suggest-switch") as HTMLAnchorElement | null;
+  const dismissEl = document.getElementById("lang-suggest-dismiss");
+  if (!msgEl || !switchEl || !dismissEl) return;
+
+  msgEl.textContent = msg;
+  switchEl.href = target;
+  switchEl.addEventListener("click", () => rememberLocaleChoice(match!));
+  dismissEl.addEventListener("click", () => {
+    try {
+      localStorage.setItem(LOCALE_DISMISS_KEY, "1");
+    } catch {
+      // ignore
+    }
+    banner.hidden = true;
+  });
+  banner.hidden = false;
 }
 
 // --- Events ---
@@ -337,14 +433,14 @@ el("btn-copy").addEventListener("click", async () => {
   if (!current) return;
   const btn = el<HTMLButtonElement>("btn-copy");
   const ok = await tryCopy(current.url);
-  const title = ok ? "Uploaded. Link copied." : "Uploaded.";
+  const title = ok ? ui.uploadedCopied : ui.uploaded;
   successTitle.textContent = title;
   announce(title);
   if (ok) {
     const prev = btn.textContent;
-    btn.textContent = "Copied";
+    btn.textContent = ui.copied;
     window.setTimeout(() => {
-      btn.textContent = prev || "Copy";
+      btn.textContent = prev || ui.copy;
     }, 1600);
   } else {
     shareUrl.focus();
@@ -365,18 +461,21 @@ el("btn-delete").addEventListener("click", async () => {
       headers: { Authorization: `Bearer ${token}` },
     });
     if (!res.ok && res.status !== 404) {
-      showError("Could not delete image.");
+      showError(ui.couldNotDelete);
       return;
     }
   } catch {
-    showError("Could not delete image.");
+    showError(ui.couldNotDelete);
     return;
   }
   removeRecent(slug);
-  announce("Image deleted");
+  announce(ui.imageDeleted);
   resetToIdle();
 });
 
 shareUrl.addEventListener("focus", () => shareUrl.select());
 
+rememberLocaleChoice(locale);
+setupLanguageLinks();
+setupLangSuggest();
 renderRecent();

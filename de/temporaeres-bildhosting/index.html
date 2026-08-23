@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="de" data-locale="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Temporäres Bildhosting — Kein Konto, 24 Std. | dropimg.io</title>
+    <meta name="description" content="Temporäres Bildhosting ohne Konto. PNG, JPEG, WebP oder GIF hochladen und einen Link erhalten, der nach 24 Stunden abläuft. Metadaten werden entfernt, wenn möglich." />
+    <link rel="canonical" href="https://dropimg.io/de/temporaeres-bildhosting" />
+    <link rel="alternate" hreflang="en" href="https://dropimg.io/temporary-image-hosting" />
+    <link rel="alternate" hreflang="es" href="https://dropimg.io/es/alojamiento-temporal-imagenes" />
+    <link rel="alternate" hreflang="pt-BR" href="https://dropimg.io/pt-br/hospedagem-temporaria-de-imagens" />
+    <link rel="alternate" hreflang="de" href="https://dropimg.io/de/temporaeres-bildhosting" />
+    <link rel="alternate" hreflang="x-default" href="https://dropimg.io/temporary-image-hosting" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#07101C" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="de_DE" />
+    <meta property="og:url" content="https://dropimg.io/de/temporaeres-bildhosting" />
+    <meta property="og:title" content="Temporäres Bildhosting | dropimg.io" />
+    <meta property="og:description" content="Bild 24 Stunden hosten. Kein Konto. Link holen und weiterarbeiten." />
+    <meta property="og:site_name" content="dropimg.io" />
+    <meta property="og:image" content="https://dropimg.io/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="dropimg.io" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Temporäres Bildhosting | dropimg.io" />
+    <meta name="twitter:description" content="Bild 24 Stunden hosten. Kein Konto. Link holen und weiterarbeiten." />
+    <meta name="twitter:image" content="https://dropimg.io/og.png" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/og.png" />
+  </head>
+  <body>
+    <a class="skip-link" href="#dropzone">Zum Upload</a>
+    <div class="page page-seo">
+      <header class="top">
+        <a class="brand" href="/de" aria-label="dropimg.io Startseite">
+          <img class="mark" src="/favicon.svg" alt="" width="28" height="28" />
+          <span class="wordmark"
+            ><span class="wm-drop">drop</span><span class="wm-img">img</span
+            ><span class="wm-io">.io</span></span
+          >
+        </a>
+        <nav class="lang" aria-label="Sprache">
+          <details class="lang-details">
+            <summary class="lang-summary">
+              <span class="lang-globe" aria-hidden="true">🌐</span>
+              <span class="lang-label">Deutsch</span>
+            </summary>
+            <ul class="lang-menu">
+            <li><a href="/temporary-image-hosting" hreflang="en" lang="en">English</a></li>
+            <li><a href="/es/alojamiento-temporal-imagenes" hreflang="es" lang="es">Español</a></li>
+            <li><a href="/pt-br/hospedagem-temporaria-de-imagens" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a></li>
+            <li><a href="/de/temporaeres-bildhosting" hreflang="de" lang="de" aria-current="page">Deutsch</a></li>
+            </ul>
+          </details>
+        </nav>
+      </header>
+
+      <main>
+        <section class="seo-hero">
+          <h1 class="tagline">Temporäres Bildhosting</h1>
+          <p class="sub seo-lede">Brauchst du einen Link für ein Bild — keine dauerhafte Galerie? dropimg.io hostet die Datei 24 Stunden und löscht sie danach.</p>
+
+          <section
+            id="dropzone"
+            class="dropzone"
+            tabindex="0"
+            role="button"
+            aria-label="Bild einfügen, ablegen oder auswählen zum Hochladen"
+          >
+            <input
+              id="file-input"
+              type="file"
+              accept="image/png,image/jpeg,image/webp,image/gif"
+              hidden
+            />
+
+            <div id="status-live" class="visually-hidden" aria-live="polite"></div>
+
+            <div id="state-idle" class="state">
+              <div class="icon-ring" aria-hidden="true">
+                <svg viewBox="0 0 64 64" width="40" height="40">
+                  <defs>
+                    <linearGradient id="iconGrad" x1="8" y1="8" x2="56" y2="56">
+                      <stop stop-color="#2563EB" />
+                      <stop offset="1" stop-color="#22D3EE" />
+                    </linearGradient>
+                  </defs>
+                  <rect
+                    x="10"
+                    y="14"
+                    width="36"
+                    height="28"
+                    rx="4"
+                    fill="none"
+                    stroke="url(#iconGrad)"
+                    stroke-width="2.5"
+                  />
+                  <path
+                    d="M18 34l8-8 6 6 4-4 8 8"
+                    fill="none"
+                    stroke="url(#iconGrad)"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                  <circle cx="46" cy="44" r="10" fill="#F59E0B" />
+                  <path
+                    d="M46 39v7m0 0l-3-3m3 3l3-3"
+                    stroke="#0F172A"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    fill="none"
+                  />
+                </svg>
+              </div>
+              <p id="idle-title" class="dz-title">
+                <span class="idle-desktop">Einfügen, ablegen oder Bild wählen</span>
+                <span class="idle-mobile">Bild zum Teilen wählen</span>
+              </p>
+              <p class="dz-hint">
+                <span class="hint-desktop"
+                  ><kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>V</kbd> ·
+                </span>
+                PNG, JPEG, WebP, GIF · max. 10 MB
+              </p>
+              <button id="btn-choose" type="button" class="btn primary choose-btn">
+                Bild wählen
+              </button>
+            </div>
+
+            <div id="state-uploading" class="state hidden">
+              <img id="preview" class="preview" alt="" />
+              <p class="dz-title" data-i18n="uploading">Wird hochgeladen…</p>
+              <div
+                class="progress"
+                role="progressbar"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="0"
+                id="progress-wrap"
+              >
+                <div id="progress-bar" class="progress-bar"></div>
+              </div>
+              <p id="progress-label" class="dz-hint">0%</p>
+            </div>
+
+            <div id="state-success" class="state hidden">
+              <div class="success-badge" aria-hidden="true">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
+                  <path
+                    d="M5 12.5l4.5 4.5L19 7.5"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </div>
+              <p id="success-title" class="dz-title success">Hochgeladen. Link kopiert.</p>
+              <div class="url-row">
+                <input id="share-url" class="url-input" readonly aria-label="Share-URL" />
+                <button id="btn-copy" type="button" class="btn primary">Kopieren</button>
+              </div>
+              <p id="expires-label" class="dz-hint"></p>
+              <div class="actions">
+                <a id="btn-open" class="btn secondary" href="#" target="_blank" rel="noopener"
+                  >Öffnen</a
+                >
+                <button id="btn-delete" type="button" class="btn danger">
+                  Jetzt löschen
+                </button>
+                <button id="btn-another" type="button" class="btn secondary">
+                  Weiteres hochladen
+                </button>
+              </div>
+            </div>
+
+            <div id="state-error" class="state hidden">
+              <p id="error-title" class="dz-title error">Upload fehlgeschlagen</p>
+              <p id="error-message" class="dz-hint"></p>
+              <button id="btn-retry" type="button" class="btn primary">Erneut versuchen</button>
+            </div>
+          </section>
+
+          <ul class="trust-chips" aria-label="Highlights">
+            <li>Kein Konto</li>
+            <li>24 Std. verfügbar</li>
+            <li>Metadaten entfernt</li>
+          </ul>
+
+          <section id="recent" class="recent" hidden>
+            <h2>Zuletzt</h2>
+            <ul id="recent-list"></ul>
+          </section>
+        </section>
+
+        <article class="seo-article">
+          <h2>Wofür temporäres Bildhosting gut ist</h2>
+
+          <p>Dauerhafte Hosts eignen sich für Blogs und Portfolios. Temporäres Hosting deckt den Rest ab: Bug-Screenshot in Slack, Entwurf in Discord, Beleg im Support-Ticket, Mockup im Pull Request.</p>
+
+          <p>Du bekommst eine kurze URL. Wer den Link hat, kann das Bild sehen, bis es abläuft. Keine öffentliche Galerie, keine Account-Wand.</p>
+
+          <h2>Warum 24 Stunden</h2>
+
+          <p>Die meisten geteilten Bilder sind Minuten oder Stunden nützlich, nicht Monate. Eine feste 24-Stunden-Frist hält Speicher standardmäßig kurzlebig.</p>
+
+          <p>Früher weg damit? Nach dem Upload gibt es eine private Löschfunktion.</p>
+
+          <h2>Was du hochladen kannst</h2>
+
+          <ul>
+            <li>PNG, JPEG, WebP, GIF</li>
+            <li>Bis 10 MB</li>
+            <li>Kein SVG (aus Sicherheitsgründen blockiert)</li>
+          </ul>
+
+          <h2>Privatsphäre by default</h2>
+
+          <p>Keine Anmeldung. Keine durchsuchbare Upload-Bibliothek. Share-Seiten sind noindex. Bei JPEG, PNG und WebP werden EXIF und ähnliche Metadaten vor dem Speichern entfernt — schlägt das fehl, wird der Upload abgelehnt.</p>
+
+          <p>Mit dropimg.io kannst du ein Bild einfügen, hochladen oder per Drag-and-drop ablegen und sofort einen temporären Link erstellen, der nach 24 Stunden abläuft.</p>
+        </article>
+
+        <nav class="seo-more" aria-label="Verwandt">
+          <a href="/de/screenshot-online-einfuegen">Screenshot online einfügen</a>
+          <span aria-hidden="true">·</span>
+          <a href="/de/bild-per-link-teilen">Bild per Link teilen</a>
+          <span aria-hidden="true">·</span>
+          <a href="/de">Start</a>
+        </nav>
+      </main>
+
+      <footer class="foot">
+        <div class="foot-legal">
+          <a href="/privacy.html">Privacy</a>
+          <span aria-hidden="true">·</span>
+          <a href="/terms.html">Terms</a>
+          <span aria-hidden="true">·</span>
+          <a href="/abuse">Abuse</a>
+        </div>
+        <nav class="foot-seo" aria-label="Mehr erfahren">
+          <a href="/de/temporaeres-bildhosting">Temporäres Bildhosting</a>
+          <a href="/de/screenshot-online-einfuegen">Screenshot online einfügen</a>
+          <a href="/de/bild-per-link-teilen">Bild per Link teilen</a>
+        </nav>
+      </footer>
+    </div>
+
+    <script type="module" src="/client/main.ts"></script>
+  </body>
+</html>
