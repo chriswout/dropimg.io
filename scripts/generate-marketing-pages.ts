@@ -17,6 +17,7 @@ import { renderPage } from "../marketing/render";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LASTMOD = "2026-08-23";
+const LEGAL_LASTMOD = "2026-08-23";
 
 function htmlOutPath(pageId: PageId, locale: (typeof LOCALES)[number]): string {
   const dir = pageDir(pageId, locale);
@@ -58,6 +59,7 @@ function writeSitemap() {
       loc,
       priority: loc.includes("abuse") ? "0.4" : "0.3",
       changefreq: "yearly",
+      lastmod: LEGAL_LASTMOD,
     })),
   ];
 
@@ -73,7 +75,7 @@ function writeSitemap() {
     .map(
       (u) => `  <url>
     <loc>${u.loc}</loc>
-    <lastmod>${LASTMOD}</lastmod>
+    <lastmod>${"lastmod" in u && u.lastmod ? u.lastmod : LASTMOD}</lastmod>
     <changefreq>${u.changefreq}</changefreq>
     <priority>${u.priority}</priority>
   </url>`,
