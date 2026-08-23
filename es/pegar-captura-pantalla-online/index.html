@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Pegar captura de pantalla online — Enlace para compartir | dropimg.io</title>
-    <meta name="description" content="Pega una captura del portapapeles y obtén una URL temporal. Funciona con capturas de macOS, Herramienta Recortes de Windows, Cmd+V / Ctrl+V. Sin cuenta." />
+    <title>Pega tu captura y genera un enlace | dropimg.io</title>
+    <meta name="description" content="Captura en el portapapeles → Ctrl/Cmd+V → enlace temporal. macOS y Windows. Sin guardar el archivo ni crear cuenta." />
     <link rel="canonical" href="https://dropimg.io/es/pegar-captura-pantalla-online" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/paste-screenshot-online" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es/pegar-captura-pantalla-online" />
@@ -18,30 +18,44 @@
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_ES" />
     <meta property="og:url" content="https://dropimg.io/es/pegar-captura-pantalla-online" />
-    <meta property="og:title" content="Pegar captura de pantalla online | dropimg.io" />
-    <meta property="og:description" content="Copia una captura, pégala aquí, obtén un enlace. Sin guardar en disco para luego subir." />
+    <meta property="og:title" content="Pega tu captura online | dropimg.io" />
+    <meta property="og:description" content="Copia la captura, pégala aquí y listo: un enlace. Sin el rollo de guardar y subir." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="dropimg.io" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Pegar captura de pantalla online | dropimg.io" />
-    <meta name="twitter:description" content="Copia una captura, pégala aquí, obtén un enlace. Sin el baile de guardar y subir." />
+    <meta name="twitter:title" content="Pega tu captura online | dropimg.io" />
+    <meta name="twitter:description" content="Copia la captura, pégala aquí y listo: un enlace." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/og.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body>
     <a class="skip-link" href="#dropzone">Ir a subir</a>
     <div class="page page-seo">
       <header class="top">
         <a class="brand" href="/es" aria-label="Inicio de dropimg.io">
-          <img class="mark" src="/favicon.svg" alt="" width="28" height="28" />
-          <span class="wordmark"
-            ><span class="wm-drop">drop</span><span class="wm-img">img</span
-            ><span class="wm-io">.io</span></span
-          >
+          <img
+            class="brand-logo brand-logo-light"
+            src="/brand/logo-32.png"
+            srcset="/brand/logo-32.png 1x, /brand/logo-64.png 2x"
+            width="134"
+            height="32"
+            alt="dropimg.io"
+            decoding="async"
+          />
+          <img
+            class="brand-logo brand-logo-dark"
+            src="/brand/logo-dark-32.png"
+            srcset="/brand/logo-dark-32.png 1x, /brand/logo-dark-64.png 2x"
+            width="134"
+            height="32"
+            alt=""
+            decoding="async"
+            aria-hidden="true"
+          />
         </a>
         <nav class="lang" aria-label="Idioma">
           <details class="lang-details">
@@ -61,8 +75,8 @@
 
       <main>
         <section class="seo-hero">
-          <h1 class="tagline">Pegar una captura de pantalla online</h1>
-          <p class="sub seo-lede">Captura → portapapeles → pegar → enlace. Olvídate de guardar un archivo solo para subirlo a otro sitio.</p>
+          <h1 class="tagline">Pega una captura y genera el enlace</h1>
+          <p class="sub seo-lede">Captura → portapapeles → pegar → enlace. Sin guardar un PNG solo para subirlo a otro sitio.</p>
 
           <section
             id="dropzone"
@@ -161,9 +175,9 @@
                   />
                 </svg>
               </div>
-              <p id="success-title" class="dz-title success">Subida. Enlace copiado.</p>
+              <p id="success-title" class="dz-title success">Listo. Enlace copiado.</p>
               <div class="url-row">
-                <input id="share-url" class="url-input" readonly aria-label="URL para compartir" />
+                <input id="share-url" class="url-input" readonly aria-label="Enlace para compartir" />
                 <button id="btn-copy" type="button" class="btn primary">Copiar</button>
               </div>
               <p id="expires-label" class="dz-hint"></p>
@@ -172,7 +186,7 @@
                   >Abrir</a
                 >
                 <button id="btn-delete" type="button" class="btn danger">
-                  Eliminar ahora
+                  Borrar ahora
                 </button>
                 <button id="btn-another" type="button" class="btn secondary">
                   Subir otra
@@ -181,16 +195,16 @@
             </div>
 
             <div id="state-error" class="state hidden">
-              <p id="error-title" class="dz-title error">Error al subir</p>
+              <p id="error-title" class="dz-title error">No se pudo subir</p>
               <p id="error-message" class="dz-hint"></p>
               <button id="btn-retry" type="button" class="btn primary">Reintentar</button>
             </div>
           </section>
 
-          <ul class="trust-chips" aria-label="Destacados">
+          <ul class="trust-chips" aria-label="En resumen">
             <li>Sin cuenta</li>
-            <li>Expira en 24 h</li>
-            <li>Metadatos eliminados</li>
+            <li>24 horas</li>
+            <li>Sin metadatos</li>
           </ul>
 
           <section id="recent" class="recent" hidden>
@@ -200,39 +214,39 @@
         </section>
 
         <article class="seo-article">
-          <h2>macOS</h2>
+          <h2>En Mac</h2>
 
           <ul>
-            <li>Captura al portapapeles con Control + Command + Shift + 3/4</li>
+            <li>Captura al portapapeles: Control + Command + Shift + 3 o 4</li>
             <li>Abre dropimg.io</li>
             <li>Pulsa Command + V</li>
           </ul>
 
-          <p>Si ya guardaste un .png en el escritorio, arrástralo a la página o usa Elegir imagen.</p>
+          <p>Si el .png ya está en el escritorio, arrástralo a la página o pulsa Elegir imagen.</p>
 
-          <h2>Windows</h2>
+          <h2>En Windows</h2>
 
           <ul>
-            <li>Herramienta Recortes / Snip &amp; Sketch → copia el recorte</li>
+            <li>Recortes / Snip &amp; Sketch → copia el recorte</li>
             <li>O Windows + Shift + S y luego copia</li>
             <li>Abre dropimg.io y pulsa Ctrl + V</li>
           </ul>
 
-          <h2>Por qué pegar desde el portapapeles gana</h2>
+          <h2>Por qué pegar es más rápido que “guardar y subir”</h2>
 
-          <p>Chats de soporte, Discord, Slack y reportes de bugs están llenos de “una captura rápida”. Guardar en Descargas, buscar el archivo y adjuntarlo es fricción. Pegar desde el portapapeles deja el flujo en una sola pestaña.</p>
+          <p>En soporte, Discord, Slack o un ticket casi siempre es “una captura rápida”. Guardar en Descargas, buscar el archivo y adjuntarlo es un rollo. Pegar desde el portapapeles deja todo en la misma pestaña.</p>
 
-          <p>dropimg.io permite pegar, arrastrar o subir una imagen y crear un enlace temporal que expira automáticamente después de 24 horas. Tienes una captura en el portapapeles y necesitas una URL: pégala aquí.</p>
+          <p>dropimg.io te devuelve un enlace temporal (24 horas). Lo mandas donde estés hablando. ¿Tienes la captura en el portapapeles y te hace falta una URL? Pégala aquí.</p>
 
           <h2>Formatos</h2>
 
-          <p>PNG y JPEG van mejor. WebP y GIF también. Máx. 10 MB. SVG no se acepta.</p>
+          <p>PNG y JPEG van de lujo. WebP y GIF también. Máximo 10 MB. SVG no se acepta.</p>
         </article>
 
-        <nav class="seo-more" aria-label="Relacionado">
+        <nav class="seo-more" aria-label="También te puede interesar">
           <a href="/es/alojamiento-temporal-imagenes">Alojamiento temporal de imágenes</a>
           <span aria-hidden="true">·</span>
-          <a href="/es/compartir-imagen-con-enlace">Compartir imagen con un enlace</a>
+          <a href="/es/compartir-imagen-con-enlace">Compartir imagen con enlace</a>
           <span aria-hidden="true">·</span>
           <a href="/es">Inicio</a>
         </nav>
@@ -248,8 +262,8 @@
         </div>
         <nav class="foot-seo" aria-label="Más información">
           <a href="/es/alojamiento-temporal-imagenes">Alojamiento temporal de imágenes</a>
-          <a href="/es/pegar-captura-pantalla-online">Pegar captura de pantalla online</a>
-          <a href="/es/compartir-imagen-con-enlace">Compartir imagen con un enlace</a>
+          <a href="/es/pegar-captura-pantalla-online">Pegar captura online</a>
+          <a href="/es/compartir-imagen-con-enlace">Compartir imagen con enlace</a>
         </nav>
       </footer>
     </div>

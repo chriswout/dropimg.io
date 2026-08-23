@@ -34,6 +34,7 @@ export function renderSharePage(p: ShareProps): string {
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:image" content="${esc(imageUrl)}" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   <style>
     :root {
       --bg: #F8FAFC;
@@ -73,17 +74,21 @@ export function renderSharePage(p: ShareProps): string {
       backdrop-filter: blur(8px);
     }
     .brand {
-      font-weight: 750;
-      letter-spacing: -0.03em;
-      color: var(--fg);
+      display: inline-flex;
+      align-items: center;
+      line-height: 0;
       text-decoration: none;
-      font-size: 1.05rem;
+      border-radius: 8px;
     }
-    .brand span {
-      background: linear-gradient(135deg, var(--blue), var(--cyan));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+    .brand:focus-visible {
+      outline: 2px solid var(--blue);
+      outline-offset: 3px;
+    }
+    .brand-logo {
+      display: block;
+      height: 28px;
+      width: auto;
+      max-width: min(148px, 55vw);
     }
     .report {
       color: var(--muted);
@@ -181,7 +186,17 @@ export function renderSharePage(p: ShareProps): string {
 </head>
 <body>
   <header>
-    <a class="brand" href="/">drop<span>img</span>.io</a>
+    <a class="brand" href="/" aria-label="dropimg.io home">
+      <img
+        class="brand-logo"
+        src="/brand/logo-32.png"
+        srcset="/brand/logo-32.png 1x, /brand/logo-64.png 2x"
+        width="134"
+        height="32"
+        alt="dropimg.io"
+        decoding="async"
+      />
+    </a>
     <a class="report" href="${esc(reportUrl)}">Report</a>
   </header>
   <main>

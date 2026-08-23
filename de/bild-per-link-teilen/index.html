@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Bild per Link teilen — Temporäre URL | dropimg.io</title>
-    <meta name="description" content="Bild in Sekunden in einen teilbaren Link verwandeln. Temporäre URLs für Chat, Support und Dev-Workflows. Kein Konto. Läuft nach 24 Stunden ab." />
+    <title>Bild per Link teilen | dropimg.io</title>
+    <meta name="description" content="Aus dem Bild in Sekunden eine URL machen. Für Chat, Support und GitHub. Kein Konto. Gültig 24 Stunden." />
     <link rel="canonical" href="https://dropimg.io/de/bild-per-link-teilen" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/share-image-with-link" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es/compartir-imagen-con-enlace" />
@@ -19,7 +19,7 @@
     <meta property="og:locale" content="de_DE" />
     <meta property="og:url" content="https://dropimg.io/de/bild-per-link-teilen" />
     <meta property="og:title" content="Bild per Link teilen | dropimg.io" />
-    <meta property="og:description" content="Bild ablegen, URL kopieren, senden. Für Chat und Support — nicht für dauerhaftes Hosting." />
+    <meta property="og:description" content="Bild rein, URL kopieren, senden. Für Chat und Support — nicht fürs ewige Hosting." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
@@ -27,21 +27,35 @@
     <meta property="og:image:alt" content="dropimg.io" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Bild per Link teilen | dropimg.io" />
-    <meta name="twitter:description" content="Bild ablegen, URL kopieren, senden. Für Chat und Support — nicht dauerhaftes Hosting." />
+    <meta name="twitter:description" content="Bild rein, URL kopieren, senden. Für Chat und Support." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/og.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body>
     <a class="skip-link" href="#dropzone">Zum Upload</a>
     <div class="page page-seo">
       <header class="top">
         <a class="brand" href="/de" aria-label="dropimg.io Startseite">
-          <img class="mark" src="/favicon.svg" alt="" width="28" height="28" />
-          <span class="wordmark"
-            ><span class="wm-drop">drop</span><span class="wm-img">img</span
-            ><span class="wm-io">.io</span></span
-          >
+          <img
+            class="brand-logo brand-logo-light"
+            src="/brand/logo-32.png"
+            srcset="/brand/logo-32.png 1x, /brand/logo-64.png 2x"
+            width="134"
+            height="32"
+            alt="dropimg.io"
+            decoding="async"
+          />
+          <img
+            class="brand-logo brand-logo-dark"
+            src="/brand/logo-dark-32.png"
+            srcset="/brand/logo-dark-32.png 1x, /brand/logo-dark-64.png 2x"
+            width="134"
+            height="32"
+            alt=""
+            decoding="async"
+            aria-hidden="true"
+          />
         </a>
         <nav class="lang" aria-label="Sprache">
           <details class="lang-details">
@@ -62,14 +76,14 @@
       <main>
         <section class="seo-hero">
           <h1 class="tagline">Bild per Link teilen</h1>
-          <p class="sub seo-lede">Manche Tools wollen eine URL, keinen Anhang. dropimg.io macht aus einer Datei (oder einem eingefügten Screenshot) einen kurzen Link zum Weitergeben.</p>
+          <p class="sub seo-lede">Manche Tools wollen eine URL, keinen Anhang. dropimg.io macht aus der Datei (oder dem eingefügten Screenshot) einen kurzen Link zum Weitergeben.</p>
 
           <section
             id="dropzone"
             class="dropzone"
             tabindex="0"
             role="button"
-            aria-label="Bild einfügen, ablegen oder auswählen zum Hochladen"
+            aria-label="Bild einfügen, ablegen oder auswählen"
           >
             <input
               id="file-input"
@@ -161,9 +175,9 @@
                   />
                 </svg>
               </div>
-              <p id="success-title" class="dz-title success">Hochgeladen. Link kopiert.</p>
+              <p id="success-title" class="dz-title success">Fertig. Link kopiert.</p>
               <div class="url-row">
-                <input id="share-url" class="url-input" readonly aria-label="Share-URL" />
+                <input id="share-url" class="url-input" readonly aria-label="Link zum Teilen" />
                 <button id="btn-copy" type="button" class="btn primary">Kopieren</button>
               </div>
               <p id="expires-label" class="dz-hint"></p>
@@ -175,7 +189,7 @@
                   Jetzt löschen
                 </button>
                 <button id="btn-another" type="button" class="btn secondary">
-                  Weiteres hochladen
+                  Weiteres Bild
                 </button>
               </div>
             </div>
@@ -183,14 +197,14 @@
             <div id="state-error" class="state hidden">
               <p id="error-title" class="dz-title error">Upload fehlgeschlagen</p>
               <p id="error-message" class="dz-hint"></p>
-              <button id="btn-retry" type="button" class="btn primary">Erneut versuchen</button>
+              <button id="btn-retry" type="button" class="btn primary">Nochmal versuchen</button>
             </div>
           </section>
 
-          <ul class="trust-chips" aria-label="Highlights">
+          <ul class="trust-chips" aria-label="Auf einen Blick">
             <li>Kein Konto</li>
-            <li>24 Std. verfügbar</li>
-            <li>Metadaten entfernt</li>
+            <li>24 Stunden</li>
+            <li>Ohne Metadaten</li>
           </ul>
 
           <section id="recent" class="recent" hidden>
@@ -205,37 +219,37 @@
           <ul>
             <li>Ablegen, einfügen oder Bild wählen</li>
             <li>Link kopieren (oft schon für dich kopiert)</li>
-            <li>In Chat, E-Mail, Ticket oder PR-Kommentar einfügen</li>
+            <li>In Chat, Mail, Ticket oder PR-Kommentar einfügen</li>
           </ul>
 
-          <p>Das war’s. Screenshot → Link. Fertig.</p>
+          <p>Fertig. Screenshot → Link.</p>
 
-          <h2>Wo temporäre Links helfen</h2>
+          <h2>Wo kurze Links helfen</h2>
 
           <ul>
-            <li>Chat: Discord, Slack, Teams, Reddit — teilen ohne Upload-Limits</li>
-            <li>Support: exakten UI-Zustand zeigen ohne Anhang-Marathon</li>
+            <li>Chat: Discord, Slack, Teams, Reddit — ohne Upload-Limit-Kampf</li>
+            <li>Support: genauen Bildschirmzustand zeigen, ohne Anhang-Marathon</li>
             <li>Dev: Bugreports, GitHub-Reviews, „sieht das so aus?“</li>
             <li>E-Mail: wenn der Client eingebettete Bilder zerlegt</li>
           </ul>
 
-          <p>Links laufen nach 24 Stunden ab. Temporär by Design — kein CMS, kein CDN für Marken-Assets.</p>
+          <p>Links gelten 24 Stunden. Absichtlich temporär — kein CMS und kein CDN für Marken-Assets.</p>
 
           <h2>Was Empfänger sehen</h2>
 
-          <p>Eine einfache Seite mit Bild und Ablaufhinweis. Share-Seiten sind noindex. Wer die einzigartige URL hat, kann das Bild sehen, bis es abläuft oder du es löschst.</p>
+          <p>Eine schlichte Seite mit Bild und Ablaufhinweis. Share-Seiten sind noindex und sollen nicht in der Suche landen. Wer die URL hat, sieht das Bild bis zum Ablauf oder bis du es löschst.</p>
 
-          <h2>Schnelles Teilen vs dauerhaftes Hosting</h2>
+          <h2>Schnell teilen vs. dauerhaft hosten</h2>
 
-          <p>Nutze dropimg.io, wenn das Bild Teil einer Unterhaltung ist. Nutze einen dauerhaften Host, wenn es Teil eines Produkts, einer Doku oder eines langlebigen Posts ist.</p>
+          <p>Nimm dropimg.io, wenn das Bild zur Unterhaltung gehört. Nimm einen dauerhaften Host, wenn es zu Produkt, Doku oder einem langlebigen Beitrag gehört.</p>
         </article>
 
-        <nav class="seo-more" aria-label="Verwandt">
+        <nav class="seo-more" aria-label="Weiterlesen">
           <a href="/de/temporaeres-bildhosting">Temporäres Bildhosting</a>
           <span aria-hidden="true">·</span>
           <a href="/de/screenshot-online-einfuegen">Screenshot online einfügen</a>
           <span aria-hidden="true">·</span>
-          <a href="/de">Start</a>
+          <a href="/de">Startseite</a>
         </nav>
       </main>
 

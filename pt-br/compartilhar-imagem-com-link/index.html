@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Compartilhar imagem com um link — URL temporária | dropimg.io</title>
-    <meta name="description" content="Transforme uma imagem em um link em segundos. URLs temporárias para chat, suporte e desenvolvimento. Sem conta. Expira em 24 horas." />
+    <title>Compartilhe uma imagem com um link | dropimg.io</title>
+    <meta name="description" content="Transforme a imagem em URL em segundos. Ideal pra WhatsApp, Slack, tickets e GitHub. Sem conta. Vale por 24 horas." />
     <link rel="canonical" href="https://dropimg.io/pt-br/compartilhar-imagem-com-link" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/share-image-with-link" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es/compartir-imagen-con-enlace" />
@@ -18,30 +18,44 @@
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="pt_BR" />
     <meta property="og:url" content="https://dropimg.io/pt-br/compartilhar-imagem-com-link" />
-    <meta property="og:title" content="Compartilhar imagem com um link | dropimg.io" />
-    <meta property="og:description" content="Solte uma imagem, copie a URL, envie. Feito para chat e suporte — não para hospedagem permanente." />
+    <meta property="og:title" content="Compartilhe uma imagem com um link | dropimg.io" />
+    <meta property="og:description" content="Manda a imagem, copia a URL e envia. Feito pra chat e suporte — não pra hospedagem eterna." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="dropimg.io" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Compartilhar imagem com um link | dropimg.io" />
-    <meta name="twitter:description" content="Solte uma imagem, copie a URL, envie. Para chat e suporte — não hospedagem permanente." />
+    <meta name="twitter:title" content="Compartilhe uma imagem com um link | dropimg.io" />
+    <meta name="twitter:description" content="Manda a imagem, copia a URL e envia. Pra chat e suporte." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/og.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body>
     <a class="skip-link" href="#dropzone">Ir para o envio</a>
     <div class="page page-seo">
       <header class="top">
         <a class="brand" href="/pt-br" aria-label="Início do dropimg.io">
-          <img class="mark" src="/favicon.svg" alt="" width="28" height="28" />
-          <span class="wordmark"
-            ><span class="wm-drop">drop</span><span class="wm-img">img</span
-            ><span class="wm-io">.io</span></span
-          >
+          <img
+            class="brand-logo brand-logo-light"
+            src="/brand/logo-32.png"
+            srcset="/brand/logo-32.png 1x, /brand/logo-64.png 2x"
+            width="134"
+            height="32"
+            alt="dropimg.io"
+            decoding="async"
+          />
+          <img
+            class="brand-logo brand-logo-dark"
+            src="/brand/logo-dark-32.png"
+            srcset="/brand/logo-dark-32.png 1x, /brand/logo-dark-64.png 2x"
+            width="134"
+            height="32"
+            alt=""
+            decoding="async"
+            aria-hidden="true"
+          />
         </a>
         <nav class="lang" aria-label="Idioma">
           <details class="lang-details">
@@ -61,8 +75,8 @@
 
       <main>
         <section class="seo-hero">
-          <h1 class="tagline">Compartilhar uma imagem com um link</h1>
-          <p class="sub seo-lede">Algumas ferramentas querem uma URL, não um anexo. O dropimg.io transforma um arquivo (ou uma captura colada) em um link curto que você envia para qualquer lugar.</p>
+          <h1 class="tagline">Compartilhe uma imagem com um link</h1>
+          <p class="sub seo-lede">Às vezes o que falta é uma URL, não um anexo. O dropimg.io transforma o arquivo (ou o print colado) num link curto pra mandar pra qualquer lugar.</p>
 
           <section
             id="dropzone"
@@ -120,7 +134,7 @@
               </div>
               <p id="idle-title" class="dz-title">
                 <span class="idle-desktop">Cole, arraste ou escolha uma imagem</span>
-                <span class="idle-mobile">Escolha uma imagem para compartilhar</span>
+                <span class="idle-mobile">Escolha uma imagem pra compartilhar</span>
               </p>
               <p class="dz-hint">
                 <span class="hint-desktop"
@@ -161,9 +175,9 @@
                   />
                 </svg>
               </div>
-              <p id="success-title" class="dz-title success">Enviado. Link copiado.</p>
+              <p id="success-title" class="dz-title success">Pronto. Link copiado.</p>
               <div class="url-row">
-                <input id="share-url" class="url-input" readonly aria-label="URL para compartilhar" />
+                <input id="share-url" class="url-input" readonly aria-label="Link pra compartilhar" />
                 <button id="btn-copy" type="button" class="btn primary">Copiar</button>
               </div>
               <p id="expires-label" class="dz-hint"></p>
@@ -181,16 +195,16 @@
             </div>
 
             <div id="state-error" class="state hidden">
-              <p id="error-title" class="dz-title error">Falha no envio</p>
+              <p id="error-title" class="dz-title error">Não deu pra enviar</p>
               <p id="error-message" class="dz-hint"></p>
               <button id="btn-retry" type="button" class="btn primary">Tentar de novo</button>
             </div>
           </section>
 
-          <ul class="trust-chips" aria-label="Destaques">
+          <ul class="trust-chips" aria-label="Em resumo">
             <li>Sem conta</li>
-            <li>Expira em 24 h</li>
-            <li>Metadados removidos</li>
+            <li>24 horas</li>
+            <li>Sem metadados</li>
           </ul>
 
           <section id="recent" class="recent" hidden>
@@ -200,40 +214,40 @@
         </section>
 
         <article class="seo-article">
-          <h2>O fluxo</h2>
+          <h2>O passo a passo</h2>
 
           <ul>
-            <li>Arraste, cole ou escolha uma imagem</li>
-            <li>Copie o link (muitas vezes já é copiado)</li>
-            <li>Cole no chat, e-mail, ticket ou comentário de PR</li>
+            <li>Arrasta, cola ou escolhe a imagem</li>
+            <li>Copia o link (muitas vezes já vai copiado)</li>
+            <li>Cola no chat, e-mail, ticket ou comentário do PR</li>
           </ul>
 
-          <p>É isso. Captura → link. Pronto.</p>
+          <p>É isso. Print → link. Pronto.</p>
 
-          <h2>Onde links temporários ajudam</h2>
+          <h2>Onde um link temporário ajuda</h2>
 
           <ul>
-            <li>Chat: Discord, Slack, Teams, Reddit — compartilhe sem brigar com limites de upload</li>
-            <li>Suporte: mostre o estado exato da UI sem threads eternas de anexos</li>
-            <li>Dev: bugs, reviews no GitHub, “fica bom assim?”</li>
-            <li>E-mail: quando o cliente do destinatário estraga imagens embutidas</li>
+            <li>Chat: WhatsApp, Discord, Slack, Teams, Reddit — sem brigar com limite de upload</li>
+            <li>Suporte: mostra exatamente a tela, sem mil mensagens com anexo</li>
+            <li>Dev: bugs, review no GitHub, “fica bom assim?”</li>
+            <li>E-mail: quando o cliente do outro lado estraga imagem embutida</li>
           </ul>
 
-          <p>Os links expiram em 24 horas. Temporários de propósito — não é CMS nem CDN para assets de marca.</p>
+          <p>Os links duram 24 horas. São temporários de propósito: não é CMS nem CDN pra asset de marca.</p>
 
-          <h2>O que os destinatários veem</h2>
+          <h2>O que quem recebe vê</h2>
 
-          <p>Uma página simples com a imagem e a expiração. Páginas de compartilhamento vão com noindex. Quem tiver a URL única pode ver até expirar ou você excluir.</p>
+          <p>Uma página simples com a imagem e até quando vale. Vai com noindex, então não é pra aparecer no Google. Quem tiver a URL vê até expirar ou você excluir.</p>
 
-          <h2>Compartilhamento rápido vs hospedagem permanente</h2>
+          <h2>Compartilhar rápido vs deixar no ar</h2>
 
-          <p>Use o dropimg.io quando a imagem faz parte de uma conversa. Use um host permanente quando faz parte de um produto, docs ou post duradouro.</p>
+          <p>Usa o dropimg.io quando a imagem faz parte da conversa. Usa host permanente quando ela faz parte de produto, docs ou post que precisa ficar.</p>
         </article>
 
-        <nav class="seo-more" aria-label="Relacionado">
+        <nav class="seo-more" aria-label="Veja também">
           <a href="/pt-br/hospedagem-temporaria-de-imagens">Hospedagem temporária de imagens</a>
           <span aria-hidden="true">·</span>
-          <a href="/pt-br/colar-captura-de-tela-online">Colar captura de tela online</a>
+          <a href="/pt-br/colar-captura-de-tela-online">Colar print online</a>
           <span aria-hidden="true">·</span>
           <a href="/pt-br">Início</a>
         </nav>
@@ -249,8 +263,8 @@
         </div>
         <nav class="foot-seo" aria-label="Saiba mais">
           <a href="/pt-br/hospedagem-temporaria-de-imagens">Hospedagem temporária de imagens</a>
-          <a href="/pt-br/colar-captura-de-tela-online">Colar captura de tela online</a>
-          <a href="/pt-br/compartilhar-imagem-com-link">Compartilhar imagem com um link</a>
+          <a href="/pt-br/colar-captura-de-tela-online">Colar print online</a>
+          <a href="/pt-br/compartilhar-imagem-com-link">Compartilhar imagem com link</a>
         </nav>
       </footer>
     </div>

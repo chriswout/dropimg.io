@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Compartir imagen con un enlace — URL temporal | dropimg.io</title>
-    <meta name="description" content="Convierte una imagen en un enlace en segundos. URLs temporales para chat, soporte y desarrollo. Sin cuenta. Expira en 24 horas." />
+    <title>Comparte una imagen con un enlace | dropimg.io</title>
+    <meta name="description" content="Convierte una imagen en URL en segundos. Ideal para WhatsApp, Slack, tickets y GitHub. Sin cuenta. Dura 24 horas." />
     <link rel="canonical" href="https://dropimg.io/es/compartir-imagen-con-enlace" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/share-image-with-link" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es/compartir-imagen-con-enlace" />
@@ -18,30 +18,44 @@
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_ES" />
     <meta property="og:url" content="https://dropimg.io/es/compartir-imagen-con-enlace" />
-    <meta property="og:title" content="Compartir imagen con un enlace | dropimg.io" />
-    <meta property="og:description" content="Suelta una imagen, copia la URL, envíala. Pensado para chat y soporte — no para hosting permanente." />
+    <meta property="og:title" content="Comparte una imagen con un enlace | dropimg.io" />
+    <meta property="og:description" content="Sube la imagen, copia la URL y mándala. Pensado para chats y soporte — no para hosting eterno." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="dropimg.io" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Compartir imagen con un enlace | dropimg.io" />
-    <meta name="twitter:description" content="Suelta una imagen, copia la URL, envíala. Para chat y soporte — no hosting permanente." />
+    <meta name="twitter:title" content="Comparte una imagen con un enlace | dropimg.io" />
+    <meta name="twitter:description" content="Sube la imagen, copia la URL y mándala. Para chats y soporte." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/og.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body>
     <a class="skip-link" href="#dropzone">Ir a subir</a>
     <div class="page page-seo">
       <header class="top">
         <a class="brand" href="/es" aria-label="Inicio de dropimg.io">
-          <img class="mark" src="/favicon.svg" alt="" width="28" height="28" />
-          <span class="wordmark"
-            ><span class="wm-drop">drop</span><span class="wm-img">img</span
-            ><span class="wm-io">.io</span></span
-          >
+          <img
+            class="brand-logo brand-logo-light"
+            src="/brand/logo-32.png"
+            srcset="/brand/logo-32.png 1x, /brand/logo-64.png 2x"
+            width="134"
+            height="32"
+            alt="dropimg.io"
+            decoding="async"
+          />
+          <img
+            class="brand-logo brand-logo-dark"
+            src="/brand/logo-dark-32.png"
+            srcset="/brand/logo-dark-32.png 1x, /brand/logo-dark-64.png 2x"
+            width="134"
+            height="32"
+            alt=""
+            decoding="async"
+            aria-hidden="true"
+          />
         </a>
         <nav class="lang" aria-label="Idioma">
           <details class="lang-details">
@@ -61,8 +75,8 @@
 
       <main>
         <section class="seo-hero">
-          <h1 class="tagline">Compartir una imagen con un enlace</h1>
-          <p class="sub seo-lede">Algunas herramientas quieren una URL, no un adjunto. dropimg.io convierte un archivo (o una captura pegada) en un enlace corto que puedes enviar a cualquier sitio.</p>
+          <h1 class="tagline">Comparte una imagen con un enlace</h1>
+          <p class="sub seo-lede">A veces lo que necesitan es una URL, no un adjunto. dropimg.io convierte el archivo (o la captura pegada) en un enlace corto para mandar donde sea.</p>
 
           <section
             id="dropzone"
@@ -161,9 +175,9 @@
                   />
                 </svg>
               </div>
-              <p id="success-title" class="dz-title success">Subida. Enlace copiado.</p>
+              <p id="success-title" class="dz-title success">Listo. Enlace copiado.</p>
               <div class="url-row">
-                <input id="share-url" class="url-input" readonly aria-label="URL para compartir" />
+                <input id="share-url" class="url-input" readonly aria-label="Enlace para compartir" />
                 <button id="btn-copy" type="button" class="btn primary">Copiar</button>
               </div>
               <p id="expires-label" class="dz-hint"></p>
@@ -172,7 +186,7 @@
                   >Abrir</a
                 >
                 <button id="btn-delete" type="button" class="btn danger">
-                  Eliminar ahora
+                  Borrar ahora
                 </button>
                 <button id="btn-another" type="button" class="btn secondary">
                   Subir otra
@@ -181,16 +195,16 @@
             </div>
 
             <div id="state-error" class="state hidden">
-              <p id="error-title" class="dz-title error">Error al subir</p>
+              <p id="error-title" class="dz-title error">No se pudo subir</p>
               <p id="error-message" class="dz-hint"></p>
               <button id="btn-retry" type="button" class="btn primary">Reintentar</button>
             </div>
           </section>
 
-          <ul class="trust-chips" aria-label="Destacados">
+          <ul class="trust-chips" aria-label="En resumen">
             <li>Sin cuenta</li>
-            <li>Expira en 24 h</li>
-            <li>Metadatos eliminados</li>
+            <li>24 horas</li>
+            <li>Sin metadatos</li>
           </ul>
 
           <section id="recent" class="recent" hidden>
@@ -200,40 +214,40 @@
         </section>
 
         <article class="seo-article">
-          <h2>El flujo</h2>
+          <h2>El truco de siempre</h2>
 
           <ul>
-            <li>Arrastra, pega o elige una imagen</li>
-            <li>Copia el enlace (a menudo se copia solo)</li>
-            <li>Pégalo en chat, email, un ticket o un comentario de PR</li>
+            <li>Arrastra, pega o elige la imagen</li>
+            <li>Copia el enlace (casi siempre se copia solo)</li>
+            <li>Pégalo en el chat, el email, el ticket o el comentario del PR</li>
           </ul>
 
-          <p>Eso es todo. Captura → enlace. Listo.</p>
+          <p>Y ya. Captura → enlace. Listo.</p>
 
-          <h2>Dónde ayudan los enlaces temporales</h2>
+          <h2>Dónde encaja un enlace temporal</h2>
 
           <ul>
-            <li>Chat: Discord, Slack, Teams, Reddit — comparte sin pelear con límites de subida</li>
-            <li>Soporte: muestra el estado exacto de la UI sin hilos eternos de adjuntos</li>
-            <li>Dev: reportes de bugs, revisiones en GitHub, “¿se ve bien?”</li>
-            <li>Email: cuando el cliente del destinatario rompe las imágenes incrustadas</li>
+            <li>Chat: WhatsApp, Discord, Slack, Teams, Reddit — sin pelear con límites de subida</li>
+            <li>Soporte: enseña exactamente lo que ves en pantalla, sin hilos eternos de adjuntos</li>
+            <li>Dev: bugs, revisiones en GitHub, “¿se ve bien así?”</li>
+            <li>Email: cuando el cliente del otro lado destroza las imágenes incrustadas</li>
           </ul>
 
-          <p>Los enlaces expiran a las 24 horas. Temporales a propósito — no es un CMS ni un CDN para assets de marca.</p>
+          <p>Los enlaces duran 24 horas. Son temporales a propósito: no es un CMS ni un sitio para los assets de tu marca.</p>
 
-          <h2>Qué ven los destinatarios</h2>
+          <h2>Qué ve quien recibe el enlace</h2>
 
-          <p>Una página simple con la imagen y una nota de caducidad. Las páginas de compartir van con noindex. Quien tenga la URL única puede ver la imagen hasta que expire o la elimines.</p>
+          <p>Una página sencilla con la imagen y cuándo caduca. Va con noindex, así que no está pensada para aparecer en Google. Quien tenga la URL puede verla hasta que expire o la borres.</p>
 
-          <h2>Compartir rápido vs hosting permanente</h2>
+          <h2>Compartir rápido vs dejarla publicada</h2>
 
-          <p>Usa dropimg.io cuando la imagen forma parte de una conversación. Usa un host permanente cuando forma parte de un producto, documentación o publicación duradera.</p>
+          <p>Usa dropimg.io cuando la imagen es parte de la conversación. Usa un host permanente cuando forma parte de un producto, una doc o un post que debe quedarse.</p>
         </article>
 
-        <nav class="seo-more" aria-label="Relacionado">
+        <nav class="seo-more" aria-label="También te puede interesar">
           <a href="/es/alojamiento-temporal-imagenes">Alojamiento temporal de imágenes</a>
           <span aria-hidden="true">·</span>
-          <a href="/es/pegar-captura-pantalla-online">Pegar captura de pantalla online</a>
+          <a href="/es/pegar-captura-pantalla-online">Pegar captura online</a>
           <span aria-hidden="true">·</span>
           <a href="/es">Inicio</a>
         </nav>
@@ -249,8 +263,8 @@
         </div>
         <nav class="foot-seo" aria-label="Más información">
           <a href="/es/alojamiento-temporal-imagenes">Alojamiento temporal de imágenes</a>
-          <a href="/es/pegar-captura-pantalla-online">Pegar captura de pantalla online</a>
-          <a href="/es/compartir-imagen-con-enlace">Compartir imagen con un enlace</a>
+          <a href="/es/pegar-captura-pantalla-online">Pegar captura online</a>
+          <a href="/es/compartir-imagen-con-enlace">Compartir imagen con enlace</a>
         </nav>
       </footer>
     </div>

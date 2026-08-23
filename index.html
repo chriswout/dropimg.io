@@ -30,7 +30,7 @@
     <meta name="twitter:description" content="Fast temporary screenshot sharing. No account. Images expire automatically after 24 hours." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/og.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <script type="application/ld+json">
       {
         "@context": "https://schema.org",
@@ -68,7 +68,7 @@
             "@id": "https://dropimg.io/#org",
             "name": "dropimg.io",
             "url": "https://dropimg.io/",
-            "logo": "https://dropimg.io/favicon.svg"
+            "logo": "https://dropimg.io/brand/logo-square-512.png"
           },
           {
             "@type": "HowTo",
@@ -143,15 +143,29 @@
           <button id="lang-suggest-dismiss" type="button" class="btn secondary">Dismiss</button>
         </div>
       </div>
-      <script type="application/json" id="lang-suggest-data">{"es":"¿Prefieres Español?","pt-BR":"Ver dropimg.io em Português?","de":"dropimg.io auf Deutsch anzeigen?"}</script>
+      <script type="application/json" id="lang-suggest-data">{"es":"¿Prefieres verlo en español?","pt-BR":"Prefere ver em português?","de":"Lieber auf Deutsch?"}</script>
     <div class="page">
       <header class="top">
         <a class="brand" href="/" aria-label="dropimg.io home">
-          <img class="mark" src="/favicon.svg" alt="" width="28" height="28" />
-          <span class="wordmark"
-            ><span class="wm-drop">drop</span><span class="wm-img">img</span
-            ><span class="wm-io">.io</span></span
-          >
+          <img
+            class="brand-logo brand-logo-light"
+            src="/brand/logo-32.png"
+            srcset="/brand/logo-32.png 1x, /brand/logo-64.png 2x"
+            width="134"
+            height="32"
+            alt="dropimg.io"
+            decoding="async"
+          />
+          <img
+            class="brand-logo brand-logo-dark"
+            src="/brand/logo-dark-32.png"
+            srcset="/brand/logo-dark-32.png 1x, /brand/logo-dark-64.png 2x"
+            width="134"
+            height="32"
+            alt=""
+            decoding="async"
+            aria-hidden="true"
+          />
         </a>
         <nav class="lang" aria-label="Language">
           <details class="lang-details">

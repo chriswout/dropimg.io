@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Screenshot online einfügen — Sharebaren Link | dropimg.io</title>
-    <meta name="description" content="Screenshot aus der Zwischenablage einfügen und eine temporäre URL erhalten. Funktioniert mit macOS-Screenshots, Windows Snipping Tool, Cmd+V / Ctrl+V. Kein Konto." />
+    <title>Screenshot einfügen und Link holen | dropimg.io</title>
+    <meta name="description" content="Screenshot in der Zwischenablage → Ctrl/Cmd+V → temporärer Link. macOS und Windows. Ohne Speichern, ohne Konto." />
     <link rel="canonical" href="https://dropimg.io/de/screenshot-online-einfuegen" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/paste-screenshot-online" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es/pegar-captura-pantalla-online" />
@@ -19,7 +19,7 @@
     <meta property="og:locale" content="de_DE" />
     <meta property="og:url" content="https://dropimg.io/de/screenshot-online-einfuegen" />
     <meta property="og:title" content="Screenshot online einfügen | dropimg.io" />
-    <meta property="og:description" content="Screenshot kopieren, hier einfügen, Link erhalten. Ohne Speichern → Upload-Tanz." />
+    <meta property="og:description" content="Screenshot kopieren, hier einfügen — Link fertig. Ohne Speichern und erneut Hochladen." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
@@ -27,21 +27,35 @@
     <meta property="og:image:alt" content="dropimg.io" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Screenshot online einfügen | dropimg.io" />
-    <meta name="twitter:description" content="Screenshot kopieren, hier einfügen, Link erhalten. Ohne Speichern und erneutes Hochladen." />
+    <meta name="twitter:description" content="Screenshot kopieren, hier einfügen — Link fertig." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/og.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body>
     <a class="skip-link" href="#dropzone">Zum Upload</a>
     <div class="page page-seo">
       <header class="top">
         <a class="brand" href="/de" aria-label="dropimg.io Startseite">
-          <img class="mark" src="/favicon.svg" alt="" width="28" height="28" />
-          <span class="wordmark"
-            ><span class="wm-drop">drop</span><span class="wm-img">img</span
-            ><span class="wm-io">.io</span></span
-          >
+          <img
+            class="brand-logo brand-logo-light"
+            src="/brand/logo-32.png"
+            srcset="/brand/logo-32.png 1x, /brand/logo-64.png 2x"
+            width="134"
+            height="32"
+            alt="dropimg.io"
+            decoding="async"
+          />
+          <img
+            class="brand-logo brand-logo-dark"
+            src="/brand/logo-dark-32.png"
+            srcset="/brand/logo-dark-32.png 1x, /brand/logo-dark-64.png 2x"
+            width="134"
+            height="32"
+            alt=""
+            decoding="async"
+            aria-hidden="true"
+          />
         </a>
         <nav class="lang" aria-label="Sprache">
           <details class="lang-details">
@@ -61,7 +75,7 @@
 
       <main>
         <section class="seo-hero">
-          <h1 class="tagline">Screenshot online einfügen</h1>
+          <h1 class="tagline">Screenshot einfügen, Link bekommen</h1>
           <p class="sub seo-lede">Screenshot → Zwischenablage → einfügen → Link. Kein Speichern nur zum erneuten Hochladen.</p>
 
           <section
@@ -69,7 +83,7 @@
             class="dropzone"
             tabindex="0"
             role="button"
-            aria-label="Bild einfügen, ablegen oder auswählen zum Hochladen"
+            aria-label="Bild einfügen, ablegen oder auswählen"
           >
             <input
               id="file-input"
@@ -161,9 +175,9 @@
                   />
                 </svg>
               </div>
-              <p id="success-title" class="dz-title success">Hochgeladen. Link kopiert.</p>
+              <p id="success-title" class="dz-title success">Fertig. Link kopiert.</p>
               <div class="url-row">
-                <input id="share-url" class="url-input" readonly aria-label="Share-URL" />
+                <input id="share-url" class="url-input" readonly aria-label="Link zum Teilen" />
                 <button id="btn-copy" type="button" class="btn primary">Kopieren</button>
               </div>
               <p id="expires-label" class="dz-hint"></p>
@@ -175,7 +189,7 @@
                   Jetzt löschen
                 </button>
                 <button id="btn-another" type="button" class="btn secondary">
-                  Weiteres hochladen
+                  Weiteres Bild
                 </button>
               </div>
             </div>
@@ -183,14 +197,14 @@
             <div id="state-error" class="state hidden">
               <p id="error-title" class="dz-title error">Upload fehlgeschlagen</p>
               <p id="error-message" class="dz-hint"></p>
-              <button id="btn-retry" type="button" class="btn primary">Erneut versuchen</button>
+              <button id="btn-retry" type="button" class="btn primary">Nochmal versuchen</button>
             </div>
           </section>
 
-          <ul class="trust-chips" aria-label="Highlights">
+          <ul class="trust-chips" aria-label="Auf einen Blick">
             <li>Kein Konto</li>
-            <li>24 Std. verfügbar</li>
-            <li>Metadaten entfernt</li>
+            <li>24 Stunden</li>
+            <li>Ohne Metadaten</li>
           </ul>
 
           <section id="recent" class="recent" hidden>
@@ -200,17 +214,17 @@
         </section>
 
         <article class="seo-article">
-          <h2>macOS</h2>
+          <h2>Unter macOS</h2>
 
           <ul>
-            <li>In die Zwischenablage mit Control + Command + Shift + 3/4</li>
+            <li>In die Zwischenablage: Control + Command + Shift + 3 oder 4</li>
             <li>dropimg.io öffnen</li>
             <li>Command + V drücken</li>
           </ul>
 
-          <p>Falls die .png schon auf dem Schreibtisch liegt: auf die Seite ziehen oder Bild wählen.</p>
+          <p>Liegt die .png schon auf dem Schreibtisch: auf die Seite ziehen oder Bild wählen.</p>
 
-          <h2>Windows</h2>
+          <h2>Unter Windows</h2>
 
           <ul>
             <li>Snipping Tool / Snip &amp; Sketch → Ausschnitt kopieren</li>
@@ -218,23 +232,23 @@
             <li>dropimg.io öffnen und Ctrl + V</li>
           </ul>
 
-          <h2>Warum Einfügen aus der Zwischenablage besser ist</h2>
+          <h2>Warum Einfügen besser ist als „speichern und hochladen“</h2>
 
-          <p>Support-Chats, Discord, Slack und Bugreports sind voll von „schnell mal einen Screenshot“. Speichern, finden, anhängen ist Reibung. Einfügen aus der Zwischenablage hält den Loop in einem Tab.</p>
+          <p>In Support-Chats, Discord, Slack oder Tickets heißt es meist „schnell einen Screenshot“. Speichern, finden, anhängen — umständlich. Einfügen aus der Zwischenablage bleibt in einem Tab.</p>
 
-          <p>Mit dropimg.io kannst du ein Bild einfügen, hochladen oder per Drag-and-drop ablegen und sofort einen temporären Link erstellen, der nach 24 Stunden abläuft. Screenshot in der Zwischenablage, URL gebraucht — hier einfügen.</p>
+          <p>dropimg.io gibt dir eine temporäre URL (24 Stunden). Die schickst du dorthin, wo das Gespräch läuft. Screenshot in der Zwischenablage, URL gebraucht? Hier einfügen.</p>
 
           <h2>Formate</h2>
 
-          <p>PNG und JPEG funktionieren am besten. WebP und GIF auch. Max. 10 MB. SVG wird nicht akzeptiert.</p>
+          <p>PNG und JPEG passen am besten. WebP und GIF auch. Maximal 10 MB. SVG wird nicht angenommen.</p>
         </article>
 
-        <nav class="seo-more" aria-label="Verwandt">
+        <nav class="seo-more" aria-label="Weiterlesen">
           <a href="/de/temporaeres-bildhosting">Temporäres Bildhosting</a>
           <span aria-hidden="true">·</span>
           <a href="/de/bild-per-link-teilen">Bild per Link teilen</a>
           <span aria-hidden="true">·</span>
-          <a href="/de">Start</a>
+          <a href="/de">Startseite</a>
         </nav>
       </main>
 

@@ -53,11 +53,25 @@ function topBar(pageId: PageId, locale: Locale, chrome: SharedChrome): string {
   const home = pagePath("home", locale);
   return `      <header class="top">
         <a class="brand" href="${esc(home)}" aria-label="${esc(chrome.brandHomeAria)}">
-          <img class="mark" src="/favicon.svg" alt="" width="28" height="28" />
-          <span class="wordmark"
-            ><span class="wm-drop">drop</span><span class="wm-img">img</span
-            ><span class="wm-io">.io</span></span
-          >
+          <img
+            class="brand-logo brand-logo-light"
+            src="/brand/logo-32.png"
+            srcset="/brand/logo-32.png 1x, /brand/logo-64.png 2x"
+            width="134"
+            height="32"
+            alt="dropimg.io"
+            decoding="async"
+          />
+          <img
+            class="brand-logo brand-logo-dark"
+            src="/brand/logo-dark-32.png"
+            srcset="/brand/logo-dark-32.png 1x, /brand/logo-dark-64.png 2x"
+            width="134"
+            height="32"
+            alt=""
+            decoding="async"
+            aria-hidden="true"
+          />
         </a>
 ${langSwitcher(pageId, locale, chrome)}
       </header>`;
@@ -249,7 +263,7 @@ ${hreflangTags(pageId)}
     <meta name="twitter:description" content="${esc(seo.twitterDescription)}" />
     <meta name="twitter:image" content="${SITE_ORIGIN}/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/og.png" />`;
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />`;
 }
 
 function homeJsonLd(locale: Locale, copy: (typeof HOME)[Locale]): string {
@@ -285,7 +299,7 @@ function homeJsonLd(locale: Locale, copy: (typeof HOME)[Locale]): string {
         "@id": `${SITE_ORIGIN}/#org`,
         name: "dropimg.io",
         url: `${SITE_ORIGIN}/`,
-        logo: `${SITE_ORIGIN}/favicon.svg`,
+        logo: `${SITE_ORIGIN}/brand/logo-square-512.png`,
       },
       {
         "@type": "HowTo",

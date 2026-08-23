@@ -72,7 +72,12 @@ describe("renderPage metadata", () => {
 
   it("Spanish homepage H1 is localized", () => {
     const html = renderPage("home", "es");
-    expect(html).toContain("Suelta una imagen. Obtén un enlace.");
+    expect(html).toContain("Suelta una imagen. Llévate el enlace.");
+  });
+
+  it("Portuguese and German homepage H1s sound native", () => {
+    expect(renderPage("home", "pt-BR")).toContain("Solte a imagem. Pegue o link.");
+    expect(renderPage("home", "de")).toContain("Bild rein. Link raus.");
   });
 
   it("homepage JSON-LD matches visible FAQ/HowTo counts", () => {

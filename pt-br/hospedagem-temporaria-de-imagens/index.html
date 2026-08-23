@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Hospedagem temporária de imagens — Sem conta, 24 h | dropimg.io</title>
-    <meta name="description" content="Hospedagem temporária de imagens sem conta. Envie PNG, JPEG, WebP ou GIF e receba um link que expira em 24 horas. Metadados removidos quando possível." />
+    <title>Hospedagem temporária de imagens sem conta | dropimg.io</title>
+    <meta name="description" content="Manda a imagem, ganha o link e segue. Sem conta. Some em 24 horas. PNG, JPEG, WebP ou GIF. Metadados removidos na hora de salvar." />
     <link rel="canonical" href="https://dropimg.io/pt-br/hospedagem-temporaria-de-imagens" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/temporary-image-hosting" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es/alojamiento-temporal-imagenes" />
@@ -19,7 +19,7 @@
     <meta property="og:locale" content="pt_BR" />
     <meta property="og:url" content="https://dropimg.io/pt-br/hospedagem-temporaria-de-imagens" />
     <meta property="og:title" content="Hospedagem temporária de imagens | dropimg.io" />
-    <meta property="og:description" content="Hospede uma imagem por 24 horas. Sem conta. Receba um link e siga em frente." />
+    <meta property="og:description" content="Um link pra sua imagem, 24 horas, sem criar conta." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
@@ -27,21 +27,35 @@
     <meta property="og:image:alt" content="dropimg.io" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Hospedagem temporária de imagens | dropimg.io" />
-    <meta name="twitter:description" content="Hospede uma imagem por 24 horas. Sem conta. Receba um link e siga em frente." />
+    <meta name="twitter:description" content="Um link pra sua imagem, 24 horas, sem criar conta." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/og.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body>
     <a class="skip-link" href="#dropzone">Ir para o envio</a>
     <div class="page page-seo">
       <header class="top">
         <a class="brand" href="/pt-br" aria-label="Início do dropimg.io">
-          <img class="mark" src="/favicon.svg" alt="" width="28" height="28" />
-          <span class="wordmark"
-            ><span class="wm-drop">drop</span><span class="wm-img">img</span
-            ><span class="wm-io">.io</span></span
-          >
+          <img
+            class="brand-logo brand-logo-light"
+            src="/brand/logo-32.png"
+            srcset="/brand/logo-32.png 1x, /brand/logo-64.png 2x"
+            width="134"
+            height="32"
+            alt="dropimg.io"
+            decoding="async"
+          />
+          <img
+            class="brand-logo brand-logo-dark"
+            src="/brand/logo-dark-32.png"
+            srcset="/brand/logo-dark-32.png 1x, /brand/logo-dark-64.png 2x"
+            width="134"
+            height="32"
+            alt=""
+            decoding="async"
+            aria-hidden="true"
+          />
         </a>
         <nav class="lang" aria-label="Idioma">
           <details class="lang-details">
@@ -62,7 +76,7 @@
       <main>
         <section class="seo-hero">
           <h1 class="tagline">Hospedagem temporária de imagens</h1>
-          <p class="sub seo-lede">Precisa de um link para uma imagem — não de uma galeria permanente? O dropimg.io hospeda o arquivo por 24 horas e depois o exclui.</p>
+          <p class="sub seo-lede">Precisa só de um link — não de uma galeria eterna? O dropimg.io guarda o arquivo por 24 horas e depois apaga.</p>
 
           <section
             id="dropzone"
@@ -120,7 +134,7 @@
               </div>
               <p id="idle-title" class="dz-title">
                 <span class="idle-desktop">Cole, arraste ou escolha uma imagem</span>
-                <span class="idle-mobile">Escolha uma imagem para compartilhar</span>
+                <span class="idle-mobile">Escolha uma imagem pra compartilhar</span>
               </p>
               <p class="dz-hint">
                 <span class="hint-desktop"
@@ -161,9 +175,9 @@
                   />
                 </svg>
               </div>
-              <p id="success-title" class="dz-title success">Enviado. Link copiado.</p>
+              <p id="success-title" class="dz-title success">Pronto. Link copiado.</p>
               <div class="url-row">
-                <input id="share-url" class="url-input" readonly aria-label="URL para compartilhar" />
+                <input id="share-url" class="url-input" readonly aria-label="Link pra compartilhar" />
                 <button id="btn-copy" type="button" class="btn primary">Copiar</button>
               </div>
               <p id="expires-label" class="dz-hint"></p>
@@ -181,16 +195,16 @@
             </div>
 
             <div id="state-error" class="state hidden">
-              <p id="error-title" class="dz-title error">Falha no envio</p>
+              <p id="error-title" class="dz-title error">Não deu pra enviar</p>
               <p id="error-message" class="dz-hint"></p>
               <button id="btn-retry" type="button" class="btn primary">Tentar de novo</button>
             </div>
           </section>
 
-          <ul class="trust-chips" aria-label="Destaques">
+          <ul class="trust-chips" aria-label="Em resumo">
             <li>Sem conta</li>
-            <li>Expira em 24 h</li>
-            <li>Metadados removidos</li>
+            <li>24 horas</li>
+            <li>Sem metadados</li>
           </ul>
 
           <section id="recent" class="recent" hidden>
@@ -200,37 +214,37 @@
         </section>
 
         <article class="seo-article">
-          <h2>Para que serve a hospedagem temporária</h2>
+          <h2>Pra que isso serve de verdade</h2>
 
-          <p>Hosts permanentes são ótimos para blogs e portfólios. A hospedagem temporária cobre o resto: print de bug no Slack, rascunho no Discord, recibo em um ticket, mockup em um pull request.</p>
+          <p>Hospedagem permanente é ótima pra blog e portfólio. O dia a dia é outro: print de bug no Slack, rascunho no Discord, comprovante num ticket, mockup num pull request, print no WhatsApp.</p>
 
-          <p>Você recebe uma URL curta. Quem tiver o link pode ver até expirar. Não há galeria pública nem cadastro.</p>
+          <p>Você leva uma URL curta. Quem tiver o link vê a imagem até expirar. Sem galeria pública e sem cadastro.</p>
 
-          <h2>Por que 24 horas</h2>
+          <h2>Por que só 24 horas</h2>
 
-          <p>A maioria das imagens compartilhadas serve por minutos ou horas, não meses. Um prazo fixo de 24 horas mantém o armazenamento curto por padrão.</p>
+          <p>Quase todo print que a gente manda vale por minutos ou horas, não por meses. Um prazo fixo de um dia evita arquivo velho parado pra sempre.</p>
 
-          <p>Precisa apagar antes? Após o envio você recebe um controle privado de exclusão.</p>
+          <p>Precisa sumir agora? Depois do envio você ganha um link privado pra excluir na hora.</p>
 
-          <h2>O que você pode enviar</h2>
+          <h2>O que dá pra enviar</h2>
 
           <ul>
             <li>PNG, JPEG, WebP, GIF</li>
             <li>Até 10 MB</li>
-            <li>Sem SVG (bloqueado por segurança)</li>
+            <li>Sem SVG (por segurança)</li>
           </ul>
 
-          <h2>Privacidade por padrão</h2>
+          <h2>Privacidade desde o começo</h2>
 
-          <p>Sem cadastro. Sem biblioteca pública de uploads. Páginas de compartilhamento vão com noindex. Em JPEG, PNG e WebP, EXIF e metadados similares são removidos antes do armazenamento; se a remoção falhar, o envio é rejeitado.</p>
+          <p>Sem cadastro. Sem pasta pública de uploads. Páginas de compartilhamento vão com noindex. Em JPEG, PNG e WebP a gente remove EXIF e metadados parecidos antes de guardar; se não der pra remover, o envio é recusado.</p>
 
-          <p>dropimg.io permite colar, arrastar ou enviar uma imagem e criar um link temporário que expira automaticamente após 24 horas.</p>
+          <p>Com o dropimg.io você cola, arrasta ou envia uma imagem e cria um link temporário que some sozinho depois de 24 horas.</p>
         </article>
 
-        <nav class="seo-more" aria-label="Relacionado">
-          <a href="/pt-br/colar-captura-de-tela-online">Colar captura de tela online</a>
+        <nav class="seo-more" aria-label="Veja também">
+          <a href="/pt-br/colar-captura-de-tela-online">Colar print online</a>
           <span aria-hidden="true">·</span>
-          <a href="/pt-br/compartilhar-imagem-com-link">Compartilhar imagem com um link</a>
+          <a href="/pt-br/compartilhar-imagem-com-link">Compartilhar imagem com link</a>
           <span aria-hidden="true">·</span>
           <a href="/pt-br">Início</a>
         </nav>
@@ -246,8 +260,8 @@
         </div>
         <nav class="foot-seo" aria-label="Saiba mais">
           <a href="/pt-br/hospedagem-temporaria-de-imagens">Hospedagem temporária de imagens</a>
-          <a href="/pt-br/colar-captura-de-tela-online">Colar captura de tela online</a>
-          <a href="/pt-br/compartilhar-imagem-com-link">Compartilhar imagem com um link</a>
+          <a href="/pt-br/colar-captura-de-tela-online">Colar print online</a>
+          <a href="/pt-br/compartilhar-imagem-com-link">Compartilhar imagem com link</a>
         </nav>
       </footer>
     </div>

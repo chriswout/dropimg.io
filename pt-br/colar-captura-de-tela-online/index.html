@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Colar captura de tela online — Link para compartilhar | dropimg.io</title>
-    <meta name="description" content="Cole uma captura da área de transferência e receba uma URL temporária. Funciona com macOS, Ferramenta de Captura do Windows, Cmd+V / Ctrl+V. Sem conta." />
+    <title>Cole o print e ganhe um link | dropimg.io</title>
+    <meta name="description" content="Print na área de transferência → Ctrl/Cmd+V → link temporário. macOS e Windows. Sem salvar arquivo e sem criar conta." />
     <link rel="canonical" href="https://dropimg.io/pt-br/colar-captura-de-tela-online" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/paste-screenshot-online" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es/pegar-captura-pantalla-online" />
@@ -18,30 +18,44 @@
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="pt_BR" />
     <meta property="og:url" content="https://dropimg.io/pt-br/colar-captura-de-tela-online" />
-    <meta property="og:title" content="Colar captura de tela online | dropimg.io" />
-    <meta property="og:description" content="Copie uma captura, cole aqui, receba um link. Sem salvar no disco para depois enviar." />
+    <meta property="og:title" content="Cole o print online | dropimg.io" />
+    <meta property="og:description" content="Copia o print, cola aqui e pronto: um link. Sem o vai-e-volta de salvar e enviar." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="dropimg.io" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Colar captura de tela online | dropimg.io" />
-    <meta name="twitter:description" content="Copie uma captura, cole aqui, receba um link. Sem o vai-e-volta de salvar e enviar." />
+    <meta name="twitter:title" content="Cole o print online | dropimg.io" />
+    <meta name="twitter:description" content="Copia o print, cola aqui e pronto: um link." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/og.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body>
     <a class="skip-link" href="#dropzone">Ir para o envio</a>
     <div class="page page-seo">
       <header class="top">
         <a class="brand" href="/pt-br" aria-label="Início do dropimg.io">
-          <img class="mark" src="/favicon.svg" alt="" width="28" height="28" />
-          <span class="wordmark"
-            ><span class="wm-drop">drop</span><span class="wm-img">img</span
-            ><span class="wm-io">.io</span></span
-          >
+          <img
+            class="brand-logo brand-logo-light"
+            src="/brand/logo-32.png"
+            srcset="/brand/logo-32.png 1x, /brand/logo-64.png 2x"
+            width="134"
+            height="32"
+            alt="dropimg.io"
+            decoding="async"
+          />
+          <img
+            class="brand-logo brand-logo-dark"
+            src="/brand/logo-dark-32.png"
+            srcset="/brand/logo-dark-32.png 1x, /brand/logo-dark-64.png 2x"
+            width="134"
+            height="32"
+            alt=""
+            decoding="async"
+            aria-hidden="true"
+          />
         </a>
         <nav class="lang" aria-label="Idioma">
           <details class="lang-details">
@@ -61,8 +75,8 @@
 
       <main>
         <section class="seo-hero">
-          <h1 class="tagline">Colar uma captura de tela online</h1>
-          <p class="sub seo-lede">Captura → área de transferência → colar → link. Pule salvar um arquivo só para enviar em outro lugar.</p>
+          <h1 class="tagline">Cole o print e pegue o link</h1>
+          <p class="sub seo-lede">Print → área de transferência → colar → link. Sem salvar um PNG só pra mandar em outro lugar.</p>
 
           <section
             id="dropzone"
@@ -120,7 +134,7 @@
               </div>
               <p id="idle-title" class="dz-title">
                 <span class="idle-desktop">Cole, arraste ou escolha uma imagem</span>
-                <span class="idle-mobile">Escolha uma imagem para compartilhar</span>
+                <span class="idle-mobile">Escolha uma imagem pra compartilhar</span>
               </p>
               <p class="dz-hint">
                 <span class="hint-desktop"
@@ -161,9 +175,9 @@
                   />
                 </svg>
               </div>
-              <p id="success-title" class="dz-title success">Enviado. Link copiado.</p>
+              <p id="success-title" class="dz-title success">Pronto. Link copiado.</p>
               <div class="url-row">
-                <input id="share-url" class="url-input" readonly aria-label="URL para compartilhar" />
+                <input id="share-url" class="url-input" readonly aria-label="Link pra compartilhar" />
                 <button id="btn-copy" type="button" class="btn primary">Copiar</button>
               </div>
               <p id="expires-label" class="dz-hint"></p>
@@ -181,16 +195,16 @@
             </div>
 
             <div id="state-error" class="state hidden">
-              <p id="error-title" class="dz-title error">Falha no envio</p>
+              <p id="error-title" class="dz-title error">Não deu pra enviar</p>
               <p id="error-message" class="dz-hint"></p>
               <button id="btn-retry" type="button" class="btn primary">Tentar de novo</button>
             </div>
           </section>
 
-          <ul class="trust-chips" aria-label="Destaques">
+          <ul class="trust-chips" aria-label="Em resumo">
             <li>Sem conta</li>
-            <li>Expira em 24 h</li>
-            <li>Metadados removidos</li>
+            <li>24 horas</li>
+            <li>Sem metadados</li>
           </ul>
 
           <section id="recent" class="recent" hidden>
@@ -200,39 +214,39 @@
         </section>
 
         <article class="seo-article">
-          <h2>macOS</h2>
+          <h2>No Mac</h2>
 
           <ul>
-            <li>Capture para a área de transferência com Control + Command + Shift + 3/4</li>
-            <li>Abra o dropimg.io</li>
-            <li>Pressione Command + V</li>
+            <li>Print pra área de transferência: Control + Command + Shift + 3 ou 4</li>
+            <li>Abre o dropimg.io</li>
+            <li>Aperta Command + V</li>
           </ul>
 
-          <p>Se você já salvou um .png na área de trabalho, arraste para a página ou use Escolher imagem.</p>
+          <p>Se o .png já tá na área de trabalho, arrasta pra página ou usa Escolher imagem.</p>
 
-          <h2>Windows</h2>
+          <h2>No Windows</h2>
 
           <ul>
-            <li>Ferramenta de Captura / Snip &amp; Sketch → copie o recorte</li>
-            <li>Ou Windows + Shift + S e depois copie</li>
-            <li>Abra o dropimg.io e pressione Ctrl + V</li>
+            <li>Ferramenta de Captura / Snip &amp; Sketch → copia o recorte</li>
+            <li>Ou Windows + Shift + S e depois copia</li>
+            <li>Abre o dropimg.io e aperta Ctrl + V</li>
           </ul>
 
-          <h2>Por que colar da área de transferência vence</h2>
+          <h2>Por que colar é melhor que “salvar e enviar”</h2>
 
-          <p>Chats de suporte, Discord, Slack e relatórios de bug estão cheios de “uma captura rápida”. Salvar em Downloads, achar o arquivo e anexar é atrito. Colar da área de transferência mantém o fluxo em uma aba.</p>
+          <p>Em suporte, Discord, Slack ou chamado quase sempre é “um print rápido”. Salvar em Downloads, achar o arquivo e anexar é perda de tempo. Colar da área de transferência deixa tudo numa aba só.</p>
 
-          <p>dropimg.io permite colar, arrastar ou enviar uma imagem e criar um link temporário que expira automaticamente após 24 horas. Você tem uma captura na área de transferência e precisa de uma URL — cole aqui.</p>
+          <p>O dropimg.io devolve um link temporário (24 horas). Você manda onde a conversa tá acontecendo. Tem o print na área de transferência e precisa de uma URL? Cola aqui.</p>
 
           <h2>Formatos</h2>
 
-          <p>PNG e JPEG funcionam melhor. WebP e GIF também. Máx. 10 MB. SVG não é aceito.</p>
+          <p>PNG e JPEG funcionam melhor. WebP e GIF também. Máximo 10 MB. SVG não entra.</p>
         </article>
 
-        <nav class="seo-more" aria-label="Relacionado">
+        <nav class="seo-more" aria-label="Veja também">
           <a href="/pt-br/hospedagem-temporaria-de-imagens">Hospedagem temporária de imagens</a>
           <span aria-hidden="true">·</span>
-          <a href="/pt-br/compartilhar-imagem-com-link">Compartilhar imagem com um link</a>
+          <a href="/pt-br/compartilhar-imagem-com-link">Compartilhar imagem com link</a>
           <span aria-hidden="true">·</span>
           <a href="/pt-br">Início</a>
         </nav>
@@ -248,8 +262,8 @@
         </div>
         <nav class="foot-seo" aria-label="Saiba mais">
           <a href="/pt-br/hospedagem-temporaria-de-imagens">Hospedagem temporária de imagens</a>
-          <a href="/pt-br/colar-captura-de-tela-online">Colar captura de tela online</a>
-          <a href="/pt-br/compartilhar-imagem-com-link">Compartilhar imagem com um link</a>
+          <a href="/pt-br/colar-captura-de-tela-online">Colar print online</a>
+          <a href="/pt-br/compartilhar-imagem-com-link">Compartilhar imagem com link</a>
         </nav>
       </footer>
     </div>
