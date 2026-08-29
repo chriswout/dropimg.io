@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   hashImagePassword,
+  pbkdf2HmacSha256,
   signUnlockCookie,
   unlockCookieHeader,
   unlockCookieValid,
@@ -8,6 +9,14 @@ import {
 } from "../../src/lib/image-password";
 
 describe("image password", () => {
+  it("matches standard PBKDF2-HMAC-SHA256", async () => {
+    const salt = new TextEncoder().encode("salt");
+    const derived = await pbkdf2HmacSha256("password", salt, 4096, 32);
+    expect(Buffer.from(derived).toString("hex")).toBe(
+      "c5e478d59288c841aa530db6845c4c8d962893a001ce4e11a4963873aa98134a",
+    );
+  });
+
   it("hashes and verifies with PBKDF2", async () => {
     const rec = await hashImagePassword("correct-horse");
     expect(rec.iterations).toBe(600_000);

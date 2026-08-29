@@ -55,13 +55,6 @@
   "observability": {
     "enabled": true
   },
-  "send_email": [
-    {
-      "name": "EMAIL",
-      "allowed_sender_addresses": ["signin@dropimg.io"],
-      "remote": true
-    }
-  ],
   "vars": {
     "ENVIRONMENT": "development",
     "UGC_SHARE_ADS_ENABLED": "false",
@@ -80,7 +73,7 @@
         "ENVIRONMENT": "staging",
         "UGC_SHARE_ADS_ENABLED": "false",
         "LONG_TTL_ENABLED": "true",
-        "PRO_50MB_ENABLED": "true",
+        "PRO_50MB_ENABLED": "false",
         "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>",
         "BILLING_ENABLED": "true",
         "PADDLE_ENV": "sandbox",

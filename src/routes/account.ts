@@ -1,12 +1,12 @@
 import { Hono } from "hono";
 import type { Context } from "hono";
 import { track } from "../lib/analytics";
+import { deleteUserAccount } from "../lib/account-delete";
 import { csrfOriginOk } from "../lib/auth/csrf";
 import { resolveRequestLocale } from "../lib/auth/locale-cookie";
 import {
   clearSessionCookie,
   resolveSession,
-  revokeAllSessions,
   type SessionUser,
 } from "../lib/auth/session";
 import { toArrayBuffer } from "../lib/d1-blob";
@@ -19,6 +19,7 @@ import {
   loadSubscription,
   PRO_HISTORY_PAGE,
   resolveEntitlements,
+  uploadIntentAllowed,
 } from "../lib/entitlements";
 import {
   hashImagePassword,
@@ -283,6 +284,31 @@ accountRoutes.post("/api/account/upload/:intent", async (c) => {
   if (!intent) {
     return c.json({ error: "Upload intent is invalid or expired." }, 400);
   }
+
+  const entitlements = await entitlementsFor(c.env, session.id);
+  const hasPassword = Boolean(intent.password_hash && intent.password_salt);
+  if (
+    !uploadIntentAllowed(
+      {
+        expiry_seconds: intent.expiry_seconds,
+        max_bytes: intent.max_bytes,
+        hasPassword,
+      },
+      entitlements,
+    )
+  ) {
+    await c.env.DB.prepare(
+      `UPDATE upload_intents SET used_at = ?
+       WHERE id = ? AND user_id = ? AND used_at IS NULL`,
+    )
+      .bind(now, intentId, session.id)
+      .run();
+    return c.json(
+      { error: "This upload is no longer available. Create a new upload." },
+      400,
+    );
+  }
+
   const used = await c.env.DB.prepare(
     `UPDATE upload_intents SET used_at = ?
      WHERE id = ? AND user_id = ? AND used_at IS NULL AND expires_at > ?`,
@@ -297,7 +323,8 @@ accountRoutes.post("/api/account/upload/:intent", async (c) => {
   const client = normalizeUploadClient(c.req.header("x-dropimg-client"));
   const pageIntent = normalizePageIntent(c.req.header("x-dropimg-page-intent"));
   const contentLength = Number(c.req.header("content-length") || 0);
-  if (contentLength > taken.max_bytes) {
+  const maxBytes = Math.min(taken.max_bytes, entitlements.maxUploadBytes);
+  if (contentLength > maxBytes) {
     return c.json({ error: "File exceeds the size limit", code: "too_large" }, 413);
   }
 
@@ -332,7 +359,6 @@ accountRoutes.post("/api/account/upload/:intent", async (c) => {
     return c.json({ error: "Could not read upload body", code: "invalid_image" }, 400);
   }
 
-  const entitlements = await entitlementsFor(c.env, session.id);
   const passHash = toArrayBuffer(taken.password_hash);
   const passSalt = toArrayBuffer(taken.password_salt);
   const stored = await storeUploadedImage(c.env, c.executionCtx, {
@@ -342,7 +368,7 @@ accountRoutes.post("/api/account/upload/:intent", async (c) => {
     ipHash,
     userId: session.id,
     expirySeconds: taken.expiry_seconds,
-    maxBytes: taken.max_bytes,
+    maxBytes,
     origin: new URL(c.req.url).origin,
     r2Class: entitlements.plan === "pro" ? "pro" : "24h",
     password:
@@ -499,12 +525,10 @@ accountRoutes.post("/api/account/delete", async (c) => {
   if (!session) return c.json({ error: "Unauthorized" }, 401);
 
   const now = Math.floor(Date.now() / 1000);
-  await c.env.DB.prepare(
-    `UPDATE users SET deleted_at = ?, updated_at = ? WHERE id = ? AND deleted_at IS NULL`,
-  )
-    .bind(now, now, session.id)
-    .run();
-  await revokeAllSessions(c.env.DB, session.id);
+  const deleted = await deleteUserAccount(c.env, session.id, now);
+  if (!deleted.ok) {
+    return c.json({ error: deleted.error }, deleted.status);
+  }
   track(c.env.ANALYTICS, "account_deleted", { reason: "user" });
   return new Response(JSON.stringify({ ok: true }), {
     status: 200,

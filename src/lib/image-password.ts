@@ -1,13 +1,10 @@
+import { pbkdf2 as pbkdf2Callback } from "node:crypto";
 import { base64Url, cookieSecure, timingSafeEqualBytes } from "./auth/crypto";
 
 export const PASSWORD_KDF = "pbkdf2-sha256";
 /** OWASP PBKDF2-HMAC-SHA256 work factor. Stored on each row. */
 export const PASSWORD_ITERATIONS = 600_000;
-/**
- * Production Workers WebCrypto rejects a single PBKDF2 call above 100k.
- * We run 100k chunks so the stored work factor stays 600k.
- */
-export const PBKDF2_NATIVE_MAX_ITERATIONS = 100_000;
+export const PASSWORD_KEY_LEN = 32;
 export const PASSWORD_MIN_LENGTH = 8;
 export const UNLOCK_TTL_SECONDS = 60 * 60;
 
@@ -30,9 +27,14 @@ export async function hashImagePassword(
 ): Promise<ImagePasswordRecord> {
   const salt = new Uint8Array(16);
   crypto.getRandomValues(salt);
-  const hash = await pbkdf2(password, salt, PASSWORD_ITERATIONS);
+  const hash = await pbkdf2HmacSha256(
+    password,
+    salt,
+    PASSWORD_ITERATIONS,
+    PASSWORD_KEY_LEN,
+  );
   return {
-    hash: new Uint8Array(hash),
+    hash,
     salt,
     kdf: PASSWORD_KDF,
     iterations: PASSWORD_ITERATIONS,
@@ -44,8 +46,28 @@ export async function verifyImagePassword(
   stored: { hash: ArrayBuffer; salt: ArrayBuffer; iterations: number },
 ): Promise<boolean> {
   const iterations = stored.iterations > 0 ? stored.iterations : PASSWORD_ITERATIONS;
-  const derived = await pbkdf2(password, new Uint8Array(stored.salt), iterations);
+  const derived = await pbkdf2HmacSha256(
+    password,
+    new Uint8Array(stored.salt),
+    iterations,
+    stored.hash.byteLength || PASSWORD_KEY_LEN,
+  );
   return timingSafeEqualBytes(derived, stored.hash);
+}
+
+/** Standard PBKDF2-HMAC-SHA256 via node:crypto (nodejs_compat). */
+export function pbkdf2HmacSha256(
+  password: string,
+  salt: Uint8Array,
+  iterations: number,
+  keyLen = PASSWORD_KEY_LEN,
+): Promise<Uint8Array> {
+  return new Promise((resolve, reject) => {
+    pbkdf2Callback(password, salt, iterations, keyLen, "sha256", (err, key) => {
+      if (err) reject(err);
+      else resolve(new Uint8Array(key));
+    });
+  });
 }
 
 export function unlockCookieName(slug: string): string {
@@ -109,50 +131,6 @@ function readCookie(header: string | null | undefined, name: string): string | n
     if (trimmed.startsWith(`${name}=`)) return trimmed.slice(name.length + 1);
   }
   return null;
-}
-
-async function pbkdf2(
-  password: string,
-  salt: Uint8Array,
-  iterations: number,
-): Promise<ArrayBuffer> {
-  let material: BufferSource = new TextEncoder().encode(password);
-  let left = Math.max(1, iterations);
-  let round = 0;
-  while (left > 0) {
-    const n = Math.min(PBKDF2_NATIVE_MAX_ITERATIONS, left);
-    const key = await crypto.subtle.importKey(
-      "raw",
-      material,
-      "PBKDF2",
-      false,
-      ["deriveBits"],
-    );
-    material = await crypto.subtle.deriveBits(
-      {
-        name: "PBKDF2",
-        hash: "SHA-256",
-        salt: saltForRound(salt, round),
-        iterations: n,
-      },
-      key,
-      256,
-    );
-    left -= n;
-    round += 1;
-  }
-  return material as ArrayBuffer;
-}
-
-function saltForRound(salt: Uint8Array, round: number): ArrayBuffer {
-  const out = new ArrayBuffer(salt.byteLength + 4);
-  const view = new Uint8Array(out);
-  view.set(salt);
-  view[salt.byteLength] = (round >>> 24) & 0xff;
-  view[salt.byteLength + 1] = (round >>> 16) & 0xff;
-  view[salt.byteLength + 2] = (round >>> 8) & 0xff;
-  view[salt.byteLength + 3] = round & 0xff;
-  return out;
 }
 
 async function hmacSha256(secret: string, data: string): Promise<ArrayBuffer> {

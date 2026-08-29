@@ -104,6 +104,60 @@ describe("Paddle billing webhook", () => {
     expect(Number(events?.n)).toBe(1);
   });
 
+  it("keeps canceled when an older active update arrives later", async () => {
+    const env = await worker.getEnv();
+    const now = Math.floor(Date.now() / 1000);
+    await env.DB.prepare(
+      `INSERT INTO users (id, email, email_norm, created_at, updated_at)
+       VALUES (?, 'ooo@example.com', 'ooo@example.com', ?, ?)`,
+    )
+      .bind(USER_ID, now, now)
+      .run();
+
+    const t2 = new Date((now - 10) * 1000).toISOString();
+    const t1 = new Date((now - 40) * 1000).toISOString();
+    const canceled = {
+      event_id: "evt_ooo_canceled",
+      event_type: "subscription.canceled",
+      occurred_at: t2,
+      data: {
+        id: "sub_ooo",
+        status: "canceled",
+        customer_id: "ctm_ooo",
+        custom_data: { dropimg_user_id: USER_ID },
+        items: [{ price: { id: "pri_monthly" } }],
+        current_billing_period: {
+          ends_at: new Date(now * 1000).toISOString(),
+        },
+      },
+    };
+    const olderActive = {
+      event_id: "evt_ooo_updated",
+      event_type: "subscription.updated",
+      occurred_at: t1,
+      data: {
+        id: "sub_ooo",
+        status: "active",
+        customer_id: "ctm_ooo",
+        custom_data: { dropimg_user_id: USER_ID },
+        items: [{ price: { id: "pri_monthly" } }],
+        current_billing_period: {
+          ends_at: new Date((now + 30 * 86400) * 1000).toISOString(),
+        },
+      },
+    };
+
+    expect((await signedRequest(JSON.stringify(canceled))).status).toBe(200);
+    expect((await signedRequest(JSON.stringify(olderActive))).status).toBe(200);
+
+    const row = await env.DB.prepare(
+      `SELECT status FROM subscriptions WHERE provider_subscription_id = ?`,
+    )
+      .bind("sub_ooo")
+      .first<{ status: string }>();
+    expect(row?.status).toBe("canceled");
+  });
+
   it("rejects a bad signature", async () => {
     const res = await worker.fetch("https://dropimg.io/api/billing/paddle/webhook", {
       method: "POST",

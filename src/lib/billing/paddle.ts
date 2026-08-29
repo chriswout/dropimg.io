@@ -96,35 +96,18 @@ export async function upsertSubscriptionFromEvent(
     }
     if (!userId) return { userId: null, subscriptionId };
 
-    await db
-      .prepare(
-        `INSERT INTO subscriptions (
-           id, user_id, provider, provider_customer_id, provider_subscription_id,
-           status, price_id, current_period_end, cancel_at_period_end,
-           created_at, updated_at
-         ) VALUES (?, ?, 'paddle', ?, ?, ?, ?, ?, ?, ?, ?)
-         ON CONFLICT(provider_subscription_id) DO UPDATE SET
-           user_id = excluded.user_id,
-           provider_customer_id = excluded.provider_customer_id,
-           status = excluded.status,
-           price_id = excluded.price_id,
-           current_period_end = excluded.current_period_end,
-           cancel_at_period_end = excluded.cancel_at_period_end,
-           updated_at = excluded.updated_at`,
-      )
-      .bind(
-        subscriptionId,
-        userId,
-        customerId,
-        subscriptionId,
-        status,
-        priceId,
-        periodEnd,
-        cancelAtPeriodEnd,
-        now,
-        now,
-      )
-      .run();
+    await applySubscriptionState(db, {
+      userId,
+      customerId,
+      subscriptionId,
+      status,
+      priceId,
+      periodEnd,
+      cancelAtPeriodEnd,
+      occurredAt: unixFromIso(event.occurred_at) ?? now,
+      now,
+      statusOnConflict: true,
+    });
     return { userId, subscriptionId };
   }
 
@@ -134,33 +117,162 @@ export async function upsertSubscriptionFromEvent(
     const userId = customUserId(data);
     if (!userId || !customerId) return { userId, subscriptionId };
     if (subscriptionId) {
-      await db
-        .prepare(
-          `INSERT INTO subscriptions (
-             id, user_id, provider, provider_customer_id, provider_subscription_id,
-             status, price_id, current_period_end, cancel_at_period_end,
-             created_at, updated_at
-           ) VALUES (?, ?, 'paddle', ?, ?, 'active', ?, NULL, 0, ?, ?)
-           ON CONFLICT(provider_subscription_id) DO UPDATE SET
-             user_id = excluded.user_id,
-             provider_customer_id = excluded.provider_customer_id,
-             updated_at = excluded.updated_at`,
-        )
-        .bind(
-          subscriptionId,
-          userId,
-          customerId,
-          subscriptionId,
-          firstPriceId(data),
-          now,
-          now,
-        )
-        .run();
+      await applySubscriptionState(db, {
+        userId,
+        customerId,
+        subscriptionId,
+        status: "active",
+        priceId: firstPriceId(data),
+        periodEnd: null,
+        cancelAtPeriodEnd: 0,
+        occurredAt: unixFromIso(event.occurred_at) ?? now,
+        now,
+        statusOnConflict: false,
+      });
     }
     return { userId, subscriptionId };
   }
 
   return { userId: customUserId(data), subscriptionId: null };
+}
+
+async function applySubscriptionState(
+  db: D1Database,
+  row: {
+    userId: string;
+    customerId: string | null;
+    subscriptionId: string;
+    status: string;
+    priceId: string | null;
+    periodEnd: number | null;
+    cancelAtPeriodEnd: number;
+    occurredAt: number;
+    now: number;
+    statusOnConflict: boolean;
+  },
+): Promise<boolean> {
+  const existing = await db
+    .prepare(
+      `SELECT provider_occurred_at FROM subscriptions
+       WHERE provider_subscription_id = ? LIMIT 1`,
+    )
+    .bind(row.subscriptionId)
+    .first<{ provider_occurred_at: number | null }>();
+
+  if (
+    existing &&
+    existing.provider_occurred_at != null &&
+    row.occurredAt < existing.provider_occurred_at
+  ) {
+    return false;
+  }
+
+  if (existing) {
+    if (row.statusOnConflict) {
+      await db
+        .prepare(
+          `UPDATE subscriptions SET
+             user_id = ?,
+             provider_customer_id = ?,
+             status = ?,
+             price_id = ?,
+             current_period_end = ?,
+             cancel_at_period_end = ?,
+             provider_occurred_at = ?,
+             updated_at = ?
+           WHERE provider_subscription_id = ?`,
+        )
+        .bind(
+          row.userId,
+          row.customerId,
+          row.status,
+          row.priceId,
+          row.periodEnd,
+          row.cancelAtPeriodEnd,
+          row.occurredAt,
+          row.now,
+          row.subscriptionId,
+        )
+        .run();
+    } else {
+      await db
+        .prepare(
+          `UPDATE subscriptions SET
+             user_id = ?,
+             provider_customer_id = ?,
+             provider_occurred_at = ?,
+             updated_at = ?
+           WHERE provider_subscription_id = ?`,
+        )
+        .bind(
+          row.userId,
+          row.customerId,
+          row.occurredAt,
+          row.now,
+          row.subscriptionId,
+        )
+        .run();
+    }
+    return true;
+  }
+
+  await db
+    .prepare(
+      `INSERT INTO subscriptions (
+         id, user_id, provider, provider_customer_id, provider_subscription_id,
+         status, price_id, current_period_end, cancel_at_period_end,
+         provider_occurred_at, created_at, updated_at
+       ) VALUES (?, ?, 'paddle', ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    )
+    .bind(
+      row.subscriptionId,
+      row.userId,
+      row.customerId,
+      row.subscriptionId,
+      row.status,
+      row.priceId,
+      row.periodEnd,
+      row.cancelAtPeriodEnd,
+      row.occurredAt,
+      row.now,
+      row.now,
+    )
+    .run();
+  return true;
+}
+
+export const LIVE_PADDLE_STATUSES = new Set([
+  "active",
+  "trialing",
+  "past_due",
+  "paused",
+]);
+
+export function isLivePaddleStatus(status: string | null | undefined): boolean {
+  return LIVE_PADDLE_STATUSES.has((status ?? "").trim().toLowerCase());
+}
+
+export async function cancelPaddleSubscriptionImmediately(
+  env: BillingEnv,
+  subscriptionId: string,
+  fetchImpl: typeof fetch = fetch,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const key = env.PADDLE_API_KEY?.trim();
+  if (!key) return { ok: false, error: "paddle_unconfigured" };
+  const res = await fetchImpl(
+    `${paddleApiBase(env)}/subscriptions/${encodeURIComponent(subscriptionId)}/cancel`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${key}`,
+        "Paddle-Version": "1",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ effective_from: "immediately" }),
+    },
+  );
+  if (!res.ok) return { ok: false, error: "paddle_cancel_failed" };
+  return { ok: true };
 }
 
 export async function createPortalUrl(

@@ -21,6 +21,7 @@ type Copy = {
   deleteHint: string;
   deleteAction: string;
   deleteConfirm: string;
+  deleteFailed: string;
   skip: string;
 };
 
@@ -43,9 +44,11 @@ const COPY: Record<Locale, Copy> = {
     signOutAll: "Sign out of all devices",
     delete: "Delete account",
     deleteHint:
-      "This signs you out. Active Pro billing continues until you cancel it.",
+      "Deletes your drops and signs you out. An active Pro subscription is canceled immediately first.",
     deleteAction: "Delete account",
-    deleteConfirm: "Delete this account? You will be signed out.",
+    deleteConfirm:
+      "Delete this account? Active Pro billing is canceled immediately and your images are removed.",
+    deleteFailed: "Could not delete this account.",
     skip: "Skip to account",
   },
   es: {
@@ -66,9 +69,11 @@ const COPY: Record<Locale, Copy> = {
     signOutAll: "Salir de todos los dispositivos",
     delete: "Borrar cuenta",
     deleteHint:
-      "Esto cierra tu sesión. La facturación Pro sigue hasta que la canceles.",
+      "Borra tus imágenes y cierra la sesión. Si hay Pro activo, se cancela al momento.",
     deleteAction: "Borrar cuenta",
-    deleteConfirm: "¿Borrar esta cuenta? Se cerrará la sesión.",
+    deleteConfirm:
+      "¿Borrar esta cuenta? La facturación Pro se cancela al momento y se eliminan tus imágenes.",
+    deleteFailed: "No se pudo borrar la cuenta.",
     skip: "Ir a la cuenta",
   },
   "pt-BR": {
@@ -89,9 +94,11 @@ const COPY: Record<Locale, Copy> = {
     signOutAll: "Sair de todos os dispositivos",
     delete: "Excluir conta",
     deleteHint:
-      "Isso encerra sua sessão. A cobrança Pro continua até você cancelar.",
+      "Apaga seus envios e encerra a sessão. Uma assinatura Pro ativa é cancelada na hora.",
     deleteAction: "Excluir conta",
-    deleteConfirm: "Excluir esta conta? Você vai sair.",
+    deleteConfirm:
+      "Excluir esta conta? A cobrança Pro é cancelada na hora e suas imagens são removidas.",
+    deleteFailed: "Não foi possível excluir a conta.",
     skip: "Ir para a conta",
   },
   de: {
@@ -112,9 +119,11 @@ const COPY: Record<Locale, Copy> = {
     signOutAll: "Auf allen Geräten abmelden",
     delete: "Konto löschen",
     deleteHint:
-      "Damit wirst du abgemeldet. Pro-Abrechnung läuft weiter, bis du kündigst.",
+      "Löscht deine Drops und meldet dich ab. Ein aktives Pro-Abo wird zuerst sofort gekündigt.",
     deleteAction: "Konto löschen",
-    deleteConfirm: "Dieses Konto löschen? Du wirst abgemeldet.",
+    deleteConfirm:
+      "Dieses Konto löschen? Aktives Pro wird sofort gekündigt und deine Bilder werden entfernt.",
+    deleteFailed: "Konto konnte nicht gelöscht werden.",
     skip: "Zum Konto",
   },
 };
@@ -174,7 +183,16 @@ export function renderAccountPage(opts: {
           credentials: "same-origin",
           headers: { "Content-Type": "application/json" },
         });
-        if (res.ok) location.href = "/";
+        if (res.ok) {
+          location.href = "/";
+          return;
+        }
+        let err = btn?.getAttribute("data-error") || "";
+        try {
+          const body = await res.json();
+          if (body.error) err = body.error;
+        } catch {}
+        if (err) alert(err);
       });
     })();
   </script>`;
@@ -201,7 +219,7 @@ export function renderAccountPage(opts: {
     <section class="settings-card settings-danger">
       <h2>${esc(t.delete)}</h2>
       <p class="account-muted">${esc(t.deleteHint)}</p>
-      <button type="button" class="btn" id="account-delete" data-confirm="${esc(t.deleteConfirm)}">${esc(t.deleteAction)}</button>
+      <button type="button" class="btn" id="account-delete" data-confirm="${esc(t.deleteConfirm)}" data-error="${esc(t.deleteFailed)}">${esc(t.deleteAction)}</button>
     </section>
   </section>`;
 

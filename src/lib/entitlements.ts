@@ -113,6 +113,26 @@ export function resolveEntitlements(input: {
   };
 }
 
+export function uploadIntentAllowed(
+  intent: {
+    expiry_seconds: number;
+    max_bytes: number;
+    hasPassword: boolean;
+  },
+  entitlements: Entitlements,
+): boolean {
+  if (!entitlements.allowedExpirySeconds.includes(intent.expiry_seconds)) {
+    return false;
+  }
+  if (intent.hasPassword && !entitlements.passwordProtection) {
+    return false;
+  }
+  if (intent.max_bytes > entitlements.maxUploadBytes) {
+    return false;
+  }
+  return true;
+}
+
 export async function entitlementsFor(
   env: Cloudflare.Env,
   userId: string,

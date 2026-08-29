@@ -174,4 +174,51 @@ describe("Pro expiry + extend", () => {
     expect(await env.BUCKET.head(before!.r2_key)).toBeNull();
     expect(await env.BUCKET.head(after!.r2_key)).toBeTruthy();
   });
+
+  it("rejects a Pro intent after the subscriber is downgraded", async () => {
+    const { cookie, userId } = await signIn("stale-intent@example.com");
+    await makePro(userId);
+    const intent = await worker.fetch("https://dropimg.io/api/account/upload-intent", {
+      method: "POST",
+      headers: {
+        Cookie: cookie,
+        Origin: "https://dropimg.io",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ expiry: EXPIRY_7D, password: "hunter2xx" }),
+    });
+    expect(intent.status).toBe(200);
+    const created = (await intent.json()) as { uploadUrl: string };
+
+    const env = await worker.getEnv();
+    await env.DB.prepare(
+      `UPDATE subscriptions SET status = 'canceled', current_period_end = 1 WHERE user_id = ?`,
+    )
+      .bind(userId)
+      .run();
+
+    const up = await worker.fetch(`https://dropimg.io${created.uploadUrl}`, {
+      method: "POST",
+      headers: {
+        Cookie: cookie,
+        "Content-Type": "application/octet-stream",
+        "CF-Connecting-IP": "203.0.113.72",
+      },
+      body: PNG_1x1,
+    });
+    expect(up.status).toBe(400);
+    const body = (await up.json()) as { error?: string };
+    expect(body.error).toMatch(/no longer available/i);
+
+    const reuse = await worker.fetch(`https://dropimg.io${created.uploadUrl}`, {
+      method: "POST",
+      headers: {
+        Cookie: cookie,
+        "Content-Type": "application/octet-stream",
+        "CF-Connecting-IP": "203.0.113.72",
+      },
+      body: PNG_1x1,
+    });
+    expect(reuse.status).toBe(400);
+  });
 });

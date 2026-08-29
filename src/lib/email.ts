@@ -32,13 +32,14 @@ export async function sendMail(
     return { sent: false, error: "email_unconfigured" };
   }
 
-  if (!env.EMAIL) {
+  const email = emailBinding(env);
+  if (!email) {
     if (env.ENVIRONMENT === "development") return { sent: false };
     return { sent: false, error: "email_unconfigured" };
   }
 
   try {
-    await env.EMAIL.send({
+    await email.send({
       to: msg.to,
       from,
       subject: msg.subject,
@@ -61,6 +62,15 @@ export function magicLinkEmail(opts: {
     text: `Sign in to DropIMG with this link (expires in ${opts.minutes} minutes):\n\n${opts.url}\n\nIf you did not request this, ignore this email.`,
     html: `<p>Sign in to DropIMG with this one-time link. It expires in ${opts.minutes} minutes.</p><p><a href="${esc(opts.url)}">Sign in</a></p><p>If you did not request this, ignore this email.</p>`,
   };
+}
+
+function emailBinding(
+  env: Cloudflare.Env,
+): { send: (message: Record<string, unknown>) => Promise<unknown> } | undefined {
+  const candidate = (env as { EMAIL?: { send?: unknown } }).EMAIL;
+  return candidate && typeof candidate.send === "function"
+    ? (candidate as { send: (message: Record<string, unknown>) => Promise<unknown> })
+    : undefined;
 }
 
 function esc(s: string): string {

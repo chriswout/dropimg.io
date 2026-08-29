@@ -34,12 +34,6 @@
   "triggers": {
     "crons": ["*/5 * * * *"]
   },
-  "send_email": [
-    {
-      "name": "EMAIL",
-      "allowed_sender_addresses": ["signin@dropimg.io"]
-    }
-  ],
   "vars": {
     "ENVIRONMENT": "development",
     "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>"

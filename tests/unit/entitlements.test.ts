@@ -7,6 +7,7 @@ import {
   PRO_MAX_UPLOAD_BYTES,
   isProSubscription,
   resolveEntitlements,
+  uploadIntentAllowed,
 } from "../../src/lib/entitlements";
 import { maskEmail, normalizeEmail } from "../../src/lib/auth/magic-link";
 import { localeFromAcceptLanguage } from "../../src/lib/auth/locale-cookie";
@@ -101,6 +102,36 @@ describe("resolveEntitlements", () => {
     expect(e.plan).toBe("free");
     expect(e.maxUploadBytes).toBe(FREE_MAX_UPLOAD_BYTES);
     expect(e.passwordProtection).toBe(false);
+  });
+});
+
+describe("uploadIntentAllowed", () => {
+  it("rejects leftover Pro expiry, password, or 50MB after downgrade", () => {
+    const free = resolveEntitlements({ userId: "u1", subscription: null, now });
+    expect(
+      uploadIntentAllowed(
+        { expiry_seconds: EXPIRY_7D, max_bytes: FREE_MAX_UPLOAD_BYTES, hasPassword: false },
+        free,
+      ),
+    ).toBe(false);
+    expect(
+      uploadIntentAllowed(
+        { expiry_seconds: EXPIRY_24H, max_bytes: FREE_MAX_UPLOAD_BYTES, hasPassword: true },
+        free,
+      ),
+    ).toBe(false);
+    expect(
+      uploadIntentAllowed(
+        { expiry_seconds: EXPIRY_24H, max_bytes: PRO_MAX_UPLOAD_BYTES, hasPassword: false },
+        free,
+      ),
+    ).toBe(false);
+    expect(
+      uploadIntentAllowed(
+        { expiry_seconds: EXPIRY_24H, max_bytes: FREE_MAX_UPLOAD_BYTES, hasPassword: false },
+        free,
+      ),
+    ).toBe(true);
   });
 });
 
