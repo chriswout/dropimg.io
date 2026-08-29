@@ -17,7 +17,7 @@ export default defineConfig({
   webServer: process.env.E2E_BASE_URL
     ? undefined
     : {
-        command: `npm run generate:pages && npx vite --host 127.0.0.1 --port ${port}`,
+        command: `npm run generate:pages && npx wrangler d1 migrations apply dropimg --local && npx vite --host 127.0.0.1 --port ${port}`,
         url: `${baseURL}/health`,
         reuseExistingServer: !process.env.CI,
         timeout: 180_000,
