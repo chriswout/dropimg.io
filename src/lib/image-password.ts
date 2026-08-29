@@ -1,3 +1,4 @@
+import { Buffer } from "node:buffer";
 import { pbkdf2 as pbkdf2Callback } from "node:crypto";
 import { base64Url, cookieSecure, timingSafeEqualBytes } from "./auth/crypto";
 
@@ -55,7 +56,12 @@ export async function verifyImagePassword(
   return timingSafeEqualBytes(derived, stored.hash);
 }
 
-/** Standard PBKDF2-HMAC-SHA256 via node:crypto (nodejs_compat). */
+/**
+ * Standard PBKDF2-HMAC-SHA256 via node:crypto (nodejs_compat).
+ * Staging Worker (2026-08-29, version 62bccb6d) rejected 600_000 iterations:
+ * "Pbkdf2 failed: iteration counts above 100000 are not supported (requested 600000)."
+ * Do not invent a substitute KDF here.
+ */
 export function pbkdf2HmacSha256(
   password: string,
   salt: Uint8Array,
@@ -63,7 +69,7 @@ export function pbkdf2HmacSha256(
   keyLen = PASSWORD_KEY_LEN,
 ): Promise<Uint8Array> {
   return new Promise((resolve, reject) => {
-    pbkdf2Callback(password, salt, iterations, keyLen, "sha256", (err, key) => {
+    pbkdf2Callback(password, Buffer.from(salt), iterations, keyLen, "sha256", (err, key) => {
       if (err) reject(err);
       else resolve(new Uint8Array(key));
     });

@@ -73,7 +73,7 @@
         "ENVIRONMENT": "staging",
         "UGC_SHARE_ADS_ENABLED": "false",
         "LONG_TTL_ENABLED": "true",
-        "PRO_50MB_ENABLED": "false",
+        "PRO_50MB_ENABLED": "true",
         "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>",
         "BILLING_ENABLED": "true",
         "PADDLE_ENV": "sandbox",

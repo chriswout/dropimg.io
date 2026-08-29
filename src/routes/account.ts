@@ -230,7 +230,22 @@ accountRoutes.post("/api/account/upload-intent", async (c) => {
     }
   }
 
-  const hashed = password ? await hashImagePassword(password) : null;
+  let hashed = null;
+  if (password) {
+    try {
+      hashed = await hashImagePassword(password);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "hash_failed";
+      console.error("password_intent_hash_failed", msg);
+      return c.json(
+        {
+          error: "Could not save password.",
+          ...(c.env.ENVIRONMENT === "production" ? {} : { detail: msg }),
+        },
+        500,
+      );
+    }
+  }
   const now = Math.floor(Date.now() / 1000);
   const id = uuid();
   await c.env.DB.prepare(
@@ -246,8 +261,18 @@ accountRoutes.post("/api/account/upload-intent", async (c) => {
       entitlements.maxUploadBytes,
       now,
       now + INTENT_TTL_SECONDS,
-      hashed?.hash ?? null,
-      hashed?.salt ?? null,
+      hashed
+        ? hashed.hash.buffer.slice(
+            hashed.hash.byteOffset,
+            hashed.hash.byteOffset + hashed.hash.byteLength,
+          )
+        : null,
+      hashed
+        ? hashed.salt.buffer.slice(
+            hashed.salt.byteOffset,
+            hashed.salt.byteOffset + hashed.salt.byteLength,
+          )
+        : null,
       hashed?.kdf ?? null,
       hashed?.iterations ?? null,
     )
