@@ -14,3 +14,4 @@ tests/e2e/.fixtures
 cloudflare token
 .cloudflare-api-token
 *.pem
+extension/dropimg-extension.zip

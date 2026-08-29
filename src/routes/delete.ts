@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { track } from "../lib/analytics";
+import { removeImage } from "../lib/remove-image";
 import { isValidSlug } from "../lib/slug";
 import { verifyDeleteToken } from "../lib/tokens";
 import type { ImageRow } from "../types";
@@ -33,38 +34,26 @@ deleteRoutes.delete("/api/i/:slug", async (c) => {
     return c.json({ error: "Not found" }, 404);
   }
 
-  if (row.deleted_at) {
-    return c.json({ ok: true, alreadyDeleted: true });
-  }
-
   const stored = toArrayBuffer(row.delete_token_hash);
   if (!stored || !(await verifyDeleteToken(token, stored))) {
     return c.json({ error: "Invalid delete token" }, 403);
   }
 
-  const now = Math.floor(Date.now() / 1000);
-
-  try {
-    await c.env.BUCKET.delete(row.r2_key);
-  } catch {
-    // Continue — tombstone anyway so the URL stops serving
+  if (row.deleted_at) {
+    return c.json({ ok: true, alreadyDeleted: true });
   }
 
-  await c.env.DB.prepare(
-    `UPDATE images
-     SET deleted_at = ?, delete_reason = 'user', r2_key = ''
-     WHERE slug = ? AND deleted_at IS NULL`,
-  )
-    .bind(now, slug)
-    .run();
+  const result = await removeImage(c.env, row, "user");
 
-  track(c.env.ANALYTICS, "delete_user", {
-    slug,
-    mime: row.mime,
-    size: row.size,
-  });
+  if (!result.alreadyDeleted) {
+    track(c.env.ANALYTICS, "delete_user", {
+      slug,
+      mime: row.mime,
+      size: row.size,
+    });
+  }
 
-  return c.json({ ok: true });
+  return c.json({ ok: true, alreadyDeleted: result.alreadyDeleted });
 });
 
 /** D1 may return BLOB as ArrayBuffer, Uint8Array, or number[]. */

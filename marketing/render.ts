@@ -1,4 +1,10 @@
 import { CHROME, HOME, LANDINGS } from "./content";
+import { EXTENSION_PAGE, EXTENSION_URL } from "./extension";
+import {
+  INTENT_PAGES,
+  intentPageUrl,
+  type IntentPageId,
+} from "./intent-pages";
 import {
   DEFAULT_LOCALE,
   LOCALE_CONFIG,
@@ -9,6 +15,7 @@ import {
 import { alternateLinks, pagePath, pageUrl, type PageId } from "./pages";
 import type { LandingCopy, SeoBlock, SharedChrome } from "./types";
 import { t } from "./ui";
+import { renderAdSlot } from "../src/lib/ads";
 
 function esc(s: string): string {
   return s
@@ -216,6 +223,7 @@ function footerHtml(locale: Locale, chrome: SharedChrome): string {
           <a href="${esc(pagePath("temporary-hosting", locale))}">${esc(chrome.footerSeo.temporary)}</a>
           <a href="${esc(pagePath("paste-screenshot", locale))}">${esc(chrome.footerSeo.paste)}</a>
           <a href="${esc(pagePath("share-link", locale))}">${esc(chrome.footerSeo.share)}</a>
+          <a href="/browser-extension">${esc(chrome.footerSeo.extension)}</a>
         </nav>
       </footer>`;
 }
@@ -386,6 +394,25 @@ function langSuggestBanner(chrome: SharedChrome): string {
       <script type="application/json" id="lang-suggest-data">${JSON.stringify(chrome.langSuggest)}</script>`;
 }
 
+/** Subtle post-uploader extension promo — must not dominate the dropzone. */
+function extensionPromoHtml(locale: Locale, chrome: SharedChrome): string {
+  if (locale !== DEFAULT_LOCALE) {
+    // Keep one English store page; still link for other locales
+  }
+  const label =
+    locale === "es"
+      ? "También disponible como extensión de Chrome y Edge"
+      : locale === "pt-BR"
+        ? "Também disponível como extensão Chrome e Edge"
+        : locale === "de"
+          ? "Auch als Chrome- und Edge-Erweiterung"
+          : "Also available as a Chrome / Edge extension";
+  return `          <p class="ext-promo">
+            <a href="${esc(EXTENSION_URL)}">${esc(label)}</a>
+            <span class="visually-hidden"> — ${esc(chrome.footerSeo.extension)}</span>
+          </p>`;
+}
+
 export function renderHome(locale: Locale): string {
   const copy = HOME[locale];
   const chrome = CHROME[locale];
@@ -395,7 +422,7 @@ export function renderHome(locale: Locale): string {
     locale === DEFAULT_LOCALE ? `\n${langSuggestBanner(chrome)}\n` : "\n";
 
   return `<!DOCTYPE html>
-<html lang="${esc(cfg.htmlLang)}" data-locale="${esc(locale)}">
+<html lang="${esc(cfg.htmlLang)}" data-locale="${esc(locale)}" data-page-intent="home">
   <head>
 ${headMeta("home", locale, copy)}
 ${homeJsonLd(locale, copy)}
@@ -424,6 +451,8 @@ ${dropzoneHtml(locale, copy.dropzoneAria)}
             <h2>${esc(ui.recentDrops)}</h2>
             <ul id="recent-list"></ul>
           </section>
+
+${extensionPromoHtml(locale, chrome)}
         </section>
 
         <section class="below" aria-label="${esc(chrome.aboutAria)}">
@@ -488,7 +517,7 @@ export function renderLanding(
   const homeCopy = HOME[locale];
 
   return `<!DOCTYPE html>
-<html lang="${esc(cfg.htmlLang)}" data-locale="${esc(locale)}">
+<html lang="${esc(cfg.htmlLang)}" data-locale="${esc(locale)}" data-page-intent="${esc(pageId)}">
   <head>
 ${headMeta(pageId, locale, copy)}
   </head>
@@ -520,6 +549,7 @@ ${dropzoneHtml(locale, homeCopy.dropzoneAria)}
 ${renderBlocks(copy.blocks)}
         </article>
 
+${renderAdSlot("landing-below-fold")}
 ${relatedNav(pageId, locale, chrome)}
       </main>
 
@@ -535,4 +565,177 @@ ${footerHtml(locale, chrome)}
 export function renderPage(pageId: PageId, locale: Locale): string {
   if (pageId === "home") return renderHome(locale);
   return renderLanding(pageId, locale);
+}
+
+/** English-only acquisition page (not in PAGE_IDS / hreflang set). */
+export function renderExtensionPage(): string {
+  const locale = DEFAULT_LOCALE;
+  const copy = EXTENSION_PAGE;
+  const chrome = CHROME[locale];
+  const homeCopy = HOME[locale];
+  const cfg = LOCALE_CONFIG[locale];
+  const url = EXTENSION_URL;
+
+  const head = `    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>${esc(copy.title)}</title>
+    <meta name="description" content="${esc(copy.description)}" />
+    <link rel="canonical" href="${esc(url)}" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#07101C" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="${esc(cfg.ogLocale)}" />
+    <meta property="og:url" content="${esc(url)}" />
+    <meta property="og:title" content="${esc(copy.ogTitle)}" />
+    <meta property="og:description" content="${esc(copy.ogDescription)}" />
+    <meta property="og:site_name" content="dropimg.io" />
+    <meta property="og:image" content="${SITE_ORIGIN}/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="dropimg.io" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${esc(copy.twitterTitle)}" />
+    <meta name="twitter:description" content="${esc(copy.twitterDescription)}" />
+    <meta name="twitter:image" content="${SITE_ORIGIN}/og.png" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />`;
+
+  return `<!DOCTYPE html>
+<html lang="${esc(cfg.htmlLang)}" data-locale="${esc(locale)}" data-page-intent="browser-extension">
+  <head>
+${head}
+  </head>
+  <body>
+    <a class="skip-link" href="#dropzone">${esc(chrome.skipToUpload)}</a>
+    <div class="page page-seo">
+${topBar("home", locale, chrome)}
+
+      <main>
+        <section class="seo-hero">
+          <h1 class="tagline">${esc(copy.h1)}</h1>
+          <p class="sub seo-lede">${esc(copy.lede)}</p>
+
+${dropzoneHtml(locale, homeCopy.dropzoneAria)}
+
+          <ul class="trust-chips" aria-label="${esc(chrome.productHighlights)}">
+            <li>${esc(homeCopy.trust[0])}</li>
+            <li>${esc(homeCopy.trust[1])}</li>
+            <li>${esc(homeCopy.trust[2])}</li>
+          </ul>
+
+          <section id="recent" class="recent" hidden>
+            <h2>${esc(t(locale).recentDrops)}</h2>
+            <ul id="recent-list"></ul>
+          </section>
+        </section>
+
+        <article class="seo-article">
+${renderBlocks(copy.blocks)}
+        </article>
+
+        <nav class="seo-more" aria-label="${esc(chrome.relatedAria)}">
+          <a href="${esc(pagePath("paste-screenshot", locale))}">${esc(chrome.footerSeo.paste)}</a>
+          <span aria-hidden="true">·</span>
+          <a href="${esc(pagePath("share-link", locale))}">${esc(chrome.footerSeo.share)}</a>
+          <span aria-hidden="true">·</span>
+          <a href="${esc(pagePath("home", locale))}">${esc(chrome.homeLink)}</a>
+        </nav>
+      </main>
+
+${footerHtml(locale, chrome)}
+    </div>
+
+    <script type="module" src="/client/main.ts"></script>
+  </body>
+</html>
+`;
+}
+
+/** English-only intent landing (uploader above fold, no hreflang set). */
+export function renderIntentPage(pageId: IntentPageId): string {
+  const locale = DEFAULT_LOCALE;
+  const copy = INTENT_PAGES[pageId];
+  const chrome = CHROME[locale];
+  const homeCopy = HOME[locale];
+  const cfg = LOCALE_CONFIG[locale];
+  const url = intentPageUrl(pageId);
+
+  const head = `    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>${esc(copy.title)}</title>
+    <meta name="description" content="${esc(copy.description)}" />
+    <link rel="canonical" href="${esc(url)}" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#07101C" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="${esc(cfg.ogLocale)}" />
+    <meta property="og:url" content="${esc(url)}" />
+    <meta property="og:title" content="${esc(copy.ogTitle)}" />
+    <meta property="og:description" content="${esc(copy.ogDescription)}" />
+    <meta property="og:site_name" content="dropimg.io" />
+    <meta property="og:image" content="${SITE_ORIGIN}/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="dropimg.io" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${esc(copy.twitterTitle)}" />
+    <meta name="twitter:description" content="${esc(copy.twitterDescription)}" />
+    <meta name="twitter:image" content="${SITE_ORIGIN}/og.png" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />`;
+
+  return `<!DOCTYPE html>
+<html lang="${esc(cfg.htmlLang)}" data-locale="${esc(locale)}" data-page-intent="${esc(pageId)}">
+  <head>
+${head}
+  </head>
+  <body>
+    <a class="skip-link" href="#dropzone">${esc(chrome.skipToUpload)}</a>
+    <div class="page page-seo">
+${topBar("home", locale, chrome)}
+
+      <main>
+        <section class="seo-hero">
+          <h1 class="tagline">${esc(copy.h1)}</h1>
+          <p class="sub seo-lede">${esc(copy.lede)}</p>
+
+${dropzoneHtml(locale, homeCopy.dropzoneAria)}
+
+          <ul class="trust-chips" aria-label="${esc(chrome.productHighlights)}">
+            <li>${esc(homeCopy.trust[0])}</li>
+            <li>${esc(homeCopy.trust[1])}</li>
+            <li>${esc(homeCopy.trust[2])}</li>
+          </ul>
+
+          <section id="recent" class="recent" hidden>
+            <h2>${esc(t(locale).recentDrops)}</h2>
+            <ul id="recent-list"></ul>
+          </section>
+        </section>
+
+        <article class="seo-article">
+${renderBlocks(copy.blocks)}
+        </article>
+
+${renderAdSlot("landing-below-fold")}
+        <nav class="seo-more" aria-label="${esc(chrome.relatedAria)}">
+          <a href="${esc(pagePath("paste-screenshot", locale))}">${esc(chrome.footerSeo.paste)}</a>
+          <span aria-hidden="true">·</span>
+          <a href="${esc(pagePath("temporary-hosting", locale))}">${esc(chrome.footerSeo.temporary)}</a>
+          <span aria-hidden="true">·</span>
+          <a href="${esc(pagePath("home", locale))}">${esc(chrome.homeLink)}</a>
+        </nav>
+      </main>
+
+${footerHtml(locale, chrome)}
+    </div>
+
+    <script type="module" src="/client/main.ts"></script>
+  </body>
+</html>
+`;
 }

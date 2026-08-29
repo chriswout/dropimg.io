@@ -3,15 +3,18 @@ import type { Context } from "hono";
 import { track } from "../lib/analytics";
 import { inspectImage } from "../lib/inspect";
 import { clientIp, hashIp } from "../lib/ip";
+import { normalizePageIntent } from "../lib/page-intent";
 import { resolveIpHashSecret } from "../lib/secrets";
 import { generateSlug } from "../lib/slug";
 import { StripMetadataError, stripMetadata } from "../lib/strip";
+import { runPostStripSafetyScan } from "../lib/moderation-hook";
 import {
   generateDeleteToken,
   hashDeleteToken,
   r2Key,
   uuid,
 } from "../lib/tokens";
+import { normalizeUploadClient } from "../lib/upload-client";
 import {
   MAX_UPLOAD_BYTES,
   TTL_SECONDS,
@@ -26,23 +29,34 @@ type Env = {
 const DAILY_UPLOAD_LIMIT = 100;
 const DAILY_BYTE_LIMIT = 500 * 1024 * 1024;
 
+function uploadClient(c: Context<Env>): string {
+  return normalizeUploadClient(c.req.header("x-dropimg-client"));
+}
+
+function uploadPageIntent(c: Context<Env>): string {
+  return normalizePageIntent(c.req.header("x-dropimg-page-intent"));
+}
+
 export const uploadRoutes = new Hono<Env>();
 
 uploadRoutes.post("/api/upload", async (c) => {
+  const client = uploadClient(c);
+  const pageIntent = uploadPageIntent(c);
   const contentLength = Number(c.req.header("content-length") || 0);
   if (contentLength > MAX_UPLOAD_BYTES) {
-    return fail(c, 413, "too_large", "File exceeds 10 MB limit");
+    return fail(c, 413, "too_large", "File exceeds 10 MB limit", undefined, client, pageIntent);
   }
 
   const secretResolved = resolveIpHashSecret(c.env);
   if (!secretResolved.ok) {
-    track(c.env.ANALYTICS, "upload_fail", { reason: "misconfigured_secret" });
     return fail(
       c,
       500,
       "server_error",
       "Upload temporarily unavailable",
       "misconfigured_secret",
+      client,
+      pageIntent,
     );
   }
   const ip = clientIp(c.req.raw);
@@ -53,8 +67,8 @@ uploadRoutes.post("/api/upload", async (c) => {
   if (limiter) {
     const { success } = await limiter.limit({ key: `upload:${ipHash}` });
     if (!success) {
-      track(c.env.ANALYTICS, "rate_limited", { reason: "burst" });
-      return fail(c, 429, "rate_limited", "Too many uploads. Try again shortly.");
+      track(c.env.ANALYTICS, "rate_limited", { reason: "burst", client, pageIntent });
+      return fail(c, 429, "rate_limited", "Too many uploads. Try again shortly.", undefined, client, pageIntent);
     }
   }
 
@@ -69,12 +83,15 @@ uploadRoutes.post("/api/upload", async (c) => {
     .first<{ cnt: number; bytes: number }>();
 
   if (quota && (quota.cnt >= DAILY_UPLOAD_LIMIT || quota.bytes >= DAILY_BYTE_LIMIT)) {
-    track(c.env.ANALYTICS, "rate_limited", { reason: "daily_quota" });
+    track(c.env.ANALYTICS, "rate_limited", { reason: "daily_quota", client, pageIntent });
     return fail(
       c,
       429,
       "quota_exceeded",
       "Daily upload limit reached. Try again tomorrow.",
+      undefined,
+      client,
+      pageIntent,
     );
   }
 
@@ -82,14 +99,14 @@ uploadRoutes.post("/api/upload", async (c) => {
   try {
     bytes = await c.req.arrayBuffer();
   } catch {
-    return fail(c, 400, "invalid_image", "Could not read upload body");
+    return fail(c, 400, "invalid_image", "Could not read upload body", undefined, client, pageIntent);
   }
 
   if (bytes.byteLength === 0) {
-    return fail(c, 400, "invalid_image", "Empty upload");
+    return fail(c, 400, "invalid_image", "Empty upload", undefined, client, pageIntent);
   }
   if (bytes.byteLength > MAX_UPLOAD_BYTES) {
-    return fail(c, 413, "too_large", "File exceeds 10 MB limit");
+    return fail(c, 413, "too_large", "File exceeds 10 MB limit", undefined, client, pageIntent);
   }
 
   const inspected = inspectImage(bytes);
@@ -101,6 +118,8 @@ uploadRoutes.post("/api/upload", async (c) => {
         "invalid_image",
         "Image dimensions exceed the 50 megapixel limit",
         "too_many_pixels",
+        client,
+        pageIntent,
       );
     }
     const msg =
@@ -115,6 +134,8 @@ uploadRoutes.post("/api/upload", async (c) => {
       inspected.reason === "invalid" ? "invalid_image" : "unsupported_type",
       msg,
       inspected.reason,
+      client,
+      pageIntent,
     );
   }
 
@@ -135,8 +156,17 @@ uploadRoutes.post("/api/upload", async (c) => {
       err instanceof StripMetadataError
         ? err.message
         : "Could not strip image metadata";
-    return fail(c, 422, "invalid_image", msg, "strip_failed");
+    return fail(c, 422, "invalid_image", msg, "strip_failed", client, pageIntent);
   }
+
+  const scan = await runPostStripSafetyScan({
+    bytes: storeBytes,
+    mime: inspected.mime,
+  });
+  if (!scan.ok) {
+    return fail(c, 422, "invalid_image", "Image rejected", scan.reason, client, pageIntent);
+  }
+
   const storeSize = storeBytes.byteLength;
 
   try {
@@ -145,7 +175,7 @@ uploadRoutes.post("/api/upload", async (c) => {
       customMetadata: { id },
     });
   } catch {
-    return fail(c, 500, "server_error", "Storage write failed");
+    return fail(c, 500, "server_error", "Storage write failed", undefined, client, pageIntent);
   }
 
   for (let attempt = 0; attempt < 3; attempt++) {
@@ -178,19 +208,21 @@ uploadRoutes.post("/api/upload", async (c) => {
         continue;
       }
       c.executionCtx.waitUntil(c.env.BUCKET.delete(key));
-      return fail(c, 500, "server_error", "Database write failed");
+      return fail(c, 500, "server_error", "Database write failed", undefined, client, pageIntent);
     }
   }
 
   if (!inserted) {
     c.executionCtx.waitUntil(c.env.BUCKET.delete(key));
-    return fail(c, 500, "server_error", "Could not allocate a unique URL");
+    return fail(c, 500, "server_error", "Could not allocate a unique URL", undefined, client, pageIntent);
   }
 
   track(c.env.ANALYTICS, "upload_ok", {
     slug,
     mime: inspected.mime,
     size: storeSize,
+    client,
+    pageIntent,
   });
 
   const origin = new URL(c.req.url).origin;
@@ -216,9 +248,13 @@ function fail(
   code: UploadErrorResponse["code"],
   error: string,
   reason?: string,
+  client = "web",
+  pageIntent = "",
 ) {
   track(c.env.ANALYTICS, "upload_fail", {
     reason: reason ?? code,
+    client,
+    pageIntent,
   });
   const body: UploadErrorResponse = { error, code };
   return new Response(JSON.stringify(body), {

@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { ugcShareAdsEnabled } from "../lib/ads";
 import { track } from "../lib/analytics";
 import { securityHeaders, sharePageCsp } from "../lib/headers";
 import { isValidSlug } from "../lib/slug";
@@ -44,7 +45,10 @@ shareRoutes.get("/:slug", async (c) => {
   if (row.deleted_at || row.expires_at <= now) {
     return new Response(
       renderGonePage({
-        reason: row.delete_reason === "user" ? "deleted" : "expired",
+        reason:
+          row.delete_reason === "user" || row.delete_reason === "moderation"
+            ? "deleted"
+            : "expired",
       }),
       { status: 410, headers },
     );
@@ -64,6 +68,7 @@ shareRoutes.get("/:slug", async (c) => {
     height: row.height,
     size: row.size,
     expiresAt: row.expires_at,
+    adsEnabled: ugcShareAdsEnabled(c.env),
   });
 
   return new Response(html, { status: 200, headers });

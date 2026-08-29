@@ -51,6 +51,7 @@ export type SharedChrome = {
     temporary: string;
     paste: string;
     share: string;
+    extension: string;
   };
   homeLink: string;
   productHighlights: string;

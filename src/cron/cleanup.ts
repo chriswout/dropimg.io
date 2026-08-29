@@ -1,4 +1,5 @@
 import { track } from "../lib/analytics";
+import { deleteR2Keys, tombstoneImages } from "../lib/remove-image";
 
 const BATCH = 500;
 const MAX_BATCHES = 4;
@@ -6,7 +7,7 @@ const TOMBSTONE_KEEP_SECONDS = 7 * 24 * 60 * 60;
 
 /**
  * Expire live images, then purge old tombstones.
- * R2 delete before D1 tombstone; R2 deletes are idempotent.
+ * Uses shared tombstone helper; R2 deletes are batched for efficiency.
  */
 export async function runCleanup(
   env: Cloudflare.Env,
@@ -32,20 +33,13 @@ export async function runCleanup(
 
     if (!results || results.length === 0) break;
 
-    const keys = results.map((r) => r.r2_key).filter(Boolean);
-    if (keys.length > 0) {
-      await env.BUCKET.delete(keys);
-    }
+    await deleteR2Keys(
+      env.BUCKET,
+      results.map((r) => r.r2_key),
+    );
 
     const ids = results.map((r) => r.id);
-    const placeholders = ids.map(() => "?").join(",");
-    await env.DB.prepare(
-      `UPDATE images
-       SET deleted_at = ?, delete_reason = 'expired', r2_key = ''
-       WHERE id IN (${placeholders}) AND deleted_at IS NULL`,
-    )
-      .bind(now, ...ids)
-      .run();
+    await tombstoneImages(env.DB, ids, "expired", now);
 
     for (const row of results) {
       track(env.ANALYTICS, "delete_expired", {

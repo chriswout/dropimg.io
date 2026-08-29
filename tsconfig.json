@@ -20,6 +20,7 @@
     "marketing",
     "scripts",
     "tests",
+    "extension/src",
     "worker-configuration.d.ts",
     "vite.config.ts"
   ]

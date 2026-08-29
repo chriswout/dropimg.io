@@ -6,6 +6,8 @@ type ShareProps = {
   height: number | null;
   size: number;
   expiresAt: number;
+  /** When true, render a visible ad placeholder on UGC share pages. Default off. */
+  adsEnabled?: boolean;
 };
 
 export function renderSharePage(p: ShareProps): string {
@@ -18,6 +20,9 @@ export function renderSharePage(p: ShareProps): string {
       ? ` width="${p.width}" height="${p.height}"`
       : "";
   const reportUrl = `${p.origin}/abuse?slug=${encodeURIComponent(p.slug)}`;
+  const adSlotHtml = p.adsEnabled
+    ? `<aside class="ad-slot" data-ad-slot="share-below-image" aria-hidden="true"></aside>`
+    : `<!-- ad slot share-below-image reserved (disabled) -->`;
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -204,12 +209,29 @@ export function renderSharePage(p: ShareProps): string {
       <img src="${esc(imageUrl)}" alt="Shared image"${wh} loading="eager" decoding="async" />
     </div>
     <p class="meta">Expires <time datetime="${expiresIso}">${esc(expiresFriendly)}</time> · temporary link</p>
-    <a class="cta" href="/">Share your own image</a>
-    <div class="ad-slot" aria-hidden="true"><!-- ad slot reserved --></div>
+    <a class="cta" id="share-cta" href="/">Paste your screenshot</a>
+    ${adSlotHtml}
   </main>
   <footer>
     <a href="/">dropimg.io</a> · links expire in 24 hours · <a href="/privacy.html">Privacy</a>
   </footer>
+  <script>
+    (function () {
+      var a = document.getElementById("share-cta");
+      if (!a) return;
+      a.addEventListener("click", function () {
+        try {
+          navigator.sendBeacon(
+            "/api/event",
+            new Blob(
+              [JSON.stringify({ event: "share_cta_click" })],
+              { type: "application/json" },
+            ),
+          );
+        } catch (e) {}
+      });
+    })();
+  </script>
 </body>
 </html>`;
 }

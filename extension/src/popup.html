@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>dropimg.io</title>
+    <link rel="stylesheet" href="popup.css" />
+  </head>
+  <body>
+    <header class="top">
+      <img class="logo" src="icons/icon-32.png" width="20" height="20" alt="" />
+      <span class="name">dropimg.io</span>
+    </header>
+
+    <main>
+      <div class="modes" role="tablist" aria-label="Capture mode">
+        <button type="button" class="mode" data-mode="visible" id="mode-visible"></button>
+        <button type="button" class="mode" data-mode="region" id="mode-region"></button>
+      </div>
+      <p id="mode-hint" class="hint mode-hint"></p>
+
+      <section id="state-idle" class="state hidden">
+        <button id="btn-capture" type="button" class="btn primary"></button>
+      </section>
+
+      <section id="state-loading" class="state hidden">
+        <p id="loading-title" class="title"></p>
+        <p id="loading-hint" class="hint"></p>
+      </section>
+
+      <section id="state-success" class="state hidden">
+        <p id="success-title" class="title ok"></p>
+        <input id="share-url" class="url" readonly />
+        <p id="taken-at" class="hint"></p>
+        <p id="expires" class="hint"></p>
+        <div class="actions">
+          <button id="btn-copy" type="button" class="btn primary"></button>
+          <a id="btn-open" class="btn secondary" href="#" target="_blank" rel="noopener"></a>
+        </div>
+        <p id="copy-note" class="hint subtle" hidden></p>
+        <button id="btn-another" type="button" class="btn secondary"></button>
+      </section>
+
+      <section id="state-error" class="state hidden">
+        <p id="error-title" class="title err"></p>
+        <p id="error-message" class="hint"></p>
+        <button id="btn-retry" type="button" class="btn primary"></button>
+      </section>
+
+      <section id="recent" class="recent" hidden>
+        <h2 id="recent-heading"></h2>
+        <ul id="recent-list"></ul>
+      </section>
+    </main>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

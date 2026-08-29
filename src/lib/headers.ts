@@ -15,6 +15,8 @@ export function sharePageCsp(): string {
     "default-src 'none'",
     "img-src 'self'",
     "style-src 'self' 'unsafe-inline'",
+    "script-src 'unsafe-inline'",
+    "connect-src 'self'",
     "font-src 'self'",
     "base-uri 'none'",
     "form-action 'none'",

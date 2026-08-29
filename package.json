@@ -6,6 +6,8 @@
   "scripts": {
     "generate:pages": "tsx scripts/generate-marketing-pages.ts",
     "seo:check": "tsx scripts/seo-check.ts",
+    "ext:build": "tsx scripts/build-extension.ts",
+    "ext:pack": "npm run ext:build && cd extension/dist && zip -r ../dropimg-extension.zip . && echo Packed extension/dropimg-extension.zip",
     "predev": "npm run generate:pages",
     "dev": "vite",
     "prebuild": "npm run generate:pages",
@@ -31,7 +33,9 @@
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.13.0",
     "@playwright/test": "^1.55.0",
+    "@types/chrome": "^0.2.7",
     "@types/node": "^26.2.0",
+    "esbuild": "^0.28.2",
     "tsx": "^4.23.12",
     "typescript": "^5.9.2",
     "vite": "^7.1.0",

@@ -63,9 +63,16 @@ npx wrangler r2 bucket lifecycle add dropimg-images --name expire-o-prefix --pre
 
 **Cron** runs every 5 minutes (`*/5 * * * *`) to tombstone expired rows and delete R2 objects.
 
+## Docs
+
+- [Browser extension](docs/extension.md)
+- [ShareX](docs/sharex.md)
+- [Moderation admin](docs/moderation.md)
+
 ## V1 scope
 
 - Upload via Worker (raw body), private R2, short 8-char Base58 URLs
 - 24h expiry, delete token, no accounts
 - Formats: PNG / JPEG / WebP / GIF (no SVG)
 - Rate limit: 10 uploads / 60s + 100 uploads / 500 MB per day (hashed IP)
+- Admin reports at `/admin` (cookie session from `ADMIN_TOKEN`)

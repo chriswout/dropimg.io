@@ -1,0 +1,16 @@
+{
+  "Version": "15.0.0",
+  "Name": "dropimg.io",
+  "DestinationType": "ImageUploader",
+  "RequestMethod": "POST",
+  "RequestURL": "https://dropimg.io/api/integrations/sharex",
+  "Body": "MultipartFormData",
+  "FileFormName": "file",
+  "Headers": {
+    "X-Dropimg-Client": "sharex"
+  },
+  "URL": "{json:url}",
+  "ThumbnailURL": "{json:imageUrl}",
+  "DeletionURL": "{json:deleteUrl}#{json:deleteToken}",
+  "ErrorMessage": "{json:error}"
+}

@@ -36,7 +36,7 @@
       </a>
 
       <h1>Privacy Policy</h1>
-      <p class="updated">Last updated: August 23, 2026</p>
+      <p class="updated">Last updated: August 24, 2026</p>
 
       <p>
         dropimg.io (“<strong>dropimg.io</strong>,” “<strong>we</strong>,”
@@ -109,7 +109,8 @@
         share page viewed, image deleted or expired) in Cloudflare Analytics
         Engine. These events are for operating and improving the service. They
         are designed around operational fields such as event type, MIME type,
-        size, or reason codes—not account profiles.
+        size, reason codes, or upload surface (for example web vs browser
+        extension)—not account profiles.
       </p>
 
       <h3>2.5 Abuse reports</h3>
@@ -128,7 +129,55 @@
         build cross-device accounts.
       </p>
 
-      <h3>2.7 Cookies</h3>
+      <h3>2.7 Browser extension</h3>
+      <p>
+        Our official Chrome / Edge extension (Manifest V3) can capture the
+        <strong>visible tab</strong> or a <strong>user-drawn region</strong> of
+        the current viewport when you use the toolbar popup or the documented
+        keyboard shortcut. Captures upload to dropimg.io using the same upload
+        API as the website. The extension UI is localized to English, Spanish,
+        Portuguese (Brazil), and German (matching your browser language). It
+        requests:
+      </p>
+      <ul>
+        <li>
+          <code>activeTab</code> — to capture the tab you are viewing when you
+          invoke the extension.
+        </li>
+        <li>
+          <code>scripting</code> — to show a temporary region-selection overlay
+          and a short-lived on-page toast with the share link on that tab.
+        </li>
+        <li>
+          <code>storage</code> — to remember the last capture mode and a short
+          list of recent share links
+          <strong>only on your device</strong> (not an account).
+        </li>
+        <li>
+          <code>offscreen</code> and <code>notifications</code> — to copy the
+          share link to the clipboard after a silent shortcut or region capture,
+          and to show a brief notice if an on-page toast cannot be displayed.
+        </li>
+        <li>
+          Host access to <code>https://dropimg.io/*</code> — to upload the
+          screenshot and receive a temporary share link.
+        </li>
+      </ul>
+      <p>
+        Uploads from the extension are attributed with an
+        <code>X-Dropimg-Client</code> header (for example
+        <code>chrome-extension</code> or <code>edge-extension</code>) so we can
+        measure extension usage in aggregate analytics. The extension does not
+        require an account and does not sync a gallery across devices. Captured
+        images follow the same retention, metadata stripping, and sharing rules
+        as web uploads.
+      </p>
+      <p>
+        More product detail:
+        <a href="/browser-extension">/browser-extension</a>.
+      </p>
+
+      <h3>2.8 Cookies</h3>
       <p>
         dropimg.io’s core upload and share flow does not require account cookies.
         Essential infrastructure or security tooling operated by Cloudflare may

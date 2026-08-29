@@ -15,5 +15,10 @@ export const MARKETING_URLS = [
   "https://dropimg.io/share-image-with-link",
   "https://dropimg.io/es/compartir-imagen-con-enlace",
   "https://dropimg.io/pt-br/compartilhar-imagem-com-link",
-  "https://dropimg.io/de/bild-per-link-teilen"
+  "https://dropimg.io/de/bild-per-link-teilen",
+  "https://dropimg.io/browser-extension",
+  "https://dropimg.io/screenshot-to-link",
+  "https://dropimg.io/image-to-url",
+  "https://dropimg.io/anonymous-image-hosting",
+  "https://dropimg.io/expiring-image-link"
 ] as const;

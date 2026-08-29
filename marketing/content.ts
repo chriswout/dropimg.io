@@ -16,6 +16,7 @@ export const CHROME: Record<Locale, SharedChrome> = {
       temporary: "Temporary image hosting",
       paste: "Paste screenshot online",
       share: "Share image with a link",
+      extension: "Chrome / Edge extension",
     },
     homeLink: "Home",
     productHighlights: "Product highlights",
@@ -41,6 +42,7 @@ export const CHROME: Record<Locale, SharedChrome> = {
       temporary: "Alojamiento temporal de imágenes",
       paste: "Pegar captura online",
       share: "Compartir imagen con enlace",
+      extension: "Extensión Chrome / Edge",
     },
     homeLink: "Inicio",
     productHighlights: "En resumen",
@@ -66,6 +68,7 @@ export const CHROME: Record<Locale, SharedChrome> = {
       temporary: "Hospedagem temporária de imagens",
       paste: "Colar print online",
       share: "Compartilhar imagem com link",
+      extension: "Extensão Chrome / Edge",
     },
     homeLink: "Início",
     productHighlights: "Em resumo",
@@ -91,6 +94,7 @@ export const CHROME: Record<Locale, SharedChrome> = {
       temporary: "Temporäres Bildhosting",
       paste: "Screenshot online einfügen",
       share: "Bild per Link teilen",
+      extension: "Chrome- / Edge-Erweiterung",
     },
     homeLink: "Startseite",
     productHighlights: "Auf einen Blick",
@@ -550,6 +554,14 @@ export const LANDINGS: Record<
         {
           type: "p",
           text: "dropimg.io returns a temporary URL (24 hours). Send that URL wherever the conversation is happening. You have a screenshot in your clipboard and need a URL — paste it here.",
+        },
+        {
+          type: "h2",
+          text: "Prefer one-click from the browser?",
+        },
+        {
+          type: "p",
+          text: "Our Chrome / Edge extension captures the visible tab and uploads it for you — same temporary links, no account. See /browser-extension.",
         },
         { type: "h2", text: "Formats" },
         {

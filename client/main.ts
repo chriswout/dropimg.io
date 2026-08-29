@@ -2,6 +2,7 @@ import "./styles.css";
 import { matchBrowserLocale } from "../marketing/locales";
 import { pagePath, pathToPageId, type PageId } from "../marketing/pages";
 import { resolveLocale, t, type UiStrings } from "../marketing/ui";
+import { normalizePageIntent } from "../src/lib/page-intent";
 import type { RecentDrop, UploadErrorResponse, UploadResponse } from "../src/types";
 
 const MAX_BYTES = 10 * 1024 * 1024;
@@ -14,6 +15,11 @@ const locale = resolveLocale(
   document.documentElement.dataset.locale || document.documentElement.lang,
 );
 const ui: UiStrings = t(locale);
+
+const pageIntent =
+  normalizePageIntent(document.documentElement.dataset.pageIntent) ||
+  normalizePageIntent(pathToPageId(location.pathname) ?? "") ||
+  "home";
 
 const dropzone = el<HTMLElement>("dropzone");
 const fileInput = el<HTMLInputElement>("file-input");
@@ -43,6 +49,31 @@ function el<T extends HTMLElement>(id: string): T {
   const node = document.getElementById(id);
   if (!node) throw new Error(`#${id} missing`);
   return node as T;
+}
+
+function trackEvent(
+  event: string,
+  extra: { page_intent?: string } = {},
+): void {
+  try {
+    const body = JSON.stringify({
+      event,
+      page_intent: extra.page_intent ?? pageIntent,
+    });
+    const blob = new Blob([body], { type: "application/json" });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon("/api/event", blob);
+      return;
+    }
+    void fetch("/api/event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      keepalive: true,
+    });
+  } catch {
+    // ignore
+  }
 }
 
 function announce(message: string) {
@@ -119,6 +150,10 @@ function uploadWithProgress(
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "/api/upload");
     xhr.setRequestHeader("Content-Type", "application/octet-stream");
+    xhr.setRequestHeader("X-Dropimg-Client", "web");
+    if (pageIntent) {
+      xhr.setRequestHeader("X-Dropimg-Page-Intent", pageIntent);
+    }
     xhr.responseType = "json";
 
     xhr.upload.onprogress = (e) => {
@@ -231,10 +266,12 @@ function renderRecent() {
     a.target = "_blank";
     a.rel = "noopener";
     a.textContent = item.url.replace(/^https?:\/\//, "");
+    a.addEventListener("click", () => trackEvent("recent_link_open"));
     const del = document.createElement("button");
     del.type = "button";
     del.textContent = ui.delete;
     del.addEventListener("click", async () => {
+      trackEvent("recent_delete");
       try {
         const res = await fetch(`/api/i/${item.slug}`, {
           method: "DELETE",
@@ -249,8 +286,9 @@ function renderRecent() {
       removeRecent(item.slug);
       if (current?.slug === item.slug) resetToIdle();
     });
-    li.append(a, del);
-    recentList.append(li);
+    li.appendChild(a);
+    li.appendChild(del);
+    recentList.appendChild(li);
   }
 }
 
@@ -479,3 +517,9 @@ rememberLocaleChoice(locale);
 setupLanguageLinks();
 setupLangSuggest();
 renderRecent();
+
+if (pageIntent === "home") {
+  trackEvent("home_view");
+} else {
+  trackEvent("landing_view");
+}

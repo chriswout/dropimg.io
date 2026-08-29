@@ -7,6 +7,11 @@ import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { LOCALES, LOCALE_CONFIG } from "../marketing/locales";
 import {
+  INTENT_PAGE_IDS,
+  INTENT_PAGE_PATHS,
+  intentPageUrl,
+} from "../marketing/intent-pages";
+import {
   PAGE_IDS,
   allMarketingUrls,
   alternateLinks,
@@ -182,14 +187,68 @@ else {
   if (sm.includes("/api/") || sm.includes("/i/") || sm.includes(":slug")) {
     fail("sitemap contains temporary/API patterns");
   }
+  if (!sm.includes(`<loc>https://dropimg.io/browser-extension</loc>`)) {
+    fail("sitemap missing browser-extension");
+  }
+  for (const id of INTENT_PAGE_IDS) {
+    const url = intentPageUrl(id);
+    if (!sm.includes(`<loc>${url}</loc>`)) fail(`sitemap missing ${url}`);
+  }
   const locs = extractAll(sm, /<loc>([^<]*)<\/loc>/g);
   const dup = locs.filter((u, i) => locs.indexOf(u) !== i);
   if (dup.length) fail(`sitemap duplicates: ${[...new Set(dup)].join(", ")}`);
   ok(`sitemap has ${locs.length} URLs`);
 }
 
+// English-only extension acquisition page
+{
+  const path = join(root, "browser-extension/index.html");
+  if (!existsSync(path)) fail("missing browser-extension/index.html");
+  else {
+    const html = readFileSync(path, "utf8");
+    if (!html.includes('rel="canonical" href="https://dropimg.io/browser-extension"')) {
+      fail("browser-extension: bad canonical");
+    }
+    if (!html.includes("Screenshot to link")) fail("browser-extension: missing H1 copy");
+    if (!html.includes('data-page-intent="browser-extension"')) {
+      fail("browser-extension: missing data-page-intent");
+    }
+    ok("browser-extension page present");
+  }
+}
+
+// English-only intent landings
+{
+  for (const id of INTENT_PAGE_IDS) {
+    const dir = INTENT_PAGE_PATHS[id].replace(/^\//, "");
+    const path = join(root, dir, "index.html");
+    if (!existsSync(path)) {
+      fail(`missing intent page ${path}`);
+      continue;
+    }
+    const html = readFileSync(path, "utf8");
+    const canonical = intentPageUrl(id);
+    if (!html.includes(`rel="canonical" href="${canonical}"`)) {
+      fail(`${id}: bad canonical`);
+    }
+    if (!html.includes(`data-page-intent="${id}"`)) {
+      fail(`${id}: missing data-page-intent`);
+    }
+    if (!html.includes('id="dropzone"')) fail(`${id}: missing dropzone`);
+    if (/noindex/i.test(html) && /name="robots"/i.test(html)) {
+      const robots = extractAll(html, /<meta\s+name="robots"\s+content="([^"]*)"/i);
+      if (robots.some((r) => /noindex/i.test(r))) {
+        fail(`${id}: has noindex`);
+      }
+    }
+  }
+  ok(`${INTENT_PAGE_IDS.length} EN intent pages present`);
+}
+
 if (failures === 0) {
-  ok(`all checks passed (${PAGE_IDS.length * LOCALES.length} pages)`);
+  ok(
+    `all checks passed (${PAGE_IDS.length * LOCALES.length} pages + extension + ${INTENT_PAGE_IDS.length} intents)`,
+  );
   process.exit(0);
 }
 console.error(`\n${failures} failure(s)`);

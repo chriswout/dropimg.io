@@ -1,8 +1,11 @@
 import { Hono } from "hono";
 import { runCleanup } from "./cron/cleanup";
+import { adminRoutes } from "./routes/admin";
 import { deletePageRoutes } from "./routes/delete-page";
 import { deleteRoutes } from "./routes/delete";
+import { eventRoutes } from "./routes/event";
 import { imageRoutes } from "./routes/image";
+import { sharexRoutes } from "./routes/integrations-sharex";
 import { reportRoutes } from "./routes/report";
 import { shareRoutes } from "./routes/share";
 import { uploadRoutes } from "./routes/upload";
@@ -26,10 +29,13 @@ app.use("*", async (c, next) => {
 app.get("/health", (c) => c.json({ ok: true, service: "dropimg" }));
 
 app.route("/", uploadRoutes);
+app.route("/", eventRoutes);
 app.route("/", imageRoutes);
 app.route("/", deleteRoutes);
 app.route("/", deletePageRoutes);
 app.route("/", reportRoutes);
+app.route("/", adminRoutes);
+app.route("/", sharexRoutes);
 app.route("/", shareRoutes);
 
 app.notFound(async (c) => {
