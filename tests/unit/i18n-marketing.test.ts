@@ -64,6 +64,21 @@ describe("renderPage metadata", () => {
     }
   }
 
+  it("homepage header has a Sign in control", () => {
+    expect(renderPage("home", "en")).toContain('id="account-signin"');
+    expect(renderPage("home", "en")).toContain("Sign in");
+    expect(renderPage("home", "es")).toContain("Entrar");
+    expect(renderPage("home", "en")).toContain('id="account-plan"');
+    expect(renderPage("home", "en")).toContain('class="account-menu"');
+    expect(renderPage("home", "en")).toContain("Upgrade to Pro");
+    expect(renderPage("home", "en")).toContain("Edit account");
+    expect(renderPage("home", "en")).toContain('id="theme-toggle"');
+    expect(renderPage("home", "en")).toContain("dropimg:theme");
+    expect(renderPage("home", "en")).not.toMatch(
+      /header-actions[\s\S]*?<a class="account-link" href="\/pro">Pro<\/a>/,
+    );
+  });
+
   it("English homepage H1 matches product copy", () => {
     const html = renderPage("home", "en");
     expect(html).toContain(HOME.en.h1);

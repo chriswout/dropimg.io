@@ -62,4 +62,9 @@ export type ImageRow = {
   expires_at: number;
   deleted_at: number | null;
   delete_reason: string | null;
+  user_id?: string | null;
+  password_hash?: unknown;
+  password_salt?: unknown;
+  password_kdf?: string | null;
+  password_iterations?: number | null;
 };

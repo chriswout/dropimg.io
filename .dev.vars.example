@@ -3,3 +3,13 @@ IP_HASH_SECRET=dev-ip-hash-secret-change-me
 ADMIN_TOKEN=dev-admin-token-change-me
 # Optional: IndexNow key for notifying Bing when marketing pages change
 # INDEXNOW_KEY=
+# Magic-link mail uses the EMAIL binding (signin@dropimg.io). Local wrangler
+# simulates send unless the binding has remote: true.
+# Paddle sandbox (Phase D). Never commit real keys.
+# PADDLE_ENV=sandbox
+# PADDLE_API_KEY=
+# BILLING_ENABLED=false
+# PADDLE_CLIENT_TOKEN=
+# PADDLE_PRICE_MONTHLY=
+# PADDLE_PRICE_ANNUAL=
+# PADDLE_WEBHOOK_SECRET=

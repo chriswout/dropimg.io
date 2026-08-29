@@ -40,29 +40,37 @@ function stripJpeg(bytes: ArrayBuffer): ArrayBuffer {
     throw new StripMetadataError("Invalid JPEG while stripping metadata");
   }
 
-  const out: number[] = [0xff, 0xd8];
+  const out = new Uint8Array(u8.length);
+  let o = 0;
+  out[o++] = 0xff;
+  out[o++] = 0xd8;
+
+  const write = (src: Uint8Array) => {
+    out.set(src, o);
+    o += src.length;
+  };
+
   let i = 2;
   let sawSos = false;
   while (i < u8.length) {
     if (u8[i] !== 0xff) {
-      // Entropy-coded data — copy rest
-      for (let j = i; j < u8.length; j++) out.push(u8[j]!);
+      write(u8.subarray(i));
       sawSos = true;
       break;
     }
-    // Skip fill bytes
     while (i < u8.length && u8[i] === 0xff) i++;
     if (i >= u8.length) break;
     const marker = u8[i]!;
     i++;
 
-    // Standalone markers
     if (marker === 0xd9 || marker === 0xd8) {
-      out.push(0xff, marker);
+      out[o++] = 0xff;
+      out[o++] = marker;
       continue;
     }
     if (marker >= 0xd0 && marker <= 0xd7) {
-      out.push(0xff, marker);
+      out[o++] = 0xff;
+      out[o++] = marker;
       continue;
     }
 
@@ -74,25 +82,24 @@ function stripJpeg(bytes: ArrayBuffer): ArrayBuffer {
       throw new StripMetadataError("Malformed JPEG segment while stripping");
     }
 
-    // Drop APP1 (Exif/XMP) and COM
     const drop = marker === 0xe1 || marker === 0xfe;
     if (!drop) {
-      out.push(0xff, marker);
-      for (let j = 0; j < len; j++) out.push(u8[i + j]!);
+      out[o++] = 0xff;
+      out[o++] = marker;
+      write(u8.subarray(i, i + len));
     }
     i += len;
 
-    // After SOS, remaining is scan data
     if (marker === 0xda) {
-      for (let j = i; j < u8.length; j++) out.push(u8[j]!);
+      write(u8.subarray(i));
       sawSos = true;
       break;
     }
   }
-  if (!sawSos && out.length < 4) {
+  if (!sawSos && o < 4) {
     throw new StripMetadataError("JPEG strip produced empty output");
   }
-  return new Uint8Array(out).buffer;
+  return out.buffer.slice(0, o);
 }
 
 const PNG_DROP = new Set(["tEXt", "iTXt", "zTXt", "eXIf", "tIME"]);

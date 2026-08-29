@@ -1,3 +1,4 @@
+import { footerHtml, themeBootScript, topBarHtml } from "./chrome";
 import { CHROME, HOME, LANDINGS } from "./content";
 import { EXTENSION_PAGE, EXTENSION_URL } from "./extension";
 import {
@@ -8,7 +9,6 @@ import {
 import {
   DEFAULT_LOCALE,
   LOCALE_CONFIG,
-  LOCALES,
   SITE_ORIGIN,
   type Locale,
 } from "./locales";
@@ -34,54 +34,12 @@ function hreflangTags(pageId: PageId): string {
     .join("\n");
 }
 
-function langSwitcher(pageId: PageId, locale: Locale, chrome: SharedChrome): string {
-  const cfg = LOCALE_CONFIG[locale];
-  const items = LOCALES.map((loc) => {
-    const href = pagePath(pageId, loc);
-    const label = LOCALE_CONFIG[loc].label;
-    const current = loc === locale ? ' aria-current="page"' : "";
-    return `            <li><a href="${esc(href)}" hreflang="${esc(LOCALE_CONFIG[loc].hreflang)}" lang="${esc(LOCALE_CONFIG[loc].htmlLang)}"${current}>${esc(label)}</a></li>`;
-  }).join("\n");
-
-  return `        <nav class="lang" aria-label="${esc(chrome.langMenuAria)}">
-          <details class="lang-details">
-            <summary class="lang-summary">
-              <span class="lang-globe" aria-hidden="true">🌐</span>
-              <span class="lang-label">${esc(cfg.label)}</span>
-            </summary>
-            <ul class="lang-menu">
-${items}
-            </ul>
-          </details>
-        </nav>`;
-}
-
 function topBar(pageId: PageId, locale: Locale, chrome: SharedChrome): string {
-  const home = pagePath("home", locale);
-  return `      <header class="top">
-        <a class="brand" href="${esc(home)}" aria-label="${esc(chrome.brandHomeAria)}">
-          <img
-            class="brand-logo brand-logo-light"
-            src="/brand/logo-32.png"
-            srcset="/brand/logo-32.png 1x, /brand/logo-64.png 2x"
-            width="134"
-            height="32"
-            alt="dropimg.io"
-            decoding="async"
-          />
-          <img
-            class="brand-logo brand-logo-dark"
-            src="/brand/logo-dark-32.png"
-            srcset="/brand/logo-dark-32.png 1x, /brand/logo-dark-64.png 2x"
-            width="134"
-            height="32"
-            alt=""
-            decoding="async"
-            aria-hidden="true"
-          />
-        </a>
-${langSwitcher(pageId, locale, chrome)}
-      </header>`;
+  return topBarHtml({
+    locale,
+    chrome,
+    langHref: (loc) => pagePath(pageId, loc),
+  });
 }
 
 function dropzoneHtml(locale: Locale, dropzoneAria: string): string {
@@ -207,25 +165,24 @@ function dropzoneHtml(locale: Locale, dropzoneAria: string): string {
               <p id="error-message" class="dz-hint"></p>
               <button id="btn-retry" type="button" class="btn primary">${esc(ui.tryAgain)}</button>
             </div>
-          </section>`;
-}
-
-function footerHtml(locale: Locale, chrome: SharedChrome): string {
-  return `      <footer class="foot">
-        <div class="foot-legal">
-          <a href="/privacy.html">${esc(chrome.privacy)}</a>
-          <span aria-hidden="true">·</span>
-          <a href="/terms.html">${esc(chrome.terms)}</a>
-          <span aria-hidden="true">·</span>
-          <a href="/abuse">${esc(chrome.abuse)}</a>
-        </div>
-        <nav class="foot-seo" aria-label="${esc(chrome.learnMoreAria)}">
-          <a href="${esc(pagePath("temporary-hosting", locale))}">${esc(chrome.footerSeo.temporary)}</a>
-          <a href="${esc(pagePath("paste-screenshot", locale))}">${esc(chrome.footerSeo.paste)}</a>
-          <a href="${esc(pagePath("share-link", locale))}">${esc(chrome.footerSeo.share)}</a>
-          <a href="/browser-extension">${esc(chrome.footerSeo.extension)}</a>
-        </nav>
-      </footer>`;
+          </section>
+          <div id="pro-options" class="pro-options" hidden>
+            <div class="pro-field">
+              <span id="pro-expiry-label">Expires</span>
+              <div id="pro-expiry" class="expiry-pills" role="radiogroup" aria-labelledby="pro-expiry-label" data-value="86400">
+                <button type="button" class="expiry-pill" role="radio" aria-checked="true" data-expiry="86400">24h</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="604800">7 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="2592000">30 days</button>
+              </div>
+            </div>
+            <div class="pro-field" id="pro-password-wrap">
+              <span id="pro-password-label">Password</span>
+              <div class="pro-password-controls">
+                <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password"></button>
+                <input id="pro-password" type="password" minlength="8" placeholder="Min. 8 characters" autocomplete="new-password" hidden />
+              </div>
+            </div>
+          </div>`;
 }
 
 function headMeta(
@@ -256,6 +213,7 @@ ${hreflangTags(pageId)}
     <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#07101C" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light dark" />
+${themeBootScript()}
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="${esc(cfg.ogLocale)}" />
     <meta property="og:url" content="${esc(url)}" />
@@ -585,6 +543,7 @@ export function renderExtensionPage(): string {
     <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#07101C" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light dark" />
+${themeBootScript()}
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="${esc(cfg.ogLocale)}" />
     <meta property="og:url" content="${esc(url)}" />
@@ -671,6 +630,7 @@ export function renderIntentPage(pageId: IntentPageId): string {
     <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#07101C" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light dark" />
+${themeBootScript()}
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="${esc(cfg.ogLocale)}" />
     <meta property="og:url" content="${esc(url)}" />

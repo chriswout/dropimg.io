@@ -18,6 +18,14 @@
         "limit": 10,
         "period": 60
       }
+    },
+    {
+      "name": "AUTH_LIMIT",
+      "namespace_id": "1003",
+      "simple": {
+        "limit": 5,
+        "period": 60
+      }
     }
   ],
   "r2_buckets": [
@@ -47,9 +55,21 @@
   "observability": {
     "enabled": true
   },
+  "send_email": [
+    {
+      "name": "EMAIL",
+      "allowed_sender_addresses": ["signin@dropimg.io"],
+      "remote": true
+    }
+  ],
   "vars": {
     "ENVIRONMENT": "development",
-    "UGC_SHARE_ADS_ENABLED": "false"
+    "UGC_SHARE_ADS_ENABLED": "false",
+    "LONG_TTL_ENABLED": "false",
+    "PRO_50MB_ENABLED": "false",
+    "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>",
+    "BILLING_ENABLED": "false",
+    "PADDLE_ENV": "sandbox"
   },
   "env": {
     "staging": {
@@ -58,14 +78,36 @@
       "preview_urls": true,
       "vars": {
         "ENVIRONMENT": "staging",
-        "UGC_SHARE_ADS_ENABLED": "false"
+        "UGC_SHARE_ADS_ENABLED": "false",
+        "LONG_TTL_ENABLED": "true",
+        "PRO_50MB_ENABLED": "true",
+        "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>",
+        "BILLING_ENABLED": "true",
+        "PADDLE_ENV": "sandbox",
+        "PADDLE_CLIENT_TOKEN": "test_814c61a8863cdd74b2bd9a40491",
+        "PADDLE_PRICE_MONTHLY": "pri_01m17sgnc1k3ck9mgxh176fh8h",
+        "PADDLE_PRICE_ANNUAL": "pri_01m17sgnj1gjtraqzk7w6z3pm5"
       },
+      "send_email": [
+        {
+          "name": "EMAIL",
+          "allowed_sender_addresses": ["signin@dropimg.io"]
+        }
+      ],
       "ratelimits": [
         {
           "name": "UPLOAD_LIMIT",
           "namespace_id": "1001",
           "simple": {
             "limit": 10,
+            "period": 60
+          }
+        },
+        {
+          "name": "AUTH_LIMIT",
+          "namespace_id": "1003",
+          "simple": {
+            "limit": 5,
             "period": 60
           }
         }
@@ -98,14 +140,32 @@
       "name": "dropimg",
       "vars": {
         "ENVIRONMENT": "production",
-        "UGC_SHARE_ADS_ENABLED": "false"
+        "UGC_SHARE_ADS_ENABLED": "false",
+        "LONG_TTL_ENABLED": "false",
+        "PRO_50MB_ENABLED": "false",
+        "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>",
+        "BILLING_ENABLED": "false"
       },
+      "send_email": [
+        {
+          "name": "EMAIL",
+          "allowed_sender_addresses": ["signin@dropimg.io"]
+        }
+      ],
       "ratelimits": [
         {
           "name": "UPLOAD_LIMIT",
           "namespace_id": "1002",
           "simple": {
             "limit": 10,
+            "period": 60
+          }
+        },
+        {
+          "name": "AUTH_LIMIT",
+          "namespace_id": "1004",
+          "simple": {
+            "limit": 5,
             "period": 60
           }
         }

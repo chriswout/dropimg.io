@@ -76,3 +76,4 @@ npx wrangler r2 bucket lifecycle add dropimg-images --name expire-o-prefix --pre
 - Formats: PNG / JPEG / WebP / GIF (no SVG)
 - Rate limit: 10 uploads / 60s + 100 uploads / 500 MB per day (hashed IP)
 - Admin reports at `/admin` (cookie session from `ADMIN_TOKEN`)
+- Optional accounts: passwordless `/login`, My drops at `/app` (staging; see [docs/auth.md](docs/auth.md), [docs/account.md](docs/account.md))

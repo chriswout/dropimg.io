@@ -19,6 +19,11 @@ const RESERVED = new Set([
   "sitemap",
   "health",
   "status",
+  "login",
+  "auth",
+  "app",
+  "account",
+  "pro",
 ]);
 
 export function generateSlug(length = SLUG_LENGTH): string {

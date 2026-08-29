@@ -15,3 +15,5 @@ cloudflare token
 .cloudflare-api-token
 *.pem
 extension/dropimg-extension.zip
+padde_sandbox_creds.md
+*creds*.md

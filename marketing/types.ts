@@ -60,4 +60,14 @@ export type SharedChrome = {
   langSuggest: Record<"es" | "pt-BR" | "de", string>;
   suggestSwitch: string;
   suggestDismiss: string;
+  signIn: string;
+  signOut: string;
+  myDrops: string;
+  pro: string;
+  upgradeToPro: string;
+  editAccount: string;
+  accountAria: string;
+  themeToggleAria: string;
+  themeToLight: string;
+  themeToDark: string;
 };

@@ -15,6 +15,17 @@
     <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#07101C" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light dark" />
+<script>
+(function(){
+  try {
+    var t = localStorage.getItem("dropimg:theme");
+    if (t !== "light" && t !== "dark") {
+      t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    document.documentElement.dataset.theme = t;
+  } catch (e) {}
+})();
+</script>
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="de_DE" />
     <meta property="og:url" content="https://dropimg.io/de/temporaeres-bildhosting" />
@@ -57,6 +68,34 @@
             aria-hidden="true"
           />
         </a>
+        <div class="header-actions">
+          <nav id="account-nav" class="account-nav" aria-label="Konto">
+            <a id="account-signin" class="account-chip" href="/login">Anmelden</a>
+            <div id="account-session" class="account-session" hidden>
+              <a id="account-app" class="account-nav-link" href="/app">Meine Drops</a>
+              <a id="account-plan" class="account-plan" href="/pro" hidden
+                data-label-pro="Pro"
+                data-label-upgrade="Auf Pro upgraden"></a>
+              <details class="account-menu">
+                <summary class="account-chip account-summary">
+                  <span id="account-plan-badge" class="account-plan-badge" hidden>Pro</span>
+                  <span id="account-email" class="account-email"></span>
+                </summary>
+                <div class="account-menu-panel">
+                  <p id="account-email-full" class="account-email-full"></p>
+                  <a id="account-edit" class="account-menu-item" href="/account">Konto bearbeiten</a>
+                  <button id="account-signout" type="button" class="account-menu-item">Abmelden</button>
+                </div>
+              </details>
+            </div>
+          </nav>
+        <button type="button" id="theme-toggle" class="theme-toggle"
+          aria-label="Farbschema"
+          data-label-light="Hell einschalten"
+          data-label-dark="Dunkel einschalten">
+          <span class="theme-icon theme-icon-moon" aria-hidden="true"></span>
+          <span class="theme-icon theme-icon-sun" aria-hidden="true"></span>
+        </button>
         <nav class="lang" aria-label="Sprache">
           <details class="lang-details">
             <summary class="lang-summary">
@@ -71,6 +110,7 @@
             </ul>
           </details>
         </nav>
+        </div>
       </header>
 
       <main>
@@ -200,6 +240,23 @@
               <button id="btn-retry" type="button" class="btn primary">Nochmal versuchen</button>
             </div>
           </section>
+          <div id="pro-options" class="pro-options" hidden>
+            <div class="pro-field">
+              <span id="pro-expiry-label">Expires</span>
+              <div id="pro-expiry" class="expiry-pills" role="radiogroup" aria-labelledby="pro-expiry-label" data-value="86400">
+                <button type="button" class="expiry-pill" role="radio" aria-checked="true" data-expiry="86400">24h</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="604800">7 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="2592000">30 days</button>
+              </div>
+            </div>
+            <div class="pro-field" id="pro-password-wrap">
+              <span id="pro-password-label">Password</span>
+              <div class="pro-password-controls">
+                <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password"></button>
+                <input id="pro-password" type="password" minlength="8" placeholder="Min. 8 characters" autocomplete="new-password" hidden />
+              </div>
+            </div>
+          </div>
 
           <ul class="trust-chips" aria-label="Auf einen Blick">
             <li>Kein Konto</li>

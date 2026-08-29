@@ -53,9 +53,19 @@ export function uuid(): string {
   return crypto.randomUUID();
 }
 
-export function r2Key(id: string, now = new Date()): string {
+export type R2KeyClass = "24h" | "pro";
+
+export function r2Key(
+  id: string,
+  now = new Date(),
+  keyClass: R2KeyClass = "24h",
+): string {
   const y = now.getUTCFullYear();
   const m = String(now.getUTCMonth() + 1).padStart(2, "0");
   const d = String(now.getUTCDate()).padStart(2, "0");
-  return `o/24h/${y}${m}${d}/${id}`;
+  return `o/${keyClass}/${y}${m}${d}/${id}`;
+}
+
+export function r2KeyClassOf(key: string): R2KeyClass {
+  return key.startsWith("o/pro/") ? "pro" : "24h";
 }

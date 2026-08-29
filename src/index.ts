@@ -1,6 +1,9 @@
 import { Hono } from "hono";
 import { runCleanup } from "./cron/cleanup";
+import { accountRoutes } from "./routes/account";
 import { adminRoutes } from "./routes/admin";
+import { authRoutes } from "./routes/auth";
+import { billingRoutes } from "./routes/billing";
 import { deletePageRoutes } from "./routes/delete-page";
 import { deleteRoutes } from "./routes/delete";
 import { eventRoutes } from "./routes/event";
@@ -30,6 +33,9 @@ app.get("/health", (c) => c.json({ ok: true, service: "dropimg" }));
 
 app.route("/", uploadRoutes);
 app.route("/", eventRoutes);
+app.route("/", authRoutes);
+app.route("/", billingRoutes);
+app.route("/", accountRoutes);
 app.route("/", imageRoutes);
 app.route("/", deleteRoutes);
 app.route("/", deletePageRoutes);

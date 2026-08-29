@@ -6,6 +6,8 @@ import { generateSlug, isValidSlug } from "../../src/lib/slug";
 import {
   generateDeleteToken,
   hashDeleteToken,
+  r2Key,
+  r2KeyClassOf,
   verifyDeleteToken,
 } from "../../src/lib/tokens";
 
@@ -160,6 +162,17 @@ describe("slug", () => {
   it("rejects short or invalid slugs", () => {
     expect(isValidSlug("abc")).toBe(false);
     expect(isValidSlug("00000000")).toBe(false);
+  });
+});
+
+describe("r2Key", () => {
+  it("puts anonymous objects under o/24h and Pro under o/pro", () => {
+    const day = new Date("2026-08-29T12:00:00Z");
+    expect(r2Key("abc", day, "24h")).toBe("o/24h/20260829/abc");
+    expect(r2Key("abc", day, "pro")).toBe("o/pro/20260829/abc");
+    expect(r2KeyClassOf("o/24h/20260829/abc")).toBe("24h");
+    expect(r2KeyClassOf("o/pro/20260829/abc")).toBe("pro");
+    expect(r2KeyClassOf("o/20260829/legacy")).toBe("24h");
   });
 });
 

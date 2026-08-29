@@ -10,7 +10,17 @@ export type AnalyticsEvent =
   | "landing_view"
   | "share_cta_click"
   | "recent_link_open"
-  | "recent_delete";
+  | "recent_delete"
+  | "auth_requested"
+  | "auth_completed"
+  | "claim_ok"
+  | "unlock_ok"
+  | "unlock_fail"
+  | "extend_ok"
+  | "password_set"
+  | "checkout_started"
+  | "billing_webhook_ok"
+  | "account_deleted";
 
 export function track(
   analytics: AnalyticsEngineDataset | undefined,

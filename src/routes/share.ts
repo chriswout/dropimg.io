@@ -1,9 +1,16 @@
 import { Hono } from "hono";
 import { ugcShareAdsEnabled } from "../lib/ads";
 import { track } from "../lib/analytics";
-import { securityHeaders, sharePageCsp } from "../lib/headers";
+import { resolveSession } from "../lib/auth/session";
+import { lockedShareCsp, securityHeaders, sharePageCsp } from "../lib/headers";
+import {
+  imageHasPassword,
+  unlockCookieValid,
+} from "../lib/image-password";
+import { resolveIpHashSecret } from "../lib/secrets";
 import { isValidSlug } from "../lib/slug";
 import type { ImageRow } from "../types";
+import { renderLockedSharePage } from "../views/locked-share";
 import { renderGonePage, renderSharePage } from "../views/share";
 
 type Env = {
@@ -52,6 +59,26 @@ shareRoutes.get("/:slug", async (c) => {
       }),
       { status: 410, headers },
     );
+  }
+
+  if (imageHasPassword(row)) {
+    const session = await resolveSession(c.env.DB, c.req.header("cookie"));
+    const owner = Boolean(session && row.user_id && session.id === row.user_id);
+    const secretResolved = resolveIpHashSecret(c.env);
+    const unlocked =
+      secretResolved.ok &&
+      (await unlockCookieValid(slug, c.req.header("cookie"), secretResolved.secret));
+    if (!owner && !unlocked) {
+      return new Response(renderLockedSharePage({ slug, origin }), {
+        status: 200,
+        headers: securityHeaders({
+          "Content-Type": "text/html; charset=utf-8",
+          "Content-Security-Policy": lockedShareCsp(),
+          "X-Robots-Tag": "noindex, nofollow",
+          "Cache-Control": "private, no-store",
+        }),
+      });
+    }
   }
 
   track(c.env.ANALYTICS, "share_view", {
