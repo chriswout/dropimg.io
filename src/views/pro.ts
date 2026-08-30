@@ -211,8 +211,10 @@ export function renderProPage(opts: {
   cancelAtPeriodEnd?: boolean;
 }): Response {
   const t = PRO_COPY[opts.locale];
+  const check =
+    '<svg class="pro-check icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg>';
   const perks = `<ul class="pro-perks">${t.features
-    .map((f) => `<li>${esc(f)}</li>`)
+    .map((f) => `<li>${check}<span>${esc(f)}</span></li>`)
     .join("")}</ul>`;
   const isPro = opts.plan === "pro";
   const period =
@@ -233,15 +235,14 @@ export function renderProPage(opts: {
       <article class="pro-card pro-card-featured">
         <p class="pro-save">${esc(t.save)}</p>
         <h2>${esc(t.annual)}</h2>
-        <p class="pro-price">${esc(t.annualPrice)}</p>
-        <p class="pro-note">${esc(t.annualNote)}</p>
+        <p class="pro-price">${esc(t.annualPrice)}<span class="pro-per">${esc(t.annualNote)}</span></p>
         <p class="pro-note">${esc(t.annualPerMonth)}</p>
         ${cta("annual")}
       </article>
       <article class="pro-card">
         <h2>${esc(t.monthly)}</h2>
-        <p class="pro-price">${esc(t.monthlyPrice)}</p>
-        <p class="pro-note">${esc(t.monthlyNote)}</p>
+        <p class="pro-price">${esc(t.monthlyPrice)}<span class="pro-per">${esc(t.monthlyNote)}</span></p>
+        <p class="pro-note">&nbsp;</p>
         ${cta("monthly")}
       </article>
     </div>`;
