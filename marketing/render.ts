@@ -62,40 +62,12 @@ function dropzoneHtml(locale: Locale, dropzoneAria: string): string {
 
             <div id="state-idle" class="state">
               <div class="icon-ring" aria-hidden="true">
-                <svg viewBox="0 0 64 64" width="40" height="40">
-                  <defs>
-                    <linearGradient id="iconGrad" x1="8" y1="8" x2="56" y2="56">
-                      <stop stop-color="#2563EB" />
-                      <stop offset="1" stop-color="#22D3EE" />
-                    </linearGradient>
-                  </defs>
-                  <rect
-                    x="10"
-                    y="14"
-                    width="36"
-                    height="28"
-                    rx="4"
-                    fill="none"
-                    stroke="url(#iconGrad)"
-                    stroke-width="2.5"
-                  />
-                  <path
-                    d="M18 34l8-8 6 6 4-4 8 8"
-                    fill="none"
-                    stroke="url(#iconGrad)"
-                    stroke-width="2.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                  <circle cx="46" cy="44" r="10" fill="#F59E0B" />
-                  <path
-                    d="M46 39v7m0 0l-3-3m3 3l3-3"
-                    stroke="#0F172A"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    fill="none"
-                  />
+                <svg class="dz-glyph" viewBox="0 0 24 24" width="34" height="34" fill="none"
+                  stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10.3 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v7.3" />
+                  <path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21" />
+                  <circle cx="9" cy="9" r="2" />
+                  <path class="dz-glyph-arrow" d="M19 22v-6m-3 3 3-3 3 3" />
                 </svg>
               </div>
               <p id="idle-title" class="dz-title">
@@ -217,8 +189,8 @@ function headMeta(
     <link rel="canonical" href="${esc(url)}" />
 ${hreflangTags(pageId)}
     <meta name="robots" content="${robots}" />
-    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#07101C" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light dark" />
 ${themeBootScript()}
     <meta property="og:type" content="website" />
@@ -394,7 +366,7 @@ ${homeJsonLd(locale, copy)}
   </head>
   <body>
     <a class="skip-link" href="#dropzone">${esc(chrome.skipToUpload)}</a>
-${suggest}    <div class="page">
+${suggest}    <div class="page page-home">
 ${topBar("home", locale, chrome)}
 
       <main>
@@ -421,25 +393,28 @@ ${extensionPromoHtml(locale, chrome)}
         </section>
 
         <section class="below" aria-label="${esc(chrome.aboutAria)}">
-          <section class="howto-compact" aria-labelledby="howto-heading">
+          <section class="howto-compact" aria-labelledby="howto-heading" data-enter>
             <h2 id="howto-heading">${esc(copy.howtoHeading)}</h2>
             <ol class="flow">
               <li>
+                <span class="flow-step" aria-hidden="true">1</span>
                 <strong>${esc(copy.howto[0].name)}</strong>
-                <span>${esc(copy.howto[0].detail)}</span>
+                <span class="flow-detail">${esc(copy.howto[0].detail)}</span>
               </li>
               <li>
+                <span class="flow-step" aria-hidden="true">2</span>
                 <strong>${esc(copy.howto[1].name)}</strong>
-                <span>${esc(copy.howto[1].detail)}</span>
+                <span class="flow-detail">${esc(copy.howto[1].detail)}</span>
               </li>
               <li>
+                <span class="flow-step" aria-hidden="true">3</span>
                 <strong>${esc(copy.howto[2].name)}</strong>
-                <span>${esc(copy.howto[2].detail)}</span>
+                <span class="flow-detail">${esc(copy.howto[2].detail)}</span>
               </li>
             </ol>
           </section>
 
-          <section class="faq-compact" id="faq" aria-labelledby="faq-heading">
+          <section class="faq-compact" id="faq" aria-labelledby="faq-heading" data-enter>
             <h2 id="faq-heading">${esc(copy.faqHeading)}</h2>
             <div class="faq-list">
               <details>
@@ -547,8 +522,8 @@ export function renderExtensionPage(): string {
     <meta name="description" content="${esc(copy.description)}" />
     <link rel="canonical" href="${esc(url)}" />
     <meta name="robots" content="index, follow" />
-    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#07101C" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light dark" />
 ${themeBootScript()}
     <meta property="og:type" content="website" />
@@ -634,8 +609,8 @@ export function renderIntentPage(pageId: IntentPageId): string {
     <meta name="description" content="${esc(copy.description)}" />
     <link rel="canonical" href="${esc(url)}" />
     <meta name="robots" content="index, follow" />
-    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#07101C" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light dark" />
 ${themeBootScript()}
     <meta property="og:type" content="website" />

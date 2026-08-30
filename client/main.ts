@@ -11,6 +11,8 @@ import {
   accountUser,
   rememberLocaleChoice,
   setupAccountNav,
+  setupEntrance,
+  setupHeaderScroll,
   setupLanguageLinks,
   setupThemeToggle,
 } from "./chrome";
@@ -469,6 +471,8 @@ function resetToIdle() {
 
 function setDragging(active: boolean) {
   dropzone.classList.toggle("dragover", active);
+  if (active) document.body.dataset.dragging = "true";
+  else delete document.body.dataset.dragging;
   if (active) {
     idleTitle.textContent = ui.dropItHere;
   } else {
@@ -692,6 +696,8 @@ function setupLangSuggest() {
 setupAccountNav();
 setupThemeToggle();
 setupLanguageLinks();
+setupHeaderScroll();
+setupEntrance();
 setupLangSuggest();
 if (document.getElementById("dropzone")) {
   setupUploader();

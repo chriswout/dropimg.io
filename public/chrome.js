@@ -171,7 +171,7 @@
         theme === "dark" ? btn.getAttribute("data-label-light") || "Switch to light" : btn.getAttribute("data-label-dark") || "Switch to dark"
       );
       document.querySelectorAll('meta[name="theme-color"]').forEach((node) => {
-        node.setAttribute("content", theme === "dark" ? "#07101C" : "#F8FAFC");
+        node.setAttribute("content", theme === "dark" ? "#0B0E17" : "#F7F7FB");
         node.removeAttribute("media");
       });
     };
@@ -205,6 +205,49 @@
         }
       });
     });
+  }
+  function setupHeaderScroll() {
+    if (!document.querySelector(".top")) return;
+    let ticking = false;
+    const apply = () => {
+      ticking = false;
+      const scrolled = window.scrollY > 8;
+      if (scrolled) document.body.dataset.scrolled = "true";
+      else delete document.body.dataset.scrolled;
+    };
+    apply();
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(apply);
+      },
+      { passive: true }
+    );
+  }
+  function setupEntrance() {
+    const targets = [...document.querySelectorAll("[data-enter]")];
+    if (targets.length === 0) return;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (reduced || !("IntersectionObserver" in window)) {
+      targets.forEach((el) => el.classList.add("is-in"));
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const el = entry.target;
+          const delay = Number(el.dataset.enterDelay || 0);
+          if (delay > 0) el.style.transitionDelay = `${delay}ms`;
+          el.classList.add("is-in");
+          observer.unobserve(el);
+        }
+      },
+      { rootMargin: "0px 0px -10% 0px", threshold: 0.05 }
+    );
+    targets.forEach((el) => observer.observe(el));
   }
   async function claimLocalRecent() {
     const items = loadRecentForClaim().map((d) => ({
@@ -240,4 +283,6 @@
   setupAccountNav();
   setupThemeToggle();
   setupLanguageLinks();
+  setupHeaderScroll();
+  setupEntrance();
 })();

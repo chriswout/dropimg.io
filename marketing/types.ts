@@ -47,6 +47,9 @@ export type SharedChrome = {
   abuse: string;
   learnMoreAria: string;
   relatedAria: string;
+  footerProduct: string;
+  footerLegal: string;
+  footerTagline: string;
   footerSeo: {
     temporary: string;
     paste: string;

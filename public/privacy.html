@@ -11,9 +11,22 @@
     <link rel="canonical" href="https://dropimg.io/privacy.html" />
     <meta name="robots" content="index, follow" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="/legal.css" />
+    <link rel="stylesheet" href="/site.css" />
+    <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
+    <script>
+(function(){
+  try {
+    var t = localStorage.getItem("dropimg:theme");
+    if (t !== "light" && t !== "dark") {
+      t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    document.documentElement.dataset.theme = t;
+  } catch (e) {}
+})();
+</script>
   </head>
-  <body>
+  <body class="page-legal">
     <div class="wrap">
       <a class="brand" href="/" aria-label="dropimg.io home">
         <img

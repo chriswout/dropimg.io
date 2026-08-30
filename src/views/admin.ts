@@ -1,3 +1,4 @@
+import { themeBootScript } from "../../marketing/chrome";
 import { securityHeaders } from "../lib/headers";
 
 export function renderAdminLogin(opts: { error?: string }): string {
@@ -11,24 +12,18 @@ export function renderAdminLogin(opts: { error?: string }): string {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Admin login — dropimg.io</title>
   <meta name="robots" content="noindex, nofollow" />
-  <style>
-    body{margin:0;font-family:Segoe UI,ui-sans-serif,system-ui,sans-serif;background:#F8FAFC;color:#0F172A;padding:2rem 1.25rem}
-    main{max-width:22rem;margin:0 auto}
-    label{display:block;font-weight:650;margin:1rem 0 .35rem}
-    input{width:100%;padding:.65rem .75rem;border:1px solid #DCE6F0;border-radius:10px;font:inherit;box-sizing:border-box}
-    button{margin-top:1rem;padding:.7rem 1.1rem;border:0;border-radius:10px;background:#2563EB;color:#fff;font:inherit;font-weight:650;cursor:pointer}
-    .err{color:#DC2626;font-weight:650}
-  </style>
+  <link rel="stylesheet" href="/site.css" />
+  ${themeBootScript()}
 </head>
-<body>
-  <main>
+<body class="page-admin">
+  <main class="admin-narrow">
     <h1>Admin</h1>
-    <p>Enter the admin token. It is never shown in the URL.</p>
+    <p class="muted">Enter the admin token. It is never shown in the URL.</p>
     ${err}
     <form method="post" action="/admin/login" autocomplete="off">
-      <label for="token">Admin token</label>
-      <input id="token" name="token" type="password" required autofocus />
-      <button type="submit">Sign in</button>
+      <label class="field-label" for="token">Admin token</label>
+      <input class="field" id="token" name="token" type="password" required autofocus />
+      <button class="btn primary" type="submit">Sign in</button>
     </form>
   </main>
 </body>
@@ -70,10 +65,10 @@ export function renderAdminReports(opts: {
   <td class="actions">
     <a href="/${esc(r.slug)}" target="_blank" rel="noopener">View image</a>
     <form method="post" action="/admin/reports/${r.id}/remove" style="display:inline">
-      <button type="submit"${r.image_live ? "" : " disabled"}>Remove</button>
+      <button class="btn primary btn-sm" type="submit"${r.image_live ? "" : " disabled"}>Remove</button>
     </form>
     <form method="post" action="/admin/reports/${r.id}/dismiss" style="display:inline">
-      <button type="submit" class="secondary">Dismiss</button>
+      <button class="btn secondary btn-sm" type="submit">Dismiss</button>
     </form>
   </td>
 </tr>`;
@@ -87,26 +82,13 @@ export function renderAdminReports(opts: {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Reports — dropimg.io admin</title>
   <meta name="robots" content="noindex, nofollow" />
-  <style>
-    body{margin:0;font-family:Segoe UI,ui-sans-serif,system-ui,sans-serif;background:#F8FAFC;color:#0F172A;padding:1.5rem}
-    header{display:flex;justify-content:space-between;align-items:center;gap:1rem;margin-bottom:1rem}
-    table{width:100%;border-collapse:collapse;background:#fff;border:1px solid #DCE6F0;border-radius:12px;overflow:hidden;font-size:.9rem}
-    th,td{padding:.65rem .75rem;border-bottom:1px solid #E8EEF5;text-align:left;vertical-align:top}
-    th{background:#F1F5F9;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
-    button{padding:.4rem .7rem;border:0;border-radius:8px;background:#2563EB;color:#fff;font:inherit;font-weight:650;cursor:pointer}
-    button:disabled{opacity:.45;cursor:not-allowed}
-    button.secondary{background:#64748B}
-    a{color:#2563EB}
-    .ok{color:#059669;font-weight:650}
-    .muted{color:#64748B;font-size:.8rem}
-    .actions{white-space:nowrap}
-    .actions form{margin-left:.35rem}
-  </style>
+  <link rel="stylesheet" href="/site.css" />
+  ${themeBootScript()}
 </head>
-<body>
+<body class="page-admin">
   <header>
     <h1>Open reports</h1>
-    <form method="post" action="/admin/logout"><button type="submit" class="secondary">Sign out</button></form>
+    <form method="post" action="/admin/logout"><button class="btn secondary btn-sm" type="submit">Sign out</button></form>
   </header>
   ${msg}
   <table>

@@ -11,6 +11,8 @@ worker-configuration.d.ts
 test-results
 playwright-report
 tests/e2e/.fixtures
+tests/visual/__screens__
+tests/visual/.output
 cloudflare token
 .cloudflare-api-token
 *.pem

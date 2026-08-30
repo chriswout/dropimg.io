@@ -212,7 +212,7 @@ export function setupThemeToggle() {
         : btn.getAttribute("data-label-dark") || "Switch to dark",
     );
     document.querySelectorAll('meta[name="theme-color"]').forEach((node) => {
-      node.setAttribute("content", theme === "dark" ? "#07101C" : "#F8FAFC");
+      node.setAttribute("content", theme === "dark" ? "#0B0E17" : "#F7F7FB");
       node.removeAttribute("media");
     });
   };
@@ -252,6 +252,93 @@ export function setupLanguageLinks() {
       }
     });
   });
+}
+
+/** Fades the header background in once the page has scrolled past the hero edge. */
+export function setupHeaderScroll() {
+  if (!document.querySelector(".top")) return;
+  let ticking = false;
+  const apply = () => {
+    ticking = false;
+    const scrolled = window.scrollY > 8;
+    if (scrolled) document.body.dataset.scrolled = "true";
+    else delete document.body.dataset.scrolled;
+  };
+  apply();
+  window.addEventListener(
+    "scroll",
+    () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(apply);
+    },
+    { passive: true },
+  );
+}
+
+/** Reveals `[data-enter]` elements as they come into view. */
+export function setupEntrance() {
+  const targets = [...document.querySelectorAll<HTMLElement>("[data-enter]")];
+  if (targets.length === 0) return;
+
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (reduced || !("IntersectionObserver" in window)) {
+    targets.forEach((el) => el.classList.add("is-in"));
+    return;
+  }
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const el = entry.target as HTMLElement;
+        const delay = Number(el.dataset.enterDelay || 0);
+        if (delay > 0) el.style.transitionDelay = `${delay}ms`;
+        el.classList.add("is-in");
+        observer.unobserve(el);
+      }
+    },
+    { rootMargin: "0px 0px -10% 0px", threshold: 0.05 },
+  );
+  targets.forEach((el) => observer.observe(el));
+}
+
+const TOAST_ICONS: Record<string, string> = {
+  success: '<path d="M4 12.5l5 5L20 6.5"/>',
+  danger: '<path d="M12 8v5"/><path d="M12 16.5v.01"/><circle cx="12" cy="12" r="9"/>',
+  info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 7.5v.01"/>',
+};
+
+function toastRegion(): HTMLElement {
+  let region = document.getElementById("toast-region");
+  if (region) return region;
+  region = document.createElement("div");
+  region.id = "toast-region";
+  region.className = "toast-region";
+  region.setAttribute("role", "status");
+  region.setAttribute("aria-live", "polite");
+  document.body.appendChild(region);
+  return region;
+}
+
+/** Shows a small transient confirmation. Announced via the shared live region. */
+export function toast(
+  message: string,
+  tone: "success" | "danger" | "info" = "success",
+  ms = 2600,
+) {
+  const region = toastRegion();
+  const node = document.createElement("div");
+  node.className = "toast";
+  node.dataset.tone = tone;
+  node.innerHTML = `<svg class="toast-icon icon" viewBox="0 0 24 24" aria-hidden="true">${TOAST_ICONS[tone] ?? TOAST_ICONS.info}</svg><span></span>`;
+  node.querySelector("span")!.textContent = message;
+  region.appendChild(node);
+
+  window.setTimeout(() => {
+    node.classList.add("is-leaving");
+    window.setTimeout(() => node.remove(), 200);
+  }, ms);
 }
 
 async function claimLocalRecent() {

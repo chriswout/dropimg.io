@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { themeBootScript } from "../../marketing/chrome";
 import { securityHeaders } from "../lib/headers";
 import { isValidSlug } from "../lib/slug";
 
@@ -48,38 +49,40 @@ reportRoutes.get("/abuse", async (c) => {
   <meta name="robots" content="index, follow" />
   <link rel="canonical" href="https://dropimg.io/abuse" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <style>
-    body{margin:0;font-family:Segoe UI,ui-sans-serif,system-ui,sans-serif;background:#F8FAFC;color:#0F172A;line-height:1.55;padding:2rem 1.25rem}
-    main{max-width:32rem;margin:0 auto}
-    a{color:#2563EB}
-    label{display:block;font-weight:650;margin:1rem 0 .35rem}
-    input,textarea,select{width:100%;padding:.65rem .75rem;border:1px solid #DCE6F0;border-radius:10px;font:inherit;box-sizing:border-box}
-    button{margin-top:1rem;padding:.7rem 1.1rem;border:0;border-radius:10px;background:#2563EB;color:#fff;font:inherit;font-weight:650;cursor:pointer}
-    .msg{margin-top:1rem;color:#059669;font-weight:650}
-    .err{color:#DC2626}
-  </style>
+  <link rel="stylesheet" href="/site.css" />
+  <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
+  ${themeBootScript()}
 </head>
-<body>
-  <main>
-    <p><a href="/">← dropimg.io</a></p>
+<body class="page-legal">
+  <main class="wrap">
+    <a class="brand" href="/" aria-label="dropimg.io home">
+      <img class="brand-logo brand-logo-light" src="/brand/logo-32.png" srcset="/brand/logo-32.png 1x, /brand/logo-64.png 2x" width="134" height="32" alt="dropimg.io" decoding="async" />
+      <img class="brand-logo brand-logo-dark" src="/brand/logo-dark-32.png" srcset="/brand/logo-dark-32.png 1x, /brand/logo-dark-64.png 2x" width="134" height="32" alt="" decoding="async" aria-hidden="true" />
+    </a>
     <h1>Report abuse</h1>
     <p>Report illegal or abusive content hosted on dropimg.io. You can also email <a href="mailto:abuse@dropimg.io">abuse@dropimg.io</a>.</p>
-    <form id="f">
-      <label for="slug">Image slug or URL</label>
-      <input id="slug" name="slug" required placeholder="a8Fk2Qr9 or https://dropimg.io/…" />
-      <label for="reason">Reason</label>
-      <select id="reason" name="reason" required>
+    <form id="f" class="utility-form">
+      <label class="field-label" for="slug">Image slug or URL</label>
+      <input class="field" id="slug" name="slug" required placeholder="a8Fk2Qr9 or https://dropimg.io/…" />
+      <label class="field-label" for="reason">Reason</label>
+      <select class="field" id="reason" name="reason" required>
         <option value="illegal">Illegal content</option>
         <option value="csam">CSAM / exploitation of minors</option>
         <option value="malware">Malware / phishing</option>
         <option value="copyright">Copyright / DMCA</option>
         <option value="other">Other</option>
       </select>
-      <label for="detail">Details (optional)</label>
-      <textarea id="detail" name="detail" rows="4" maxlength="2000"></textarea>
-      <button type="submit">Submit report</button>
-      <p id="out" class="msg" hidden></p>
+      <label class="field-label" for="detail">Details (optional)</label>
+      <textarea class="field" id="detail" name="detail" rows="4" maxlength="2000"></textarea>
+      <button class="btn primary" type="submit">Submit report</button>
+      <p id="out" class="msg" role="status" hidden></p>
     </form>
+    <nav class="foot-nav" aria-label="Legal">
+      <a href="/">Home</a>
+      <a href="/privacy.html">Privacy Policy</a>
+      <a href="/terms.html">Terms of Use</a>
+    </nav>
   </main>
   <script>
     const f = document.getElementById('f');

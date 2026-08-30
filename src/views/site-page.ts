@@ -34,8 +34,8 @@ export function renderSitePage(opts: {
     <title>${esc(opts.title)}</title>
     <meta name="robots" content="${robots}" />
     ${opts.extraHead ?? ""}
-    <meta name="theme-color" content="#F8FAFC" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#07101C" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
     <meta name="color-scheme" content="light dark" />
     ${themeBootScript()}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />

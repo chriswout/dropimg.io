@@ -52,7 +52,7 @@ export function langSwitcherHtml(
   return `        <nav class="lang" aria-label="${esc(chrome.langMenuAria)}">
           <details class="lang-details">
             <summary class="lang-summary">
-              <span class="lang-globe" aria-hidden="true">🌐</span>
+              <svg class="lang-globe icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8M3.6 15h16.8"/><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18z"/></svg>
               <span class="lang-label">${esc(cfg.label)}</span>
             </summary>
             <ul class="lang-menu">
@@ -69,6 +69,7 @@ export function topBarHtml(opts: {
 }): string {
   const home = pagePath("home", opts.locale);
   return `      <header class="top">
+       <div class="top-inner">
         <a class="brand" href="${esc(home)}" aria-label="${esc(opts.chrome.brandHomeAria)}">
           <img
             class="brand-logo brand-logo-light"
@@ -117,24 +118,34 @@ export function topBarHtml(opts: {
 ${themeToggleHtml(opts.chrome)}
 ${langSwitcherHtml(opts.locale, opts.chrome, opts.langHref)}
         </div>
+       </div>
       </header>`;
 }
 
 export function footerHtml(locale: Locale, chrome: SharedChrome): string {
   return `      <footer class="foot">
-        <div class="foot-legal">
-          <a href="/privacy.html">${esc(chrome.privacy)}</a>
-          <span aria-hidden="true">·</span>
-          <a href="/terms.html">${esc(chrome.terms)}</a>
-          <span aria-hidden="true">·</span>
-          <a href="/abuse">${esc(chrome.abuse)}</a>
+        <div class="foot-inner">
+          <p class="foot-tagline">${esc(chrome.footerTagline)}</p>
+          <div class="foot-cols">
+            <nav class="foot-col" aria-label="${esc(chrome.footerProduct)}">
+              <h2 class="foot-col-title">${esc(chrome.footerProduct)}</h2>
+              <a href="${esc(proPath(locale))}">${esc(chrome.pro)}</a>
+              <a href="/browser-extension">${esc(chrome.footerSeo.extension)}</a>
+            </nav>
+            <nav class="foot-col foot-legal" aria-label="${esc(chrome.footerLegal)}">
+              <h2 class="foot-col-title">${esc(chrome.footerLegal)}</h2>
+              <a href="/privacy.html">${esc(chrome.privacy)}</a>
+              <a href="/terms.html">${esc(chrome.terms)}</a>
+              <a href="/abuse">${esc(chrome.abuse)}</a>
+            </nav>
+            <nav class="foot-col foot-seo" aria-label="${esc(chrome.learnMoreAria)}">
+              <h2 class="foot-col-title">${esc(chrome.learnMoreAria)}</h2>
+              <a href="${esc(pagePath("temporary-hosting", locale))}">${esc(chrome.footerSeo.temporary)}</a>
+              <a href="${esc(pagePath("paste-screenshot", locale))}">${esc(chrome.footerSeo.paste)}</a>
+              <a href="${esc(pagePath("share-link", locale))}">${esc(chrome.footerSeo.share)}</a>
+            </nav>
+          </div>
         </div>
-        <nav class="foot-seo" aria-label="${esc(chrome.learnMoreAria)}">
-          <a href="${esc(pagePath("temporary-hosting", locale))}">${esc(chrome.footerSeo.temporary)}</a>
-          <a href="${esc(pagePath("paste-screenshot", locale))}">${esc(chrome.footerSeo.paste)}</a>
-          <a href="${esc(pagePath("share-link", locale))}">${esc(chrome.footerSeo.share)}</a>
-          <a href="/browser-extension">${esc(chrome.footerSeo.extension)}</a>
-        </nav>
       </footer>`;
 }
 

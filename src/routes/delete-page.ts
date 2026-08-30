@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { themeBootScript } from "../../marketing/chrome";
 import { securityHeaders } from "../lib/headers";
 import { isValidSlug } from "../lib/slug";
 
@@ -23,27 +24,21 @@ deletePageRoutes.get("/d/:slug", async (c) => {
   <title>Delete image — dropimg.io</title>
   <meta name="robots" content="noindex, nofollow" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <style>
-    :root{--bg:#F8FAFC;--text:#0F172A;--muted:#64748B;--blue:#2563EB;--danger:#DC2626;--border:#DCE6F0}
-    body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:Segoe UI,ui-sans-serif,system-ui,sans-serif;background:var(--bg);color:var(--text);padding:1.5rem;text-align:center}
-    .card{max-width:26rem;width:100%;background:#fff;border:1px solid var(--border);border-radius:18px;padding:1.75rem 1.35rem;box-shadow:0 10px 40px rgba(15,23,42,.05)}
-    h1{font-size:1.35rem;margin:0 0 .5rem;letter-spacing:-.02em}
-    p{color:var(--muted);margin:0 0 1.25rem;line-height:1.5}
-    button{appearance:none;border:0;border-radius:11px;padding:.75rem 1.1rem;min-height:44px;font:inherit;font-weight:650;cursor:pointer}
-    .danger{background:var(--danger);color:#fff}
-    .ghost{background:#fff;border:1px solid var(--border);color:var(--text);margin-top:.5rem}
-    a{color:var(--blue)}
-    #status{margin-top:1rem;font-weight:650}
-  </style>
+  <link rel="stylesheet" href="/site.css" />
+  <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
+  ${themeBootScript()}
 </head>
-<body>
-  <div class="card">
+<body class="page-utility">
+  <main class="utility-card">
     <h1>Delete this image?</h1>
     <p>Slug <strong id="slug-label"></strong>. This cannot be undone. The delete token must be present in the link fragment.</p>
-    <button type="button" class="danger" id="btn-del">Delete now</button>
-    <div><a class="ghost" href="/" style="display:inline-block;padding:.75rem 1.1rem;text-decoration:none;border-radius:11px;border:1px solid var(--border);margin-top:.5rem">Back to dropimg.io</a></div>
-    <p id="status" hidden></p>
-  </div>
+    <div class="utility-actions">
+      <button type="button" class="btn danger" id="btn-del">Delete now</button>
+      <a class="btn secondary" href="/">Back to dropimg.io</a>
+    </div>
+    <p id="status" class="utility-status" role="status" hidden></p>
+  </main>
   <script>
     const slug = ${JSON.stringify(slug)};
     document.getElementById('slug-label').textContent = slug;

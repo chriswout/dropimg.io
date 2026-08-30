@@ -12,6 +12,9 @@ export const CHROME: Record<Locale, SharedChrome> = {
     abuse: "Abuse",
     learnMoreAria: "Learn more",
     relatedAria: "Related",
+    footerProduct: "Product",
+    footerLegal: "Legal",
+    footerTagline: "Temporary image sharing, without the clutter.",
     footerSeo: {
       temporary: "Temporary image hosting",
       paste: "Paste screenshot online",
@@ -49,6 +52,9 @@ export const CHROME: Record<Locale, SharedChrome> = {
     abuse: "Abuso",
     learnMoreAria: "Más información",
     relatedAria: "También te puede interesar",
+    footerProduct: "Producto",
+    footerLegal: "Legal",
+    footerTagline: "Imágenes temporales, sin complicaciones.",
     footerSeo: {
       temporary: "Alojamiento temporal de imágenes",
       paste: "Pegar captura online",
@@ -86,6 +92,9 @@ export const CHROME: Record<Locale, SharedChrome> = {
     abuse: "Abuso",
     learnMoreAria: "Saiba mais",
     relatedAria: "Veja também",
+    footerProduct: "Produto",
+    footerLegal: "Jurídico",
+    footerTagline: "Imagens temporárias, sem bagunça.",
     footerSeo: {
       temporary: "Hospedagem temporária de imagens",
       paste: "Colar print online",
@@ -123,6 +132,9 @@ export const CHROME: Record<Locale, SharedChrome> = {
     abuse: "Missbrauch",
     learnMoreAria: "Mehr erfahren",
     relatedAria: "Weiterlesen",
+    footerProduct: "Produkt",
+    footerLegal: "Rechtliches",
+    footerTagline: "Bilder teilen, temporär und ohne Ballast.",
     footerSeo: {
       temporary: "Temporäres Bildhosting",
       paste: "Screenshot online einfügen",
