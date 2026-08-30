@@ -78,7 +78,7 @@ async function grantPro(userId: string) {
   await env.DB.prepare(
     `INSERT INTO subscriptions
       (id, user_id, provider, status, current_period_end, cancel_at_period_end, created_at, updated_at)
-     VALUES (?, ?, 'paddle', 'active', ?, 0, ?, ?)`,
+     VALUES (?, ?, 'stripe', 'active', ?, 0, ?, ?)`,
   )
     .bind(`sub-${userId}`, userId, now + 86400, now, now)
     .run();

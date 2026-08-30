@@ -1,20 +1,28 @@
-/** Paddle docs window is 5s; allow 10s for Worker/Paddle clock skew. */
-export const PADDLE_SIGNATURE_MAX_SKEW_SECONDS = 10;
+/** Stripe's own recommended tolerance for replayed webhook deliveries. */
+export const STRIPE_SIGNATURE_MAX_SKEW_SECONDS = 300;
 
 export type VerifyResult =
   | { ok: true; ts: number }
   | { ok: false; error: "missing" | "malformed" | "expired" | "mismatch" };
 
-function parseSignatureHeader(header: string): { ts: number; h1: string } | null {
+/**
+ * `t=<unix>,v1=<hex>` with a v1 per active secret, so a signature rotated in
+ * the dashboard keeps verifying against the old secret until it is retired.
+ */
+function parseSignatureHeader(header: string): { ts: number; v1: string[] } | null {
   let ts: number | null = null;
-  let h1: string | null = null;
-  for (const part of header.split(";")) {
-    const [k, v] = part.split("=").map((s) => s.trim());
-    if (k === "ts" && v) ts = Number(v);
-    if (k === "h1" && v) h1 = v;
+  const v1: string[] = [];
+  for (const part of header.split(",")) {
+    const idx = part.indexOf("=");
+    if (idx < 0) continue;
+    const k = part.slice(0, idx).trim();
+    const v = part.slice(idx + 1).trim();
+    if (!v) continue;
+    if (k === "t") ts = Number(v);
+    if (k === "v1") v1.push(v);
   }
-  if (ts == null || !Number.isFinite(ts) || !h1) return null;
-  return { ts, h1 };
+  if (ts == null || !Number.isFinite(ts) || v1.length === 0) return null;
+  return { ts, v1 };
 }
 
 function hexToBytes(hex: string): Uint8Array | null {
@@ -51,7 +59,7 @@ export async function hmacSha256Hex(secret: string, payload: string): Promise<st
     .join("");
 }
 
-export async function verifyPaddleSignature(opts: {
+export async function verifyStripeSignature(opts: {
   rawBody: string;
   header: string | null | undefined;
   secret: string;
@@ -64,12 +72,17 @@ export async function verifyPaddleSignature(opts: {
   if (!parsed) return { ok: false, error: "malformed" };
 
   const now = opts.nowSeconds ?? Math.floor(Date.now() / 1000);
-  const skew = opts.maxSkewSeconds ?? PADDLE_SIGNATURE_MAX_SKEW_SECONDS;
+  const skew = opts.maxSkewSeconds ?? STRIPE_SIGNATURE_MAX_SKEW_SECONDS;
   if (Math.abs(now - parsed.ts) > skew) return { ok: false, error: "expired" };
 
-  const expected = await hmacSha256Hex(opts.secret, `${parsed.ts}:${opts.rawBody}`);
-  const a = hexToBytes(expected);
-  const b = hexToBytes(parsed.h1);
-  if (!a || !b || !timingSafeEqual(a, b)) return { ok: false, error: "mismatch" };
-  return { ok: true, ts: parsed.ts };
+  const expected = hexToBytes(
+    await hmacSha256Hex(opts.secret, `${parsed.ts}.${opts.rawBody}`),
+  );
+  if (!expected) return { ok: false, error: "mismatch" };
+
+  for (const candidate of parsed.v1) {
+    const given = hexToBytes(candidate);
+    if (given && timingSafeEqual(expected, given)) return { ok: true, ts: parsed.ts };
+  }
+  return { ok: false, error: "mismatch" };
 }

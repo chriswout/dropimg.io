@@ -1,10 +1,10 @@
 import { revokeAllSessions } from "./auth/session";
 import { revokeAllIntegrationTokens } from "./integration-token";
 import {
-  cancelPaddleSubscriptionImmediately,
-  isLivePaddleStatus,
+  cancelStripeSubscriptionImmediately,
+  isLiveStripeStatus,
   type BillingEnv,
-} from "./billing/paddle";
+} from "./billing/stripe";
 import { removeImage } from "./remove-image";
 
 export type AccountDeleteFail = {
@@ -23,13 +23,13 @@ export async function deleteUserAccount(
   const subs = await env.DB.prepare(
     `SELECT provider_subscription_id, status
      FROM subscriptions
-     WHERE user_id = ? AND provider = 'paddle'`,
+     WHERE user_id = ? AND provider = 'stripe'`,
   )
     .bind(userId)
     .all<{ provider_subscription_id: string | null; status: string }>();
 
   for (const sub of subs.results ?? []) {
-    if (!isLivePaddleStatus(sub.status)) continue;
+    if (!isLiveStripeStatus(sub.status)) continue;
     const subscriptionId = sub.provider_subscription_id?.trim();
     if (!subscriptionId) {
       return {
@@ -39,11 +39,11 @@ export async function deleteUserAccount(
           "We couldn't cancel your Pro subscription, so your DropIMG account was not deleted.",
       };
     }
-    const canceled = await cancelPaddleSubscriptionImmediately(env, subscriptionId);
+    const canceled = await cancelStripeSubscriptionImmediately(env, subscriptionId);
     if (!canceled.ok) {
       return {
         ok: false,
-        status: canceled.error === "paddle_unconfigured" ? 409 : 502,
+        status: canceled.error === "stripe_unconfigured" ? 409 : 502,
         error:
           "We couldn't cancel your Pro subscription, so your DropIMG account was not deleted.",
       };

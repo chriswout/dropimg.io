@@ -27,7 +27,7 @@ Rows show the share host path, type/size/dimensions, time left, and lock state. 
 
 `GET /api/account/me` hydrates the header:
 
-- Anonymous: **Pro · $2.99** + Sign in
+- Anonymous: **Pro · €2.99** + Sign in
 - Free: My drops + **Upgrade** + account menu
 - Pro: My drops + **PRO** badge (no upgrade CTA)
 
@@ -35,7 +35,7 @@ After sign-in the client claims `dropimg:recent`.
 
 `GET /account` (noindex, session required) is organized as Account, Plan, Integrations, Security, and Danger zone. Customer-facing billing copy uses “Renews …” / “Ends …” — not provider IDs.
 
-`POST /api/account/delete` cancels live Pro billing first, then removes images, revokes integration tokens and sessions, and soft-deletes the user. If Paddle cancel fails, the account is **not** deleted.
+`POST /api/account/delete` cancels live Pro billing first, then removes images, revokes integration tokens and sessions, and soft-deletes the user. If the Stripe cancel fails, the account is **not** deleted.
 
 ## Integrations
 

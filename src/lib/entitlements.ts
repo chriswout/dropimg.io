@@ -83,7 +83,9 @@ export function flagsFromEnv(env: {
 
 /**
  * Pro while the paid period is still running:
- * active, past_due, or canceled/paused with current_period_end in the future.
+ * active, trialing, past_due, or canceled/paused with current_period_end in
+ * the future. `unpaid` is deliberately absent: it is where Stripe parks a
+ * subscription after retries are exhausted, so access should already be gone.
  */
 export function isProSubscription(
   sub: SubscriptionSnapshot | null | undefined,
@@ -94,7 +96,9 @@ export function isProSubscription(
   if (end != null && end <= now) return false;
 
   const status = sub.status.trim().toLowerCase();
-  if (status === "active" || status === "past_due") return true;
+  if (status === "active" || status === "trialing" || status === "past_due") {
+    return true;
+  }
   if (status === "canceled" || status === "paused") {
     return end != null && end > now;
   }
@@ -223,7 +227,7 @@ export async function loadSubscription(
     .prepare(
       `SELECT status, price_id, current_period_end, cancel_at_period_end
        FROM subscriptions
-       WHERE user_id = ? AND provider = 'paddle'
+       WHERE user_id = ? AND provider = 'stripe'
        ORDER BY updated_at DESC
        LIMIT 1`,
     )

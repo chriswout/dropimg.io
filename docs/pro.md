@@ -5,7 +5,7 @@ until the [launch runbook](launch.md) turns each gate on in order.
 
 ## Offer
 
-- **$2.99 / month** or **$24.99 / year** (about $2.08/mo, save 30%)
+- **€2.99 / month** or **€24.99 / year** (about $2.08/mo, save 30%)
 - Annual is the default on `/pro` and carries the **Best value** badge. Never
   "Most popular" — there is only one paid plan to be popular against.
 - Localized public URLs: `/pro`, `/es/pro`, `/pt-br/pro`, `/de/pro`
@@ -27,9 +27,9 @@ permanent storage, storage quota, or team plan.
 
 ## Who can buy
 
-Checkout is a signed-in Paddle overlay. Anonymous visitors are sent to `/login`. Active Pro subscribers see **You're on DropIMG Pro** and **Manage billing** — no purchase CTAs.
+Checkout is a signed-in redirect to Stripe's hosted page. Anonymous visitors are sent to `/login`. Active Pro subscribers see **You're on DropIMG Pro** and **Manage billing** — no purchase CTAs.
 
-Pro is granted only from a verified Paddle webhook. The browser never grants Pro from checkout UI state.
+Pro is granted only from a verified Stripe webhook. The browser never grants Pro from checkout UI state.
 
 ## Flags
 
@@ -44,4 +44,4 @@ lifecycle rules existing. With it off, every plan gets the single legacy 24-hour
 lifetime and the uploader hides the selector rather than showing a one-option
 radiogroup.
 
-See [paddle.md](paddle.md) for catalog IDs, webhooks, and sandbox checkout.
+See [stripe.md](stripe.md) for catalog IDs, webhooks, and test checkout.

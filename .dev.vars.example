@@ -9,11 +9,13 @@ PRO_50MB_ENABLED=true
 # INDEXNOW_KEY=
 # Magic-link mail uses the EMAIL binding (signin@dropimg.io). Local wrangler
 # simulates send unless the binding has remote: true.
-# Paddle sandbox (Phase D). Never commit real keys.
-# PADDLE_ENV=sandbox
-# PADDLE_API_KEY=
+# Stripe. Never commit real keys. Test and live are told apart by the secret
+# key prefix, so there is no separate environment setting to keep in sync.
 # BILLING_ENABLED=false
-# PADDLE_CLIENT_TOKEN=
-# PADDLE_PRICE_MONTHLY=
-# PADDLE_PRICE_ANNUAL=
-# PADDLE_WEBHOOK_SECRET=
+# STRIPE_SECRET_KEY=sk_test_...
+# STRIPE_PRICE_MONTHLY=price_...
+# STRIPE_PRICE_ANNUAL=price_...
+# Webhooks are signed per endpoint. For local work use the secret that
+# `stripe listen --forward-to localhost:5173/api/billing/stripe/webhook`
+# prints, not the one registered against the deployed endpoint.
+# STRIPE_WEBHOOK_SECRET=whsec_...

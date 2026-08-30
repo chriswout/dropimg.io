@@ -62,9 +62,9 @@ describe("localized /pro SEO", () => {
       billingOn: true,
     }).text();
     expect(html).toContain("Get Pro");
-    expect(html).toContain("$24.99");
-    expect(html).toContain("$2.99");
-    expect(html).toContain("$2.08/mo");
+    expect(html).toContain("€24.99");
+    expect(html).toContain("€2.99");
+    expect(html).toContain("€2.08/mo");
     expect(html).toContain("Save 30%");
     expect(html).toContain("Best value");
     expect(html).not.toContain("Most popular");

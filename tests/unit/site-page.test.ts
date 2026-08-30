@@ -30,7 +30,7 @@ describe("Account pages share site chrome", () => {
     expect(html).toContain('class="account-menu"');
     expect(html).toContain('href="/pro"');
     expect(html).toContain("Upgrade");
-    expect(html).toContain("Pro · $2.99");
+    expect(html).toContain("Pro · €2.99");
     expect(html).toContain("Edit account");
     expect(html).toContain('href="/app/account"');
   });

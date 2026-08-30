@@ -150,12 +150,13 @@
 
       <h2>7. Billing</h2>
       <p>
-        Paid DropIMG Pro checkout is handled by <strong>Paddle</strong>. Paddle
-        receives the payment and billing information needed to charge you.
-        DropIMG stores the subscription identifiers and status we need to provide
-        Pro (for example whether Pro is active, when the current period ends, and
-        whether cancellation is scheduled). We do not store your full card
-        number.
+        Paid DropIMG Pro checkout is handled by <strong>Stripe</strong>, under
+        its <strong>Link</strong> brand, as merchant of record. Stripe receives
+        the payment and billing information needed to charge you, and holds it
+        under its own privacy policy. DropIMG stores the subscription and
+        customer identifiers and the status we need to provide Pro (for example
+        whether Pro is active, when the current period ends, and whether
+        cancellation is scheduled). We never see or store your card number.
       </p>
 
       <h2>8. Analytics</h2>
@@ -171,7 +172,7 @@
       <h2>9. Account deletion</h2>
       <p>When you delete your account we:</p>
       <ul>
-        <li>cancel an active Pro subscription first, if we can reach Paddle;</li>
+        <li>cancel an active Pro subscription first, if we can reach Stripe;</li>
         <li>remove your active DropIMG images;</li>
         <li>revoke connected integration tokens;</li>
         <li>sign you out everywhere;</li>
@@ -207,7 +208,7 @@
         <li>To provide temporary image hosting, share pages, and optional accounts.</li>
         <li>To send magic-link emails and keep you signed in.</li>
         <li>To enforce size, format, rate, quota, and plan limits.</li>
-        <li>To provide Pro features and talk to Paddle about your subscription.</li>
+        <li>To provide Pro features and talk to Stripe about your subscription.</li>
         <li>To delete expired, user-deleted, or moderated images.</li>
         <li>To investigate abuse, security incidents, and legal requests.</li>
         <li>To understand aggregate reliability and usage of the service.</li>
@@ -225,7 +226,7 @@
       <p>
         We use infrastructure providers to run DropIMG, including
         <strong>Cloudflare</strong> (Workers, DNS/CDN, object storage, database,
-        email sending, analytics, and security) and <strong>Paddle</strong> for
+        email sending, analytics, and security) and <strong>Stripe</strong> for
         paid subscriptions. They process data to provide those services to us.
       </p>
       <p>

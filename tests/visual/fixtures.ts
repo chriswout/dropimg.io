@@ -7,7 +7,7 @@ import type { APIRequestContext, Page } from "@playwright/test";
  *
  * Everything here runs against the local dev worker with local D1. Pro state
  * is produced by stubbing the client-facing entitlements endpoint, never by
- * touching Paddle or by adding any server-side bypass. Nothing in this file is
+ * touching Stripe or by adding any server-side bypass. Nothing in this file is
  * imported by production code.
  */
 

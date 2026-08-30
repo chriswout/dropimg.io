@@ -79,7 +79,7 @@ describe("Password-protected images", () => {
     await env.DB.prepare(
       `INSERT INTO subscriptions
         (id, user_id, provider, status, current_period_end, cancel_at_period_end, created_at, updated_at)
-       VALUES (?, ?, 'paddle', 'active', ?, 0, ?, ?)`,
+       VALUES (?, ?, 'stripe', 'active', ?, 0, ?, ?)`,
     )
       .bind("sub-lock", userId, now + 86400, now, now)
       .run();
@@ -180,7 +180,7 @@ describe("Password-protected images", () => {
     await env.DB.prepare(
       `INSERT INTO subscriptions
         (id, user_id, provider, status, current_period_end, cancel_at_period_end, created_at, updated_at)
-       VALUES (?, ?, 'paddle', 'active', ?, 0, ?, ?)`,
+       VALUES (?, ?, 'stripe', 'active', ?, 0, ?, ?)`,
     )
       .bind("sub-setpw", userId, now + 86400, now, now)
       .run();
@@ -250,7 +250,7 @@ describe("Password-protected images", () => {
     await env.DB.prepare(
       `INSERT INTO subscriptions
         (id, user_id, provider, status, current_period_end, cancel_at_period_end, created_at, updated_at)
-       VALUES (?, ?, 'paddle', 'active', ?, 0, ?, ?)`,
+       VALUES (?, ?, 'stripe', 'active', ?, 0, ?, ?)`,
     )
       .bind("sub-ttl", userId, now + 86400, now, now)
       .run();
@@ -283,7 +283,7 @@ describe("Password-protected images", () => {
     await env.DB.prepare(
       `INSERT INTO subscriptions
         (id, user_id, provider, status, current_period_end, cancel_at_period_end, created_at, updated_at)
-       VALUES (?, ?, 'paddle', 'active', ?, 0, ?, ?)`,
+       VALUES (?, ?, 'stripe', 'active', ?, 0, ?, ?)`,
     )
       .bind("sub-down", userId, now + 86400, now, now)
       .run();
@@ -357,7 +357,7 @@ describe("Password-protected images", () => {
     await env.DB.prepare(
       `INSERT INTO subscriptions
         (id, user_id, provider, status, current_period_end, cancel_at_period_end, created_at, updated_at)
-       VALUES (?, ?, 'paddle', 'active', ?, 0, ?, ?)`,
+       VALUES (?, ?, 'stripe', 'active', ?, 0, ?, ?)`,
     )
       .bind("sub-legacykdf", userId, now + 86400, now, now)
       .run();

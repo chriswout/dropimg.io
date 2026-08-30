@@ -61,8 +61,7 @@
     "LONG_TTL_ENABLED": "false",
     "PRO_50MB_ENABLED": "false",
     "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>",
-    "BILLING_ENABLED": "false",
-    "PADDLE_ENV": "sandbox"
+    "BILLING_ENABLED": "false"
   },
   "env": {
     "staging": {
@@ -76,10 +75,8 @@
         "PRO_50MB_ENABLED": "true",
         "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>",
         "BILLING_ENABLED": "true",
-        "PADDLE_ENV": "sandbox",
-        "PADDLE_CLIENT_TOKEN": "test_814c61a8863cdd74b2bd9a40491",
-        "PADDLE_PRICE_MONTHLY": "pri_01m19br9nek5t303zjv52vnpv1",
-        "PADDLE_PRICE_ANNUAL": "pri_01m19br9ypsg7pdfqqgrgeehnw"
+        "STRIPE_PRICE_MONTHLY": "price_1UAC0uAyXaIAfjNQgHrpar8s",
+        "STRIPE_PRICE_ANNUAL": "price_1UAC0vAyXaIAfjNQRRE1SSkA"
       },
       "send_email": [
         {
@@ -137,11 +134,10 @@
         "LONG_TTL_ENABLED": "true",
         "PRO_50MB_ENABLED": "false",
         "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>",
-        "BILLING_ENABLED": "false",
-        "PADDLE_ENV": "live",
-        "PADDLE_CLIENT_TOKEN": "live_f2e562026b324d74d011edc058c",
-        "PADDLE_PRICE_MONTHLY": "pri_01m19mj6phqctcwdhfxkw7hq2w",
-        "PADDLE_PRICE_ANNUAL": "pri_01m19mj6sx9xsqaj2g97qwhyg8"
+        // Live price IDs land here once the Stripe account is activated and
+        // the catalog is recreated in live mode. Until then billing stays off
+        // and an absent price ID keeps the checkout route closed regardless.
+        "BILLING_ENABLED": "false"
       },
       "send_email": [
         {

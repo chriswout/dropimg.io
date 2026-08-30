@@ -1,8 +1,6 @@
 "use strict";
 (() => {
   // client/pro.ts
-  var paddleReady = null;
-  var paddleInitialized = false;
   function root() {
     return document.getElementById("pro-app");
   }
@@ -28,33 +26,21 @@
     } catch {
     }
   }
-  function loadPaddle() {
-    if (window.Paddle) return Promise.resolve();
-    if (paddleReady) return paddleReady;
-    paddleReady = new Promise((resolve, reject) => {
-      const existing = document.querySelector("script[src*='paddle.js']");
-      if (existing) {
-        existing.addEventListener("load", () => resolve());
-        return;
-      }
-      const script = document.createElement("script");
-      script.src = "https://cdn.paddle.com/paddle/v2/paddle.js";
-      script.async = true;
-      script.onload = () => resolve();
-      script.onerror = () => reject(new Error("paddle_js"));
-      document.head.appendChild(script);
-    });
-    return paddleReady;
-  }
   async function startCheckout(interval) {
     trackClient("pro_cta_click", { interval, plan: "free" });
     setStatus(copy("waiting", "Opening checkout\u2026"));
-    const res = await fetch("/api/billing/checkout", {
-      method: "POST",
-      credentials: "same-origin",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ interval })
-    });
+    let res;
+    try {
+      res = await fetch("/api/billing/checkout", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ interval })
+      });
+    } catch {
+      setStatus(copy("unavailable", "Checkout isn\u2019t available right now. Try again shortly."));
+      return;
+    }
     if (res.status === 401) {
       location.href = "/login";
       return;
@@ -64,32 +50,11 @@
       return;
     }
     const data = await res.json();
-    await loadPaddle();
-    if (!window.Paddle) return;
-    if (!paddleInitialized) {
-      if (data.env === "sandbox") {
-        window.Paddle.Environment.set("sandbox");
-      }
-      window.Paddle.Initialize({
-        token: data.clientToken,
-        eventCallback(event) {
-          if (event.name === "checkout.completed") {
-            trackClient("checkout_completed_client", { interval, plan: "free" });
-            void pollUntilPro();
-          }
-          if (event.name === "checkout.error") {
-            setStatus(copy("open-fail", "Checkout could not open. Try again shortly."));
-          }
-        }
-      });
-      paddleInitialized = true;
+    if (!data.url) {
+      setStatus(copy("open-fail", "Checkout could not open. Try again shortly."));
+      return;
     }
-    window.Paddle.Checkout.open({
-      items: [{ priceId: data.priceId, quantity: 1 }],
-      customer: data.email ? { email: data.email } : void 0,
-      customData: data.customData,
-      settings: { displayMode: "overlay", variant: "one-page" }
-    });
+    location.href = data.url;
   }
   async function pollUntilPro() {
     setStatus(copy("activating", "Payment received. Activating Pro\u2026"));
@@ -164,6 +129,9 @@
     document.getElementById("pro-portal")?.addEventListener("click", () => {
       void openPortal();
     });
+    if (new URLSearchParams(location.search).get("checkout") === "success") {
+      void pollUntilPro();
+    }
   }
   setupProPage();
 })();

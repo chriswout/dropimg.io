@@ -6,15 +6,21 @@ import { resolveSession } from "../lib/auth/session";
 import {
   billingConfig,
   billingEnabled,
+  createCheckoutSession,
   createPortalUrl,
+  intervalForPrice,
   priceIdForInterval,
   upsertSubscriptionFromEvent,
-} from "../lib/billing/paddle";
-import type { BillingEnv, CheckoutInterval, PaddleWebhookEvent } from "../lib/billing/types";
-import { verifyPaddleSignature } from "../lib/billing/verify";
+} from "../lib/billing/stripe";
+import type {
+  BillingEnv,
+  CheckoutInterval,
+  StripeWebhookEvent,
+} from "../lib/billing/types";
+import { verifyStripeSignature } from "../lib/billing/verify";
 import { entitlementsFor, loadSubscription } from "../lib/entitlements";
 import { sha256Hex } from "../lib/auth/crypto";
-import { localeFromProPath } from "../../marketing/pro";
+import { localeFromProPath, proPath } from "../../marketing/pro";
 import { renderProPage } from "../views/pro";
 
 type Env = {
@@ -25,26 +31,6 @@ export const billingRoutes = new Hono<Env>();
 
 function asBillingEnv(env: Cloudflare.Env): BillingEnv {
   return env as Cloudflare.Env & BillingEnv;
-}
-
-function intervalFromPrice(
-  env: BillingEnv,
-  data: Record<string, unknown>,
-): "monthly" | "annual" | "" {
-  const monthly = env.PADDLE_PRICE_MONTHLY?.trim() || "";
-  const annual = env.PADDLE_PRICE_ANNUAL?.trim() || "";
-  const ids: string[] = [];
-  if (typeof data.price_id === "string") ids.push(data.price_id);
-  const items = Array.isArray(data.items) ? data.items : [];
-  for (const item of items) {
-    if (!item || typeof item !== "object") continue;
-    const rec = item as { price?: { id?: string }; price_id?: string };
-    if (typeof rec.price?.id === "string") ids.push(rec.price.id);
-    if (typeof rec.price_id === "string") ids.push(rec.price_id);
-  }
-  if (annual && ids.includes(annual)) return "annual";
-  if (monthly && ids.includes(monthly)) return "monthly";
-  return "";
 }
 
 async function servePro(c: { req: { raw: Request; header: (n: string) => string | undefined }; env: Cloudflare.Env }) {
@@ -101,19 +87,44 @@ billingRoutes.post("/api/billing/checkout", async (c) => {
     interval = "monthly";
   }
 
+  /**
+   * Reuse the Stripe customer a previous subscription created, so a returning
+   * subscriber keeps one billing history instead of collecting duplicates.
+   */
+  const known = await c.env.DB.prepare(
+    `SELECT provider_customer_id FROM subscriptions
+     WHERE user_id = ? AND provider = 'stripe' AND provider_customer_id IS NOT NULL
+     ORDER BY updated_at DESC
+     LIMIT 1`,
+  )
+    .bind(session.id)
+    .first<{ provider_customer_id: string | null }>();
+
+  /**
+   * Both legs return to the Pro page: it owns the "activating" status and can
+   * wait for the webhook before sending the buyer on to their drops.
+   */
+  const origin = new URL(c.req.raw.url).origin;
+  const returnPath = `${origin}${proPath(resolveRequestLocale(c.req.raw))}`;
+  const created = await createCheckoutSession(asBillingEnv(c.env), {
+    userId: session.id,
+    email: session.email,
+    priceId: priceIdForInterval(config, interval),
+    successUrl: `${returnPath}?checkout=success`,
+    cancelUrl: returnPath,
+    customerId: known?.provider_customer_id ?? null,
+  });
+  if (!created.ok) {
+    return c.json({ error: "Checkout isn’t available right now." }, 502);
+  }
+
   track(c.env.ANALYTICS, "checkout_started", {
     reason: interval,
     interval,
     plan: "free",
     client: "web",
   });
-  return c.json({
-    env: config.env,
-    clientToken: config.clientToken,
-    priceId: priceIdForInterval(config, interval),
-    email: session.email,
-    customData: { dropimg_user_id: session.id },
-  });
+  return c.json({ url: created.data.url });
 });
 
 billingRoutes.post("/api/billing/portal", async (c) => {
@@ -125,100 +136,117 @@ billingRoutes.post("/api/billing/portal", async (c) => {
   if (!session) return c.json({ error: "Unauthorized" }, 401);
 
   const row = await c.env.DB.prepare(
-    `SELECT provider_customer_id, provider_subscription_id
+    `SELECT provider_customer_id
      FROM subscriptions
-     WHERE user_id = ? AND provider = 'paddle'
+     WHERE user_id = ? AND provider = 'stripe'
      ORDER BY updated_at DESC
      LIMIT 1`,
   )
     .bind(session.id)
-    .first<{ provider_customer_id: string | null; provider_subscription_id: string | null }>();
+    .first<{ provider_customer_id: string | null }>();
 
   if (!row?.provider_customer_id) {
     return c.json({ error: "No billing account yet." }, 400);
   }
+  const origin = new URL(c.req.raw.url).origin;
   const url = await createPortalUrl(
     asBillingEnv(c.env),
     row.provider_customer_id,
-    row.provider_subscription_id ? [row.provider_subscription_id] : [],
+    `${origin}/account`,
   );
   if (!url) return c.json({ error: "Could not open billing portal." }, 502);
   return c.json({ url });
 });
 
-billingRoutes.post("/api/billing/paddle/webhook", async (c) => {
-  const secret = asBillingEnv(c.env).PADDLE_WEBHOOK_SECRET?.trim() || "";
+billingRoutes.post("/api/billing/stripe/webhook", async (c) => {
+  const secret = asBillingEnv(c.env).STRIPE_WEBHOOK_SECRET?.trim() || "";
   const rawBody = await c.req.text();
-  const header = c.req.header("paddle-signature");
+  const header = c.req.header("stripe-signature");
   if (!secret || !rawBody || !header) {
     return c.json({ error: "Missing signature or body" }, 400);
   }
 
-  const verified = await verifyPaddleSignature({ rawBody, header, secret });
+  const verified = await verifyStripeSignature({ rawBody, header, secret });
   if (!verified.ok) {
-    return c.json({ error: "Invalid signature" }, 500);
+    return c.json({ error: "Invalid signature" }, 400);
   }
 
-  let event: PaddleWebhookEvent;
+  let event: StripeWebhookEvent;
   try {
-    event = JSON.parse(rawBody) as PaddleWebhookEvent;
+    event = JSON.parse(rawBody) as StripeWebhookEvent;
   } catch {
     return c.json({ error: "Invalid payload" }, 400);
   }
-  if (!event.event_id || !event.event_type || !event.data) {
+  if (!event.id || !event.type || !event.data?.object) {
     return c.json({ error: "Invalid payload" }, 400);
   }
 
   const now = Math.floor(Date.now() / 1000);
   const payloadHash = await sha256Hex(rawBody);
-  const inserted = await c.env.DB.prepare(
+  await c.env.DB.prepare(
     `INSERT OR IGNORE INTO billing_events
        (provider, event_id, event_type, received_at, payload_hash, status)
-     VALUES ('paddle', ?, ?, ?, ?, 'received')`,
+     VALUES ('stripe', ?, ?, ?, ?, 'received')`,
   )
-    .bind(event.event_id, event.event_type, now, payloadHash)
+    .bind(event.id, event.type, now, payloadHash)
     .run();
 
   const existing = await c.env.DB.prepare(
-    `SELECT status FROM billing_events WHERE provider = 'paddle' AND event_id = ?`,
+    `SELECT status FROM billing_events WHERE provider = 'stripe' AND event_id = ?`,
   )
-    .bind(event.event_id)
+    .bind(event.id)
     .first<{ status: string }>();
   if (existing?.status === "processed") {
     return c.json({ received: true, duplicate: true });
   }
 
-  const handled = await upsertSubscriptionFromEvent(c.env.DB, event, now);
+  await upsertSubscriptionFromEvent(c.env.DB, event, now);
   await c.env.DB.prepare(
     `UPDATE billing_events
      SET status = 'processed', processed_at = ?
-     WHERE provider = 'paddle' AND event_id = ?`,
+     WHERE provider = 'stripe' AND event_id = ?`,
   )
-    .bind(now, event.event_id)
+    .bind(now, event.id)
     .run();
+
   track(c.env.ANALYTICS, "billing_webhook_ok", {
-    reason: event.event_type,
+    reason: event.type,
   });
-  const status = typeof event.data.status === "string" ? event.data.status : "";
-  const interval = intervalFromPrice(asBillingEnv(c.env), event.data);
+
+  const object = event.data.object;
+  const status = typeof object.status === "string" ? object.status : "";
+  const interval =
+    intervalForPrice(asBillingEnv(c.env), priceIdFromObject(object)) ?? undefined;
   if (
-    event.event_type === "subscription.activated" ||
-    event.event_type === "subscription.created" ||
-    (event.event_type === "transaction.completed" && status === "completed")
+    event.type === "checkout.session.completed" ||
+    (event.type === "customer.subscription.created" && status === "active")
   ) {
     track(c.env.ANALYTICS, "pro_activated", {
-      reason: event.event_type,
-      interval: interval || undefined,
+      reason: event.type,
+      interval,
       plan: "pro",
     });
   }
-  if (event.event_type === "subscription.canceled" || status === "canceled") {
+  if (event.type === "customer.subscription.deleted" || status === "canceled") {
     track(c.env.ANALYTICS, "pro_canceled", {
-      reason: event.event_type,
-      interval: interval || undefined,
+      reason: event.type,
+      interval,
       plan: "pro",
     });
   }
-  void inserted;
   return c.json({ received: true });
 });
+
+function priceIdFromObject(object: Record<string, unknown>): string | null {
+  const items = object.items as { data?: unknown[] } | undefined;
+  for (const item of items?.data ?? []) {
+    if (!item || typeof item !== "object") continue;
+    const price = (item as { price?: unknown }).price;
+    if (typeof price === "string") return price;
+    if (price && typeof price === "object") {
+      const id = (price as { id?: unknown }).id;
+      if (typeof id === "string") return id;
+    }
+  }
+  return null;
+}

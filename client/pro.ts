@@ -1,26 +1,3 @@
-declare global {
-  interface Window {
-    Paddle?: {
-      Environment: { set: (env: "sandbox" | "production") => void };
-      Initialize: (opts: {
-        token: string;
-        eventCallback?: (event: { name?: string }) => void;
-      }) => void;
-      Checkout: {
-        open: (opts: {
-          items: { priceId: string; quantity: number }[];
-          customer?: { email: string };
-        customData?: Record<string, string>;
-        settings?: { displayMode?: string; variant?: string };
-        }) => void;
-      };
-    };
-  }
-}
-
-let paddleReady: Promise<void> | null = null;
-let paddleInitialized = false;
-
 function root(): HTMLElement | null {
   return document.getElementById("pro-app");
 }
@@ -54,34 +31,26 @@ function trackClient(
   }
 }
 
-function loadPaddle(): Promise<void> {
-  if (window.Paddle) return Promise.resolve();
-  if (paddleReady) return paddleReady;
-  paddleReady = new Promise((resolve, reject) => {
-    const existing = document.querySelector("script[src*='paddle.js']");
-    if (existing) {
-      existing.addEventListener("load", () => resolve());
-      return;
-    }
-    const script = document.createElement("script");
-    script.src = "https://cdn.paddle.com/paddle/v2/paddle.js";
-    script.async = true;
-    script.onload = () => resolve();
-    script.onerror = () => reject(new Error("paddle_js"));
-    document.head.appendChild(script);
-  });
-  return paddleReady;
-}
-
+/**
+ * Managed Payments only runs on Stripe's own hosted page, so checkout is a
+ * full navigation rather than an overlay: the session is minted server-side
+ * and the browser is handed the URL it returns.
+ */
 async function startCheckout(interval: "monthly" | "annual") {
   trackClient("pro_cta_click", { interval, plan: "free" });
   setStatus(copy("waiting", "Opening checkout…"));
-  const res = await fetch("/api/billing/checkout", {
-    method: "POST",
-    credentials: "same-origin",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ interval }),
-  });
+  let res: Response;
+  try {
+    res = await fetch("/api/billing/checkout", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ interval }),
+    });
+  } catch {
+    setStatus(copy("unavailable", "Checkout isn’t available right now. Try again shortly."));
+    return;
+  }
   if (res.status === 401) {
     location.href = "/login";
     return;
@@ -90,41 +59,18 @@ async function startCheckout(interval: "monthly" | "annual") {
     setStatus(copy("unavailable", "Checkout isn’t available right now. Try again shortly."));
     return;
   }
-  const data = (await res.json()) as {
-    env: string;
-    clientToken: string;
-    priceId: string;
-    email: string;
-    customData: Record<string, string>;
-  };
-  await loadPaddle();
-  if (!window.Paddle) return;
-  if (!paddleInitialized) {
-    if (data.env === "sandbox") {
-      window.Paddle.Environment.set("sandbox");
-    }
-    window.Paddle.Initialize({
-      token: data.clientToken,
-      eventCallback(event) {
-        if (event.name === "checkout.completed") {
-          trackClient("checkout_completed_client", { interval, plan: "free" });
-          void pollUntilPro();
-        }
-        if (event.name === "checkout.error") {
-          setStatus(copy("open-fail", "Checkout could not open. Try again shortly."));
-        }
-      },
-    });
-    paddleInitialized = true;
+  const data = (await res.json()) as { url?: string };
+  if (!data.url) {
+    setStatus(copy("open-fail", "Checkout could not open. Try again shortly."));
+    return;
   }
-  window.Paddle.Checkout.open({
-    items: [{ priceId: data.priceId, quantity: 1 }],
-    customer: data.email ? { email: data.email } : undefined,
-    customData: data.customData,
-    settings: { displayMode: "overlay", variant: "one-page" },
-  });
+  location.href = data.url;
 }
 
+/**
+ * Stripe returns the buyer before the webhook has necessarily landed, so the
+ * success page waits for the entitlement rather than assuming it.
+ */
 async function pollUntilPro() {
   setStatus(copy("activating", "Payment received. Activating Pro…"));
   for (let i = 0; i < 20; i++) {
@@ -209,6 +155,9 @@ function setupProPage() {
   document.getElementById("pro-portal")?.addEventListener("click", () => {
     void openPortal();
   });
+  if (new URLSearchParams(location.search).get("checkout") === "success") {
+    void pollUntilPro();
+  }
 }
 
 setupProPage();

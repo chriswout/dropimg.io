@@ -340,7 +340,7 @@ type SettingsProps = {
   cancelAtPeriodEnd: boolean;
 };
 
-/** Plan state and the Paddle portal hand-off. */
+/** Plan state and the Stripe portal hand-off. */
 export function renderBillingPage(opts: SettingsProps): string {
   const t = ACCOUNT_COPY[opts.locale];
   const period =
@@ -721,7 +721,7 @@ export function renderAccountPage(opts: SettingsProps): string {
   });
 }
 
-/** Opens the Paddle-hosted portal. Shared by Billing and the delete fallback. */
+/** Opens the Stripe-hosted portal. Shared by Billing and the delete fallback. */
 const PORTAL_SCRIPT = `
     (() => {
       async function openPortal() {

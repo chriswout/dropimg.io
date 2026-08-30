@@ -11,9 +11,9 @@ Progress:
 | 2 migrate | done — `0003`–`0007` applied, none pending |
 | 3 R2 | done — three prefix rules applied and read back |
 | 4 deploy dark | done — all gates off, V1 behaviour verified live |
-| 5 billing | config complete; blocked on Paddle enabling checkouts for the account |
+| 5 billing | rebuilt on Stripe; test mode works, blocked on account activation |
 | 6 first purchase | blocked on the same |
-| 7 lifecycle | done — `LONG_TTL_ENABLED=true`, brought forward past the Paddle block |
+| 7 lifecycle | done — `LONG_TTL_ENABLED=true`, brought forward past the billing block |
 | 8 `PRO_50MB_ENABLED` | waiting: it only affects Pro accounts, and there are none yet |
 | 9 final smoke | after billing |
 
@@ -25,56 +25,60 @@ free-tier lifecycle behind a third-party verification queue.
 
 Production before step 1, for reference: five pending migrations, a single
 blanket `o/` 2-day R2 rule, secrets limited to `ADMIN_TOKEN`, `INDEXNOW_KEY`
-and `IP_HASH_SECRET`, and no `PADDLE_*` var or secret of any kind.
+and `IP_HASH_SECRET`, and no billing var or secret of any kind.
 
-## The Paddle live account
+## Why billing was rebuilt mid-launch
 
-Created through the live MCP, which needed write permission granted under
-**Paddle > Connectors > MCP** first:
+Paddle rejected the account, classifying DropIMG as a filesharing service.
+Everything Paddle-shaped was removed and rebuilt on **Stripe Managed
+Payments**, which keeps a merchant of record — so tax, fraud, disputes and
+transaction support stay off our plate — while running on Stripe's own
+infrastructure. See [stripe.md](stripe.md) for the integration.
 
-| Thing | ID |
-|-------|----|
-| Product `DropIMG Pro`, `saas` | `pro_01m19mj6khd0v39ysxqny66w9q` |
-| Monthly, $2.99 USD | `pri_01m19mj6phqctcwdhfxkw7hq2w` |
-| Annual, $24.99 USD | `pri_01m19mj6sx9xsqaj2g97qwhyg8` |
-| Client-side token | `ctkn_01m19mjktf36gc8j7831m7pavg` |
-| Webhook destination | `ntfset_01m19mjkzz7fxkbcch392fwbpb` |
+The category question did not disappear with the provider. Stripe also lists
+"cyberlocker and file-sharing services" as a restricted business needing
+written pre-approval, and has closed accounts over it. Managed Payments does
+explicitly support "electronically supplied business and web services", and
+DropIMG Pro is sold under a SaaS tax code, which is a much better fit than
+Paddle's read. **Get that confirmed in writing before taking live payments**,
+because being shut down after launch with a balance held is worse than being
+rejected before it.
 
-A US pricing preview reads back `$2.99` and `$24.99`, so Paddle charges what
-the site advertises. The webhook is subscribed to the nine events the handler
-acts on, and its signing secret is already the `PADDLE_WEBHOOK_SECRET` secret
-on `env.production`.
+The compliance work done for Paddle's domain review all still applies and all
+still stands: the homepage and `/pro` are public with prices visible to
+anonymous visitors, and `/terms`, `/privacy`, `/refunds` and `/contact` return
+200 without authentication. The merchant-of-record wording in those pages now
+names Stripe and Link.
 
-`PADDLE_API_KEY` is set as a production secret.
+## The Stripe account
 
-**Checkouts are not enabled on the account yet.** Creating a live transaction
-returns "Checkouts aren't enabled for this account. This typically means that
-you haven't fully completed the Paddle onboarding process." Until Paddle
-finishes verifying the account, no live checkout can open and no real purchase
-can be made, so steps 5 and 6 cannot proceed regardless of what this repo does.
+Netherlands, EUR, `acct_1UABoeAyXaIAfjNQ`. Test mode is working end to end;
+`charges_enabled`, `payouts_enabled` and `details_submitted` are all still
+false, so live mode does not exist yet.
 
-Two things gate live checkout: **verification (KYB/KYC)** and **an approved
-checkout domain set as the default payment link**. Payouts do not gate it.
-Neither the domain nor the payment link can be set through the API.
+| Thing | Test ID |
+|-------|---------|
+| Product `DropIMG Pro`, `txcd_10103000` | `prod_VAX5xiQSjTfSjN` |
+| Monthly, €2.99 EUR, tax inclusive | `price_1UAC0uAyXaIAfjNQgHrpar8s` |
+| Annual, €24.99 EUR, tax inclusive | `price_1UAC0vAyXaIAfjNQRRE1SSkA` |
+| Webhook endpoint → staging, `2025-03-31.basil` | `we_1UAC1EAyXaIAfjNQLiKLdOfR` |
 
 In the dashboard, in this order:
 
-1. Submit `dropimg.io` under **Checkout > Website approval > Domain approval**.
-2. Complete verification. Watch for email from Paddle's verification team.
-3. Once approved, set **Checkout > Checkout settings > Default payment link**
-   to `https://dropimg.io/pro`. Without it checkout 400s with
-   `transaction_default_checkout_url_not_set`.
-4. Under **Website approval > Apple Pay verification**, click Verify. The
-   association file is already hosted at
-   `/.well-known/apple-developer-merchantid-domain-association`.
-5. Re-run the throwaway-transaction check to confirm a checkout URL is issued
-   before exposing a purchase button.
+1. Complete account activation: business details, bank account, identity.
+2. Accept the **Managed Payments** terms of service and activate it. A
+   Checkout Session with `managed_payments[enabled]=true` already succeeds in
+   test, so the entitlement is present, but live needs the terms accepted.
+3. Set the custom terms of service and privacy policy URLs under Checkout
+   settings to `https://dropimg.io/terms` and `https://dropimg.io/privacy`, so
+   they appear in the Checkout footer.
+4. Recreate the catalog in live mode with the same tax code and tax behaviour,
+   and put the live price IDs into `env.production.vars`.
+5. Register the live webhook endpoint and set `STRIPE_WEBHOOK_SECRET`.
 
-Domain review fails most often on pages behind a login, pricing that is not
-publicly visible, or a missing refund policy. The site was audited against
-that list: the homepage and `/pro` are public with prices visible to anonymous
-visitors, and `/terms`, `/privacy`, `/refunds` and `/contact` all return 200
-without authentication. The terms name Paddle as merchant of record.
+Apple Pay needs no domain association file here: Managed Payments checkouts are
+hosted on `checkout.stripe.com`, which Stripe verifies itself. The Paddle file
+under `/.well-known/` is now inert and can be deleted whenever convenient.
 
 ## Step 1 — snapshot
 
@@ -131,23 +135,30 @@ Verify before going further:
 
 ## Step 5 — enable billing
 
-`env.production.vars` now carries `PADDLE_ENV=live`, the client token and both
-price IDs, and `PADDLE_WEBHOOK_SECRET` is set. All that is left is the key:
+Once the live catalog exists, put both live price IDs into
+`env.production.vars` and set the two secrets:
 
 ```bash
-npx wrangler secret put PADDLE_API_KEY --env production
+npx wrangler secret put STRIPE_SECRET_KEY --env production      # sk_live_…
+npx wrangler secret put STRIPE_WEBHOOK_SECRET --env production  # whsec_…
 ```
 
 Set `BILLING_ENABLED=true` and deploy. Verify `/api/billing/config` reports
-`live` with the two live price IDs, the overlay opens, and a webhook with a bad
-signature is rejected.
+`live` with the two live price IDs, that the CTA redirects to
+`checkout.stripe.com`, and that a webhook with a bad signature is rejected.
+
+There is no separate environment variable to set: the mode is read off the
+secret key prefix, so a test key in production disables billing rather than
+silently charging against the wrong account.
 
 ## Step 6 — one real purchase
 
 Buy annual with a real card on `https://dropimg.io/pro`. Confirm Pro is granted
 only after the verified webhook, that `pro_activated` is recorded, that My drops
 and `/app/billing` show the subscription, and that the customer portal opens.
-Then decide explicitly whether to keep or refund the transaction.
+Check the charge descriptor reads `LINK.COM*`, matching what `/refunds` and
+`/terms` tell buyers to expect. Then decide explicitly whether to keep or
+refund the transaction.
 
 ## Step 7 — enable the lifecycle
 
