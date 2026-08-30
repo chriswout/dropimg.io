@@ -10,10 +10,19 @@ export function billingEnabled(env: BillingEnv): boolean {
   return env.BILLING_ENABLED === "true";
 }
 
+/**
+ * Anything we don't recognise means sandbox, so a typo costs a broken checkout
+ * rather than a real charge. Paddle's own word for production is "live", and
+ * config written from their docs would otherwise be silently wrong.
+ */
+function isLive(env: BillingEnv): boolean {
+  const value = env.PADDLE_ENV?.trim().toLowerCase();
+  return value === "production" || value === "live";
+}
+
 export function billingConfig(env: BillingEnv): BillingConfig | null {
   if (!billingEnabled(env)) return null;
-  const paddleEnv: PaddleEnvironment =
-    env.PADDLE_ENV === "production" ? "production" : "sandbox";
+  const paddleEnv: PaddleEnvironment = isLive(env) ? "production" : "sandbox";
   const clientToken = env.PADDLE_CLIENT_TOKEN?.trim() || "";
   const priceMonthly = env.PADDLE_PRICE_MONTHLY?.trim() || "";
   const priceAnnual = env.PADDLE_PRICE_ANNUAL?.trim() || "";
@@ -29,9 +38,7 @@ export function priceIdForInterval(
 }
 
 export function paddleApiBase(env: BillingEnv): string {
-  return env.PADDLE_ENV === "production"
-    ? "https://api.paddle.com"
-    : "https://sandbox-api.paddle.com";
+  return isLive(env) ? "https://api.paddle.com" : "https://sandbox-api.paddle.com";
 }
 
 function asRecord(value: unknown): Record<string, unknown> | null {

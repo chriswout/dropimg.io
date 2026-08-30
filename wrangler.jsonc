@@ -137,7 +137,11 @@
         "LONG_TTL_ENABLED": "false",
         "PRO_50MB_ENABLED": "false",
         "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>",
-        "BILLING_ENABLED": "false"
+        "BILLING_ENABLED": "false",
+        "PADDLE_ENV": "live",
+        "PADDLE_CLIENT_TOKEN": "live_f2e562026b324d74d011edc058c",
+        "PADDLE_PRICE_MONTHLY": "pri_01m19mj6phqctcwdhfxkw7hq2w",
+        "PADDLE_PRICE_ANNUAL": "pri_01m19mj6sx9xsqaj2g97qwhyg8"
       },
       "send_email": [
         {

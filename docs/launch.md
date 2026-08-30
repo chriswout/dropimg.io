@@ -10,9 +10,11 @@ Progress:
 | 1 snapshot | done — `.backup/prod-20260830-1116.sql`, 2 tables, 21 rows |
 | 2 migrate | done — `0003`–`0007` applied, none pending |
 | 3 R2 | done — three prefix rules applied and read back |
-| 4 deploy dark | done — version `b5238ca0-1df8-41fb-98e8-203d6b42181c`, all gates off |
-| 5 billing | blocked on the live Paddle catalog |
+| 4 deploy dark | done — all gates off, V1 behaviour verified live |
+| 5 billing | catalog, token, webhook and config done; needs the API key and the payment link |
 | 6–9 | not started |
+
+Deployed version: `906adcdf-3a87-4a5a-a336-0c8a7a0c6e0b`.
 
 Production before step 1, for reference: five pending migrations, a single
 blanket `o/` 2-day R2 rule, secrets limited to `ADMIN_TOKEN`, `INDEXNOW_KEY`
@@ -20,27 +22,31 @@ and `IP_HASH_SECRET`, and no `PADDLE_*` var or secret of any kind.
 
 ## The Paddle live account
 
-The live account is empty: no products, prices, client tokens or checkout
-domains. The live MCP connection is authorized read-only, so creating the
-catalog through it needs write permission granted first, under
-**Paddle > Connectors > MCP** (`https://vendors.paddle.com/mcps`). With that
-granted, the product, prices, client token and webhook destination can all be
-created through the MCP; the rest of this list stays manual.
+Created through the live MCP, which needed write permission granted under
+**Paddle > Connectors > MCP** first:
 
-In the **live** Paddle dashboard:
+| Thing | ID |
+|-------|----|
+| Product `DropIMG Pro`, `saas` | `pro_01m19mj6khd0v39ysxqny66w9q` |
+| Monthly, $2.99 USD | `pri_01m19mj6phqctcwdhfxkw7hq2w` |
+| Annual, $24.99 USD | `pri_01m19mj6sx9xsqaj2g97qwhyg8` |
+| Client-side token | `ctkn_01m19mjktf36gc8j7831m7pavg` |
+| Webhook destination | `ntfset_01m19mjkzz7fxkbcch392fwbpb` |
 
-1. Create the DropIMG Pro product (`saas`) and two prices: `$2.99` monthly,
-   `$24.99` annual. Live prices are separate objects from the sandbox ones;
-   their IDs go into `env.production.vars`.
-2. Set the default payment link to `https://dropimg.io/pro`. Without it,
-   checkout 400s with `transaction_default_checkout_url_not_set`, and it cannot
-   be set through the API.
-3. Approve `dropimg.io` as a checkout domain.
-4. Add the webhook destination `https://dropimg.io/api/billing/paddle/webhook`
-   subscribed to `subscription.*` and `transaction.completed`, and keep its
-   signing secret.
-5. Generate a live API key — the only item with no API of its own — and a live
-   client-side token.
+A US pricing preview reads back `$2.99` and `$24.99`, so Paddle charges what
+the site advertises. The webhook is subscribed to the nine events the handler
+acts on, and its signing secret is already the `PADDLE_WEBHOOK_SECRET` secret
+on `env.production`.
+
+Two things remain, and neither has an API:
+
+1. **A live API key**, with at least subscription and customer-portal write.
+   Without it checkout still works — that is client-side — but "Manage billing"
+   and cancellation fail, so it belongs in place before billing is enabled.
+2. **The default payment link**, set to `https://dropimg.io/pro`. Without it
+   checkout 400s with `transaction_default_checkout_url_not_set`.
+
+Also confirm `dropimg.io` is approved as a checkout domain.
 
 ## Step 1 — snapshot
 
@@ -97,14 +103,11 @@ Verify before going further:
 
 ## Step 5 — enable billing
 
-Add to `env.production.vars` in `wrangler.jsonc`: `PADDLE_ENV=live`,
-`PADDLE_CLIENT_TOKEN`, `PADDLE_PRICE_MONTHLY`, `PADDLE_PRICE_ANNUAL`. This also
-clears the existing warning that `PADDLE_ENV` sits at the top level where
-production does not inherit it. Then:
+`env.production.vars` now carries `PADDLE_ENV=live`, the client token and both
+price IDs, and `PADDLE_WEBHOOK_SECRET` is set. All that is left is the key:
 
 ```bash
 npx wrangler secret put PADDLE_API_KEY --env production
-npx wrangler secret put PADDLE_WEBHOOK_SECRET --env production
 ```
 
 Set `BILLING_ENABLED=true` and deploy. Verify `/api/billing/config` reports
