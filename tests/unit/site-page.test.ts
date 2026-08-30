@@ -35,6 +35,51 @@ describe("Account pages share site chrome", () => {
     expect(html).toContain('href="/app/account"');
   });
 
+  it("renders every magic-link state without changing how a link is requested", () => {
+    const base = { locale: "en", env: { ENVIRONMENT: "production" } } as const;
+
+    for (const state of ["form", "invalid", "expired"] as const) {
+      const html = renderLoginPage({ ...base, state });
+      expect(html).toContain('<form method="post" action="/login"');
+      expect(html).toContain('id="email"');
+      expect(html).toContain('name="email"');
+      expect(html).toContain('class="auth-card"');
+    }
+
+    expect(renderLoginPage({ ...base, state: "invalid" })).toContain(
+      "This sign-in link is invalid.",
+    );
+    expect(renderLoginPage({ ...base, state: "expired" })).toContain(
+      "This sign-in link has expired.",
+    );
+
+    const sent = renderLoginPage({
+      ...base,
+      state: "sent",
+      email: "user@example.com",
+      maskedEmail: "u***@example.com",
+    });
+    expect(sent).toContain("Check your inbox");
+    expect(sent).toContain("u***@example.com");
+    expect(sent).toContain("Link expires in 15 minutes.");
+    expect(sent).toContain("Use a different email");
+    // The masked address is what we show; the real one only rides the resend.
+    expect(sent).toContain('name="email" value="user@example.com"');
+
+    const limited = renderLoginPage({ ...base, state: "rate_limited" });
+    expect(limited).toContain("Too many sign-in attempts.");
+    expect(limited).toContain('role="alert"');
+    expect(limited).not.toContain('id="email"');
+
+    const failed = renderLoginPage({
+      ...base,
+      state: "form",
+      error: "Enter a valid email.",
+    });
+    expect(failed).toContain('class="form-error" role="alert"');
+    expect(failed).toContain("Enter a valid email.");
+  });
+
   it("splits settings into account, billing, and integrations sections", () => {
     const props = {
       locale: "en",

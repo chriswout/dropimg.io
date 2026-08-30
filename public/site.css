@@ -2961,35 +2961,154 @@ html[data-theme="dark"] kbd {
   align-items: stretch;
 }
 
-.account-panel {
-  width: 100%;
-  max-width: 28rem;
-  margin: 0 auto;
-  padding: 2rem 1.5rem 1.75rem;
-  border: 1px dashed var(--border-strong);
-  border-radius: var(--radius);
-  background: linear-gradient(180deg, var(--surface), var(--surface-soft));
-  box-shadow: var(--shadow-md);
-}
-
-.account-title {
-  max-width: none;
-  font-size: clamp(1.85rem, 4vw, 2.75rem);
-}
-
 .account-muted {
   margin: 0.75rem 0 0;
   color: var(--text-muted);
   font-size: 0.9rem;
 }
 
-.account-dev {
+/* --- Sign in -------------------------------------------------------------
+ *
+ * One centred card carrying every state of the magic-link flow, with the
+ * reasons to have an account sitting underneath rather than competing with
+ * the form. Signing in is optional, so the page stays quiet.
+ */
+
+.auth-main {
+  justify-content: center;
+}
+
+.auth {
+  display: grid;
+  justify-items: center;
+  width: 100%;
+  max-width: 26rem;
+  margin: 0 auto;
+  padding: clamp(0.5rem, 4vh, 2rem) 0 clamp(1rem, 4vh, 2rem);
+}
+
+.auth-card {
+  width: 100%;
+  padding: clamp(1.5rem, 5vw, 2.25rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--brand) 6%, transparent),
+      transparent 42%
+    ),
+    var(--surface);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+
+.auth-title {
+  margin: 0;
+  font-size: clamp(1.5rem, 4vw, 1.875rem);
+  font-weight: 740;
+  letter-spacing: -0.032em;
+  line-height: 1.15;
+  text-wrap: balance;
+}
+
+.auth-lede {
+  margin: 0.6rem 0 0;
+  color: var(--text-soft);
+  font-size: 0.9688rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* The envelope that confirms the link is on its way. */
+.auth-mark {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 1rem;
+  border-radius: 50%;
+  background: var(--brand-soft);
+  color: var(--brand-text);
+}
+
+.auth-mark .icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  stroke-width: 1.8;
+}
+
+.auth-form {
+  margin-top: 1.35rem;
+  text-align: left;
+}
+
+.auth-form .btn {
+  margin-top: 0.6rem;
+  width: 100%;
+}
+
+.auth-fineprint {
+  margin: 1rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.8438rem;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.auth-actions {
+  margin: 1.25rem 0 0;
+}
+
+.auth-alt {
+  margin: 0.9rem 0 0;
+  font-size: 0.875rem;
+}
+
+.auth-alt a {
+  color: var(--text-muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border-strong);
+}
+
+.auth-alt a:hover {
+  color: var(--text);
+}
+
+.auth-dev {
   margin: 0.85rem 0 0;
   font-size: 0.9rem;
 }
 
-.account-dev a {
+.auth-dev a {
   color: var(--brand-text);
+}
+
+.auth-perks {
+  display: grid;
+  gap: 0.6rem;
+  width: 100%;
+  margin: clamp(1.5rem, 4vh, 2rem) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.auth-perks li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  color: var(--text-muted);
+  font-size: 0.9063rem;
+  line-height: 1.45;
+}
+
+.auth-check {
+  flex-shrink: 0;
+  width: 1.05rem;
+  height: 1.05rem;
+  margin-top: 0.14rem;
+  color: var(--brand-text);
+  stroke-width: 2.25;
 }
 
 /* --- Pro page ------------------------------------------------------------ */

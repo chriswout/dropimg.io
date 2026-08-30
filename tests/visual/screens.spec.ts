@@ -1,5 +1,6 @@
 import { test } from "@playwright/test";
 import { renderLockedSharePage } from "../../src/views/locked-share";
+import { renderLoginPage } from "../../src/views/login";
 import { renderGonePage } from "../../src/views/share";
 import {
   asAnonymous,
@@ -96,6 +97,45 @@ test.describe("public pages", () => {
     await setTheme(page, "light");
     await page.goto("/privacy.html");
     await shoot(page, `legal-light-${testInfo.project.name}`);
+  });
+});
+
+test.describe("sign in", () => {
+  for (const theme of THEMES) {
+    test(`form ${theme}`, async ({ page }, testInfo) => {
+      await setTheme(page, theme);
+      await asAnonymous(page);
+      await page.goto("/login");
+      await shoot(page, `login-${theme}-${testInfo.project.name}`);
+    });
+  }
+
+  /** The state a real visitor lands on straight after asking for a link. */
+  test("link sent light", async ({ page, baseURL }, testInfo) => {
+    await setTheme(page, "light");
+    await renderServerView(
+      page,
+      baseURL!,
+      renderLoginPage({
+        locale: "en",
+        env: {},
+        state: "sent",
+        email: "alex.rivera@example.com",
+        maskedEmail: "a***@example.com",
+      }),
+    );
+    await shoot(page, `login-sent-light-${testInfo.project.name}`);
+  });
+
+  /** No form to show, so this state has to hold the card on its own. */
+  test("rate limited light", async ({ page, baseURL }, testInfo) => {
+    await setTheme(page, "light");
+    await renderServerView(
+      page,
+      baseURL!,
+      renderLoginPage({ locale: "en", env: {}, state: "rate_limited" }),
+    );
+    await shoot(page, `login-limited-light-${testInfo.project.name}`);
   });
 });
 

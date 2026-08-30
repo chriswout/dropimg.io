@@ -88,8 +88,9 @@ export async function asPro(page: Page, email = "alex.rivera@example.com") {
         user: { id: "visual-pro", email },
         entitlements: {
           plan: "pro",
-          maxUploadBytes: 25 * 1024 * 1024,
-          allowedExpirySeconds: [86400, 604800, 2592000],
+          maxUploadBytes: 50 * 1024 * 1024,
+          allowedExpirySeconds: [3600, 86400, 604800, 2592000, 7776000],
+          defaultExpirySeconds: 604800,
           passwordProtection: true,
         },
       }),
