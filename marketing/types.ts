@@ -52,6 +52,8 @@ export type SharedChrome = {
   langMenuAria: string;
   privacy: string;
   terms: string;
+  refunds: string;
+  contact: string;
   abuse: string;
   learnMoreAria: string;
   relatedAria: string;

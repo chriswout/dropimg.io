@@ -53,14 +53,28 @@ you haven't fully completed the Paddle onboarding process." Until Paddle
 finishes verifying the account, no live checkout can open and no real purchase
 can be made, so steps 5 and 6 cannot proceed regardless of what this repo does.
 
-Once Paddle approves the account:
+Two things gate live checkout: **verification (KYB/KYC)** and **an approved
+checkout domain set as the default payment link**. Payouts do not gate it.
+Neither the domain nor the payment link can be set through the API.
 
-1. Set **the default payment link** to `https://dropimg.io/pro`. Without it
-   checkout 400s with `transaction_default_checkout_url_not_set`, and it cannot
-   be set through the API.
-2. Confirm `dropimg.io` is approved as a checkout domain.
-3. Re-run the throwaway-transaction check to confirm a checkout URL is issued
+In the dashboard, in this order:
+
+1. Submit `dropimg.io` under **Checkout > Website approval > Domain approval**.
+2. Complete verification. Watch for email from Paddle's verification team.
+3. Once approved, set **Checkout > Checkout settings > Default payment link**
+   to `https://dropimg.io/pro`. Without it checkout 400s with
+   `transaction_default_checkout_url_not_set`.
+4. Under **Website approval > Apple Pay verification**, click Verify. The
+   association file is already hosted at
+   `/.well-known/apple-developer-merchantid-domain-association`.
+5. Re-run the throwaway-transaction check to confirm a checkout URL is issued
    before exposing a purchase button.
+
+Domain review fails most often on pages behind a login, pricing that is not
+publicly visible, or a missing refund policy. The site was audited against
+that list: the homepage and `/pro` are public with prices visible to anonymous
+visitors, and `/terms`, `/privacy`, `/refunds` and `/contact` all return 200
+without authentication. The terms name Paddle as merchant of record.
 
 ## Step 1 — snapshot
 

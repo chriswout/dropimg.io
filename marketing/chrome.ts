@@ -134,8 +134,10 @@ export function footerHtml(locale: Locale, chrome: SharedChrome): string {
             </nav>
             <nav class="foot-col foot-legal" aria-label="${esc(chrome.footerLegal)}">
               <h2 class="foot-col-title">${esc(chrome.footerLegal)}</h2>
-              <a href="/privacy.html">${esc(chrome.privacy)}</a>
-              <a href="/terms.html">${esc(chrome.terms)}</a>
+              <a href="/privacy">${esc(chrome.privacy)}</a>
+              <a href="/terms">${esc(chrome.terms)}</a>
+              <a href="/refunds">${esc(chrome.refunds)}</a>
+              <a href="/contact">${esc(chrome.contact)}</a>
               <a href="/abuse">${esc(chrome.abuse)}</a>
             </nav>
             <nav class="foot-col foot-seo" aria-label="${esc(chrome.learnMoreAria)}">

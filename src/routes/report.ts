@@ -80,8 +80,9 @@ reportRoutes.get("/abuse", async (c) => {
     </form>
     <nav class="foot-nav" aria-label="Legal">
       <a href="/">Home</a>
-      <a href="/privacy.html">Privacy Policy</a>
-      <a href="/terms.html">Terms of Use</a>
+      <a href="/privacy">Privacy Policy</a>
+      <a href="/terms">Terms of Use</a>
+      <a href="/contact">Contact</a>
     </nav>
   </main>
   <script>

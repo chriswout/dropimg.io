@@ -49,8 +49,10 @@ function writePage(pageId: PageId, locale: (typeof LOCALES)[number]) {
 function writeSitemap() {
   const marketing = allMarketingUrls();
   const legal = [
-    `${SITE_ORIGIN}/privacy.html`,
-    `${SITE_ORIGIN}/terms.html`,
+    `${SITE_ORIGIN}/privacy`,
+    `${SITE_ORIGIN}/terms`,
+    `${SITE_ORIGIN}/refunds`,
+    `${SITE_ORIGIN}/contact`,
     `${SITE_ORIGIN}/abuse`,
   ];
   const extension = [EXTENSION_URL];
