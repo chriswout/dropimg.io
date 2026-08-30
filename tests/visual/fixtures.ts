@@ -98,13 +98,26 @@ export async function asPro(page: Page, email = "alex.rivera@example.com") {
   });
 }
 
-/** Presents the UI as a signed-out visitor. */
+/**
+ * Presents the UI as a signed-out visitor. Anonymous visitors still get
+ * entitlements — choosing a lifetime is a free feature — so this mirrors what
+ * the worker actually answers rather than returning a bare null user.
+ */
 export async function asAnonymous(page: Page) {
   await page.route("**/api/account/me", async (route) => {
     await route.fulfill({
       status: 200,
       contentType: "application/json",
-      body: JSON.stringify({ user: null }),
+      body: JSON.stringify({
+        user: null,
+        entitlements: {
+          plan: "anonymous",
+          maxUploadBytes: 10 * 1024 * 1024,
+          allowedExpirySeconds: [3600, 86400, 604800],
+          defaultExpirySeconds: 604800,
+          passwordProtection: false,
+        },
+      }),
     });
   });
 }

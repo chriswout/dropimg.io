@@ -43,7 +43,10 @@ export default defineConfig({
   webServer: process.env.E2E_BASE_URL
     ? undefined
     : {
-        command: `npm run generate:pages && npm run generate:site-assets && npx wrangler d1 migrations apply dropimg --local && npx vite --host 127.0.0.1 --port ${port}`,
+        // Runs the staging environment so QA sees the V2 lifecycle the design
+        // is for. Production keeps those flags off; the functional e2e gate
+        // still runs against the default, flag-off environment.
+        command: `npm run generate:pages && npm run generate:site-assets && npx wrangler d1 migrations apply dropimg --local && CLOUDFLARE_ENV=staging npx vite --host 127.0.0.1 --port ${port}`,
         url: `${baseURL}/health`,
         reuseExistingServer: !process.env.CI,
         timeout: 180_000,

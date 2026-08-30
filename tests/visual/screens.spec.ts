@@ -30,7 +30,7 @@ test.describe("homepage", () => {
       await setTheme(page, theme);
       await asPro(page);
       await page.goto("/");
-      await page.locator("#pro-options").waitFor({ state: "visible" });
+      await page.locator("#pro-password-wrap").waitFor({ state: "visible" });
       await shoot(page, `home-pro-${theme}-${testInfo.project.name}`);
     });
   }

@@ -435,23 +435,30 @@ body[data-scrolled="true"] .top {
   border-bottom-color: var(--border-soft);
 }
 
+/*
+ * The theme and language controls are fixed width, so everything down to the
+ * email is allowed to shrink. A long address then truncates instead of pushing
+ * the header past the viewport.
+ */
 .header-actions {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  flex-shrink: 0;
+  min-width: 0;
 }
 
 .account-nav {
   display: flex;
   align-items: center;
   gap: 0.65rem;
+  min-width: 0;
 }
 
 .account-session {
   display: flex;
   align-items: center;
   gap: 0.65rem;
+  min-width: 0;
 }
 
 .account-session[hidden] {
@@ -518,6 +525,7 @@ body[data-scrolled="true"] .top {
 }
 
 .account-email {
+  min-width: 0;
   max-width: 8.5rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -579,10 +587,20 @@ body[data-scrolled="true"] .top {
 
 .account-menu {
   position: relative;
+  min-width: 0;
 }
 
 .account-summary {
   list-style: none;
+  min-width: 0;
+}
+
+.account-summary::after {
+  flex-shrink: 0;
+}
+
+.account-plan-badge {
+  flex-shrink: 0;
 }
 
 .account-summary::-webkit-details-marker {
@@ -2759,21 +2777,6 @@ html[data-theme="dark"] kbd {
     padding: 0.45rem 0.65rem;
   }
 
-@media (max-width: 359px) {
-  .lang {
-    display: none;
-  }
-
-  .brand-logo {
-    width: 108px;
-    height: auto;
-  }
-
-  .account-chip {
-    padding: 0.4rem 0.55rem;
-  }
-}
-
   .lang-suggest {
     margin-left: 0;
     margin-right: 0;
@@ -2873,79 +2876,33 @@ html[data-theme="dark"] kbd {
     right: -0.5rem;
   }
 
-  /*
-   * On mobile the lifecycle controls read as a compact tray hanging off the
-   * bottom of the uploader, not as a second panel competing with it: flush
-   * width, small radius, no elevation of its own, everything one step smaller.
-   */
-  .drop-options {
-    width: 100%;
-    justify-content: flex-start;
-    gap: 0.4rem 0.55rem;
-    margin-top: 0.5rem;
-    padding: 0.45rem 0.6rem;
-    border-radius: var(--radius-md);
-    background: var(--surface-soft);
-    box-shadow: none;
-  }
-
-  .drop-field-badge {
-    padding: 0.1rem 0.45rem;
-    font-size: 0.625rem;
-  }
-
-  .drop-field {
-    gap: 0.45rem;
-    font-size: 0.75rem;
-  }
-
-  /* Password always takes its own line so the expiry row stays on one. */
-  #pro-password-wrap {
-    flex: 1 0 100%;
-  }
-
-  .expiry-pills {
-    padding: 0.1rem;
-  }
-
-  .expiry-pill {
-    min-height: 28px;
-    padding: 0 0.55rem;
-    font-size: 0.75rem;
-  }
-
-  .expiry-pill::before {
-    inset: -8px 0;
-  }
-
-  .switch {
-    width: 38px;
-    height: 22px;
-  }
-
-  .switch::before {
-    inset: -11px -3px;
-  }
-
-  .switch::after {
-    width: 16px;
-    height: 16px;
-  }
-
-  .switch[aria-checked="true"]::after {
-    transform: translateX(16px);
-  }
-
-  .drop-field input {
-    flex: 1;
-    min-width: 0;
-    min-height: 34px;
-    padding: 0.4rem 0.6rem;
-    font-size: 0.8125rem;
-  }
-
   .foot {
     margin-top: 2rem;
+  }
+}
+
+/*
+ * Below this the plan badge costs more room than the email it sits next to,
+ * and the plan is still one tap away inside the account menu.
+ */
+@media (max-width: 420px) {
+  .account-plan-badge {
+    display: none !important;
+  }
+}
+
+@media (max-width: 359px) {
+  .lang {
+    display: none;
+  }
+
+  .brand-logo {
+    width: 108px;
+    height: auto;
+  }
+
+  .account-chip {
+    padding: 0.4rem 0.55rem;
   }
 }
 
@@ -4099,6 +4056,100 @@ html[data-theme="dark"] kbd {
 .expiry-pill:focus-visible {
   outline: 2px solid var(--brand);
   outline-offset: 2px;
+}
+
+/*
+ * On mobile the lifecycle controls read as a compact tray hanging off the
+ * bottom of the uploader, not as a second panel competing with it: flush
+ * width, small radius, no elevation of its own, everything one step smaller.
+ *
+ * This has to sit after the tray's base rules — a media query adds no
+ * specificity, so an earlier block would simply lose on source order.
+ */
+@media (max-width: 640px) {
+  .drop-options {
+    width: 100%;
+    justify-content: flex-start;
+    gap: 0.4rem 0.55rem;
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.7rem;
+    border-radius: var(--radius-md);
+    background: var(--surface-soft);
+    box-shadow: none;
+  }
+
+  /* Each field owns a full line, with its label above the controls. */
+  .drop-field {
+    flex: 1 0 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+    font-size: 0.75rem;
+  }
+
+  .drop-field-badge {
+    padding: 0.1rem 0.45rem;
+    font-size: 0.625rem;
+  }
+
+  /*
+   * Five Pro lifetimes never fit one phone-width row, and abbreviating the
+   * labels would read badly in German. So the segmented track becomes loose
+   * chips that wrap: Free still lands on a single line, Pro takes two.
+   */
+  .expiry-pills {
+    flex-wrap: wrap;
+    gap: 0.3rem;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  .expiry-pill {
+    min-height: 30px;
+    padding: 0 0.6rem;
+    border: 1px solid var(--border);
+    background: var(--surface-soft);
+    font-size: 0.75rem;
+  }
+
+  .expiry-pill[aria-checked="true"] {
+    border-color: var(--brand);
+  }
+
+  .expiry-pill::before {
+    inset: -7px 0;
+  }
+
+  .pro-password-controls {
+    width: 100%;
+  }
+
+  .switch {
+    width: 38px;
+    height: 22px;
+  }
+
+  .switch::before {
+    inset: -11px -3px;
+  }
+
+  .switch::after {
+    width: 16px;
+    height: 16px;
+  }
+
+  .switch[aria-checked="true"]::after {
+    transform: translateX(16px);
+  }
+
+  .drop-field input {
+    flex: 1;
+    min-width: 0;
+    min-height: 34px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8125rem;
+  }
 }
 
 .drop-meta {
