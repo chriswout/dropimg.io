@@ -1,4 +1,12 @@
 import type { Locale } from "../../marketing/locales";
+import { t as uiStrings } from "../../marketing/ui";
+import {
+  EXPIRY_1H,
+  EXPIRY_24H,
+  EXPIRY_30D,
+  EXPIRY_7D,
+  EXPIRY_90D,
+} from "../lib/entitlements";
 import { renderAppShellPage } from "./app-shell";
 import { siteHtmlResponse } from "./site-page";
 
@@ -225,7 +233,8 @@ export function renderAppPage(opts: {
   historyCapped: boolean;
   nextCursor: number | null;
   origin: string;
-  canExtend?: boolean;
+  /** Lifetimes this owner may extend to. Empty or absent hides the control. */
+  extendChoices?: number[];
   canPassword?: boolean;
 }): string {
   const t = APP_COPY[opts.locale];
@@ -259,7 +268,7 @@ export function renderAppPage(opts: {
             <details class="drop-more">
               <summary class="drop-btn" aria-label="${esc(t.moreActions)}">•••</summary>
               <div class="drop-more-panel">
-                ${opts.canExtend ? `<button type="button" class="drop-btn drop-extend" data-slug="${esc(d.slug)}">${esc(t.extend)}</button>` : ""}
+                ${extendGroupHtml(d, t, opts.locale, opts.extendChoices)}
                 ${opts.canPassword ? `<button type="button" class="drop-btn drop-pw" data-slug="${esc(d.slug)}" data-locked="${d.locked ? "1" : "0"}">${esc(t.password)}</button>` : ""}
                 <button type="button" class="drop-btn drop-del" data-slug="${esc(d.slug)}">${esc(t.delete)}</button>
               </div>
@@ -387,9 +396,15 @@ export function renderAppPage(opts: {
           const extend = e.target.closest(".drop-extend");
           if (extend) {
             const s = extend.getAttribute("data-slug") || "";
+            const seconds = Number(extend.getAttribute("data-expiry"));
             extend.disabled = true;
             try {
-              const res = await fetch("/api/account/images/" + encodeURIComponent(s) + "/extend", { method: "POST" });
+              const res = await fetch("/api/account/images/" + encodeURIComponent(s) + "/extend", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ expiry: seconds }),
+              });
               if (res.ok) location.reload();
             } catch (err) {}
             extend.disabled = false;
@@ -495,6 +510,46 @@ export function appHtmlResponse(
   status = 200,
 ): Response {
   return siteHtmlResponse(renderAppPage(opts), status);
+}
+
+const LIFETIME_LABEL_KEY = {
+  [EXPIRY_1H]: "expiry1h",
+  [EXPIRY_24H]: "expiry24h",
+  [EXPIRY_7D]: "expiry7d",
+  [EXPIRY_30D]: "expiry30d",
+  [EXPIRY_90D]: "expiry90d",
+} as const;
+
+/**
+ * Lifetimes are measured from the original upload, so an option only appears
+ * when it would actually push `expires_at` further out. That is also what keeps
+ * the 90-day ceiling honest: once a drop reaches it, nothing is left to offer.
+ */
+function extendGroupHtml(
+  drop: AppDrop,
+  t: Copy,
+  locale: Locale,
+  choices: number[] | undefined,
+): string {
+  if (!choices?.length) return "";
+  const labels = uiStrings(locale);
+  const options = choices
+    .filter((seconds) => seconds in LIFETIME_LABEL_KEY)
+    .filter((seconds) => drop.created_at + seconds > drop.expires_at)
+    .sort((a, b) => a - b);
+  if (!options.length) return "";
+
+  const buttons = options
+    .map((seconds) => {
+      const key = LIFETIME_LABEL_KEY[seconds as keyof typeof LIFETIME_LABEL_KEY];
+      return `<button type="button" class="drop-btn drop-extend" data-slug="${esc(drop.slug)}" data-expiry="${seconds}">${esc(labels[key])}</button>`;
+    })
+    .join("");
+
+  return `<div class="drop-extend-group" role="group" aria-label="${esc(t.extend)}">
+                  <span class="drop-extend-label">${esc(t.extend)}</span>
+                  ${buttons}
+                </div>`;
 }
 
 function mimeLabel(mime: string): string {

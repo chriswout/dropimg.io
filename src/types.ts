@@ -2,7 +2,8 @@
 
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10 MB
 export const MAX_MEGAPIXELS = 50_000_000;
-export const TTL_SECONDS = 24 * 60 * 60;
+/** Rolling window for the per-IP and per-user upload quota. Not an image TTL. */
+export const QUOTA_WINDOW_SECONDS = 24 * 60 * 60;
 export const SLUG_LENGTH = 8;
 export const IMAGE_CACHE_SECONDS = 300;
 
@@ -34,6 +35,7 @@ export type UploadErrorResponse = {
     | "too_large"
     | "unsupported_type"
     | "invalid_image"
+    | "invalid_expiry"
     | "rate_limited"
     | "quota_exceeded"
     | "server_error";

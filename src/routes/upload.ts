@@ -1,6 +1,13 @@
 import { Hono } from "hono";
 import type { Context } from "hono";
 import { track } from "../lib/analytics";
+import {
+  EXPIRY_HEADER,
+  flagsFromEnv,
+  parseExpiryHeader,
+  r2ClassFor,
+  resolveEntitlements,
+} from "../lib/entitlements";
 import { clientIp, hashIp } from "../lib/ip";
 import { normalizePageIntent } from "../lib/page-intent";
 import { resolveIpHashSecret } from "../lib/secrets";
@@ -32,6 +39,23 @@ uploadRoutes.post("/api/upload", async (c) => {
   const contentLength = Number(c.req.header("content-length") || 0);
   if (contentLength > MAX_UPLOAD_BYTES) {
     return routeFail(c, 413, "too_large", "File exceeds 10 MB limit", undefined, client, pageIntent);
+  }
+
+  const entitlements = resolveEntitlements({
+    userId: null,
+    flags: flagsFromEnv(c.env),
+  });
+  const expiry = parseExpiryHeader(c.req.header(EXPIRY_HEADER), entitlements);
+  if (!expiry.ok) {
+    return routeFail(
+      c,
+      400,
+      "invalid_expiry",
+      "That expiry is not available.",
+      "bad_expiry",
+      client,
+      pageIntent,
+    );
   }
 
   const secretResolved = resolveIpHashSecret(c.env);
@@ -84,9 +108,10 @@ uploadRoutes.post("/api/upload", async (c) => {
     pageIntent,
     ipHash,
     userId: null,
-    expirySeconds: 24 * 60 * 60,
+    expirySeconds: expiry.expirySeconds,
     maxBytes: MAX_UPLOAD_BYTES,
     origin: new URL(c.req.url).origin,
+    r2Class: r2ClassFor(entitlements.plan, expiry.expirySeconds),
   });
   if (!stored.ok) return uploadFailResponse(stored);
   return c.json(stored.body, 201);

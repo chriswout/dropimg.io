@@ -8,7 +8,11 @@ import { fileURLToPath } from "node:url";
 import { LOCALES, LOCALE_CONFIG } from "../marketing/locales";
 import {
   INTENT_PAGE_IDS,
-  INTENT_PAGE_PATHS,
+  allIntentUrls,
+  intentAlternateLinks,
+  intentLocales,
+  intentPageCopy,
+  intentPagePath,
   intentPageUrl,
 } from "../marketing/intent-pages";
 import {
@@ -199,8 +203,7 @@ else {
   if (!sm.includes(`<loc>https://dropimg.io/browser-extension</loc>`)) {
     fail("sitemap missing browser-extension");
   }
-  for (const id of INTENT_PAGE_IDS) {
-    const url = intentPageUrl(id);
+  for (const url of allIntentUrls()) {
     if (!sm.includes(`<loc>${url}</loc>`)) fail(`sitemap missing ${url}`);
   }
   const locs = extractAll(sm, /<loc>([^<]*)<\/loc>/g);
@@ -226,37 +229,109 @@ else {
   }
 }
 
-// English-only intent landings
-{
-  for (const id of INTENT_PAGE_IDS) {
-    const dir = INTENT_PAGE_PATHS[id].replace(/^\//, "");
+// Intent landings, including the localized ES / pt-BR clusters
+let intentPageCount = 0;
+for (const id of INTENT_PAGE_IDS) {
+  const locales = intentLocales(id);
+  const expectedAlts = intentAlternateLinks(id);
+
+  for (const locale of locales) {
+    intentPageCount++;
+    const label = `${id} [${locale}]`;
+    const dir = intentPagePath(id, locale).replace(/^\//, "");
     const path = join(root, dir, "index.html");
     if (!existsSync(path)) {
       fail(`missing intent page ${path}`);
       continue;
     }
     const html = readFileSync(path, "utf8");
-    const canonical = intentPageUrl(id);
-    if (!html.includes(`rel="canonical" href="${canonical}"`)) {
-      fail(`${id}: bad canonical`);
+    const copy = intentPageCopy(id, locale);
+    const cfg = LOCALE_CONFIG[locale];
+
+    if (!html.includes(`lang="${cfg.htmlLang}"`)) {
+      fail(`${label}: missing lang=${cfg.htmlLang}`);
+    }
+    if (!html.includes(`rel="canonical" href="${intentPageUrl(id, locale)}"`)) {
+      fail(`${label}: bad canonical`);
     }
     if (!html.includes(`data-page-intent="${id}"`)) {
-      fail(`${id}: missing data-page-intent`);
+      fail(`${label}: missing data-page-intent`);
     }
-    if (!html.includes('id="dropzone"')) fail(`${id}: missing dropzone`);
+    if (!html.includes('id="dropzone"')) fail(`${label}: missing dropzone`);
+
+    const h1s = extractAll(html, /<h1[^>]*>([^<]*)<\/h1>/i);
+    if (h1s.length !== 1) fail(`${label}: expected 1 h1, got ${h1s.length}`);
+    else if (h1s[0]!.trim() !== copy.h1) {
+      fail(`${label}: h1 "${h1s[0]}" ≠ "${copy.h1}"`);
+    }
+
     if (/noindex/i.test(html) && /name="robots"/i.test(html)) {
       const robots = extractAll(html, /<meta\s+name="robots"\s+content="([^"]*)"/i);
-      if (robots.some((r) => /noindex/i.test(r))) {
-        fail(`${id}: has noindex`);
+      if (robots.some((r) => /noindex/i.test(r))) fail(`${label}: has noindex`);
+    }
+
+    // Hreflang: exactly the cluster we authored, nothing invented.
+    const alts: { hreflang: string; href: string }[] = [];
+    const altRe =
+      /<link\s+rel="alternate"\s+hreflang="([^"]*)"\s+href="([^"]*)"\s*\/?>/gi;
+    let m: RegExpExecArray | null;
+    while ((m = altRe.exec(html))) alts.push({ hreflang: m[1]!, href: m[2]! });
+    if (alts.length !== expectedAlts.length) {
+      fail(`${label}: ${alts.length} hreflang tags, expected ${expectedAlts.length}`);
+    }
+    for (const exp of expectedAlts) {
+      const found = alts.find((a) => a.hreflang === exp.hreflang);
+      if (!found) fail(`${label}: missing hreflang ${exp.hreflang}`);
+      else if (found.href !== exp.href) {
+        fail(`${label}: hreflang ${exp.hreflang} → ${found.href} ≠ ${exp.href}`);
+      }
+    }
+    if (alts.some((a) => a.hreflang === "de")) {
+      fail(`${label}: hreflang points at a German page that does not exist`);
+    }
+
+    const ld = html.match(
+      /<script type="application\/ld\+json">([\s\S]*?)<\/script>/,
+    );
+    if (!ld) fail(`${label}: missing JSON-LD`);
+    else {
+      try {
+        const graph = JSON.parse(ld[1]!)["@graph"] as { "@type"?: string }[];
+        const howto = graph?.find((n) => n["@type"] === "HowTo") as
+          | { step?: unknown[] }
+          | undefined;
+        const faq = graph?.find((n) => n["@type"] === "FAQPage") as
+          | { mainEntity?: unknown[] }
+          | undefined;
+        if (howto?.step?.length !== 3) fail(`${label}: HowTo needs 3 steps`);
+        if (!faq?.mainEntity?.length) fail(`${label}: FAQPage has no questions`);
+        else if (faq.mainEntity.length !== copy.faqs.length) {
+          fail(`${label}: FAQ schema does not match visible FAQ`);
+        }
+      } catch (e) {
+        fail(`${label}: invalid JSON-LD (${e})`);
       }
     }
   }
-  ok(`${INTENT_PAGE_IDS.length} EN intent pages present`);
+
+  // Reciprocity within the cluster.
+  for (const locale of locales) {
+    const path = join(root, intentPagePath(id, locale).replace(/^\//, ""), "index.html");
+    if (!existsSync(path)) continue;
+    const page = readFileSync(path, "utf8");
+    for (const other of locales) {
+      const href = intentPageUrl(id, other);
+      if (!page.includes(`href="${href}"`)) {
+        fail(`${id} [${locale}]: missing reciprocal hreflang to ${href}`);
+      }
+    }
+  }
 }
+ok(`${intentPageCount} intent pages present`);
 
 if (failures === 0) {
   ok(
-    `all checks passed (${PAGE_IDS.length * LOCALES.length} pages + extension + ${INTENT_PAGE_IDS.length} intents)`,
+    `all checks passed (${PAGE_IDS.length * LOCALES.length} pages + extension + ${intentPageCount} intents)`,
   );
   process.exit(0);
 }

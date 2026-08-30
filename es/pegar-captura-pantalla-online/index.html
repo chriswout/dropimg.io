@@ -71,7 +71,7 @@
         </a>
         <div class="header-actions">
           <nav id="account-nav" class="account-nav" aria-label="Cuenta">
-            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/es/pro">Pro · $1.99</a>
+            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/es/pro">Pro · $2.99</a>
             <a id="account-signin" class="account-chip" href="/login">Entrar</a>
             <div id="account-session" class="account-session" hidden>
               <a id="account-app" class="account-nav-link" href="/app">Mis envíos</a>
@@ -213,7 +213,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>¿Lo necesitas más tiempo?</strong>
-                Conserva enlaces hasta 30 días con Pro — $1.99/mes.
+                Conserva enlaces hasta 90 días con Pro — $2.99/mes.
               </p>
             </div>
 
@@ -223,19 +223,22 @@
               <button id="btn-retry" type="button" class="btn primary">Reintentar</button>
             </div>
           </section>
-          <div id="pro-options" class="pro-options" hidden>
-            <p class="pro-options-kicker">PRO</p>
-            <div class="pro-field">
-              <span id="pro-expiry-label">Caduca</span>
-              <div id="pro-expiry" class="expiry-pills" role="radiogroup" aria-labelledby="pro-expiry-label" data-value="86400">
-                <button type="button" class="expiry-pill" role="radio" aria-checked="true" data-expiry="86400">24 horas</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="604800">7 días</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="2592000">30 días</button>
+
+          <div id="drop-options" class="drop-options">
+            <div class="drop-field">
+              <span id="expiry-label" class="drop-field-label">Caduca</span>
+              <div id="expiry-choice" class="expiry-pills" role="radiogroup" aria-labelledby="expiry-label" data-value="604800">
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 hora</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 horas</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 días</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 días</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 días</button>
               </div>
             </div>
-            <div class="pro-field" id="pro-password-wrap">
-              <span id="pro-password-label">Contraseña</span>
+            <div class="drop-field" id="pro-password-wrap" hidden>
+              <span id="pro-password-label" class="drop-field-label">Contraseña</span>
               <div class="pro-password-controls">
+                <span class="drop-field-badge">PRO</span>
                 <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password" data-off="No" data-on="Proteger"></button>
                 <input id="pro-password" type="password" minlength="8" placeholder="Mín. 8 caracteres" autocomplete="new-password" hidden />
               </div>
@@ -247,13 +250,13 @@
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
                 focusable="false"><path d="M12 12.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" /><path d="M4.5 20a7.5 7.5 0 0 1 15 0" /><path d="m3 3 18 18" /></svg>
-              <span>Sin cuenta</span>
+              <span>Sin crear cuenta</span>
             </li>
             <li>
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
                 focusable="false"><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 1.8" /></svg>
-              <span>24 horas</span>
+              <span>Tú eliges la caducidad</span>
             </li>
             <li>
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
@@ -292,7 +295,7 @@
 
           <p>En soporte, Discord, Slack o un ticket casi siempre es “una captura rápida”. Guardar en Descargas, buscar el archivo y adjuntarlo es un rollo. Pegar desde el portapapeles deja todo en la misma pestaña.</p>
 
-          <p>dropimg.io te devuelve un enlace temporal (24 horas). Lo mandas donde estés hablando. ¿Tienes la captura en el portapapeles y te hace falta una URL? Pégala aquí.</p>
+          <p>dropimg.io te devuelve un enlace temporal que dura 1 hora, 24 horas o 7 días, lo que elijas. Lo mandas donde estés hablando. ¿Tienes la captura en el portapapeles y te hace falta una URL? Pégala aquí.</p>
 
           <h2>Formatos</h2>
 

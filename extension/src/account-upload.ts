@@ -1,11 +1,18 @@
 import {
   API_ORIGIN,
+  chooseExpirySeconds,
+  EXPIRY_7D,
   mapError,
   type CaptureResult,
   type UploadErrorBody,
   type UploadResponse,
 } from "./shared";
 
+/**
+ * No expiry header, so the server applies its own anonymous default. The popup
+ * has no lifetime control until a token is connected, and inventing one here
+ * would let the extension drift from whatever the server actually allows.
+ */
 export async function uploadAnonymous(
   bytes: ArrayBuffer,
   client: string,
@@ -72,6 +79,7 @@ export async function validateIntegrationToken(
       plan: "free" | "pro" | "anonymous";
       maxUploadBytes: number;
       allowedExpirySeconds: number[];
+      defaultExpirySeconds: number;
     }
   | { ok: false; error: string }
 > {
@@ -88,14 +96,23 @@ export async function validateIntegrationToken(
         plan?: "free" | "pro" | "anonymous";
         maxUploadBytes?: number;
         allowedExpirySeconds?: number[];
+        defaultExpirySeconds?: number;
       };
     };
+    const allowedExpirySeconds = body.entitlements?.allowedExpirySeconds?.length
+      ? body.entitlements.allowedExpirySeconds
+      : [EXPIRY_7D];
     return {
       ok: true,
       emailMasked: body.user?.emailMasked || "",
       plan: body.entitlements?.plan === "pro" ? "pro" : "free",
       maxUploadBytes: body.entitlements?.maxUploadBytes || 10 * 1024 * 1024,
-      allowedExpirySeconds: body.entitlements?.allowedExpirySeconds || [86400],
+      allowedExpirySeconds,
+      defaultExpirySeconds: chooseExpirySeconds(
+        allowedExpirySeconds,
+        undefined,
+        body.entitlements?.defaultExpirySeconds,
+      ),
     };
   } catch {
     return { ok: false, error: mapError("network") };

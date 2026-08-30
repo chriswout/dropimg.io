@@ -16,9 +16,11 @@ import {
 } from "./storage";
 import {
   API_ORIGIN,
+  EXPIRY_1H,
   EXPIRY_24H,
   EXPIRY_30D,
   EXPIRY_7D,
+  EXPIRY_90D,
   accountUrl,
   chooseExpirySeconds,
   integrationTokenLooksValid,
@@ -27,6 +29,7 @@ import {
   type CaptureResult,
   type RecentItem,
 } from "./shared";
+import { expiryCountdown } from "../../src/lib/expiry-format";
 
 const idle = el("state-idle");
 const loading = el("state-loading");
@@ -99,9 +102,11 @@ function showAccount(view: "anon" | "connect" | "connected") {
 function fillExpirySelect(allowed: number[], selected: number) {
   const select = el<HTMLSelectElement>("expiry-select");
   const options: Array<{ value: number; label: string }> = [
+    { value: EXPIRY_1H, label: msg("expiry1h") },
     { value: EXPIRY_24H, label: msg("expiry24h") },
     { value: EXPIRY_7D, label: msg("expiry7d") },
     { value: EXPIRY_30D, label: msg("expiry30d") },
+    { value: EXPIRY_90D, label: msg("expiry90d") },
   ];
   select.innerHTML = "";
   for (const opt of options) {
@@ -125,7 +130,11 @@ async function renderAccount() {
   el("account-plan").textContent =
     profile.plan === "pro" ? msg("planPro") : msg("planFree");
   const preferred = await loadLastExpiry();
-  const selected = chooseExpirySeconds(profile.allowedExpirySeconds, preferred);
+  const selected = chooseExpirySeconds(
+    profile.allowedExpirySeconds,
+    preferred,
+    profile.defaultExpirySeconds,
+  );
   fillExpirySelect(profile.allowedExpirySeconds, selected);
   showAccount("connected");
 }
@@ -147,15 +156,16 @@ function formatTakenAgo(createdAtSec: number): string {
 }
 
 function formatExpiry(expiresAt: number): string {
-  const ms = expiresAt * 1000 - Date.now();
-  if (ms <= 0) return `${msg("expiresPrefix")} ${msg("expiresSoon")}`;
-  const hours = Math.floor(ms / 3_600_000);
-  if (hours >= 23) return `${msg("expiresPrefix")} ${msg("expiresAbout24h")}`;
-  if (hours > 0) {
-    return `${msg("expiresPrefix")} ${msg("expiresInHours", String(hours))}`;
-  }
-  const mins = Math.max(1, Math.floor(ms / 60_000));
-  return `${msg("expiresPrefix")} ${msg("expiresInMins", String(mins))}`;
+  const countdown = expiryCountdown(expiresAt);
+  const tail =
+    countdown.unit === "soon"
+      ? msg("expiresSoon")
+      : countdown.unit === "days"
+        ? msg("expiresInDays", String(countdown.value))
+        : countdown.unit === "hours"
+          ? msg("expiresInHours", String(countdown.value))
+          : msg("expiresInMins", String(countdown.value));
+  return `${msg("expiresPrefix")} ${tail}`;
 }
 
 async function copyText(text: string): Promise<boolean> {
@@ -411,6 +421,7 @@ async function init() {
       plan: checked.plan,
       maxUploadBytes: checked.maxUploadBytes,
       allowedExpirySeconds: checked.allowedExpirySeconds,
+      defaultExpirySeconds: checked.defaultExpirySeconds,
     });
     el<HTMLInputElement>("token-input").value = "";
     await renderAccount();

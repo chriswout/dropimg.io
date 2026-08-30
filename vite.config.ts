@@ -3,7 +3,11 @@ import { fileURLToPath } from "node:url";
 import { cloudflare } from "@cloudflare/vite-plugin";
 import { defineConfig } from "vite";
 import { LOCALES } from "./marketing/locales";
-import { INTENT_PAGE_IDS, INTENT_PAGE_PATHS } from "./marketing/intent-pages";
+import {
+  INTENT_PAGE_IDS,
+  intentLocales,
+  intentPagePath,
+} from "./marketing/intent-pages";
 import { PAGE_IDS, pageDir } from "./marketing/pages";
 
 const root = dirname(fileURLToPath(import.meta.url));
@@ -22,8 +26,10 @@ function marketingHtmlInputs(): Record<string, string> {
   }
   input["browser-extension"] = resolve(root, "browser-extension/index.html");
   for (const id of INTENT_PAGE_IDS) {
-    const dir = INTENT_PAGE_PATHS[id].replace(/^\//, "");
-    input[id] = resolve(root, dir, "index.html");
+    for (const locale of intentLocales(id)) {
+      const dir = intentPagePath(id, locale).replace(/^\//, "");
+      input[dir.replace(/\//g, "--")] = resolve(root, dir, "index.html");
+    }
   }
   return input;
 }

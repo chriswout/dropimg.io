@@ -32,9 +32,12 @@ export type UiStrings = {
   needLongerBody: string;
   proControlsKicker: string;
   expiresLabel: string;
+  expiryHint: string;
+  expiry1h: string;
   expiry24h: string;
   expiry7d: string;
   expiry30d: string;
+  expiry90d: string;
   passwordLabel: string;
   passwordOff: string;
   passwordOn: string;
@@ -42,8 +45,8 @@ export type UiStrings = {
   networkError: string;
   uploadAborted: string;
   expiresSoon: string;
-  expiresAbout24h: string;
-  expiresInHours: (h: number, m: number) => string;
+  expiresInDays: (d: number) => string;
+  expiresInHours: (h: number) => string;
   expiresInMins: (m: number) => string;
   expiresPrefix: string;
   errors: Record<string, string>;
@@ -83,12 +86,15 @@ const en: UiStrings = {
   passwordProtected: "Password protected",
   manageInDrops: "Manage in My drops",
   needLongerTitle: "Need it longer?",
-  needLongerBody: "Keep links up to 30 days with Pro — $1.99/month.",
+  needLongerBody: "Keep links up to 90 days with Pro — $2.99/month.",
   proControlsKicker: "PRO",
   expiresLabel: "Expires",
+  expiryHint: "Choose how long the link lives.",
+  expiry1h: "1 hour",
   expiry24h: "24 hours",
   expiry7d: "7 days",
   expiry30d: "30 days",
+  expiry90d: "90 days",
   passwordLabel: "Password",
   passwordOff: "Off",
   passwordOn: "Protect",
@@ -96,9 +102,9 @@ const en: UiStrings = {
   networkError: "Network error during upload",
   uploadAborted: "Upload aborted",
   expiresSoon: "soon",
-  expiresAbout24h: "in about 24 hours",
-  expiresInHours: (h, m) => `in ${h}h ${m}m`,
-  expiresInMins: (m) => `in ${m}m`,
+  expiresInDays: (d) => `in ${d} ${d === 1 ? "day" : "days"}`,
+  expiresInHours: (h) => `in ${h} ${h === 1 ? "hour" : "hours"}`,
+  expiresInMins: (m) => `in ${m} ${m === 1 ? "minute" : "minutes"}`,
   expiresPrefix: "Expires",
   errors: {
     too_large: "File exceeds the 10 MB limit.",
@@ -147,12 +153,15 @@ const es: UiStrings = {
   passwordProtected: "Protegido con contraseña",
   manageInDrops: "Gestionar en Mis envíos",
   needLongerTitle: "¿Lo necesitas más tiempo?",
-  needLongerBody: "Conserva enlaces hasta 30 días con Pro — $1.99/mes.",
+  needLongerBody: "Conserva enlaces hasta 90 días con Pro — $2.99/mes.",
   proControlsKicker: "PRO",
   expiresLabel: "Caduca",
+  expiryHint: "Elige cuánto dura el enlace.",
+  expiry1h: "1 hora",
   expiry24h: "24 horas",
   expiry7d: "7 días",
   expiry30d: "30 días",
+  expiry90d: "90 días",
   passwordLabel: "Contraseña",
   passwordOff: "No",
   passwordOn: "Proteger",
@@ -160,9 +169,9 @@ const es: UiStrings = {
   networkError: "Error de red al subir",
   uploadAborted: "Subida cancelada",
   expiresSoon: "enseguida",
-  expiresAbout24h: "en unas 24 horas",
-  expiresInHours: (h, m) => `en ${h}h ${m}m`,
-  expiresInMins: (m) => `en ${m}m`,
+  expiresInDays: (d) => `en ${d} ${d === 1 ? "día" : "días"}`,
+  expiresInHours: (h) => `en ${h} ${h === 1 ? "hora" : "horas"}`,
+  expiresInMins: (m) => `en ${m} ${m === 1 ? "minuto" : "minutos"}`,
   expiresPrefix: "Caduca",
   errors: {
     too_large: "El archivo supera los 10 MB.",
@@ -211,12 +220,15 @@ const ptBR: UiStrings = {
   passwordProtected: "Protegido por senha",
   manageInDrops: "Gerenciar em Meus envios",
   needLongerTitle: "Precisa por mais tempo?",
-  needLongerBody: "Mantenha links por até 30 dias com Pro — $1.99/mês.",
+  needLongerBody: "Mantenha links por até 90 dias com Pro — $2.99/mês.",
   proControlsKicker: "PRO",
   expiresLabel: "Expira",
+  expiryHint: "Escolha quanto tempo o link dura.",
+  expiry1h: "1 hora",
   expiry24h: "24 horas",
   expiry7d: "7 dias",
   expiry30d: "30 dias",
+  expiry90d: "90 dias",
   passwordLabel: "Senha",
   passwordOff: "Não",
   passwordOn: "Proteger",
@@ -224,9 +236,9 @@ const ptBR: UiStrings = {
   networkError: "Erro de rede no envio",
   uploadAborted: "Envio cancelado",
   expiresSoon: "já já",
-  expiresAbout24h: "em cerca de 24 horas",
-  expiresInHours: (h, m) => `em ${h}h ${m}m`,
-  expiresInMins: (m) => `em ${m}m`,
+  expiresInDays: (d) => `em ${d} ${d === 1 ? "dia" : "dias"}`,
+  expiresInHours: (h) => `em ${h} ${h === 1 ? "hora" : "horas"}`,
+  expiresInMins: (m) => `em ${m} ${m === 1 ? "minuto" : "minutos"}`,
   expiresPrefix: "Expira",
   errors: {
     too_large: "O arquivo passa de 10 MB.",
@@ -275,12 +287,15 @@ const de: UiStrings = {
   passwordProtected: "Passwortgeschützt",
   manageInDrops: "In Meine Drops verwalten",
   needLongerTitle: "Länger behalten?",
-  needLongerBody: "Links bis 30 Tage mit Pro — $1.99/Monat.",
+  needLongerBody: "Links bis 90 Tage mit Pro — $2.99/Monat.",
   proControlsKicker: "PRO",
   expiresLabel: "Läuft ab",
+  expiryHint: "Wähle, wie lange der Link lebt.",
+  expiry1h: "1 Stunde",
   expiry24h: "24 Stunden",
   expiry7d: "7 Tage",
   expiry30d: "30 Tage",
+  expiry90d: "90 Tage",
   passwordLabel: "Passwort",
   passwordOff: "Aus",
   passwordOn: "Schützen",
@@ -288,9 +303,9 @@ const de: UiStrings = {
   networkError: "Netzwerkfehler beim Upload",
   uploadAborted: "Upload abgebrochen",
   expiresSoon: "gleich",
-  expiresAbout24h: "in etwa 24 Stunden",
-  expiresInHours: (h, m) => `in ${h}h ${m}m`,
-  expiresInMins: (m) => `in ${m}m`,
+  expiresInDays: (d) => `in ${d} ${d === 1 ? "Tag" : "Tagen"}`,
+  expiresInHours: (h) => `in ${h} ${h === 1 ? "Stunde" : "Stunden"}`,
+  expiresInMins: (m) => `in ${m} ${m === 1 ? "Minute" : "Minuten"}`,
   expiresPrefix: "Läuft ab",
   errors: {
     too_large: "Datei ist größer als 10 MB.",

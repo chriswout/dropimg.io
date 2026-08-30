@@ -18,22 +18,22 @@ type ExtensionCopy = LandingCopy & {
 export const EXTENSION_PAGE: ExtensionCopy = {
   title: "Chrome & Edge Screenshot Extension | dropimg.io",
   description:
-    "Capture the visible tab or a region — get a temporary dropimg.io link. Chrome and Edge. English, Spanish, Portuguese, German. No account.",
+    "Capture the visible tab or a region — get a temporary dropimg.io link. Chrome and Edge. English, Spanish, Portuguese, German. No account required.",
   ogTitle: "Screenshot to link — Chrome & Edge extension | dropimg.io",
   ogDescription:
     "Visible or region capture. Upload to dropimg.io, copy a temporary share link. Alt+Shift+D for silent capture.",
   twitterTitle: "dropimg.io browser extension",
   twitterDescription:
-    "Screenshot → temporary link. Visible or region. No account. Expires in 24 hours.",
+    "Screenshot → temporary link. Visible or region. No account required, and you pick the expiry.",
   h1: "Screenshot to link, from your toolbar",
-  lede: "Capture what you see or draw a region — then get a temporary shareable link. No account. Expires in 24 hours. Available in English, Spanish, Portuguese (Brazil), and German.",
+  lede: "Capture what you see or draw a region — then get a temporary shareable link. No account required, and you choose whether it lasts 1 hour, 24 hours, or 7 days. Available in English, Spanish, Portuguese (Brazil), and German.",
   heroKicker: "Browser extension",
   heroTitle: "DropIMG for your browser",
   heroTagline: "Capture. Upload. Link copied.",
   heroFacts: [
     "Chrome and Edge",
     "Alt+Shift+D for a silent capture",
-    "Links expire in 24 hours",
+    "Links expire in 1 hour, 24 hours, or 7 days",
   ],
   detailsHeading: "Details",
   skip: "Skip to details",
@@ -90,7 +90,7 @@ export const EXTENSION_PAGE: ExtensionCopy = {
     },
     {
       type: "p",
-      text: "We do not sell data or require an account. Uploads follow the same rules as the website: metadata stripping when supported, 24-hour expiry. Details are in the Privacy Policy.",
+      text: "We do not sell data or require an account. Uploads follow the same rules as the website: metadata stripping when supported, and the expiry you choose. Details are in the Privacy Policy.",
     },
     {
       type: "h2",
@@ -98,7 +98,7 @@ export const EXTENSION_PAGE: ExtensionCopy = {
     },
     {
       type: "p",
-      text: "No annotation tools, OCR, AI analysis, accounts, or cloud sync. One job: capture → link.",
+      text: "No annotation tools, OCR, AI analysis, or cloud sync. One job: capture → link. Signing in is optional and only adds history, longer links, and larger uploads.",
     },
   ],
 };

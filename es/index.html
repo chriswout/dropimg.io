@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Comparte capturas con un enlace temporal | dropimg.io</title>
-    <meta name="description" content="Pega o arrastra una captura y genera un enlace en segundos. Sin cuenta. Se borra solo a las 24 horas. PNG, JPEG, WebP o GIF hasta 10 MB." />
+    <meta name="description" content="Pega o arrastra una captura y genera un enlace en segundos. Sin crear cuenta. Elige 1 hora, 24 horas o 7 días. PNG, JPEG, WebP o GIF hasta 10 MB." />
     <link rel="canonical" href="https://dropimg.io/es" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es" />
@@ -30,7 +30,7 @@
     <meta property="og:locale" content="es_ES" />
     <meta property="og:url" content="https://dropimg.io/es" />
     <meta property="og:title" content="Comparte capturas con un enlace temporal | dropimg.io" />
-    <meta property="og:description" content="Pega o arrastra una captura y genera un enlace en segundos. Sin cuenta. Se borra a las 24 horas." />
+    <meta property="og:description" content="Pega o arrastra una captura y genera un enlace en segundos. Sin crear cuenta. Tú eliges cuándo caduca." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
@@ -38,7 +38,7 @@
     <meta property="og:image:alt" content="dropimg.io" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="dropimg.io — Suelta una imagen. Llévate el enlace." />
-    <meta name="twitter:description" content="Comparte capturas sin cuenta. El enlace dura 24 horas y listo." />
+    <meta name="twitter:description" content="Comparte capturas sin crear cuenta. Tú decides cuánto dura el enlace." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -55,7 +55,7 @@
             "applicationCategory": "UtilitiesApplication",
             "operatingSystem": "Any",
             "browserRequirements": "Requires JavaScript for upload UI",
-            "description": "Herramienta para compartir imágenes de forma temporal: pegas o subes una imagen y obtienes un enlace que se borra a las 24 horas.",
+            "description": "Herramienta para compartir imágenes de forma temporal: pegas o subes una imagen y obtienes un enlace que caduca a la hora, a las 24 horas o a los 7 días.",
             "image": "https://dropimg.io/og.png",
             "offers": {
               "@type": "Offer",
@@ -69,7 +69,7 @@
             "name": "dropimg.io",
             "url": "https://dropimg.io/es",
             "inLanguage": "es",
-            "description": "dropimg.io te deja pegar, arrastrar o subir una imagen y crear al momento un enlace temporal que desaparece a las 24 horas.",
+            "description": "dropimg.io te deja pegar, arrastrar o subir una imagen y crear al momento un enlace temporal que caduca cuando tú decides.",
             "publisher": {
               "@id": "https://dropimg.io/#org"
             }
@@ -85,7 +85,7 @@
             "@type": "HowTo",
             "@id": "https://dropimg.io/es#howto",
             "name": "Cómo compartir una imagen temporal con dropimg.io",
-            "description": "Sube una imagen, copia el enlace y compártelo. Los enlaces duran 24 horas.",
+            "description": "Sube una imagen, elige cuánto dura el enlace y compártelo. Todos los enlaces caducan.",
             "inLanguage": "es",
             "totalTime": "PT1M",
             "step": [
@@ -119,7 +119,7 @@
                 "name": "¿Cuánto tiempo está disponible la imagen?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Se elimina sola a las 24 horas de subirla."
+                  "text": "El tiempo que elijas: 1 hora, 24 horas o 7 días, con 7 días por defecto. Con Pro el enlace puede durar hasta 90 días."
                 }
               },
               {
@@ -127,7 +127,7 @@
                 "name": "¿Hace falta crear una cuenta?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "No. Subes, compartes y listo — sin registro."
+                  "text": "No. Subes, compartes y listo — sin registro. La cuenta es opcional: la gratuita reúne tus 10 últimos enlaces activos y Pro añade enlaces más largos, archivos más grandes y contraseñas."
                 }
               },
               {
@@ -173,7 +173,7 @@
         </a>
         <div class="header-actions">
           <nav id="account-nav" class="account-nav" aria-label="Cuenta">
-            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/es/pro">Pro · $1.99</a>
+            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/es/pro">Pro · $2.99</a>
             <a id="account-signin" class="account-chip" href="/login">Entrar</a>
             <div id="account-session" class="account-session" hidden>
               <a id="account-app" class="account-nav-link" href="/app">Mis envíos</a>
@@ -225,7 +225,7 @@
           <h1 class="tagline">Suelta una imagen. Llévate el enlace.</h1>
           <p class="sub">
             Pega, arrastra o elige una imagen.<br />
-            Sin cuenta. Se borra a las 24 horas.
+            Sin crear cuenta. Tú eliges cuándo caduca.
           </p>
 
           <section
@@ -318,7 +318,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>¿Lo necesitas más tiempo?</strong>
-                Conserva enlaces hasta 30 días con Pro — $1.99/mes.
+                Conserva enlaces hasta 90 días con Pro — $2.99/mes.
               </p>
             </div>
 
@@ -328,19 +328,22 @@
               <button id="btn-retry" type="button" class="btn primary">Reintentar</button>
             </div>
           </section>
-          <div id="pro-options" class="pro-options" hidden>
-            <p class="pro-options-kicker">PRO</p>
-            <div class="pro-field">
-              <span id="pro-expiry-label">Caduca</span>
-              <div id="pro-expiry" class="expiry-pills" role="radiogroup" aria-labelledby="pro-expiry-label" data-value="86400">
-                <button type="button" class="expiry-pill" role="radio" aria-checked="true" data-expiry="86400">24 horas</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="604800">7 días</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="2592000">30 días</button>
+
+          <div id="drop-options" class="drop-options">
+            <div class="drop-field">
+              <span id="expiry-label" class="drop-field-label">Caduca</span>
+              <div id="expiry-choice" class="expiry-pills" role="radiogroup" aria-labelledby="expiry-label" data-value="604800">
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 hora</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 horas</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 días</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 días</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 días</button>
               </div>
             </div>
-            <div class="pro-field" id="pro-password-wrap">
-              <span id="pro-password-label">Contraseña</span>
+            <div class="drop-field" id="pro-password-wrap" hidden>
+              <span id="pro-password-label" class="drop-field-label">Contraseña</span>
               <div class="pro-password-controls">
+                <span class="drop-field-badge">PRO</span>
                 <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password" data-off="No" data-on="Proteger"></button>
                 <input id="pro-password" type="password" minlength="8" placeholder="Mín. 8 caracteres" autocomplete="new-password" hidden />
               </div>
@@ -352,13 +355,13 @@
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
                 focusable="false"><path d="M12 12.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" /><path d="M4.5 20a7.5 7.5 0 0 1 15 0" /><path d="m3 3 18 18" /></svg>
-              <span>Sin cuenta</span>
+              <span>Sin crear cuenta</span>
             </li>
             <li>
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
                 focusable="false"><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 1.8" /></svg>
-              <span>24 horas</span>
+              <span>Tú eliges la caducidad</span>
             </li>
             <li>
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
@@ -436,7 +439,7 @@
             <div class="feature-copy">
               <p class="feature-kicker">Temporal por diseño</p>
               <h2 id="feature-heading" class="feature-title">Compártelo y olvídate.</h2>
-              <p class="feature-body">Cada enlace se borra solo. Las subidas gratis desaparecen 24 horas después: sin limpiar nada, sin archivo, sin restos en ningún servidor.</p>
+              <p class="feature-body">Cada enlace se borra solo. Elige 1 hora, 24 horas o 7 días antes de subir: sin limpiar nada, sin archivo, sin restos en ningún servidor.</p>
             </div>
             <div class="feature-visual">
               <div class="fv-stage">
@@ -455,7 +458,7 @@
                   </svg>
                 </div>
               </div>
-              <p class="feature-note">Caduca en 24 h</p>
+              <p class="feature-note">De 1 hora a 7 días, gratis</p>
             </div>
           </section>
 
@@ -465,12 +468,12 @@
               <details>
                 <summary>¿Cuánto tiempo está disponible la imagen?</summary>
                 <p>
-                  Se elimina sola a las 24 horas de subirla.
+                  El tiempo que elijas: 1 hora, 24 horas o 7 días, con 7 días por defecto. Con Pro el enlace puede durar hasta 90 días.
                 </p>
               </details>
               <details>
                 <summary>¿Hace falta crear una cuenta?</summary>
-                <p>No. Subes, compartes y listo — sin registro.</p>
+                <p>No. Subes, compartes y listo — sin registro. La cuenta es opcional: la gratuita reúne tus 10 últimos enlaces activos y Pro añade enlaces más largos, archivos más grandes y contraseñas.</p>
               </details>
               <details>
                 <summary>¿Puedo borrarla antes de que expire?</summary>

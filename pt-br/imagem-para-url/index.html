@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html lang="pt-BR" data-locale="pt-BR" data-page-intent="temporary-hosting">
+<html lang="pt-BR" data-locale="pt-BR" data-page-intent="image-to-url">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Hospedagem temporária de imagens sem conta | dropimg.io</title>
-    <meta name="description" content="Manda a imagem, ganha o link e segue. Sem criar conta. Expira em 1 hora, 24 horas ou 7 dias. PNG, JPEG, WebP ou GIF. Metadados removidos na hora de salvar." />
-    <link rel="canonical" href="https://dropimg.io/pt-br/hospedagem-temporaria-de-imagens" />
-    <link rel="alternate" hreflang="en" href="https://dropimg.io/temporary-image-hosting" />
-    <link rel="alternate" hreflang="es" href="https://dropimg.io/es/alojamiento-temporal-imagenes" />
-    <link rel="alternate" hreflang="pt-BR" href="https://dropimg.io/pt-br/hospedagem-temporaria-de-imagens" />
-    <link rel="alternate" hreflang="de" href="https://dropimg.io/de/temporaeres-bildhosting" />
-    <link rel="alternate" hreflang="x-default" href="https://dropimg.io/temporary-image-hosting" />
+    <title>Imagem para URL — Envie uma imagem e receba um link | dropimg.io</title>
+    <meta name="description" content="Transforme imagem em URL na hora. Arraste ou cole o arquivo, escolha 1 hora, 24 horas ou 7 dias e copie o link. Sem criar conta." />
+    <link rel="canonical" href="https://dropimg.io/pt-br/imagem-para-url" />
+    <link rel="alternate" hreflang="en" href="https://dropimg.io/image-to-url" />
+    <link rel="alternate" hreflang="es" href="https://dropimg.io/es/imagen-a-url" />
+    <link rel="alternate" hreflang="pt-BR" href="https://dropimg.io/pt-br/imagem-para-url" />
+    <link rel="alternate" hreflang="x-default" href="https://dropimg.io/image-to-url" />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
@@ -28,20 +27,94 @@
 </script>
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="pt_BR" />
-    <meta property="og:url" content="https://dropimg.io/pt-br/hospedagem-temporaria-de-imagens" />
-    <meta property="og:title" content="Hospedagem temporária de imagens | dropimg.io" />
-    <meta property="og:description" content="Um link pra sua imagem por uma hora, um dia ou uma semana. Sem criar conta." />
+    <meta property="og:url" content="https://dropimg.io/pt-br/imagem-para-url" />
+    <meta property="og:title" content="Imagem para URL | dropimg.io" />
+    <meta property="og:description" content="Envie uma imagem e receba um link. Sem conta, e você escolhe quando expira." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="dropimg.io" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Hospedagem temporária de imagens | dropimg.io" />
-    <meta name="twitter:description" content="Um link pra sua imagem por uma hora, um dia ou uma semana. Sem criar conta." />
+    <meta name="twitter:title" content="Imagem para URL" />
+    <meta name="twitter:description" content="Envie uma imagem e copie um link para compartilhar. Você escolhe a duração." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "HowTo",
+            "@id": "https://dropimg.io/pt-br/imagem-para-url#howto",
+            "name": "Transformar uma imagem em URL",
+            "description": "Envie uma imagem, escolha a duração do link e copie a URL.",
+            "inLanguage": "pt-BR",
+            "totalTime": "PT1M",
+            "step": [
+              {
+                "@type": "HowToStep",
+                "position": 1,
+                "name": "Adicione a imagem",
+                "text": "Cole com ⌘V ou Ctrl+V, arraste o arquivo para a área de envio ou escolha do seu aparelho."
+              },
+              {
+                "@type": "HowToStep",
+                "position": 2,
+                "name": "Escolha a duração",
+                "text": "1 hora, 24 horas ou 7 dias. Sete dias já vem selecionado, se você não mudar."
+              },
+              {
+                "@type": "HowToStep",
+                "position": 3,
+                "name": "Copie o link",
+                "text": "Ele é copiado assim que o envio termina: cole num chat, num e-mail ou num chamado."
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://dropimg.io/pt-br/imagem-para-url#faq",
+            "inLanguage": "pt-BR",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Preciso de conta para transformar imagem em URL?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Não. Enviar e compartilhar funciona sem cadastro. A conta gratuita é opcional e reúne os seus 10 últimos links ativos; o Pro acrescenta links mais longos, arquivos maiores e senhas."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Por quanto tempo a URL da imagem funciona?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Pelo prazo que você escolher antes de enviar: 1 hora, 24 horas ou 7 dias. Sete dias é o padrão. Com o Pro, um link pode durar até 90 dias contados do envio original."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Isso é hospedagem permanente de imagens?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Não. Toda URL do dropimg.io expira e o arquivo é apagado depois. Ele foi feito para compartilhar por um tempo, não para armazenar."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Quais arquivos posso transformar em URL?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "PNG, JPEG, WebP e GIF até 10 MB no plano gratuito, ou até 50 MB com o Pro. SVG não é aceito."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#dropzone">Ir para o envio</a>
@@ -107,10 +180,10 @@
               <span class="lang-label">Português (Brasil)</span>
             </summary>
             <ul class="lang-menu">
-            <li><a href="/temporary-image-hosting" hreflang="en" lang="en">English</a></li>
-            <li><a href="/es/alojamiento-temporal-imagenes" hreflang="es" lang="es">Español</a></li>
-            <li><a href="/pt-br/hospedagem-temporaria-de-imagens" hreflang="pt-BR" lang="pt-BR" aria-current="page">Português (Brasil)</a></li>
-            <li><a href="/de/temporaeres-bildhosting" hreflang="de" lang="de">Deutsch</a></li>
+            <li><a href="/image-to-url" hreflang="en" lang="en">English</a></li>
+            <li><a href="/es/imagen-a-url" hreflang="es" lang="es">Español</a></li>
+            <li><a href="/pt-br/imagem-para-url" hreflang="pt-BR" lang="pt-BR" aria-current="page">Português (Brasil)</a></li>
+            <li><a href="/de" hreflang="de" lang="de">Deutsch</a></li>
             </ul>
           </details>
         </nav>
@@ -120,8 +193,8 @@
 
       <main>
         <section class="seo-hero">
-          <h1 class="tagline">Hospedagem temporária de imagens</h1>
-          <p class="sub seo-lede">Precisa só de um link — não de uma galeria eterna? O dropimg.io guarda o arquivo pelo tempo que você escolher e depois apaga.</p>
+          <h1 class="tagline">Imagem para URL</h1>
+          <p class="sub seo-lede">Arraste ou cole uma imagem e copie um link para compartilhar onde quiser. Sem criar conta, e você escolhe quanto tempo ele dura.</p>
 
           <section
             id="dropzone"
@@ -272,39 +345,110 @@
           </section>
         </section>
 
-        <article class="seo-article">
-          <h2>Pra que isso serve de verdade</h2>
+        <section class="below" aria-label="Sobre o dropimg.io">
+          <section class="howto-compact" aria-labelledby="intent-howto" data-enter>
+            <h2 id="intent-howto">Transforme uma imagem em link</h2>
+            <ol class="flow">
+              <li>
+                <span class="flow-step" aria-hidden="true">01</span>
+                <span class="flow-visual" aria-hidden="true">
+                  <svg viewBox="0 0 104 64" width="104" height="64" fill="none" stroke="currentColor"
+                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <path d="M52 2v13m-5-5 5 5 5-5" stroke-width="1.9" />
+                    <rect x="15.5" y="21.5" width="73" height="39" rx="9" stroke-width="1.5"
+                      stroke-dasharray="5 4.5" opacity=".5" />
+                    <circle cx="35" cy="34" r="3.2" stroke-width="1.5" opacity=".85" />
+                    <path d="M23 53l11-10a3.4 3.4 0 0 1 4.6 0L47 51" stroke-width="1.5" opacity=".85" />
+                    <path d="M50 47l6.5-6a3.4 3.4 0 0 1 4.6 0L74 53" stroke-width="1.5" opacity=".85" />
+                  </svg>
+                </span>
+                <strong>Adicione a imagem</strong>
+                <span class="flow-detail">Cole com ⌘V ou Ctrl+V, arraste o arquivo para a área de envio ou escolha do seu aparelho.</span>
+              </li>
+              <li>
+                <span class="flow-step" aria-hidden="true">02</span>
+                <span class="flow-visual" aria-hidden="true">
+                  <svg viewBox="0 0 104 64" width="104" height="64" fill="none" stroke="currentColor"
+                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <rect x="4.5" y="21.5" width="70" height="21" rx="10.5" stroke-width="1.5" opacity=".5" />
+                    <path d="M15 32h30" stroke-width="2.6" opacity=".4" />
+                    <path d="M50 32h13" stroke-width="2.6" opacity=".9" />
+                    <rect x="81.5" y="21.5" width="18" height="18" rx="5" stroke-width="1.5" />
+                    <path d="m86 30.5 3.2 3.2 6.3-6.4" stroke-width="1.9" />
+                  </svg>
+                </span>
+                <strong>Escolha a duração</strong>
+                <span class="flow-detail">1 hora, 24 horas ou 7 dias. Sete dias já vem selecionado, se você não mudar.</span>
+              </li>
+              <li>
+                <span class="flow-step" aria-hidden="true">03</span>
+                <span class="flow-visual" aria-hidden="true">
+                  <svg viewBox="0 0 104 64" width="104" height="64" fill="none" stroke="currentColor"
+                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <path d="M11 13h50a7 7 0 0 1 7 7v13a7 7 0 0 1-7 7H27l-11 8v-8h-5a7 7 0 0 1-7-7V20a7 7 0 0 1 7-7Z"
+                      stroke-width="1.5" opacity=".5" />
+                    <path d="M17 24h32" stroke-width="2.2" opacity=".4" />
+                    <path d="M17 31h19" stroke-width="2.2" opacity=".85" />
+                    <path d="M78 32h18m-6-6 6 6-6 6" stroke-width="1.9" />
+                  </svg>
+                </span>
+                <strong>Copie o link</strong>
+                <span class="flow-detail">Ele é copiado assim que o envio termina: cole num chat, num e-mail ou num chamado.</span>
+              </li>
+            </ol>
+          </section>
 
-          <p>Hospedagem permanente é ótima pra blog e portfólio. O dia a dia é outro: print de bug no Slack, rascunho no Discord, comprovante num ticket, mockup num pull request, print no WhatsApp.</p>
+          <article class="seo-article">
+          <h2>Do arquivo ao link</h2>
 
-          <p>Você leva uma URL curta. Quem tiver o link vê a imagem até expirar. Sem galeria pública e sem cadastro.</p>
+          <p>Use a área de envio acima. Quando o upload termina, o link fica pronto para copiar e o prazo escolhido aparece do lado, então você sempre sabe até quando ele funciona.</p>
 
-          <h2>Você decide quanto tempo dura</h2>
-
-          <p>Quase todo print que a gente manda vale por minutos ou horas, não por meses. Escolha 1 hora, 24 horas ou 7 dias antes de enviar — 7 dias já vem selecionado — e nada fica parado por aí sem ninguém pedir.</p>
-
-          <p>Precisa de mais tempo? Com o Pro dá pra escolher 30 ou 90 dias, colocar senha e enviar até 50 MB. Precisa sumir agora? Depois do envio você ganha um link privado pra excluir na hora.</p>
-
-          <h2>O que dá pra enviar</h2>
+          <h2>O que você recebe</h2>
 
           <ul>
-            <li>PNG, JPEG, WebP, GIF</li>
-            <li>Até 10 MB</li>
-            <li>Sem SVG (por segurança)</li>
+            <li>Uma página pública curta para a imagem.</li>
+            <li>Uma URL direta em /i/… para incorporar onde for permitido.</li>
+            <li>Exclusão automática quando o prazo escolhido termina.</li>
+            <li>PNG, JPEG, WebP e GIF até 10 MB, sem metadados quando o formato permite.</li>
           </ul>
 
-          <h2>Privacidade desde o começo</h2>
+          <h2>Gerar link para imagem sem criar conta</h2>
 
-          <p>Sem cadastro obrigatório. Sem pasta pública de uploads. Páginas de compartilhamento vão com noindex. Em JPEG, PNG e WebP a gente remove EXIF e metadados parecidos antes de guardar; se não der pra remover, o envio é recusado.</p>
+          <p>Enviar sem conta é o padrão aqui, não um teste. Entrar é opcional: a conta gratuita reúne os seus 10 últimos links ativos, e o Pro acrescenta links de até 90 dias, envios de 50 MB, proteção por senha e envio pela extensão e pelo ShareX.</p>
 
-          <p>Com o dropimg.io você cola, arrasta ou envia uma imagem e cria um link temporário que some sozinho quando o prazo escolhido termina.</p>
-        </article>
+          <h2>Não é CDN nem galeria</h2>
+
+          <p>O dropimg.io transforma imagem em link para compartilhar por um tempo. Não há galeria pública nem plano de armazenamento permanente: se você precisa do arquivo no ar por tempo indeterminado, use um serviço feito para isso.</p>
+          </article>
+
+          <section class="faq-compact" id="faq" aria-labelledby="intent-faq" data-enter>
+            <h2 id="intent-faq">Dúvidas sobre imagem para URL</h2>
+            <div class="faq-list">
+              <details>
+                <summary>Preciso de conta para transformar imagem em URL?</summary>
+                <p>Não. Enviar e compartilhar funciona sem cadastro. A conta gratuita é opcional e reúne os seus 10 últimos links ativos; o Pro acrescenta links mais longos, arquivos maiores e senhas.</p>
+              </details>
+              <details>
+                <summary>Por quanto tempo a URL da imagem funciona?</summary>
+                <p>Pelo prazo que você escolher antes de enviar: 1 hora, 24 horas ou 7 dias. Sete dias é o padrão. Com o Pro, um link pode durar até 90 dias contados do envio original.</p>
+              </details>
+              <details>
+                <summary>Isso é hospedagem permanente de imagens?</summary>
+                <p>Não. Toda URL do dropimg.io expira e o arquivo é apagado depois. Ele foi feito para compartilhar por um tempo, não para armazenar.</p>
+              </details>
+              <details>
+                <summary>Quais arquivos posso transformar em URL?</summary>
+                <p>PNG, JPEG, WebP e GIF até 10 MB no plano gratuito, ou até 50 MB com o Pro. SVG não é aceito.</p>
+              </details>
+            </div>
+          </section>
+        </section>
 
 
         <nav class="seo-more" aria-label="Veja também">
           <a href="/pt-br/colar-captura-de-tela-online">Colar print online</a>
           <span aria-hidden="true">·</span>
-          <a href="/pt-br/compartilhar-imagem-com-link">Compartilhar imagem com link</a>
+          <a href="/pt-br/hospedagem-temporaria-de-imagens">Hospedagem temporária de imagens</a>
           <span aria-hidden="true">·</span>
           <a href="/pt-br">Início</a>
         </nav>

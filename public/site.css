@@ -1717,13 +1717,13 @@ main {
 }
 
 .page-home .dropzone,
-.page-home .pro-options,
+.page-home .drop-options,
 .page-home .recent,
 .page-home .ext-promo {
   width: 100%;
 }
 
-.page-home .pro-options {
+.page-home .drop-options {
   justify-content: center;
 }
 
@@ -2184,7 +2184,7 @@ html[data-theme="dark"] kbd {
 .field,
 .url-input,
 .account-form input,
-.pro-field input,
+.drop-field input,
 .drop-url-input {
   width: 100%;
   min-width: 0;
@@ -2204,14 +2204,14 @@ html[data-theme="dark"] kbd {
 
 .field::placeholder,
 .account-form input::placeholder,
-.pro-field input::placeholder {
+.drop-field input::placeholder {
   color: var(--text-muted);
 }
 
 .field:focus,
 .url-input:focus,
 .account-form input:focus,
-.pro-field input:focus,
+.drop-field input:focus,
 .drop-url-input:focus {
   outline: none;
   background: var(--surface);
@@ -2874,11 +2874,11 @@ html[data-theme="dark"] kbd {
   }
 
   /*
-   * On mobile the Pro controls read as a compact tray hanging off the bottom
-   * of the uploader, not as a second panel competing with it: flush width,
-   * small radius, no elevation of its own, everything one step smaller.
+   * On mobile the lifecycle controls read as a compact tray hanging off the
+   * bottom of the uploader, not as a second panel competing with it: flush
+   * width, small radius, no elevation of its own, everything one step smaller.
    */
-  .pro-options {
+  .drop-options {
     width: 100%;
     justify-content: flex-start;
     gap: 0.4rem 0.55rem;
@@ -2889,12 +2889,12 @@ html[data-theme="dark"] kbd {
     box-shadow: none;
   }
 
-  .pro-options-kicker {
+  .drop-field-badge {
     padding: 0.1rem 0.45rem;
     font-size: 0.625rem;
   }
 
-  .pro-field {
+  .drop-field {
     gap: 0.45rem;
     font-size: 0.75rem;
   }
@@ -2936,7 +2936,7 @@ html[data-theme="dark"] kbd {
     transform: translateX(16px);
   }
 
-  .pro-field input {
+  .drop-field input {
     flex: 1;
     min-width: 0;
     min-height: 34px;
@@ -3257,15 +3257,6 @@ html[data-theme="dark"] kbd {
   padding-left: 1.2rem;
   color: var(--text-secondary);
   line-height: 1.5;
-}
-
-.pro-options-kicker {
-  width: 100%;
-  margin: 0;
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
 }
 
 .pro-status {
@@ -3824,11 +3815,11 @@ html[data-theme="dark"] kbd {
 }
 
 /*
- * Pro upload controls. Reads as one quiet bar docked under the uploader so it
+ * Lifecycle controls. Reads as one quiet bar docked under the uploader so it
  * never competes with the drop target itself.
  */
 
-.pro-options {
+.drop-options {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -3836,22 +3827,21 @@ html[data-theme="dark"] kbd {
   width: fit-content;
   max-width: 100%;
   margin: 1rem auto 0;
-  padding: 0.5rem 1.1rem 0.5rem 0.6rem;
+  padding: 0.5rem 1.1rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-pill);
   background: var(--surface);
   box-shadow: var(--shadow-sm);
 }
 
-.pro-options[hidden] {
+.drop-options[hidden],
+.drop-field[hidden] {
   display: none !important;
 }
 
-.pro-options-kicker {
+.drop-field-badge {
   display: inline-flex;
   align-items: center;
-  width: auto;
-  margin: 0;
   padding: 0.25rem 0.6rem;
   border-radius: var(--radius-pill);
   background: var(--brand-soft);
@@ -3862,7 +3852,7 @@ html[data-theme="dark"] kbd {
   text-transform: uppercase;
 }
 
-.pro-field {
+.drop-field {
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -3873,7 +3863,7 @@ html[data-theme="dark"] kbd {
   white-space: nowrap;
 }
 
-.pro-field input {
+.drop-field input {
   min-width: 9rem;
   min-height: 38px;
   font-weight: 500;
@@ -4038,6 +4028,25 @@ html[data-theme="dark"] kbd {
   border-radius: 10px;
   background: var(--surface);
   box-shadow: var(--shadow-md);
+}
+
+/* Extend offers several lifetimes, so it needs a labelled block of its own. */
+.drop-extend-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.15rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.drop-extend-label {
+  padding: 0 0.2rem;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
 
 .drop-btn {

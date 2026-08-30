@@ -11,8 +11,11 @@ const PNG_1x1 = Uint8Array.from([
   0xae, 0x42, 0x60, 0x82,
 ]);
 
+const EXPIRY_1H = 60 * 60;
+const EXPIRY_24H = 24 * 60 * 60;
 const EXPIRY_7D = 7 * 24 * 60 * 60;
 const EXPIRY_30D = 30 * 24 * 60 * 60;
+const EXPIRY_90D = 90 * 24 * 60 * 60;
 
 const server = createTestHarness({
   workers: [
@@ -86,6 +89,104 @@ async function makePro(userId: string): Promise<void> {
     .run();
 }
 
+async function anonUpload(
+  ip: string,
+  expirySeconds?: number,
+): Promise<UploadResponse> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/octet-stream",
+    "CF-Connecting-IP": ip,
+  };
+  if (expirySeconds != null) headers["X-Dropimg-Expiry"] = String(expirySeconds);
+  const res = await worker.fetch("https://dropimg.io/api/upload", {
+    method: "POST",
+    headers,
+    body: PNG_1x1,
+  });
+  expect(res.status).toBe(201);
+  return (await res.json()) as UploadResponse;
+}
+
+async function imageRow(slug: string) {
+  const env = await worker.getEnv();
+  const row = await env.DB.prepare(
+    `SELECT r2_key, created_at, expires_at FROM images WHERE slug = ?`,
+  )
+    .bind(slug)
+    .first<{ r2_key: string; created_at: number; expires_at: number }>();
+  expect(row).toBeTruthy();
+  return row!;
+}
+
+async function claim(cookie: string, drop: UploadResponse): Promise<void> {
+  await worker.fetch("https://dropimg.io/api/account/claim", {
+    method: "POST",
+    headers: {
+      Cookie: cookie,
+      Origin: "https://dropimg.io",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      items: [{ slug: drop.slug, deleteToken: drop.deleteToken }],
+    }),
+  });
+}
+
+function extendTo(cookie: string, slug: string, expiry?: number) {
+  return worker.fetch(
+    `https://dropimg.io/api/account/images/${slug}/extend`,
+    {
+      method: "POST",
+      headers: {
+        Cookie: cookie,
+        Origin: "https://dropimg.io",
+        "Content-Type": "application/json",
+      },
+      body: expiry == null ? undefined : JSON.stringify({ expiry }),
+    },
+  );
+}
+
+describe("anonymous expiry header", () => {
+  it("defaults to 7 days and stores each lifetime under its R2 class", async () => {
+    const fallback = await anonUpload("203.0.113.10");
+    const defaulted = await imageRow(fallback.slug);
+    expect(defaulted.expires_at - defaulted.created_at).toBe(EXPIRY_7D);
+    expect(defaulted.r2_key.startsWith("o/7d/")).toBe(true);
+
+    const hour = await imageRow((await anonUpload("203.0.113.11", EXPIRY_1H)).slug);
+    expect(hour.expires_at - hour.created_at).toBe(EXPIRY_1H);
+    expect(hour.r2_key.startsWith("o/24h/")).toBe(true);
+
+    const day = await imageRow((await anonUpload("203.0.113.12", EXPIRY_24H)).slug);
+    expect(day.expires_at - day.created_at).toBe(EXPIRY_24H);
+    expect(day.r2_key.startsWith("o/24h/")).toBe(true);
+
+    const week = await imageRow((await anonUpload("203.0.113.13", EXPIRY_7D)).slug);
+    expect(week.r2_key.startsWith("o/7d/")).toBe(true);
+  });
+
+  it("rejects lifetimes the anonymous plan cannot reach", async () => {
+    for (const [ip, expiry] of [
+      ["203.0.113.14", EXPIRY_30D],
+      ["203.0.113.15", EXPIRY_90D],
+      ["203.0.113.16", 7200],
+    ] as const) {
+      const res = await worker.fetch("https://dropimg.io/api/upload", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/octet-stream",
+          "CF-Connecting-IP": ip,
+          "X-Dropimg-Expiry": String(expiry),
+        },
+        body: PNG_1x1,
+      });
+      expect(res.status).toBe(400);
+      expect(((await res.json()) as { code: string }).code).toBe("invalid_expiry");
+    }
+  });
+});
+
 describe("Pro expiry + extend", () => {
   it("accepts 7d Pro uploads on o/pro and extend copies claimed 24h objects first", async () => {
     const { cookie, userId } = await signIn("pro-extend@example.com");
@@ -124,55 +225,65 @@ describe("Pro expiry + extend", () => {
     expect(row?.r2_key.startsWith("o/pro/")).toBe(true);
     expect(row!.expires_at - row!.created_at).toBe(EXPIRY_7D);
 
-    const claimed = await worker.fetch("https://dropimg.io/api/upload", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/octet-stream",
-        "CF-Connecting-IP": "203.0.113.72",
-      },
-      body: PNG_1x1,
-    });
-    const anon = (await claimed.json()) as UploadResponse;
-    await worker.fetch("https://dropimg.io/api/account/claim", {
-      method: "POST",
-      headers: {
-        Cookie: cookie,
-        Origin: "https://dropimg.io",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        items: [{ slug: anon.slug, deleteToken: anon.deleteToken }],
-      }),
-    });
+    const anon = await anonUpload("203.0.113.72", EXPIRY_24H);
+    await claim(cookie, anon);
 
-    const before = await env.DB.prepare(
-      `SELECT r2_key, expires_at, created_at FROM images WHERE slug = ?`,
-    )
-      .bind(anon.slug)
-      .first<{ r2_key: string; expires_at: number; created_at: number }>();
-    expect(before?.r2_key.startsWith("o/24h/")).toBe(true);
-    const expiresBefore = before!.expires_at;
+    const before = await imageRow(anon.slug);
+    expect(before.r2_key.startsWith("o/24h/")).toBe(true);
 
-    const extend = await worker.fetch(
-      `https://dropimg.io/api/account/images/${anon.slug}/extend`,
-      {
-        method: "POST",
-        headers: { Cookie: cookie, Origin: "https://dropimg.io" },
-      },
-    );
+    const extend = await extendTo(cookie, anon.slug, EXPIRY_30D);
     expect(extend.status).toBe(200);
     const extended = (await extend.json()) as { expiresAt: number };
-    expect(extended.expiresAt).toBe(before!.created_at + EXPIRY_30D);
-    expect(extended.expiresAt).toBeGreaterThan(expiresBefore);
+    expect(extended.expiresAt).toBe(before.created_at + EXPIRY_30D);
+    expect(extended.expiresAt).toBeGreaterThan(before.expires_at);
 
-    const after = await env.DB.prepare(
-      `SELECT r2_key, expires_at FROM images WHERE slug = ?`,
-    )
-      .bind(anon.slug)
-      .first<{ r2_key: string; expires_at: number }>();
-    expect(after?.r2_key.startsWith("o/pro/")).toBe(true);
-    expect(await env.BUCKET.head(before!.r2_key)).toBeNull();
-    expect(await env.BUCKET.head(after!.r2_key)).toBeTruthy();
+    const after = await imageRow(anon.slug);
+    expect(after.r2_key.startsWith("o/pro/")).toBe(true);
+    expect(await env.BUCKET.head(before.r2_key)).toBeNull();
+    expect(await env.BUCKET.head(after.r2_key)).toBeTruthy();
+  });
+
+  it("moves a claimed 7-day object off o/7d and stops at the 90-day ceiling", async () => {
+    const { cookie, userId } = await signIn("pro-cap@example.com");
+    await makePro(userId);
+
+    const anon = await anonUpload("203.0.113.73");
+    await claim(cookie, anon);
+    const before = await imageRow(anon.slug);
+    expect(before.r2_key.startsWith("o/7d/")).toBe(true);
+
+    const toNinety = await extendTo(cookie, anon.slug, EXPIRY_90D);
+    expect(toNinety.status).toBe(200);
+    expect(((await toNinety.json()) as { expiresAt: number }).expiresAt).toBe(
+      before.created_at + EXPIRY_90D,
+    );
+
+    const after = await imageRow(anon.slug);
+    expect(after.r2_key.startsWith("o/pro/")).toBe(true);
+    expect(after.expires_at - after.created_at).toBe(EXPIRY_90D);
+
+    // Nothing left to give: the ceiling is measured from the original upload.
+    const again = await extendTo(cookie, anon.slug, EXPIRY_90D);
+    expect(again.status).toBe(400);
+    expect(await imageRow(anon.slug)).toMatchObject({
+      expires_at: after.expires_at,
+    });
+  });
+
+  it("refuses an extend that would shorten the link", async () => {
+    const { cookie, userId } = await signIn("pro-shorten@example.com");
+    await makePro(userId);
+
+    const anon = await anonUpload("203.0.113.74");
+    await claim(cookie, anon);
+    const before = await imageRow(anon.slug);
+
+    const shorter = await extendTo(cookie, anon.slug, EXPIRY_1H);
+    expect(shorter.status).toBe(400);
+    expect(await imageRow(anon.slug)).toMatchObject({
+      expires_at: before.expires_at,
+      r2_key: before.r2_key,
+    });
   });
 
   it("rejects a Pro intent after the subscriber is downgraded", async () => {

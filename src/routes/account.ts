@@ -11,11 +11,12 @@ import {
   type SessionUser,
 } from "../lib/auth/session";
 import {
-  EXPIRY_30D,
+  EXPIRY_90D,
   entitlementsFor,
   flagsFromEnv,
   FREE_HISTORY_LIMIT,
   loadSubscription,
+  MAX_LIFETIME_SECONDS,
   PRO_HISTORY_PAGE,
   resolveEntitlements,
 } from "../lib/entitlements";
@@ -160,7 +161,11 @@ accountRoutes.get("/app", async (c) => {
     origin: new URL(c.req.url).origin,
     email: session.email,
     plan: entitlements.plan,
-    canExtend: entitlements.plan === "pro" && entitlements.allowedExpirySeconds.includes(EXPIRY_30D),
+    extendChoices:
+      entitlements.plan === "pro" &&
+      entitlements.allowedExpirySeconds.includes(EXPIRY_90D)
+        ? entitlements.allowedExpirySeconds
+        : [],
     canPassword: entitlements.passwordProtection,
     drops,
     historyCapped: entitlements.historyLimit === FREE_HISTORY_LIMIT,
@@ -364,7 +369,10 @@ accountRoutes.post("/api/account/images/:slug/extend", async (c) => {
   const session = await requireSession(c);
   if (!session) return c.json({ error: "Unauthorized" }, 401);
   const entitlements = await entitlementsFor(c.env, session.id);
-  if (entitlements.plan !== "pro" || !entitlements.allowedExpirySeconds.includes(EXPIRY_30D)) {
+  if (
+    entitlements.plan !== "pro" ||
+    !entitlements.allowedExpirySeconds.includes(EXPIRY_90D)
+  ) {
     return c.json({ error: "Extend is not available." }, 400);
   }
 
@@ -377,19 +385,41 @@ accountRoutes.post("/api/account/images/:slug/extend", async (c) => {
     .first<ImageRow>();
   if (!row || row.deleted_at) return c.json({ error: "Not found" }, 404);
 
-  const cap = row.created_at + EXPIRY_30D;
-  if (row.expires_at >= cap) {
-    return c.json({ error: "Already at the 30-day maximum." }, 400);
+  // Lifetimes are always measured from the original upload, so no amount of
+  // re-extending can push an image past MAX_LIFETIME_SECONDS.
+  const options = entitlements.allowedExpirySeconds.filter(
+    (seconds) => seconds <= MAX_LIFETIME_SECONDS,
+  );
+  let lifetime = Math.max(...options);
+  try {
+    const body = (await c.req.json()) as { expiry?: unknown };
+    if (body?.expiry != null) lifetime = Number(body.expiry);
+  } catch {
+    // No body means "as long as this plan allows", which is what the older
+    // single-button Extend control sent.
+  }
+  if (!options.includes(lifetime)) {
+    return c.json({ error: "That expiry is not available." }, 400);
+  }
+
+  const ceiling = row.created_at + MAX_LIFETIME_SECONDS;
+  if (row.expires_at >= ceiling) {
+    return c.json({ error: "Already at the 90-day maximum." }, 400);
+  }
+
+  const nextExpiresAt = Math.min(row.created_at + lifetime, ceiling);
+  if (nextExpiresAt <= row.expires_at) {
+    return c.json({ error: "That would shorten the link." }, 400);
   }
 
   const moved = await moveImageToProPrefix(c.env, row);
   if (!moved.ok) return c.json({ error: "Could not move image storage." }, 500);
 
   await c.env.DB.prepare(`UPDATE images SET expires_at = ? WHERE slug = ?`)
-    .bind(cap, slug)
+    .bind(nextExpiresAt, slug)
     .run();
-  track(c.env.ANALYTICS, "extend_ok", { slug });
-  return c.json({ ok: true, expiresAt: cap });
+  track(c.env.ANALYTICS, "extend_ok", { slug, expirySeconds: lifetime });
+  return c.json({ ok: true, expiresAt: nextExpiresAt });
 });
 
 accountRoutes.post("/api/account/images/:slug/password", async (c) => {

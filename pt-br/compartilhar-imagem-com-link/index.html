@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Compartilhe uma imagem com um link | dropimg.io</title>
-    <meta name="description" content="Transforme a imagem em URL em segundos. Ideal pra WhatsApp, Slack, tickets e GitHub. Sem conta. Vale por 24 horas." />
+    <meta name="description" content="Transforme a imagem em URL em segundos. Ideal pra WhatsApp, Slack, tickets e GitHub. Sem criar conta. Escolha 1 hora, 24 horas ou 7 dias." />
     <link rel="canonical" href="https://dropimg.io/pt-br/compartilhar-imagem-com-link" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/share-image-with-link" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es/compartir-imagen-con-enlace" />
@@ -71,7 +71,7 @@
         </a>
         <div class="header-actions">
           <nav id="account-nav" class="account-nav" aria-label="Conta">
-            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/pt-br/pro">Pro · $1.99</a>
+            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/pt-br/pro">Pro · $2.99</a>
             <a id="account-signin" class="account-chip" href="/login">Entrar</a>
             <div id="account-session" class="account-session" hidden>
               <a id="account-app" class="account-nav-link" href="/app">Meus envios</a>
@@ -213,7 +213,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>Precisa por mais tempo?</strong>
-                Mantenha links por até 30 dias com Pro — $1.99/mês.
+                Mantenha links por até 90 dias com Pro — $2.99/mês.
               </p>
             </div>
 
@@ -223,19 +223,22 @@
               <button id="btn-retry" type="button" class="btn primary">Tentar de novo</button>
             </div>
           </section>
-          <div id="pro-options" class="pro-options" hidden>
-            <p class="pro-options-kicker">PRO</p>
-            <div class="pro-field">
-              <span id="pro-expiry-label">Expira</span>
-              <div id="pro-expiry" class="expiry-pills" role="radiogroup" aria-labelledby="pro-expiry-label" data-value="86400">
-                <button type="button" class="expiry-pill" role="radio" aria-checked="true" data-expiry="86400">24 horas</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="604800">7 dias</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="2592000">30 dias</button>
+
+          <div id="drop-options" class="drop-options">
+            <div class="drop-field">
+              <span id="expiry-label" class="drop-field-label">Expira</span>
+              <div id="expiry-choice" class="expiry-pills" role="radiogroup" aria-labelledby="expiry-label" data-value="604800">
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 hora</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 horas</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 dias</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 dias</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 dias</button>
               </div>
             </div>
-            <div class="pro-field" id="pro-password-wrap">
-              <span id="pro-password-label">Senha</span>
+            <div class="drop-field" id="pro-password-wrap" hidden>
+              <span id="pro-password-label" class="drop-field-label">Senha</span>
               <div class="pro-password-controls">
+                <span class="drop-field-badge">PRO</span>
                 <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password" data-off="Não" data-on="Proteger"></button>
                 <input id="pro-password" type="password" minlength="8" placeholder="Mín. 8 caracteres" autocomplete="new-password" hidden />
               </div>
@@ -247,13 +250,13 @@
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
                 focusable="false"><path d="M12 12.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" /><path d="M4.5 20a7.5 7.5 0 0 1 15 0" /><path d="m3 3 18 18" /></svg>
-              <span>Sem conta</span>
+              <span>Sem criar conta</span>
             </li>
             <li>
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
                 focusable="false"><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 1.8" /></svg>
-              <span>24 horas</span>
+              <span>Você escolhe o prazo</span>
             </li>
             <li>
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
@@ -289,7 +292,7 @@
             <li>E-mail: quando o cliente do outro lado estraga imagem embutida</li>
           </ul>
 
-          <p>Os links duram 24 horas. São temporários de propósito: não é CMS nem CDN pra asset de marca.</p>
+          <p>Os links expiram quando você quiser: 1 hora, 24 horas ou 7 dias, e até 90 dias com o Pro. São temporários de propósito: não é CMS nem CDN pra asset de marca.</p>
 
           <h2>O que quem recebe vê</h2>
 

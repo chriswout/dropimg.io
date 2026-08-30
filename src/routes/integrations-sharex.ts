@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import type { Context } from "hono";
 import { track } from "../lib/analytics";
+import { EXPIRY_HEADER } from "../lib/entitlements";
 import { readBearerToken, resolveIntegrationToken } from "../lib/integration-token";
 import {
   executeOwnedDirectUpload,
@@ -36,9 +37,12 @@ async function authenticatedSharex(c: Context<Env>): Promise<Response> {
   const parsed = await readSharexBody(c);
   if (!parsed.ok) return parsed.response;
 
-  const expiry = parseSharexExpiry(parsed.expiry);
-  if (expiry == null) {
-    return c.json({ error: "That expiry is not available." }, 400);
+  let expiry: number | null = null;
+  if (parsed.expiry) {
+    expiry = parseSharexExpiry(parsed.expiry);
+    if (expiry == null) {
+      return c.json({ error: "That expiry is not available." }, 400);
+    }
   }
 
   const res = await executeOwnedDirectUpload(c, {
@@ -63,12 +67,17 @@ async function anonymousSharex(c: Context<Env>): Promise<Response> {
     c.req.header("x-forwarded-for") ||
     "";
 
+  // Omitting the header lets /api/upload apply the anonymous default, which is
+  // what every existing ShareX config sends.
+  const expiry = parsed.expiry ? parseSharexExpiry(parsed.expiry) : null;
+
   const upstream = new Request(new URL("/api/upload", c.req.url), {
     method: "POST",
     headers: {
       "Content-Type": "application/octet-stream",
       "Content-Length": String(parsed.bytes.byteLength),
       "X-Dropimg-Client": "sharex",
+      ...(expiry != null ? { [EXPIRY_HEADER]: String(expiry) } : {}),
       ...(ip ? { "CF-Connecting-IP": ip.split(",")[0]!.trim() } : {}),
     },
     body: parsed.bytes,

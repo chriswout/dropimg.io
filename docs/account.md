@@ -4,7 +4,7 @@ Optional passwordless accounts. Anonymous paste-to-link is unchanged.
 
 ## Ownership
 
-- Anonymous `POST /api/upload` still creates unowned 24h / 10 MB drops.
+- Anonymous `POST /api/upload` still creates unowned 10 MB drops. The lifetime comes from the `X-Dropimg-Expiry` header (1h/24h/7d) and defaults to 7 days.
 - Signed-in homepage uploads use `POST /api/account/upload-intent` then raw `POST /api/account/upload/:intent` so the row gets `user_id`.
 - `POST /api/account/claim` attaches local recent items (`slug` + `deleteToken`) to the session user. Wrong tokens and other owners are skipped.
 
@@ -18,16 +18,16 @@ Rows show the share host path, type/size/dimensions, time left, and lock state. 
 
 ## Pro extras (when flags are on)
 
-- Uploads go to `o/pro/{date}/{id}`. Anonymous/Free stay on `o/24h/`.
-- Staging: `LONG_TTL_ENABLED=true` (7d/30d + extend) and `PRO_50MB_ENABLED=true`. Production flags stay false.
-- Extend copies `o/24h` → `o/pro` before bumping `expires_at`, cap `created_at+30d`.
+- Uploads go to `o/pro/{date}/{id}` whatever lifetime is chosen. Anonymous/Free split between `o/24h/` (1h, 24h) and `o/7d/` (7d).
+- Staging: `LONG_TTL_ENABLED=true` (Free 1h/24h/7d, Pro adds 30d/90d, plus extend) and `PRO_50MB_ENABLED=true`. Production flags stay false.
+- Extend copies `o/24h` or `o/7d` → `o/pro` before bumping `expires_at`, cap `created_at+90d`.
 - Pro can set a password on upload or later via `POST /api/account/images/:slug/password`. Recipients unlock at `POST /api/i/:slug/unlock`. `GET /i/:slug` is 401 without the unlock cookie or owner session.
 
 ## Header
 
 `GET /api/account/me` hydrates the header:
 
-- Anonymous: **Pro · $1.99** + Sign in
+- Anonymous: **Pro · $2.99** + Sign in
 - Free: My drops + **Upgrade** + account menu
 - Pro: My drops + **PRO** badge (no upgrade CTA)
 

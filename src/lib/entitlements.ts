@@ -1,10 +1,33 @@
 /** Server-authoritative plan limits. Frontend claims are never trusted. */
 
+import type { R2KeyClass } from "./tokens";
+
 export const FREE_MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 export const PRO_MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
+
+export const EXPIRY_1H = 60 * 60;
 export const EXPIRY_24H = 24 * 60 * 60;
 export const EXPIRY_7D = 7 * 24 * 60 * 60;
 export const EXPIRY_30D = 30 * 24 * 60 * 60;
+export const EXPIRY_90D = 90 * 24 * 60 * 60;
+
+/**
+ * Hard ceiling on a single image's life, measured from its ORIGINAL upload.
+ * Repeated extends can approach this but never pass it.
+ */
+export const MAX_LIFETIME_SECONDS = EXPIRY_90D;
+
+/** Pre-V2 behaviour: one fixed lifetime for everyone. */
+export const LEGACY_EXPIRY_CHOICES = [EXPIRY_24H];
+export const FREE_EXPIRY_CHOICES = [EXPIRY_1H, EXPIRY_24H, EXPIRY_7D];
+export const PRO_EXPIRY_CHOICES = [
+  EXPIRY_1H,
+  EXPIRY_24H,
+  EXPIRY_7D,
+  EXPIRY_30D,
+  EXPIRY_90D,
+];
+
 export const FREE_HISTORY_LIMIT = 10;
 export const PRO_HISTORY_PAGE = 50;
 
@@ -14,6 +37,8 @@ export type Entitlements = {
   plan: Plan;
   maxUploadBytes: number;
   allowedExpirySeconds: number[];
+  /** What a client should preselect, and what the server assumes when asked for nothing. */
+  defaultExpirySeconds: number;
   passwordProtection: boolean;
   /** Active cloud history cap; null = paginated full history. */
   historyLimit: number | null;
@@ -28,7 +53,14 @@ export type SubscriptionSnapshot = {
 };
 
 export type EntitlementFlags = {
-  /** 7d/30d only after dual R2 lifecycle is proven. */
+  /**
+   * The whole choose-your-own-lifetime feature, for every plan, behind one
+   * switch. Off, every plan gets the single legacy 24h lifetime, which is what
+   * production still runs and what the current R2 lifecycle rules cover. On,
+   * Free gets 1h/24h/7d and Pro additionally gets 30d/90d — the two sets are
+   * released together because they depend on the same `o/7d` and `o/pro`
+   * lifecycle rules being in place on the bucket.
+   */
   longTtl: boolean;
   /** 50 MB only after strip + staging OOM gate. */
   pro50mb: boolean;
@@ -69,6 +101,11 @@ export function isProSubscription(
   return false;
 }
 
+/** 7 days is the product default wherever the plan can actually reach it. */
+export function defaultExpiryOf(allowed: readonly number[]): number {
+  return allowed.includes(EXPIRY_7D) ? EXPIRY_7D : EXPIRY_24H;
+}
+
 export function resolveEntitlements(input: {
   userId: string | null;
   subscription?: SubscriptionSnapshot | null;
@@ -76,11 +113,14 @@ export function resolveEntitlements(input: {
   flags?: EntitlementFlags;
 }): Entitlements {
   const flags = input.flags ?? DEFAULT_FLAGS;
+  const freeChoices = flags.longTtl ? FREE_EXPIRY_CHOICES : LEGACY_EXPIRY_CHOICES;
+
   if (!input.userId) {
     return {
       plan: "anonymous",
       maxUploadBytes: FREE_MAX_UPLOAD_BYTES,
-      allowedExpirySeconds: [EXPIRY_24H],
+      allowedExpirySeconds: [...freeChoices],
+      defaultExpirySeconds: defaultExpiryOf(freeChoices),
       passwordProtection: false,
       historyLimit: 0,
       adFree: false,
@@ -92,25 +132,58 @@ export function resolveEntitlements(input: {
     return {
       plan: "free",
       maxUploadBytes: FREE_MAX_UPLOAD_BYTES,
-      allowedExpirySeconds: [EXPIRY_24H],
+      allowedExpirySeconds: [...freeChoices],
+      defaultExpirySeconds: defaultExpiryOf(freeChoices),
       passwordProtection: false,
       historyLimit: FREE_HISTORY_LIMIT,
       adFree: false,
     };
   }
 
+  const proChoices = flags.longTtl ? PRO_EXPIRY_CHOICES : LEGACY_EXPIRY_CHOICES;
   return {
     plan: "pro",
     maxUploadBytes: flags.pro50mb
       ? PRO_MAX_UPLOAD_BYTES
       : FREE_MAX_UPLOAD_BYTES,
-    allowedExpirySeconds: flags.longTtl
-      ? [EXPIRY_24H, EXPIRY_7D, EXPIRY_30D]
-      : [EXPIRY_24H],
+    allowedExpirySeconds: [...proChoices],
+    defaultExpirySeconds: defaultExpiryOf(proChoices),
     passwordProtection: true,
     historyLimit: null,
     adFree: true,
   };
+}
+
+/**
+ * Which R2 lifecycle class an upload belongs in.
+ *
+ * Pro objects always land in `o/pro` no matter how short the chosen lifetime,
+ * because the owner can extend them later and moving an object is far more
+ * expensive than parking it under the long-lived safety rule from the start.
+ */
+export function r2ClassFor(plan: Plan, expirySeconds: number): R2KeyClass {
+  if (plan === "pro") return "pro";
+  return expirySeconds > EXPIRY_24H ? "7d" : "24h";
+}
+
+export const EXPIRY_HEADER = "x-dropimg-expiry";
+
+/**
+ * Anonymous uploads keep their raw-body shape, so a header is the only place an
+ * expiry can ride along. The plan's own allowlist is the validator, so a client
+ * can never widen its lifetime by asking nicely.
+ */
+export function parseExpiryHeader(
+  raw: string | null | undefined,
+  entitlements: Entitlements,
+): { ok: true; expirySeconds: number } | { ok: false } {
+  if (raw == null || raw.trim() === "") {
+    return { ok: true, expirySeconds: entitlements.defaultExpirySeconds };
+  }
+  const value = Number(raw.trim());
+  if (!Number.isInteger(value)) return { ok: false };
+  if (!entitlements.allowedExpirySeconds.includes(value)) return { ok: false };
+  return { ok: true, expirySeconds: value };
 }
 
 export function uploadIntentAllowed(

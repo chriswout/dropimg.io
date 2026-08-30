@@ -18,7 +18,11 @@ export const MARKETING_URLS = [
   "https://dropimg.io/de/bild-per-link-teilen",
   "https://dropimg.io/browser-extension",
   "https://dropimg.io/screenshot-to-link",
+  "https://dropimg.io/es/captura-de-pantalla-a-enlace",
+  "https://dropimg.io/pt-br/colar-print-online",
   "https://dropimg.io/image-to-url",
+  "https://dropimg.io/es/imagen-a-url",
+  "https://dropimg.io/pt-br/imagem-para-url",
   "https://dropimg.io/anonymous-image-hosting",
   "https://dropimg.io/expiring-image-link"
 ] as const;

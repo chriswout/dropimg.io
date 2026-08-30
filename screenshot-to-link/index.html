@@ -3,9 +3,13 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Screenshot to Link — Temporary Share URL | dropimg.io</title>
-    <meta name="description" content="Turn a screenshot into a shareable link in seconds. Paste or drop an image. No account. Links expire after 24 hours." />
+    <title>Screenshot to Link — Share a Screenshot in Seconds | dropimg.io</title>
+    <meta name="description" content="Turn a screenshot into a shareable link in seconds. Paste or drop the image, choose 1 hour, 24 hours, or 7 days, copy the link. No account needed." />
     <link rel="canonical" href="https://dropimg.io/screenshot-to-link" />
+    <link rel="alternate" hreflang="en" href="https://dropimg.io/screenshot-to-link" />
+    <link rel="alternate" hreflang="es" href="https://dropimg.io/es/captura-de-pantalla-a-enlace" />
+    <link rel="alternate" hreflang="pt-BR" href="https://dropimg.io/pt-br/colar-print-online" />
+    <link rel="alternate" hreflang="x-default" href="https://dropimg.io/screenshot-to-link" />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
@@ -25,7 +29,7 @@
     <meta property="og:locale" content="en_US" />
     <meta property="og:url" content="https://dropimg.io/screenshot-to-link" />
     <meta property="og:title" content="Screenshot to link | dropimg.io" />
-    <meta property="og:description" content="Paste a screenshot, get a temporary URL. No signup. Expires in 24 hours." />
+    <meta property="og:description" content="Paste a screenshot, get a link. No account. You choose when it expires." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
@@ -33,10 +37,84 @@
     <meta property="og:image:alt" content="dropimg.io" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Screenshot to link" />
-    <meta name="twitter:description" content="Paste or drop a screenshot → temporary shareable link. No account." />
+    <meta name="twitter:description" content="Paste or drop a screenshot and copy a temporary share link." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "HowTo",
+            "@id": "https://dropimg.io/screenshot-to-link#howto",
+            "name": "Share a screenshot with a link",
+            "description": "Paste a screenshot, choose how long the link lives, and copy the URL.",
+            "inLanguage": "en",
+            "totalTime": "PT1M",
+            "step": [
+              {
+                "@type": "HowToStep",
+                "position": 1,
+                "name": "Paste the screenshot",
+                "text": "Press ⌘V or Ctrl+V straight after taking it, or drop the file on the uploader."
+              },
+              {
+                "@type": "HowToStep",
+                "position": 2,
+                "name": "Choose how long it lasts",
+                "text": "1 hour for a quick answer, 24 hours for a work day, or 7 days — the default."
+              },
+              {
+                "@type": "HowToStep",
+                "position": 3,
+                "name": "Send the link",
+                "text": "The URL is copied the moment the upload finishes. Paste it into Slack, a ticket, or an email."
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://dropimg.io/screenshot-to-link#faq",
+            "inLanguage": "en",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Do I need an account to share a screenshot?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Pasting and sharing works without signing up. A free account is optional and keeps your last 10 active links in one place; Pro adds longer links, 50 MB uploads, and passwords."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How long does the screenshot link work?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "For as long as you picked before uploading: 1 hour, 24 hours, or 7 days. Seven days is the default. When the time is up the image is deleted and the link stops working."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I password-protect a screenshot?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes, with Pro. Pro links can require a password before the image is shown, and can stay online for up to 90 days."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I delete a screenshot before it expires?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. The delete control appears next to the link right after upload, and signed-in users can delete any active drop from My drops."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#dropzone">Skip to upload</a>
@@ -66,7 +144,7 @@
         </a>
         <div class="header-actions">
           <nav id="account-nav" class="account-nav" aria-label="Account">
-            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/pro">Pro · $1.99</a>
+            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/pro">Pro · $2.99</a>
             <a id="account-signin" class="account-chip" href="/login">Sign in</a>
             <div id="account-session" class="account-session" hidden>
               <a id="account-app" class="account-nav-link" href="/app">My drops</a>
@@ -102,9 +180,9 @@
               <span class="lang-label">English</span>
             </summary>
             <ul class="lang-menu">
-            <li><a href="/" hreflang="en" lang="en" aria-current="page">English</a></li>
-            <li><a href="/es" hreflang="es" lang="es">Español</a></li>
-            <li><a href="/pt-br" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a></li>
+            <li><a href="/screenshot-to-link" hreflang="en" lang="en" aria-current="page">English</a></li>
+            <li><a href="/es/captura-de-pantalla-a-enlace" hreflang="es" lang="es">Español</a></li>
+            <li><a href="/pt-br/colar-print-online" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a></li>
             <li><a href="/de" hreflang="de" lang="de">Deutsch</a></li>
             </ul>
           </details>
@@ -116,7 +194,7 @@
       <main>
         <section class="seo-hero">
           <h1 class="tagline">Screenshot to link</h1>
-          <p class="sub seo-lede">Paste or drop a screenshot and get a short shareable URL. No account. The link expires after 24 hours.</p>
+          <p class="sub seo-lede">Paste or drop a screenshot and copy a short link you can send anywhere. No account, and you decide how long it stays online.</p>
 
           <section
             id="dropzone"
@@ -208,7 +286,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>Need it longer?</strong>
-                Keep links up to 30 days with Pro — $1.99/month.
+                Keep links up to 90 days with Pro — $2.99/month.
               </p>
             </div>
 
@@ -218,19 +296,22 @@
               <button id="btn-retry" type="button" class="btn primary">Try again</button>
             </div>
           </section>
-          <div id="pro-options" class="pro-options" hidden>
-            <p class="pro-options-kicker">PRO</p>
-            <div class="pro-field">
-              <span id="pro-expiry-label">Expires</span>
-              <div id="pro-expiry" class="expiry-pills" role="radiogroup" aria-labelledby="pro-expiry-label" data-value="86400">
-                <button type="button" class="expiry-pill" role="radio" aria-checked="true" data-expiry="86400">24 hours</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="604800">7 days</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="2592000">30 days</button>
+
+          <div id="drop-options" class="drop-options">
+            <div class="drop-field">
+              <span id="expiry-label" class="drop-field-label">Expires</span>
+              <div id="expiry-choice" class="expiry-pills" role="radiogroup" aria-labelledby="expiry-label" data-value="604800">
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 hour</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 hours</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 days</button>
               </div>
             </div>
-            <div class="pro-field" id="pro-password-wrap">
-              <span id="pro-password-label">Password</span>
+            <div class="drop-field" id="pro-password-wrap" hidden>
+              <span id="pro-password-label" class="drop-field-label">Password</span>
               <div class="pro-password-controls">
+                <span class="drop-field-badge">PRO</span>
                 <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password" data-off="Off" data-on="Protect"></button>
                 <input id="pro-password" type="password" minlength="8" placeholder="Min. 8 characters" autocomplete="new-password" hidden />
               </div>
@@ -242,13 +323,13 @@
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
                 focusable="false"><path d="M12 12.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" /><path d="M4.5 20a7.5 7.5 0 0 1 15 0" /><path d="m3 3 18 18" /></svg>
-              <span>No account</span>
+              <span>No account required</span>
             </li>
             <li>
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
                 focusable="false"><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 1.8" /></svg>
-              <span>24h expiry</span>
+              <span>You pick the expiry</span>
             </li>
             <li>
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
@@ -264,27 +345,109 @@
           </section>
         </section>
 
-        <article class="seo-article">
-          <h2>How it works</h2>
+        <section class="below" aria-label="About dropimg.io">
+          <section class="howto-compact" aria-labelledby="intent-howto" data-enter>
+            <h2 id="intent-howto">Share a screenshot in three steps</h2>
+            <ol class="flow">
+              <li>
+                <span class="flow-step" aria-hidden="true">01</span>
+                <span class="flow-visual" aria-hidden="true">
+                  <svg viewBox="0 0 104 64" width="104" height="64" fill="none" stroke="currentColor"
+                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <path d="M52 2v13m-5-5 5 5 5-5" stroke-width="1.9" />
+                    <rect x="15.5" y="21.5" width="73" height="39" rx="9" stroke-width="1.5"
+                      stroke-dasharray="5 4.5" opacity=".5" />
+                    <circle cx="35" cy="34" r="3.2" stroke-width="1.5" opacity=".85" />
+                    <path d="M23 53l11-10a3.4 3.4 0 0 1 4.6 0L47 51" stroke-width="1.5" opacity=".85" />
+                    <path d="M50 47l6.5-6a3.4 3.4 0 0 1 4.6 0L74 53" stroke-width="1.5" opacity=".85" />
+                  </svg>
+                </span>
+                <strong>Paste the screenshot</strong>
+                <span class="flow-detail">Press ⌘V or Ctrl+V straight after taking it, or drop the file on the uploader.</span>
+              </li>
+              <li>
+                <span class="flow-step" aria-hidden="true">02</span>
+                <span class="flow-visual" aria-hidden="true">
+                  <svg viewBox="0 0 104 64" width="104" height="64" fill="none" stroke="currentColor"
+                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <rect x="4.5" y="21.5" width="70" height="21" rx="10.5" stroke-width="1.5" opacity=".5" />
+                    <path d="M15 32h30" stroke-width="2.6" opacity=".4" />
+                    <path d="M50 32h13" stroke-width="2.6" opacity=".9" />
+                    <rect x="81.5" y="21.5" width="18" height="18" rx="5" stroke-width="1.5" />
+                    <path d="m86 30.5 3.2 3.2 6.3-6.4" stroke-width="1.9" />
+                  </svg>
+                </span>
+                <strong>Choose how long it lasts</strong>
+                <span class="flow-detail">1 hour for a quick answer, 24 hours for a work day, or 7 days — the default.</span>
+              </li>
+              <li>
+                <span class="flow-step" aria-hidden="true">03</span>
+                <span class="flow-visual" aria-hidden="true">
+                  <svg viewBox="0 0 104 64" width="104" height="64" fill="none" stroke="currentColor"
+                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <path d="M11 13h50a7 7 0 0 1 7 7v13a7 7 0 0 1-7 7H27l-11 8v-8h-5a7 7 0 0 1-7-7V20a7 7 0 0 1 7-7Z"
+                      stroke-width="1.5" opacity=".5" />
+                    <path d="M17 24h32" stroke-width="2.2" opacity=".4" />
+                    <path d="M17 31h19" stroke-width="2.2" opacity=".85" />
+                    <path d="M78 32h18m-6-6 6 6-6 6" stroke-width="1.9" />
+                  </svg>
+                </span>
+                <strong>Send the link</strong>
+                <span class="flow-detail">The URL is copied the moment the upload finishes. Paste it into Slack, a ticket, or an email.</span>
+              </li>
+            </ol>
+          </section>
 
-          <ol>
-            <li>Paste (⌘V / Ctrl+V), drop a file, or choose an image.</li>
-            <li>Upload starts immediately — you get a short dropimg.io link.</li>
-            <li>Copy and share. The image is removed automatically after 24 hours.</li>
-          </ol>
+          <article class="seo-article">
+          <h2>Made for the screenshot you just took</h2>
 
-          <h2>Why a temporary link</h2>
+          <p>Most screenshots answer one question and then stop mattering. Instead of attaching a file to every message, paste it here and share a link that cleans itself up.</p>
 
-          <p>Screenshots for chats, tickets, and quick feedback rarely need to live forever. A short-lived link keeps sharing simple without accounts or permanent galleries.</p>
+          <h2>Where a link beats an attachment</h2>
+
+          <ul>
+            <li>Support chats and ticket comments where attachments are awkward or size-capped.</li>
+            <li>Bug reports that need a picture of the actual screen, not a description.</li>
+            <li>Design and copy feedback, where the screenshot is only relevant this week.</li>
+            <li>Forums and issue trackers that accept a URL but not an upload.</li>
+          </ul>
 
           <h2>Formats and limits</h2>
 
           <ul>
             <li>PNG, JPEG, WebP, and GIF up to 10 MB.</li>
             <li>Metadata is stripped when supported.</li>
-            <li>You can delete early with the one-time delete control after upload.</li>
+            <li>Delete early with the one-time delete control shown after upload.</li>
+            <li>Pro raises the limit to 50 MB and adds password-protected links.</li>
           </ul>
-        </article>
+
+          <h2>Not permanent hosting</h2>
+
+          <p>Every link expires. dropimg.io is for sharing a screenshot now, not for storing one forever — there is no public gallery and no permanent storage tier.</p>
+          </article>
+
+          <section class="faq-compact" id="faq" aria-labelledby="intent-faq" data-enter>
+            <h2 id="intent-faq">Screenshot sharing questions</h2>
+            <div class="faq-list">
+              <details>
+                <summary>Do I need an account to share a screenshot?</summary>
+                <p>No. Pasting and sharing works without signing up. A free account is optional and keeps your last 10 active links in one place; Pro adds longer links, 50 MB uploads, and passwords.</p>
+              </details>
+              <details>
+                <summary>How long does the screenshot link work?</summary>
+                <p>For as long as you picked before uploading: 1 hour, 24 hours, or 7 days. Seven days is the default. When the time is up the image is deleted and the link stops working.</p>
+              </details>
+              <details>
+                <summary>Can I password-protect a screenshot?</summary>
+                <p>Yes, with Pro. Pro links can require a password before the image is shown, and can stay online for up to 90 days.</p>
+              </details>
+              <details>
+                <summary>Can I delete a screenshot before it expires?</summary>
+                <p>Yes. The delete control appears next to the link right after upload, and signed-in users can delete any active drop from My drops.</p>
+              </details>
+            </div>
+          </section>
+        </section>
 
 
         <nav class="seo-more" aria-label="Related">

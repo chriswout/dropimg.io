@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Temporäres Bildhosting ohne Konto | dropimg.io</title>
-    <meta name="description" content="Bild hochladen, Link holen, weiterarbeiten. Kein Konto. Nach 24 Stunden weg. PNG, JPEG, WebP oder GIF. Metadaten werden beim Speichern entfernt." />
+    <meta name="description" content="Bild hochladen, Link holen, weiterarbeiten. Ohne Konto. Wähle 1 Stunde, 24 Stunden oder 7 Tage. PNG, JPEG, WebP oder GIF. Metadaten werden beim Speichern entfernt." />
     <link rel="canonical" href="https://dropimg.io/de/temporaeres-bildhosting" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/temporary-image-hosting" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es/alojamiento-temporal-imagenes" />
@@ -30,7 +30,7 @@
     <meta property="og:locale" content="de_DE" />
     <meta property="og:url" content="https://dropimg.io/de/temporaeres-bildhosting" />
     <meta property="og:title" content="Temporäres Bildhosting | dropimg.io" />
-    <meta property="og:description" content="Ein Link für dein Bild — 24 Stunden, ohne Anmeldung." />
+    <meta property="og:description" content="Ein Link für dein Bild — eine Stunde, einen Tag oder eine Woche, ohne Anmeldung." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
@@ -38,7 +38,7 @@
     <meta property="og:image:alt" content="dropimg.io" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Temporäres Bildhosting | dropimg.io" />
-    <meta name="twitter:description" content="Ein Link für dein Bild — 24 Stunden, ohne Anmeldung." />
+    <meta name="twitter:description" content="Ein Link für dein Bild — eine Stunde, einen Tag oder eine Woche, ohne Anmeldung." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -71,7 +71,7 @@
         </a>
         <div class="header-actions">
           <nav id="account-nav" class="account-nav" aria-label="Konto">
-            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/de/pro">Pro · $1.99</a>
+            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/de/pro">Pro · $2.99</a>
             <a id="account-signin" class="account-chip" href="/login">Anmelden</a>
             <div id="account-session" class="account-session" hidden>
               <a id="account-app" class="account-nav-link" href="/app">Meine Drops</a>
@@ -121,7 +121,7 @@
       <main>
         <section class="seo-hero">
           <h1 class="tagline">Temporäres Bildhosting</h1>
-          <p class="sub seo-lede">Du brauchst einen Link — keine Galerie für die Ewigkeit? dropimg.io legt die Datei 24 Stunden ab und löscht sie danach.</p>
+          <p class="sub seo-lede">Du brauchst einen Link — keine Galerie für die Ewigkeit? dropimg.io legt die Datei so lange ab, wie du willst, und löscht sie danach.</p>
 
           <section
             id="dropzone"
@@ -213,7 +213,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>Länger behalten?</strong>
-                Links bis 30 Tage mit Pro — $1.99/Monat.
+                Links bis 90 Tage mit Pro — $2.99/Monat.
               </p>
             </div>
 
@@ -223,19 +223,22 @@
               <button id="btn-retry" type="button" class="btn primary">Nochmal versuchen</button>
             </div>
           </section>
-          <div id="pro-options" class="pro-options" hidden>
-            <p class="pro-options-kicker">PRO</p>
-            <div class="pro-field">
-              <span id="pro-expiry-label">Läuft ab</span>
-              <div id="pro-expiry" class="expiry-pills" role="radiogroup" aria-labelledby="pro-expiry-label" data-value="86400">
-                <button type="button" class="expiry-pill" role="radio" aria-checked="true" data-expiry="86400">24 Stunden</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="604800">7 Tage</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="2592000">30 Tage</button>
+
+          <div id="drop-options" class="drop-options">
+            <div class="drop-field">
+              <span id="expiry-label" class="drop-field-label">Läuft ab</span>
+              <div id="expiry-choice" class="expiry-pills" role="radiogroup" aria-labelledby="expiry-label" data-value="604800">
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 Stunde</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 Stunden</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 Tage</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 Tage</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 Tage</button>
               </div>
             </div>
-            <div class="pro-field" id="pro-password-wrap">
-              <span id="pro-password-label">Passwort</span>
+            <div class="drop-field" id="pro-password-wrap" hidden>
+              <span id="pro-password-label" class="drop-field-label">Passwort</span>
               <div class="pro-password-controls">
+                <span class="drop-field-badge">PRO</span>
                 <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password" data-off="Aus" data-on="Schützen"></button>
                 <input id="pro-password" type="password" minlength="8" placeholder="Mind. 8 Zeichen" autocomplete="new-password" hidden />
               </div>
@@ -247,13 +250,13 @@
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
                 focusable="false"><path d="M12 12.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" /><path d="M4.5 20a7.5 7.5 0 0 1 15 0" /><path d="m3 3 18 18" /></svg>
-              <span>Kein Konto</span>
+              <span>Ohne Konto</span>
             </li>
             <li>
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
                 focusable="false"><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 1.8" /></svg>
-              <span>24 Stunden</span>
+              <span>Laufzeit wählbar</span>
             </li>
             <li>
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
@@ -276,11 +279,11 @@
 
           <p>Du bekommst eine kurze URL. Wer den Link hat, sieht das Bild bis zum Ablauf. Keine öffentliche Galerie, keine Pflicht zur Anmeldung.</p>
 
-          <h2>Warum gerade 24 Stunden</h2>
+          <h2>Du bestimmst die Laufzeit</h2>
 
-          <p>Die meisten geteilten Bilder sind Minuten oder Stunden nützlich — nicht Monate. Eine feste Tagesfrist verhindert, dass alte Uploads ewig liegen bleiben.</p>
+          <p>Die meisten geteilten Bilder sind Minuten oder Stunden nützlich — nicht Monate. Wähle vor dem Upload 1 Stunde, 24 Stunden oder 7 Tage — voreingestellt sind 7 Tage — dann bleibt nichts ewig liegen.</p>
 
-          <p>Früher weg? Nach dem Upload gibt’s einen privaten Link zum Sofortlöschen.</p>
+          <p>Länger nötig? Mit Pro sind 30 oder 90 Tage, ein Passwort und bis zu 50 MB drin. Früher weg? Nach dem Upload gibt’s einen privaten Link zum Sofortlöschen.</p>
 
           <h2>Was du hochladen kannst</h2>
 
@@ -292,9 +295,9 @@
 
           <h2>Privatsphäre von Anfang an</h2>
 
-          <p>Keine Anmeldung. Keine durchsuchbare Upload-Bibliothek. Share-Seiten sind noindex. Bei JPEG, PNG und WebP entfernen wir EXIF und ähnliche Metadaten vor dem Speichern — klappt das nicht, lehnen wir den Upload ab statt sie zu behalten.</p>
+          <p>Keine Anmeldepflicht. Keine durchsuchbare Upload-Bibliothek. Share-Seiten sind noindex. Bei JPEG, PNG und WebP entfernen wir EXIF und ähnliche Metadaten vor dem Speichern — klappt das nicht, lehnen wir den Upload ab statt sie zu behalten.</p>
 
-          <p>Mit dropimg.io fügst du ein Bild ein, lädst es hoch oder legst es per Drag-and-drop ab — und hast sofort einen temporären Link, der nach 24 Stunden verschwindet.</p>
+          <p>Mit dropimg.io fügst du ein Bild ein, lädst es hoch oder legst es per Drag-and-drop ab — und hast sofort einen temporären Link, der nach der gewählten Laufzeit verschwindet.</p>
         </article>
 
 

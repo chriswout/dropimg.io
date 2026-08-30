@@ -2,6 +2,7 @@ import "./styles.css";
 import { matchBrowserLocale } from "../marketing/locales";
 import { pagePath, pathToPageId, type PageId } from "../marketing/pages";
 import { resolveLocale, t, type UiStrings } from "../marketing/ui";
+import { expiryCountdown } from "../src/lib/expiry-format";
 import { shouldOfferLangSuggest } from "../src/lib/lang-suggest";
 import { normalizePageIntent } from "../src/lib/page-intent";
 import type { RecentDrop, UploadErrorResponse, UploadResponse } from "../src/types";
@@ -69,18 +70,21 @@ function trackEvent(
   }
 }
 
-function proExpiryValue(): number {
-  const group = document.getElementById("pro-expiry");
+const EXPIRY_KEY = "dropimg:expiry";
+const DEFAULT_EXPIRY = 604800;
+
+function selectedExpiry(): number {
+  const group = document.getElementById("expiry-choice");
   const raw = group?.getAttribute("data-value");
-  return Number(raw) || 86400;
+  return Number(raw) || DEFAULT_EXPIRY;
 }
 
 function visibleExpiryPills(group: HTMLElement): HTMLButtonElement[] {
   return [...group.querySelectorAll<HTMLButtonElement>(".expiry-pill")].filter((btn) => !btn.hidden && !btn.disabled);
 }
 
-function setProExpiry(seconds: number) {
-  const group = document.getElementById("pro-expiry");
+function setExpiry(seconds: number) {
+  const group = document.getElementById("expiry-choice");
   if (!group) return;
   group.setAttribute("data-value", String(seconds));
   group.querySelectorAll<HTMLButtonElement>(".expiry-pill").forEach((btn) => {
@@ -89,7 +93,7 @@ function setProExpiry(seconds: number) {
     btn.tabIndex = on ? 0 : -1;
   });
   try {
-    localStorage.setItem("dropimg:pro-expiry", String(seconds));
+    localStorage.setItem(EXPIRY_KEY, String(seconds));
   } catch {
     // ignore
   }
@@ -112,36 +116,42 @@ function setProPasswordOn(on: boolean) {
   }
 }
 
-function proUploadOptions(): { expiry: number; password?: string } {
-  const expiry = proExpiryValue();
-  try {
-    localStorage.setItem("dropimg:pro-expiry", String(expiry));
-  } catch {
-    // ignore
-  }
+function ownedUploadOptions(): { expiry: number; password?: string } {
+  const expiry = selectedExpiry();
   if (!proPasswordOn()) return { expiry };
   const passwordEl = document.getElementById("pro-password") as HTMLInputElement | null;
   const password = passwordEl?.value.trim() || "";
   return password ? { expiry, password } : { expiry };
 }
 
-function setupProOptions() {
-  const bar = document.getElementById("pro-options");
-  if (!bar || !accountEntitlements || accountEntitlements.plan !== "pro") return;
-  bar.hidden = false;
-  const expiryEl = document.getElementById("pro-expiry");
-  if (expiryEl) {
+/**
+ * Choosing a lifetime is a free feature, so this runs for every visitor. The
+ * server list is authoritative: pills outside it are removed rather than
+ * disabled, and a plan with a single lifetime gets no radiogroup at all.
+ */
+function setupDropOptions() {
+  const tray = document.getElementById("drop-options");
+  if (!tray) return;
+  const allowed = accountEntitlements?.allowedExpirySeconds ?? [DEFAULT_EXPIRY];
+  const fallback = accountEntitlements?.defaultExpirySeconds ?? DEFAULT_EXPIRY;
+
+  const expiryEl = document.getElementById("expiry-choice");
+  const expiryField = expiryEl?.closest<HTMLElement>(".drop-field");
+  if (expiryEl && expiryField) {
     expiryEl.querySelectorAll<HTMLButtonElement>(".expiry-pill").forEach((btn) => {
       const value = Number(btn.getAttribute("data-expiry"));
-      const allowed = accountEntitlements!.allowedExpirySeconds.includes(value);
-      btn.hidden = !allowed;
-      btn.disabled = !allowed;
+      const offered = allowed.includes(value);
+      btn.hidden = !offered;
+      btn.disabled = !offered;
       btn.tabIndex = -1;
-      btn.addEventListener("click", () => {
-        if (!allowed) return;
-        setProExpiry(value);
-      });
+      if (offered) {
+        btn.addEventListener("click", () => setExpiry(value));
+      }
     });
+
+    // A single option is a statement, not a choice — don't render it as one.
+    expiryField.hidden = allowed.length < 2;
+
     expiryEl.addEventListener("keydown", (event) => {
       const keys = ["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End"];
       if (!keys.includes(event.key)) return;
@@ -155,30 +165,31 @@ function setupProOptions() {
       else if (event.key === "ArrowRight" || event.key === "ArrowDown") index = (index + 1) % pills.length;
       else index = (index - 1 + pills.length) % pills.length;
       const next = Number(pills[index].getAttribute("data-expiry"));
-      setProExpiry(next);
+      setExpiry(next);
       pills[index].focus();
     });
-    let next = 86400;
+
+    let next = fallback;
     try {
-      const remembered = Number(localStorage.getItem("dropimg:pro-expiry"));
-      if (accountEntitlements.allowedExpirySeconds.includes(remembered)) {
-        next = remembered;
-      }
+      const remembered = Number(localStorage.getItem(EXPIRY_KEY));
+      if (allowed.includes(remembered)) next = remembered;
     } catch {
       // ignore
     }
-    setProExpiry(next);
+    setExpiry(next);
   }
+
+  const canPassword = Boolean(accountEntitlements?.passwordProtection);
   const passwordWrap = document.getElementById("pro-password-wrap");
   const passwordToggle = document.getElementById("pro-password-toggle");
-  if (passwordWrap) {
-    passwordWrap.hidden = !accountEntitlements.passwordProtection;
-  }
-  if (passwordToggle && accountEntitlements.passwordProtection) {
+  if (passwordWrap) passwordWrap.hidden = !canPassword;
+  if (passwordToggle && canPassword) {
     passwordToggle.addEventListener("click", () => {
       setProPasswordOn(!proPasswordOn());
     });
   }
+
+  tray.hidden = Boolean(expiryField?.hidden) && !canPassword;
 }
 
 function setupUploader() {
@@ -288,7 +299,7 @@ async function createAccountUploadUrl(): Promise<string> {
     method: "POST",
     credentials: "same-origin",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(proUploadOptions()),
+    body: JSON.stringify(ownedUploadOptions()),
   });
   if (!res.ok) {
     const body = (await res.json().catch(() => null)) as UploadErrorResponse | null;
@@ -312,6 +323,10 @@ function uploadWithProgress(
       xhr.open("POST", url);
       xhr.setRequestHeader("Content-Type", "application/octet-stream");
       xhr.setRequestHeader("X-Dropimg-Client", "web");
+      if (!accountUser) {
+        // Signed-in uploads carry the expiry on the intent instead.
+        xhr.setRequestHeader("X-Dropimg-Expiry", String(selectedExpiry()));
+      }
       if (pageIntent) {
         xhr.setRequestHeader("X-Dropimg-Page-Intent", pageIntent);
       }
@@ -378,13 +393,17 @@ function showError(message: string) {
 }
 
 function formatExpiry(expiresAt: number): string {
-  const ms = expiresAt * 1000 - Date.now();
-  if (ms <= 0) return ui.expiresSoon;
-  const hours = Math.floor(ms / 3_600_000);
-  const mins = Math.floor((ms % 3_600_000) / 60_000);
-  if (hours >= 23) return ui.expiresAbout24h;
-  if (hours > 0) return ui.expiresInHours(hours, mins);
-  return ui.expiresInMins(mins);
+  const countdown = expiryCountdown(expiresAt);
+  switch (countdown.unit) {
+    case "soon":
+      return ui.expiresSoon;
+    case "minutes":
+      return ui.expiresInMins(countdown.value);
+    case "hours":
+      return ui.expiresInHours(countdown.value);
+    case "days":
+      return ui.expiresInDays(countdown.value);
+  }
 }
 
 function loadRecent(): RecentDrop[] {
@@ -701,5 +720,5 @@ setupEntrance();
 setupLangSuggest();
 if (document.getElementById("dropzone")) {
   setupUploader();
-  void accountReady.then(() => setupProOptions());
+  void accountReady.then(() => setupDropOptions());
 }

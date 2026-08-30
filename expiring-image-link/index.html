@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Expiring Image Link — 24-Hour Share URL | dropimg.io</title>
-    <meta name="description" content="Create an expiring image link in seconds. Paste a screenshot or drop a file. Auto-deletes after 24 hours. No account." />
+    <title>Expiring Image Link — Choose 1 Hour to 7 Days | dropimg.io</title>
+    <meta name="description" content="Create an expiring image link in seconds. Paste a screenshot or drop a file, pick 1 hour, 24 hours, or 7 days, and it auto-deletes. No account." />
     <link rel="canonical" href="https://dropimg.io/expiring-image-link" />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
@@ -25,7 +25,7 @@
     <meta property="og:locale" content="en_US" />
     <meta property="og:url" content="https://dropimg.io/expiring-image-link" />
     <meta property="og:title" content="Expiring image link | dropimg.io" />
-    <meta property="og:description" content="Temporary image URLs that expire in 24 hours. Paste, drop, share." />
+    <meta property="og:description" content="Image URLs that delete themselves. Pick 1 hour, 24 hours, or 7 days." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
@@ -33,10 +33,84 @@
     <meta property="og:image:alt" content="dropimg.io" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Expiring image link" />
-    <meta name="twitter:description" content="Share an image with a link that disappears after 24 hours." />
+    <meta name="twitter:description" content="Share an image with a link that disappears when you say so." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "HowTo",
+            "@id": "https://dropimg.io/expiring-image-link#howto",
+            "name": "Create an expiring image link",
+            "description": "Upload an image, choose when it expires, and share the link.",
+            "inLanguage": "en",
+            "totalTime": "PT1M",
+            "step": [
+              {
+                "@type": "HowToStep",
+                "position": 1,
+                "name": "Add the image",
+                "text": "Paste, drop, or choose a PNG, JPEG, WebP, or GIF."
+              },
+              {
+                "@type": "HowToStep",
+                "position": 2,
+                "name": "Pick the expiry",
+                "text": "1 hour, 24 hours, or 7 days — the choice sits right under the uploader."
+              },
+              {
+                "@type": "HowToStep",
+                "position": 3,
+                "name": "Share it",
+                "text": "Copy the link. The countdown starts at upload, and deletion is automatic."
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://dropimg.io/expiring-image-link#faq",
+            "inLanguage": "en",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "How do I set when an image link expires?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Pick 1 hour, 24 hours, or 7 days under the uploader before you upload. Seven days is selected by default, and the link shows its expiry once it is ready."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What is the longest an image link can last?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Seven days on the free tier. Pro can choose 30 or 90 days, and 90 days from the original upload is the hard maximum — links cannot be extended past it."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "What happens when the link expires?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "The image is deleted from storage and the URL stops serving. There is no archive and no way to restore it, so keep your own copy of anything you need."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I make the link expire sooner?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. Use the delete control shown after upload, or delete the drop from My drops if you are signed in."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#dropzone">Skip to upload</a>
@@ -66,7 +140,7 @@
         </a>
         <div class="header-actions">
           <nav id="account-nav" class="account-nav" aria-label="Account">
-            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/pro">Pro · $1.99</a>
+            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/pro">Pro · $2.99</a>
             <a id="account-signin" class="account-chip" href="/login">Sign in</a>
             <div id="account-session" class="account-session" hidden>
               <a id="account-app" class="account-nav-link" href="/app">My drops</a>
@@ -102,7 +176,7 @@
               <span class="lang-label">English</span>
             </summary>
             <ul class="lang-menu">
-            <li><a href="/" hreflang="en" lang="en" aria-current="page">English</a></li>
+            <li><a href="/expiring-image-link" hreflang="en" lang="en" aria-current="page">English</a></li>
             <li><a href="/es" hreflang="es" lang="es">Español</a></li>
             <li><a href="/pt-br" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a></li>
             <li><a href="/de" hreflang="de" lang="de">Deutsch</a></li>
@@ -116,7 +190,7 @@
       <main>
         <section class="seo-hero">
           <h1 class="tagline">Expiring image link</h1>
-          <p class="sub seo-lede">Get a shareable image URL that automatically expires after 24 hours. Paste or drop to start.</p>
+          <p class="sub seo-lede">Get a shareable image URL that deletes itself on your schedule. Pick 1 hour, 24 hours, or 7 days, then paste or drop to start.</p>
 
           <section
             id="dropzone"
@@ -208,7 +282,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>Need it longer?</strong>
-                Keep links up to 30 days with Pro — $1.99/month.
+                Keep links up to 90 days with Pro — $2.99/month.
               </p>
             </div>
 
@@ -218,19 +292,22 @@
               <button id="btn-retry" type="button" class="btn primary">Try again</button>
             </div>
           </section>
-          <div id="pro-options" class="pro-options" hidden>
-            <p class="pro-options-kicker">PRO</p>
-            <div class="pro-field">
-              <span id="pro-expiry-label">Expires</span>
-              <div id="pro-expiry" class="expiry-pills" role="radiogroup" aria-labelledby="pro-expiry-label" data-value="86400">
-                <button type="button" class="expiry-pill" role="radio" aria-checked="true" data-expiry="86400">24 hours</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="604800">7 days</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="2592000">30 days</button>
+
+          <div id="drop-options" class="drop-options">
+            <div class="drop-field">
+              <span id="expiry-label" class="drop-field-label">Expires</span>
+              <div id="expiry-choice" class="expiry-pills" role="radiogroup" aria-labelledby="expiry-label" data-value="604800">
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 hour</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 hours</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 days</button>
               </div>
             </div>
-            <div class="pro-field" id="pro-password-wrap">
-              <span id="pro-password-label">Password</span>
+            <div class="drop-field" id="pro-password-wrap" hidden>
+              <span id="pro-password-label" class="drop-field-label">Password</span>
               <div class="pro-password-controls">
+                <span class="drop-field-badge">PRO</span>
                 <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password" data-off="Off" data-on="Protect"></button>
                 <input id="pro-password" type="password" minlength="8" placeholder="Min. 8 characters" autocomplete="new-password" hidden />
               </div>
@@ -242,13 +319,13 @@
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
                 focusable="false"><path d="M12 12.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" /><path d="M4.5 20a7.5 7.5 0 0 1 15 0" /><path d="m3 3 18 18" /></svg>
-              <span>No account</span>
+              <span>No account required</span>
             </li>
             <li>
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
                 focusable="false"><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 1.8" /></svg>
-              <span>24h expiry</span>
+              <span>You pick the expiry</span>
             </li>
             <li>
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
@@ -264,10 +341,72 @@
           </section>
         </section>
 
-        <article class="seo-article">
+        <section class="below" aria-label="About dropimg.io">
+          <section class="howto-compact" aria-labelledby="intent-howto" data-enter>
+            <h2 id="intent-howto">Create an expiring link</h2>
+            <ol class="flow">
+              <li>
+                <span class="flow-step" aria-hidden="true">01</span>
+                <span class="flow-visual" aria-hidden="true">
+                  <svg viewBox="0 0 104 64" width="104" height="64" fill="none" stroke="currentColor"
+                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <path d="M52 2v13m-5-5 5 5 5-5" stroke-width="1.9" />
+                    <rect x="15.5" y="21.5" width="73" height="39" rx="9" stroke-width="1.5"
+                      stroke-dasharray="5 4.5" opacity=".5" />
+                    <circle cx="35" cy="34" r="3.2" stroke-width="1.5" opacity=".85" />
+                    <path d="M23 53l11-10a3.4 3.4 0 0 1 4.6 0L47 51" stroke-width="1.5" opacity=".85" />
+                    <path d="M50 47l6.5-6a3.4 3.4 0 0 1 4.6 0L74 53" stroke-width="1.5" opacity=".85" />
+                  </svg>
+                </span>
+                <strong>Add the image</strong>
+                <span class="flow-detail">Paste, drop, or choose a PNG, JPEG, WebP, or GIF.</span>
+              </li>
+              <li>
+                <span class="flow-step" aria-hidden="true">02</span>
+                <span class="flow-visual" aria-hidden="true">
+                  <svg viewBox="0 0 104 64" width="104" height="64" fill="none" stroke="currentColor"
+                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <rect x="4.5" y="21.5" width="70" height="21" rx="10.5" stroke-width="1.5" opacity=".5" />
+                    <path d="M15 32h30" stroke-width="2.6" opacity=".4" />
+                    <path d="M50 32h13" stroke-width="2.6" opacity=".9" />
+                    <rect x="81.5" y="21.5" width="18" height="18" rx="5" stroke-width="1.5" />
+                    <path d="m86 30.5 3.2 3.2 6.3-6.4" stroke-width="1.9" />
+                  </svg>
+                </span>
+                <strong>Pick the expiry</strong>
+                <span class="flow-detail">1 hour, 24 hours, or 7 days — the choice sits right under the uploader.</span>
+              </li>
+              <li>
+                <span class="flow-step" aria-hidden="true">03</span>
+                <span class="flow-visual" aria-hidden="true">
+                  <svg viewBox="0 0 104 64" width="104" height="64" fill="none" stroke="currentColor"
+                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <path d="M11 13h50a7 7 0 0 1 7 7v13a7 7 0 0 1-7 7H27l-11 8v-8h-5a7 7 0 0 1-7-7V20a7 7 0 0 1 7-7Z"
+                      stroke-width="1.5" opacity=".5" />
+                    <path d="M17 24h32" stroke-width="2.2" opacity=".4" />
+                    <path d="M17 31h19" stroke-width="2.2" opacity=".85" />
+                    <path d="M78 32h18m-6-6 6 6-6 6" stroke-width="1.9" />
+                  </svg>
+                </span>
+                <strong>Share it</strong>
+                <span class="flow-detail">Copy the link. The countdown starts at upload, and deletion is automatic.</span>
+              </li>
+            </ol>
+          </section>
+
+          <article class="seo-article">
           <h2>Built to expire</h2>
 
-          <p>Every dropimg.io link has a fixed 24-hour lifetime. When time is up, the image is removed from storage and the URL stops serving.</p>
+          <p>Every dropimg.io link has an end date, and you set it. When the time is up the image is removed from storage and the URL stops serving — no cleanup, no archive, nothing left behind.</p>
+
+          <h2>Choose the lifetime that fits</h2>
+
+          <ul>
+            <li>1 hour for a password reset screenshot or a one-question answer.</li>
+            <li>24 hours for something you are actively working through today.</li>
+            <li>7 days for a thread, a review, or a ticket that stays open — this is the default.</li>
+            <li>Up to 30 or 90 days with Pro, when a link has to outlive the week.</li>
+          </ul>
 
           <h2>Good for</h2>
 
@@ -277,10 +416,33 @@
             <li>Anything you do not want hosted forever</li>
           </ul>
 
-          <h2>Delete early</h2>
+          <h2>Delete early, or lock it down</h2>
 
-          <p>After upload, use Delete on this device to remove the image before expiry. Recipients will see that the link is gone.</p>
-        </article>
+          <p>After upload, use the delete control to remove the image before it expires — recipients simply see that the link is gone. Pro accounts can also require a password before the image is shown, and can extend an existing link up to 90 days from its original upload.</p>
+          </article>
+
+          <section class="faq-compact" id="faq" aria-labelledby="intent-faq" data-enter>
+            <h2 id="intent-faq">Expiring link questions</h2>
+            <div class="faq-list">
+              <details>
+                <summary>How do I set when an image link expires?</summary>
+                <p>Pick 1 hour, 24 hours, or 7 days under the uploader before you upload. Seven days is selected by default, and the link shows its expiry once it is ready.</p>
+              </details>
+              <details>
+                <summary>What is the longest an image link can last?</summary>
+                <p>Seven days on the free tier. Pro can choose 30 or 90 days, and 90 days from the original upload is the hard maximum — links cannot be extended past it.</p>
+              </details>
+              <details>
+                <summary>What happens when the link expires?</summary>
+                <p>The image is deleted from storage and the URL stops serving. There is no archive and no way to restore it, so keep your own copy of anything you need.</p>
+              </details>
+              <details>
+                <summary>Can I make the link expire sooner?</summary>
+                <p>Yes. Use the delete control shown after upload, or delete the drop from My drops if you are signed in.</p>
+              </details>
+            </div>
+          </section>
+        </section>
 
 
         <nav class="seo-more" aria-label="Related">

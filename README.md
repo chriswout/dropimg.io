@@ -80,12 +80,12 @@ npx wrangler r2 bucket lifecycle add dropimg-images --name expire-o-prefix --pre
 **Free / anonymous**
 
 - Paste, drop, or choose an image — no account required
-- 24-hour links, 10 MB, PNG / JPEG / WebP / GIF (no SVG)
+- Choose 1 hour, 24 hours, or 7 days (default 7 days), 10 MB, PNG / JPEG / WebP / GIF (no SVG)
 - Share pages are `noindex`
 
-**DropIMG Pro** ($1.99/mo or $19.99/yr)
+**DropIMG Pro** ($2.99/mo or $24.99/yr — save 30%, $2.08/mo billed annually)
 
-- Links up to 30 days, 50 MB when enabled, password protection, My drops history, extension + ShareX account uploads, ad-free
+- Links up to 90 days, 50 MB when enabled, password protection, My drops history, extension + ShareX account uploads, ad-free
 - Still temporary — no permanent storage
 
 Optional passwordless accounts (`/login`, `/app`, `/account`) exist in the codebase. **Production V2 flags stay off** (`BILLING_ENABLED`, `LONG_TTL_ENABLED`, `PRO_50MB_ENABLED`). Staging has them on.

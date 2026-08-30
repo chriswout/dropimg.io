@@ -55,36 +55,36 @@ export type ProSeo = {
 
 export const PRO_SEO: Record<Locale, ProSeo> = {
   en: {
-    title: "DropIMG Pro — $1.99/month",
+    title: "DropIMG Pro — $2.99/month",
     description:
-      "More control for people who use DropIMG every day. Keep links up to 30 days, upload larger images, protect shares, and manage uploads across devices.",
+      "More control for people who use DropIMG every day. Keep links up to 90 days, upload larger images, protect shares, and manage uploads across devices.",
     ogTitle: "DropIMG Pro",
     ogDescription:
-      "Keep links longer, manage uploads across devices, and protect what you share. $1.99/month or $19.99/year.",
+      "Keep links longer, manage uploads across devices, and protect what you share. $2.99/month or $24.99/year.",
   },
   es: {
-    title: "DropIMG Pro — $1.99/mes",
+    title: "DropIMG Pro — $2.99/mes",
     description:
-      "Más control si usas DropIMG a diario. Enlaces de hasta 30 días, archivos más grandes, protección con contraseña e historial en todos tus dispositivos.",
+      "Más control si usas DropIMG a diario. Enlaces de hasta 90 días, archivos más grandes, protección con contraseña e historial en todos tus dispositivos.",
     ogTitle: "DropIMG Pro",
     ogDescription:
-      "Enlaces más largos, historial en todos tus dispositivos y protección al compartir. $1.99/mes o $19.99/año.",
+      "Enlaces más largos, historial en todos tus dispositivos y protección al compartir. $2.99/mes o $24.99/año.",
   },
   "pt-BR": {
-    title: "DropIMG Pro — $1.99/mês",
+    title: "DropIMG Pro — $2.99/mês",
     description:
-      "Mais controle pra quem usa o DropIMG todo dia. Links de até 30 dias, arquivos maiores, senha e histórico em todos os dispositivos.",
+      "Mais controle pra quem usa o DropIMG todo dia. Links de até 90 dias, arquivos maiores, senha e histórico em todos os dispositivos.",
     ogTitle: "DropIMG Pro",
     ogDescription:
-      "Links mais longos, histórico em todos os dispositivos e proteção ao compartilhar. $1.99/mês ou $19.99/ano.",
+      "Links mais longos, histórico em todos os dispositivos e proteção ao compartilhar. $2.99/mês ou $24.99/ano.",
   },
   de: {
-    title: "DropIMG Pro — $1.99/Monat",
+    title: "DropIMG Pro — $2.99/Monat",
     description:
-      "Mehr Kontrolle für alle, die DropIMG täglich nutzen. Links bis 30 Tage, größere Dateien, Passwortschutz und Verlauf auf allen Geräten.",
+      "Mehr Kontrolle für alle, die DropIMG täglich nutzen. Links bis 90 Tage, größere Dateien, Passwortschutz und Verlauf auf allen Geräten.",
     ogTitle: "DropIMG Pro",
     ogDescription:
-      "Längere Links, Verlauf auf allen Geräten und Schutz beim Teilen. $1.99/Monat oder $19.99/Jahr.",
+      "Längere Links, Verlauf auf allen Geräten und Schutz beim Teilen. $2.99/Monat oder $24.99/Jahr.",
   },
 };
 
@@ -117,13 +117,13 @@ export function proHeadTags(locale: Locale): string {
     offers: [
       {
         "@type": "Offer",
-        price: "19.99",
+        price: "24.99",
         priceCurrency: "USD",
         name: "DropIMG Pro annual",
       },
       {
         "@type": "Offer",
-        price: "1.99",
+        price: "2.99",
         priceCurrency: "USD",
         name: "DropIMG Pro monthly",
       },

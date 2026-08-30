@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Anonymous Image Hosting (Temporary) | dropimg.io</title>
-    <meta name="description" content="Anonymous temporary image hosting with no account. Paste or upload, share a link, auto-delete in 24 hours." />
+    <meta name="description" content="Anonymous temporary image hosting with no account required. Paste or upload, choose 1 hour, 24 hours, or 7 days, share a link, and it deletes itself." />
     <link rel="canonical" href="https://dropimg.io/anonymous-image-hosting" />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
@@ -25,7 +25,7 @@
     <meta property="og:locale" content="en_US" />
     <meta property="og:url" content="https://dropimg.io/anonymous-image-hosting" />
     <meta property="og:title" content="Anonymous temporary image hosting | dropimg.io" />
-    <meta property="og:description" content="No account required. Temporary links that expire in 24 hours." />
+    <meta property="og:description" content="No account required. Temporary links that delete themselves when you say so." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
@@ -33,10 +33,84 @@
     <meta property="og:image:alt" content="dropimg.io" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Anonymous image hosting" />
-    <meta name="twitter:description" content="Upload without an account. Links expire after 24 hours." />
+    <meta name="twitter:description" content="Upload without an account. You choose when the link expires." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "HowTo",
+            "@id": "https://dropimg.io/anonymous-image-hosting#howto",
+            "name": "Host an image anonymously",
+            "description": "Upload without an account, choose a lifetime, and share a temporary link.",
+            "inLanguage": "en",
+            "totalTime": "PT1M",
+            "step": [
+              {
+                "@type": "HowToStep",
+                "position": 1,
+                "name": "Upload without signing up",
+                "text": "Paste, drop, or choose a file. Nothing is asked of you — no email, no profile."
+              },
+              {
+                "@type": "HowToStep",
+                "position": 2,
+                "name": "Set the lifetime",
+                "text": "1 hour, 24 hours, or 7 days, chosen before the upload runs."
+              },
+              {
+                "@type": "HowToStep",
+                "position": 3,
+                "name": "Share and forget it",
+                "text": "Copy the link. When the time is up the image is deleted for you."
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://dropimg.io/anonymous-image-hosting#faq",
+            "inLanguage": "en",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Is an account ever required?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Anonymous uploading is the normal way to use dropimg.io. Accounts are optional and only add history, longer links, larger files, passwords, and integrations."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How long does an anonymous link last?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "You choose 1 hour, 24 hours, or 7 days before uploading, and 7 days is the default. After that the image is deleted and the link stops serving."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Can I host an image anonymously forever?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. Every link expires — there is no permanent storage tier. The longest lifetime on the service is 90 days, with Pro."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Are uploads really anonymous?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No email or profile is required, and metadata is stripped when supported. IP addresses are hashed for rate limiting and abuse handling only. Read the Privacy Policy for the full picture."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#dropzone">Skip to upload</a>
@@ -66,7 +140,7 @@
         </a>
         <div class="header-actions">
           <nav id="account-nav" class="account-nav" aria-label="Account">
-            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/pro">Pro · $1.99</a>
+            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/pro">Pro · $2.99</a>
             <a id="account-signin" class="account-chip" href="/login">Sign in</a>
             <div id="account-session" class="account-session" hidden>
               <a id="account-app" class="account-nav-link" href="/app">My drops</a>
@@ -102,7 +176,7 @@
               <span class="lang-label">English</span>
             </summary>
             <ul class="lang-menu">
-            <li><a href="/" hreflang="en" lang="en" aria-current="page">English</a></li>
+            <li><a href="/anonymous-image-hosting" hreflang="en" lang="en" aria-current="page">English</a></li>
             <li><a href="/es" hreflang="es" lang="es">Español</a></li>
             <li><a href="/pt-br" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a></li>
             <li><a href="/de" hreflang="de" lang="de">Deutsch</a></li>
@@ -116,7 +190,7 @@
       <main>
         <section class="seo-hero">
           <h1 class="tagline">Anonymous temporary image hosting</h1>
-          <p class="sub seo-lede">Share an image without creating an account. Links are temporary and expire after 24 hours.</p>
+          <p class="sub seo-lede">Share an image without creating an account. Links are temporary and delete themselves after the time you choose.</p>
 
           <section
             id="dropzone"
@@ -208,7 +282,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>Need it longer?</strong>
-                Keep links up to 30 days with Pro — $1.99/month.
+                Keep links up to 90 days with Pro — $2.99/month.
               </p>
             </div>
 
@@ -218,19 +292,22 @@
               <button id="btn-retry" type="button" class="btn primary">Try again</button>
             </div>
           </section>
-          <div id="pro-options" class="pro-options" hidden>
-            <p class="pro-options-kicker">PRO</p>
-            <div class="pro-field">
-              <span id="pro-expiry-label">Expires</span>
-              <div id="pro-expiry" class="expiry-pills" role="radiogroup" aria-labelledby="pro-expiry-label" data-value="86400">
-                <button type="button" class="expiry-pill" role="radio" aria-checked="true" data-expiry="86400">24 hours</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="604800">7 days</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="2592000">30 days</button>
+
+          <div id="drop-options" class="drop-options">
+            <div class="drop-field">
+              <span id="expiry-label" class="drop-field-label">Expires</span>
+              <div id="expiry-choice" class="expiry-pills" role="radiogroup" aria-labelledby="expiry-label" data-value="604800">
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 hour</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 hours</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 days</button>
               </div>
             </div>
-            <div class="pro-field" id="pro-password-wrap">
-              <span id="pro-password-label">Password</span>
+            <div class="drop-field" id="pro-password-wrap" hidden>
+              <span id="pro-password-label" class="drop-field-label">Password</span>
               <div class="pro-password-controls">
+                <span class="drop-field-badge">PRO</span>
                 <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password" data-off="Off" data-on="Protect"></button>
                 <input id="pro-password" type="password" minlength="8" placeholder="Min. 8 characters" autocomplete="new-password" hidden />
               </div>
@@ -242,13 +319,13 @@
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
                 focusable="false"><path d="M12 12.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" /><path d="M4.5 20a7.5 7.5 0 0 1 15 0" /><path d="m3 3 18 18" /></svg>
-              <span>No account</span>
+              <span>No account required</span>
             </li>
             <li>
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
                 focusable="false"><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 1.8" /></svg>
-              <span>24h expiry</span>
+              <span>You pick the expiry</span>
             </li>
             <li>
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
@@ -264,23 +341,109 @@
           </section>
         </section>
 
-        <article class="seo-article">
-          <h2>No signup</h2>
+        <section class="below" aria-label="About dropimg.io">
+          <section class="howto-compact" aria-labelledby="intent-howto" data-enter>
+            <h2 id="intent-howto">Upload anonymously in three steps</h2>
+            <ol class="flow">
+              <li>
+                <span class="flow-step" aria-hidden="true">01</span>
+                <span class="flow-visual" aria-hidden="true">
+                  <svg viewBox="0 0 104 64" width="104" height="64" fill="none" stroke="currentColor"
+                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <path d="M52 2v13m-5-5 5 5 5-5" stroke-width="1.9" />
+                    <rect x="15.5" y="21.5" width="73" height="39" rx="9" stroke-width="1.5"
+                      stroke-dasharray="5 4.5" opacity=".5" />
+                    <circle cx="35" cy="34" r="3.2" stroke-width="1.5" opacity=".85" />
+                    <path d="M23 53l11-10a3.4 3.4 0 0 1 4.6 0L47 51" stroke-width="1.5" opacity=".85" />
+                    <path d="M50 47l6.5-6a3.4 3.4 0 0 1 4.6 0L74 53" stroke-width="1.5" opacity=".85" />
+                  </svg>
+                </span>
+                <strong>Upload without signing up</strong>
+                <span class="flow-detail">Paste, drop, or choose a file. Nothing is asked of you — no email, no profile.</span>
+              </li>
+              <li>
+                <span class="flow-step" aria-hidden="true">02</span>
+                <span class="flow-visual" aria-hidden="true">
+                  <svg viewBox="0 0 104 64" width="104" height="64" fill="none" stroke="currentColor"
+                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <rect x="4.5" y="21.5" width="70" height="21" rx="10.5" stroke-width="1.5" opacity=".5" />
+                    <path d="M15 32h30" stroke-width="2.6" opacity=".4" />
+                    <path d="M50 32h13" stroke-width="2.6" opacity=".9" />
+                    <rect x="81.5" y="21.5" width="18" height="18" rx="5" stroke-width="1.5" />
+                    <path d="m86 30.5 3.2 3.2 6.3-6.4" stroke-width="1.9" />
+                  </svg>
+                </span>
+                <strong>Set the lifetime</strong>
+                <span class="flow-detail">1 hour, 24 hours, or 7 days, chosen before the upload runs.</span>
+              </li>
+              <li>
+                <span class="flow-step" aria-hidden="true">03</span>
+                <span class="flow-visual" aria-hidden="true">
+                  <svg viewBox="0 0 104 64" width="104" height="64" fill="none" stroke="currentColor"
+                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <path d="M11 13h50a7 7 0 0 1 7 7v13a7 7 0 0 1-7 7H27l-11 8v-8h-5a7 7 0 0 1-7-7V20a7 7 0 0 1 7-7Z"
+                      stroke-width="1.5" opacity=".5" />
+                    <path d="M17 24h32" stroke-width="2.2" opacity=".4" />
+                    <path d="M17 31h19" stroke-width="2.2" opacity=".85" />
+                    <path d="M78 32h18m-6-6 6 6-6 6" stroke-width="1.9" />
+                  </svg>
+                </span>
+                <strong>Share and forget it</strong>
+                <span class="flow-detail">Copy the link. When the time is up the image is deleted for you.</span>
+              </li>
+            </ol>
+          </section>
 
-          <p>Upload from the page above. We do not offer user accounts, profiles, or permanent libraries. IP addresses are hashed for abuse-rate limits, not for identity.</p>
+          <article class="seo-article">
+          <h2>No account required</h2>
+
+          <p>Upload from the page above without signing up. Accounts exist but are entirely optional: a free account only adds a list of your last 10 active links, and Pro adds longer links, larger uploads, and passwords. There are no public profiles and no searchable library of uploads.</p>
+
+          <h2>What we do and do not keep</h2>
+
+          <ul>
+            <li>IP addresses are hashed for abuse rate limits, not for identity.</li>
+            <li>Image metadata is stripped when the format supports it.</li>
+            <li>The image itself is deleted when the lifetime you chose runs out.</li>
+            <li>Anonymous uploads are never attached to an account unless you claim them yourself.</li>
+          </ul>
 
           <h2>Still accountable</h2>
 
-          <p>Anonymous does not mean unmoderated. Abuse can be reported at /abuse. Illegal content is removed. See the Privacy Policy and Terms for details.</p>
+          <p>Anonymous does not mean unmoderated. Abuse can be reported at /abuse, and illegal content is removed. See the Privacy Policy and Terms for details.</p>
 
-          <h2>24-hour default</h2>
+          <h2>Temporary by design</h2>
 
           <ul>
-            <li>Every upload expires after 24 hours.</li>
-            <li>You can delete sooner with the delete token from your upload session.</li>
-            <li>There is no permanent or password-protected storage.</li>
+            <li>Free uploads last 1 hour, 24 hours, or 7 days — 7 days by default.</li>
+            <li>You can delete sooner with the delete control from your upload session.</li>
+            <li>There is no permanent storage option, anonymous or otherwise.</li>
+            <li>Password-protected links and lifetimes up to 90 days require a Pro account.</li>
           </ul>
-        </article>
+          </article>
+
+          <section class="faq-compact" id="faq" aria-labelledby="intent-faq" data-enter>
+            <h2 id="intent-faq">Anonymous hosting questions</h2>
+            <div class="faq-list">
+              <details>
+                <summary>Is an account ever required?</summary>
+                <p>No. Anonymous uploading is the normal way to use dropimg.io. Accounts are optional and only add history, longer links, larger files, passwords, and integrations.</p>
+              </details>
+              <details>
+                <summary>How long does an anonymous link last?</summary>
+                <p>You choose 1 hour, 24 hours, or 7 days before uploading, and 7 days is the default. After that the image is deleted and the link stops serving.</p>
+              </details>
+              <details>
+                <summary>Can I host an image anonymously forever?</summary>
+                <p>No. Every link expires — there is no permanent storage tier. The longest lifetime on the service is 90 days, with Pro.</p>
+              </details>
+              <details>
+                <summary>Are uploads really anonymous?</summary>
+                <p>No email or profile is required, and metadata is stripped when supported. IP addresses are hashed for rate limiting and abuse handling only. Read the Privacy Policy for the full picture.</p>
+              </details>
+            </div>
+          </section>
+        </section>
 
 
         <nav class="seo-more" aria-label="Related">

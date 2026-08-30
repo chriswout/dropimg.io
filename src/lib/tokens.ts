@@ -53,7 +53,12 @@ export function uuid(): string {
   return crypto.randomUUID();
 }
 
-export type R2KeyClass = "24h" | "pro";
+/**
+ * Prefix classes exist so the bucket-level lifecycle rule can be short for
+ * short-lived objects. D1 `expires_at` stays authoritative; R2 only sweeps up
+ * anything the cron missed.
+ */
+export type R2KeyClass = "24h" | "7d" | "pro";
 
 export function r2Key(
   id: string,
@@ -67,5 +72,14 @@ export function r2Key(
 }
 
 export function r2KeyClassOf(key: string): R2KeyClass {
-  return key.startsWith("o/pro/") ? "pro" : "24h";
+  if (key.startsWith("o/pro/")) return "pro";
+  if (key.startsWith("o/7d/")) return "7d";
+  return "24h";
 }
+
+/** Longest lifetime, in seconds, the bucket rule for a prefix is safe for. */
+export const R2_CLASS_MAX_LIFETIME: Record<R2KeyClass, number> = {
+  "24h": 24 * 60 * 60,
+  "7d": 7 * 24 * 60 * 60,
+  pro: 90 * 24 * 60 * 60,
+};

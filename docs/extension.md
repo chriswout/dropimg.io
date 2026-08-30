@@ -21,7 +21,7 @@ Anonymous capture is unchanged and remains the default.
 
 The token is stored in `chrome.storage.local` only (never `sync`, never analytics, never console). Disconnect removes the local token; it does **not** revoke it. Revoke from the account page to invalidate uploads immediately.
 
-Connected captures use `POST /api/integrations/upload-intent` then `POST /api/integrations/upload/:intent`. Free stays 24h / 10 MB. Pro can pick 24h / 7d / 30d when those expiries are enabled. Last expiry is remembered locally and re-checked on the server.
+Connected captures use `POST /api/integrations/upload-intent` then `POST /api/integrations/upload/:intent`. Free can pick 1h / 24h / 7d at 10 MB; Pro adds 30d and 90d. Anonymous captures send no expiry and take the server's 7-day default. Last expiry is remembered locally, and the server re-checks it against the account's entitlements on every intent.
 
 If the token is revoked or invalid, the extension shows a connection error and does **not** fall back to an anonymous upload.
 

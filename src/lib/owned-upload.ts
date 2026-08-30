@@ -3,7 +3,12 @@ import { track } from "./analytics";
 import { toArrayBuffer } from "./d1-blob";
 import {
   entitlementsFor,
+  EXPIRY_1H,
   EXPIRY_24H,
+  EXPIRY_30D,
+  EXPIRY_7D,
+  EXPIRY_90D,
+  r2ClassFor,
   uploadIntentAllowed,
   type Entitlements,
 } from "./entitlements";
@@ -49,7 +54,7 @@ export async function createOwnedUploadIntent(
   input: { expiry?: number; password?: string },
 ): Promise<CreateOwnedIntentOk | CreateOwnedIntentFail> {
   const entitlements = await entitlementsFor(env, userId);
-  let expiry = EXPIRY_24H;
+  let expiry = entitlements.defaultExpirySeconds;
   if (input.expiry != null) expiry = Number(input.expiry);
   if (!entitlements.allowedExpirySeconds.includes(expiry)) {
     return { ok: false, status: 400, error: "That expiry is not available." };
@@ -231,13 +236,37 @@ export async function executeOwnedUploadFromRequest(
 
 export const SHAREX_MULTIPART_MAX_BYTES = 10 * 1024 * 1024;
 
-export function parseSharexExpiry(raw: unknown): number | null {
-  if (raw == null || raw === "") return EXPIRY_24H;
+const SHAREX_EXPIRY_LABELS: Record<string, number> = {
+  "1h": EXPIRY_1H,
+  "1hour": EXPIRY_1H,
+  "1hours": EXPIRY_1H,
+  "24h": EXPIRY_24H,
+  "1d": EXPIRY_24H,
+  "7d": EXPIRY_7D,
+  "7day": EXPIRY_7D,
+  "7days": EXPIRY_7D,
+  "30d": EXPIRY_30D,
+  "30day": EXPIRY_30D,
+  "30days": EXPIRY_30D,
+  "90d": EXPIRY_90D,
+  "90day": EXPIRY_90D,
+  "90days": EXPIRY_90D,
+};
+
+/**
+ * ShareX sends expiry as a free-text form field, so accept the friendly labels
+ * as well as raw seconds. Whatever comes back is still checked against the
+ * caller's entitlements before it is stored.
+ */
+export function parseSharexExpiry(
+  raw: unknown,
+  fallback: number = EXPIRY_7D,
+): number | null {
+  if (raw == null || raw === "") return fallback;
   if (typeof raw !== "string") return null;
   const value = raw.trim().toLowerCase();
-  if (value === "24h" || value === String(EXPIRY_24H)) return EXPIRY_24H;
-  if (value === "7d" || value === "7day" || value === "7days") return 7 * 24 * 60 * 60;
-  if (value === "30d" || value === "30day" || value === "30days") return 30 * 24 * 60 * 60;
+  const labelled = SHAREX_EXPIRY_LABELS[value];
+  if (labelled) return labelled;
   const asNumber = Number(value);
   if (Number.isInteger(asNumber) && asNumber > 0) return asNumber;
   return null;
@@ -248,14 +277,16 @@ export async function executeOwnedDirectUpload(
   input: {
     userId: string;
     bytes: ArrayBuffer;
-    expirySeconds: number;
+    /** null asks for the plan default rather than a specific lifetime. */
+    expirySeconds: number | null;
     maxBytesCap: number;
     client: string;
     pageIntent?: string;
   },
 ): Promise<Response> {
   const entitlements = await entitlementsFor(c.env, input.userId);
-  if (!entitlements.allowedExpirySeconds.includes(input.expirySeconds)) {
+  const expirySeconds = input.expirySeconds ?? entitlements.defaultExpirySeconds;
+  if (!entitlements.allowedExpirySeconds.includes(expirySeconds)) {
     return c.json({ error: "That expiry is not available." }, 400);
   }
   const maxBytes = Math.min(
@@ -276,7 +307,7 @@ export async function executeOwnedDirectUpload(
     entitlements,
     bytes: input.bytes,
     maxBytes,
-    expirySeconds: input.expirySeconds,
+    expirySeconds,
     client: input.client,
     pageIntent: input.pageIntent ?? "",
     ipHash: prepared.ipHash,
@@ -355,7 +386,7 @@ async function storeOwnedBytes(
     expirySeconds: input.expirySeconds,
     maxBytes: input.maxBytes,
     origin: new URL(c.req.url).origin,
-    r2Class: input.entitlements.plan === "pro" ? "pro" : "24h",
+    r2Class: r2ClassFor(input.entitlements.plan, input.expirySeconds),
     password: input.password,
   });
   if (!stored.ok) return uploadFailResponse(stored);

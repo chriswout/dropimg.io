@@ -38,6 +38,8 @@ integrationRoutes.get("/api/integrations/me", async (c) => {
       plan: entitlements.plan,
       maxUploadBytes: entitlements.maxUploadBytes,
       allowedExpirySeconds: entitlements.allowedExpirySeconds,
+      defaultExpirySeconds: entitlements.defaultExpirySeconds,
+      passwordProtection: entitlements.passwordProtection,
     },
   });
 });

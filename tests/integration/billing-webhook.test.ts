@@ -175,8 +175,8 @@ describe("Paddle billing webhook", () => {
     expect(page.status).toBe(200);
     const html = await page.text();
     expect(html).toContain("DropIMG Pro");
-    expect(html).toContain("$1.99");
-    expect(html).toContain("$19.99");
+    expect(html).toContain("$2.99");
+    expect(html).toContain("$24.99");
 
     const checkout = await worker.fetch("https://dropimg.io/api/billing/checkout", {
       method: "POST",

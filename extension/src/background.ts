@@ -287,6 +287,7 @@ async function uploadDataUrl(dataUrl: string): Promise<CaptureResult> {
     const expirySeconds = chooseExpirySeconds(
       profile?.allowedExpirySeconds,
       preferred,
+      profile?.defaultExpirySeconds,
     );
     return uploadWithIntegrationToken({
       token,

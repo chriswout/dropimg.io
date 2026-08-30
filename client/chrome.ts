@@ -7,6 +7,7 @@ export type AccountMe = {
     plan: string;
     maxUploadBytes: number;
     allowedExpirySeconds: number[];
+    defaultExpirySeconds: number;
     passwordProtection: boolean;
   };
 };

@@ -8,7 +8,7 @@ Upload screenshots from [ShareX](https://getsharex.com/) to dropimg.io.
 2. Open the file (or Import in ShareX → Destinations → Custom uploader)
 3. Set dropimg.io as the image uploader destination
 
-Anonymous uploads stay 24h / 10 MB and are not attached to an account.
+Anonymous uploads stay at 10 MB, are not attached to an account, and default to 7 days. A `expiry=1h|24h|7d` form field is honoured; anything else is rejected.
 
 ## Account setup
 
@@ -19,7 +19,7 @@ Anonymous uploads stay 24h / 10 MB and are not attached to an account.
 
 The personal config includes `Authorization: Bearer dropimg_it_…`. Keep it private. If you lose it, revoke the old token and create a new config.
 
-Authenticated ShareX uploads are owned (My drops) and use current account entitlements. Expiry can be set with a form field `expiry=24h`, `expiry=7d`, or `expiry=30d` (Pro + long TTL). Multipart size stays conservative (10 MB). No image password in the ShareX config.
+Authenticated ShareX uploads are owned (My drops) and use current account entitlements. Expiry can be set with a form field: `expiry=1h`, `24h`, or `7d` on Free, plus `30d` and `90d` on Pro with long TTL enabled. Omitting it uses the account's default (7 days). Multipart size stays conservative (10 MB). No image password in the ShareX config.
 
 ## Endpoint
 

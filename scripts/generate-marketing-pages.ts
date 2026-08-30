@@ -9,8 +9,9 @@ import { LOCALES, SITE_ORIGIN } from "../marketing/locales";
 import { EXTENSION_URL } from "../marketing/extension";
 import {
   INTENT_PAGE_IDS,
-  INTENT_PAGE_PATHS,
   allIntentUrls,
+  intentLocales,
+  intentPagePath,
   intentPageUrl,
 } from "../marketing/intent-pages";
 import {
@@ -143,12 +144,14 @@ function writeExtensionPage() {
 
 function writeIntentPages() {
   for (const id of INTENT_PAGE_IDS) {
-    const html = renderIntentPage(id);
-    const dir = INTENT_PAGE_PATHS[id].replace(/^\//, "");
-    const out = join(root, dir, "index.html");
-    mkdirSync(dirname(out), { recursive: true });
-    writeFileSync(out, html, "utf8");
-    console.log(`  ${intentPageUrl(id)} → ${dir}/index.html`);
+    for (const locale of intentLocales(id)) {
+      const html = renderIntentPage(id, locale);
+      const dir = intentPagePath(id, locale).replace(/^\//, "");
+      const out = join(root, dir, "index.html");
+      mkdirSync(dirname(out), { recursive: true });
+      writeFileSync(out, html, "utf8");
+      console.log(`  ${intentPageUrl(id, locale)} → ${dir}/index.html`);
+    }
   }
 }
 

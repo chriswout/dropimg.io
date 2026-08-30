@@ -1,6 +1,6 @@
 import {
   DEFAULT_SETTINGS,
-  EXPIRY_24H,
+  EXPIRY_7D,
   type AccountProfile,
   type ExtSettings,
   type RecentItem,
@@ -81,7 +81,7 @@ export async function saveAccountProfile(profile: AccountProfile): Promise<void>
 export async function loadLastExpiry(): Promise<number> {
   const data = await chrome.storage.local.get(EXPIRY_KEY);
   const value = Number(data[EXPIRY_KEY]);
-  return Number.isFinite(value) && value > 0 ? value : EXPIRY_24H;
+  return Number.isFinite(value) && value > 0 ? value : EXPIRY_7D;
 }
 
 export async function saveLastExpiry(seconds: number): Promise<void> {

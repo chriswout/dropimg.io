@@ -53,28 +53,40 @@ export const DEFAULT_SETTINGS: ExtSettings = {
   lastMode: "visible",
 };
 
+export const EXPIRY_1H = 60 * 60;
 export const EXPIRY_24H = 24 * 60 * 60;
 export const EXPIRY_7D = 7 * 24 * 60 * 60;
 export const EXPIRY_30D = 30 * 24 * 60 * 60;
+export const EXPIRY_90D = 90 * 24 * 60 * 60;
 
 export type AccountProfile = {
   emailMasked: string;
   plan: "free" | "pro" | "anonymous";
   maxUploadBytes: number;
   allowedExpirySeconds: number[];
+  defaultExpirySeconds: number;
 };
 
 export function accountUrl(origin = API_ORIGIN): string {
   return `${origin.replace(/\/$/, "")}/app/integrations`;
 }
 
+/**
+ * The account's remembered choice wins, then whatever the server says its
+ * default is, then 7 days. Never returns something outside `allowed`, so a
+ * downgraded plan silently falls back instead of getting a 400 at upload time.
+ */
 export function chooseExpirySeconds(
   allowed: number[] | undefined,
   preferred: number | undefined,
+  serverDefault?: number,
 ): number {
-  const list = allowed?.length ? allowed : [EXPIRY_24H];
+  const list = allowed?.length ? allowed : [EXPIRY_7D];
   if (preferred && list.includes(preferred)) return preferred;
-  return list.includes(EXPIRY_24H) ? EXPIRY_24H : list[0]!;
+  if (serverDefault && list.includes(serverDefault)) return serverDefault;
+  if (list.includes(EXPIRY_7D)) return EXPIRY_7D;
+  if (list.includes(EXPIRY_24H)) return EXPIRY_24H;
+  return list[0]!;
 }
 
 export function integrationTokenLooksValid(token: string): boolean {

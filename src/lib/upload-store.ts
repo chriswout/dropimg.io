@@ -12,7 +12,11 @@ import {
   uuid,
   type R2KeyClass,
 } from "./tokens";
-import { TTL_SECONDS, type UploadErrorResponse, type UploadResponse } from "../types";
+import {
+  QUOTA_WINDOW_SECONDS,
+  type UploadErrorResponse,
+  type UploadResponse,
+} from "../types";
 
 export const DAILY_UPLOAD_LIMIT = 100;
 export const DAILY_BYTE_LIMIT = 500 * 1024 * 1024;
@@ -48,7 +52,7 @@ export async function overDailyQuota(
   opts: { ipHash: string; userId?: string | null; now?: number },
 ): Promise<boolean> {
   const now = opts.now ?? Math.floor(Date.now() / 1000);
-  const since = now - TTL_SECONDS;
+  const since = now - QUOTA_WINDOW_SECONDS;
 
   const ip = await db
     .prepare(
@@ -245,6 +249,7 @@ export async function storeUploadedImage(
     size: storeSize,
     client,
     pageIntent,
+    expirySeconds: input.expirySeconds,
   });
 
   return {
@@ -281,7 +286,13 @@ function fail(
   return { ok: false, status, code, error, reason };
 }
 
-/** Copy o/24h → o/pro, then update D1, then delete the old object. */
+/**
+ * Promote a short-lifecycle object (`o/24h` or `o/7d`) into `o/pro`.
+ *
+ * Copy, verify, repoint D1, then delete. Callers must run this to completion
+ * before writing a longer `expires_at`, otherwise the bucket rule would delete
+ * the object well before the database thinks it expires.
+ */
 export async function moveImageToProPrefix(
   env: { DB: D1Database; BUCKET: R2Bucket },
   row: { slug: string; r2_key: string },

@@ -38,6 +38,8 @@ export type AnalyticsEvent =
 
 export const ANALYTICS_PLANS = ["anonymous", "free", "pro"] as const;
 export const ANALYTICS_INTERVALS = ["monthly", "annual"] as const;
+/** Bucketed lifetimes, so the dimension stays low-cardinality and readable. */
+export const ANALYTICS_EXPIRIES = ["1h", "24h", "7d", "30d", "90d"] as const;
 export const ANALYTICS_CLIENTS = [
   "web",
   "extension",
@@ -49,9 +51,18 @@ export const ANALYTICS_CLIENTS = [
 
 export type AnalyticsPlan = (typeof ANALYTICS_PLANS)[number];
 export type AnalyticsInterval = (typeof ANALYTICS_INTERVALS)[number];
+export type AnalyticsExpiry = (typeof ANALYTICS_EXPIRIES)[number];
 
 const PLAN_SET = new Set<string>(ANALYTICS_PLANS);
 const INTERVAL_SET = new Set<string>(ANALYTICS_INTERVALS);
+
+const EXPIRY_LABELS: Record<number, AnalyticsExpiry> = {
+  3600: "1h",
+  86400: "24h",
+  604800: "7d",
+  2592000: "30d",
+  7776000: "90d",
+};
 
 export const SENSITIVE_ANALYTICS_KEYS = [
   "email",
@@ -77,6 +88,13 @@ export function allowInterval(
   return INTERVAL_SET.has(v) ? (v as AnalyticsInterval) : "";
 }
 
+/** Seconds in, a bucket label out. Anything off the ladder is dropped. */
+export function allowExpiry(
+  seconds: number | null | undefined,
+): AnalyticsExpiry | "" {
+  return seconds == null ? "" : (EXPIRY_LABELS[seconds] ?? "");
+}
+
 export function track(
   analytics: AnalyticsEngineDataset | undefined,
   event: AnalyticsEvent,
@@ -91,6 +109,8 @@ export function track(
     pageIntent?: string;
     plan?: string;
     interval?: string;
+    /** Chosen lifetime in seconds; bucketed to 1h/24h/7d/30d/90d. */
+    expirySeconds?: number | null;
   } = {},
 ): void {
   if (!analytics) return;
@@ -105,6 +125,7 @@ export function track(
         opts.pageIntent ?? "",
         allowPlan(opts.plan),
         allowInterval(opts.interval),
+        allowExpiry(opts.expirySeconds),
       ],
       doubles: [opts.size ?? 0],
     });

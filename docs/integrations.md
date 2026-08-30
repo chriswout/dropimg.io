@@ -23,8 +23,8 @@ Browser disconnect (extension) removes the local copy only. Account-side Revoke 
 - `POST /api/integrations/upload-intent` then `POST /api/integrations/upload/:intent` — Bearer
 - `POST /api/integrations/sharex` — anonymous multipart, or Bearer for an owned upload
 
-Free integrations: ownership, My drops, 24h, 10 MB, no passwords.  
-Pro integrations: those plus enabled expiry (7d/30d), 50 MB on the intent path, and passwords where the client supports them.
+Free integrations: ownership, My drops, 1h/24h/7d, 10 MB, no passwords.  
+Pro integrations: those plus 30d and 90d, 50 MB on the intent path, and passwords where the client supports them.
 
 ShareX authenticated uploads stay on a conservative 10 MB multipart cap.
 

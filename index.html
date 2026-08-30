@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Temporary Image Hosting &amp; Screenshot Sharing | dropimg.io</title>
-    <meta name="description" content="Paste or drop a screenshot and get a temporary shareable link in seconds. No account. Images expire after 24 hours. PNG, JPEG, WebP, GIF up to 10 MB." />
+    <meta name="description" content="Paste or drop a screenshot and get a shareable link in seconds. No account required. Choose 1 hour, 24 hours, or 7 days. PNG, JPEG, WebP, GIF up to 10 MB." />
     <link rel="canonical" href="https://dropimg.io/" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es" />
@@ -30,7 +30,7 @@
     <meta property="og:locale" content="en_US" />
     <meta property="og:url" content="https://dropimg.io/" />
     <meta property="og:title" content="Temporary Image Hosting &amp; Screenshot Sharing | dropimg.io" />
-    <meta property="og:description" content="Paste or drop a screenshot and get a temporary shareable link in seconds. No account. Images expire after 24 hours." />
+    <meta property="og:description" content="Paste or drop a screenshot and get a shareable link in seconds. No account required. You choose when it expires." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
@@ -38,7 +38,7 @@
     <meta property="og:image:alt" content="dropimg.io" />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="dropimg.io — Drop an image. Get a link." />
-    <meta name="twitter:description" content="Fast temporary screenshot sharing. No account. Images expire automatically after 24 hours." />
+    <meta name="twitter:description" content="Fast temporary screenshot sharing. No account required. Links expire when you say so." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -55,7 +55,7 @@
             "applicationCategory": "UtilitiesApplication",
             "operatingSystem": "Any",
             "browserRequirements": "Requires JavaScript for upload UI",
-            "description": "A temporary image sharing tool that lets users paste or upload an image and generate a shareable link that expires after 24 hours.",
+            "description": "A temporary image sharing tool that lets users paste or upload an image and generate a shareable link that expires after 1 hour, 24 hours, or 7 days.",
             "image": "https://dropimg.io/og.png",
             "offers": {
               "@type": "Offer",
@@ -69,7 +69,7 @@
             "name": "dropimg.io",
             "url": "https://dropimg.io/",
             "inLanguage": "en",
-            "description": "dropimg.io is a temporary image-sharing service that lets users paste, drag, or upload an image and instantly create a shareable link that expires after 24 hours.",
+            "description": "dropimg.io is a temporary image-sharing service that lets users paste, drag, or upload an image and instantly create a shareable link that expires on a schedule they choose.",
             "publisher": {
               "@id": "https://dropimg.io/#org"
             }
@@ -85,7 +85,7 @@
             "@type": "HowTo",
             "@id": "https://dropimg.io/#howto",
             "name": "How to share a temporary image link with dropimg.io",
-            "description": "Drop an image, copy the link, and share it. Links expire after 24 hours.",
+            "description": "Drop an image, choose how long the link lives, copy it, and share. Every link expires.",
             "inLanguage": "en",
             "totalTime": "PT1M",
             "step": [
@@ -119,7 +119,7 @@
                 "name": "How long do images stay online?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Images expire automatically 24 hours after upload."
+                  "text": "As long as you choose: 1 hour, 24 hours, or 7 days, with 7 days selected by default. Pro links can last up to 90 days."
                 }
               },
               {
@@ -127,7 +127,7 @@
                 "name": "Do I need an account?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "No. Upload and share without signing up."
+                  "text": "No. Upload and share without signing up. An account is optional — free accounts keep your last 10 active links together, and Pro adds longer links, larger uploads, and passwords."
                 }
               },
               {
@@ -181,7 +181,7 @@
         </a>
         <div class="header-actions">
           <nav id="account-nav" class="account-nav" aria-label="Account">
-            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/pro">Pro · $1.99</a>
+            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/pro">Pro · $2.99</a>
             <a id="account-signin" class="account-chip" href="/login">Sign in</a>
             <div id="account-session" class="account-session" hidden>
               <a id="account-app" class="account-nav-link" href="/app">My drops</a>
@@ -233,7 +233,7 @@
           <h1 class="tagline">Drop an image. Get a link.</h1>
           <p class="sub">
             Paste, drop, or choose an image.<br />
-            No account. Expires in 24 hours.
+            No account required. You choose when it expires.
           </p>
 
           <section
@@ -326,7 +326,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>Need it longer?</strong>
-                Keep links up to 30 days with Pro — $1.99/month.
+                Keep links up to 90 days with Pro — $2.99/month.
               </p>
             </div>
 
@@ -336,19 +336,22 @@
               <button id="btn-retry" type="button" class="btn primary">Try again</button>
             </div>
           </section>
-          <div id="pro-options" class="pro-options" hidden>
-            <p class="pro-options-kicker">PRO</p>
-            <div class="pro-field">
-              <span id="pro-expiry-label">Expires</span>
-              <div id="pro-expiry" class="expiry-pills" role="radiogroup" aria-labelledby="pro-expiry-label" data-value="86400">
-                <button type="button" class="expiry-pill" role="radio" aria-checked="true" data-expiry="86400">24 hours</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="604800">7 days</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="2592000">30 days</button>
+
+          <div id="drop-options" class="drop-options">
+            <div class="drop-field">
+              <span id="expiry-label" class="drop-field-label">Expires</span>
+              <div id="expiry-choice" class="expiry-pills" role="radiogroup" aria-labelledby="expiry-label" data-value="604800">
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 hour</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 hours</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 days</button>
               </div>
             </div>
-            <div class="pro-field" id="pro-password-wrap">
-              <span id="pro-password-label">Password</span>
+            <div class="drop-field" id="pro-password-wrap" hidden>
+              <span id="pro-password-label" class="drop-field-label">Password</span>
               <div class="pro-password-controls">
+                <span class="drop-field-badge">PRO</span>
                 <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password" data-off="Off" data-on="Protect"></button>
                 <input id="pro-password" type="password" minlength="8" placeholder="Min. 8 characters" autocomplete="new-password" hidden />
               </div>
@@ -360,13 +363,13 @@
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
                 focusable="false"><path d="M12 12.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" /><path d="M4.5 20a7.5 7.5 0 0 1 15 0" /><path d="m3 3 18 18" /></svg>
-              <span>No account</span>
+              <span>No account required</span>
             </li>
             <li>
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
                 stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
                 focusable="false"><circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 1.8" /></svg>
-              <span>24h expiry</span>
+              <span>You pick the expiry</span>
             </li>
             <li>
               <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
@@ -444,7 +447,7 @@
             <div class="feature-copy">
               <p class="feature-kicker">Temporary by default</p>
               <h2 id="feature-heading" class="feature-title">Share it. Forget it.</h2>
-              <p class="feature-body">Every link deletes itself. Free drops are gone 24 hours after upload — no cleanup, no archive, nothing left sitting on a server.</p>
+              <p class="feature-body">Every link deletes itself. Pick 1 hour, 24 hours, or 7 days before you upload — no cleanup, no archive, nothing left sitting on a server.</p>
             </div>
             <div class="feature-visual">
               <div class="fv-stage">
@@ -463,7 +466,7 @@
                   </svg>
                 </div>
               </div>
-              <p class="feature-note">Expires in 24h</p>
+              <p class="feature-note">1 hour to 7 days, free</p>
             </div>
           </section>
 
@@ -473,12 +476,12 @@
               <details>
                 <summary>How long do images stay online?</summary>
                 <p>
-                  Images expire automatically 24 hours after upload.
+                  As long as you choose: 1 hour, 24 hours, or 7 days, with 7 days selected by default. Pro links can last up to 90 days.
                 </p>
               </details>
               <details>
                 <summary>Do I need an account?</summary>
-                <p>No. Upload and share without signing up.</p>
+                <p>No. Upload and share without signing up. An account is optional — free accounts keep your last 10 active links together, and Pro adds longer links, larger uploads, and passwords.</p>
               </details>
               <details>
                 <summary>Can I delete an image early?</summary>

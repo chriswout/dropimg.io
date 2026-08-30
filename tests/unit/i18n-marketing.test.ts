@@ -71,7 +71,7 @@ describe("renderPage metadata", () => {
     expect(renderPage("home", "en")).toContain('id="account-plan"');
     expect(renderPage("home", "en")).toContain('class="account-menu"');
     expect(renderPage("home", "en")).toContain("Upgrade");
-    expect(renderPage("home", "en")).toContain("Pro · $1.99");
+    expect(renderPage("home", "en")).toContain("Pro · $2.99");
     expect(renderPage("home", "en")).toContain("Edit account");
     expect(renderPage("home", "en")).toContain('id="theme-toggle"');
     expect(renderPage("home", "en")).toContain("dropimg:theme");

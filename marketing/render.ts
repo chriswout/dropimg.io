@@ -2,8 +2,11 @@ import { footerHtml, themeBootScript, topBarHtml } from "./chrome";
 import { CHROME, HOME, LANDINGS } from "./content";
 import { EXTENSION_PAGE, EXTENSION_URL } from "./extension";
 import {
-  INTENT_PAGES,
+  INTENT_PAGE_PATHS,
+  intentAlternateLinks,
+  intentPageCopy,
   intentPageUrl,
+  type IntentCopy,
   type IntentPageId,
 } from "./intent-pages";
 import {
@@ -13,8 +16,14 @@ import {
   type Locale,
 } from "./locales";
 import { alternateLinks, pagePath, pageUrl, type PageId } from "./pages";
-import type { HowToStep, LandingCopy, SeoBlock, SharedChrome } from "./types";
-import { t } from "./ui";
+import type {
+  FaqItem,
+  HowToStep,
+  LandingCopy,
+  SeoBlock,
+  SharedChrome,
+} from "./types";
+import { t, type UiStrings } from "./ui";
 import { renderAdSlot } from "../src/lib/ads";
 
 function esc(s: string): string {
@@ -144,19 +153,39 @@ function dropzoneHtml(locale: Locale, dropzoneAria: string): string {
               <button id="btn-retry" type="button" class="btn primary">${esc(ui.tryAgain)}</button>
             </div>
           </section>
-          <div id="pro-options" class="pro-options" hidden>
-            <p class="pro-options-kicker">${esc(ui.proControlsKicker)}</p>
-            <div class="pro-field">
-              <span id="pro-expiry-label">${esc(ui.expiresLabel)}</span>
-              <div id="pro-expiry" class="expiry-pills" role="radiogroup" aria-labelledby="pro-expiry-label" data-value="86400">
-                <button type="button" class="expiry-pill" role="radio" aria-checked="true" data-expiry="86400">${esc(ui.expiry24h)}</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="604800">${esc(ui.expiry7d)}</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="2592000">${esc(ui.expiry30d)}</button>
+${dropOptionsHtml(ui)}`;
+}
+
+/**
+ * Lifecycle tray under the dropzone. Rendered with the Free choices already in
+ * place so the common case needs no reflow once entitlements resolve; the
+ * client widens it for Pro, narrows it when a plan has only one lifetime, and
+ * reveals the password row.
+ */
+function dropOptionsHtml(ui: UiStrings): string {
+  const pill = (seconds: number, label: string, pro = false) =>
+    `<button type="button" class="expiry-pill" role="radio" aria-checked="${
+      seconds === 604800 ? "true" : "false"
+    }" tabindex="${seconds === 604800 ? "0" : "-1"}" data-expiry="${seconds}"${
+      pro ? " data-pro-only hidden" : ""
+    }>${esc(label)}</button>`;
+
+  return `
+          <div id="drop-options" class="drop-options">
+            <div class="drop-field">
+              <span id="expiry-label" class="drop-field-label">${esc(ui.expiresLabel)}</span>
+              <div id="expiry-choice" class="expiry-pills" role="radiogroup" aria-labelledby="expiry-label" data-value="604800">
+                ${pill(3600, ui.expiry1h)}
+                ${pill(86400, ui.expiry24h)}
+                ${pill(604800, ui.expiry7d)}
+                ${pill(2592000, ui.expiry30d, true)}
+                ${pill(7776000, ui.expiry90d, true)}
               </div>
             </div>
-            <div class="pro-field" id="pro-password-wrap">
-              <span id="pro-password-label">${esc(ui.passwordLabel)}</span>
+            <div class="drop-field" id="pro-password-wrap" hidden>
+              <span id="pro-password-label" class="drop-field-label">${esc(ui.passwordLabel)}</span>
               <div class="pro-password-controls">
+                <span class="drop-field-badge">${esc(ui.proControlsKicker)}</span>
                 <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password" data-off="${esc(ui.passwordOff)}" data-on="${esc(ui.passwordOn)}"></button>
                 <input id="pro-password" type="password" minlength="8" placeholder="${esc(ui.passwordPlaceholder)}" autocomplete="new-password" hidden />
               </div>
@@ -713,20 +742,98 @@ ${footerHtml(locale, chrome)}
 `;
 }
 
-/** English-only intent landing (uploader above fold, no hreflang set). */
-export function renderIntentPage(pageId: IntentPageId): string {
-  const locale = DEFAULT_LOCALE;
-  const copy = INTENT_PAGES[pageId];
+/** Steps + FAQ as HowTo and FAQPage, scoped to this URL. */
+function intentJsonLd(
+  pageId: IntentPageId,
+  locale: Locale,
+  copy: IntentCopy,
+): string {
+  const url = intentPageUrl(pageId, locale);
+  const lang = LOCALE_CONFIG[locale].htmlLang;
+  const graph = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "HowTo",
+        "@id": `${url}#howto`,
+        name: copy.schemaHowtoName,
+        description: copy.schemaHowtoDescription,
+        inLanguage: lang,
+        totalTime: "PT1M",
+        step: copy.steps.map((s, i) => ({
+          "@type": "HowToStep",
+          position: i + 1,
+          name: s.name,
+          text: s.detail,
+        })),
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${url}#faq`,
+        inLanguage: lang,
+        mainEntity: copy.faqs.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      },
+    ],
+  };
+  const json = JSON.stringify(graph, null, 2)
+    .split("\n")
+    .map((line, i) => (i === 0 ? line : `      ${line}`))
+    .join("\n");
+  return `    <script type="application/ld+json">\n      ${json}\n    </script>`;
+}
+
+function intentStepsHtml(heading: string, steps: readonly HowToStep[]): string {
+  return `          <section class="howto-compact" aria-labelledby="intent-howto" data-enter>
+            <h2 id="intent-howto">${esc(heading)}</h2>
+            <ol class="flow">
+${steps.map((step, i) => flowStepHtml(i, step)).join("\n")}
+            </ol>
+          </section>`;
+}
+
+function faqHtml(heading: string, faqs: readonly FaqItem[]): string {
+  const items = faqs
+    .map(
+      (f) => `              <details>
+                <summary>${esc(f.q)}</summary>
+                <p>${esc(f.a)}</p>
+              </details>`,
+    )
+    .join("\n");
+  return `          <section class="faq-compact" id="faq" aria-labelledby="intent-faq" data-enter>
+            <h2 id="intent-faq">${esc(heading)}</h2>
+            <div class="faq-list">
+${items}
+            </div>
+          </section>`;
+}
+
+/** Intent landing: uploader above the fold, then steps, article, and FAQ. */
+export function renderIntentPage(
+  pageId: IntentPageId,
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  const copy = intentPageCopy(pageId, locale);
   const chrome = CHROME[locale];
   const homeCopy = HOME[locale];
   const cfg = LOCALE_CONFIG[locale];
-  const url = intentPageUrl(pageId);
+  const url = intentPageUrl(pageId, locale);
+  const alternates = intentAlternateLinks(pageId)
+    .map(
+      (l) =>
+        `\n    <link rel="alternate" hreflang="${esc(l.hreflang)}" href="${esc(l.href)}" />`,
+    )
+    .join("");
 
   const head = `    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>${esc(copy.title)}</title>
     <meta name="description" content="${esc(copy.description)}" />
-    <link rel="canonical" href="${esc(url)}" />
+    <link rel="canonical" href="${esc(url)}" />${alternates}
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
@@ -753,11 +860,16 @@ ${themeBootScript()}
 <html lang="${esc(cfg.htmlLang)}" data-locale="${esc(locale)}" data-page-intent="${esc(pageId)}">
   <head>
 ${head}
+${intentJsonLd(pageId, locale, copy)}
   </head>
   <body>
     <a class="skip-link" href="#dropzone">${esc(chrome.skipToUpload)}</a>
     <div class="page page-seo">
-${topBar("home", locale, chrome)}
+${topBarHtml({
+    locale,
+    chrome,
+    langHref: (loc) => intentLangHref(pageId, loc),
+  })}
 
       <main>
         <section class="seo-hero">
@@ -774,9 +886,15 @@ ${trustStripHtml(homeCopy.trust, chrome.productHighlights)}
           </section>
         </section>
 
-        <article class="seo-article">
+        <section class="below" aria-label="${esc(chrome.aboutAria)}">
+${intentStepsHtml(copy.stepsHeading, copy.steps)}
+
+          <article class="seo-article">
 ${renderBlocks(copy.blocks)}
-        </article>
+          </article>
+
+${faqHtml(copy.faqHeading, copy.faqs)}
+        </section>
 
 ${renderAdSlot("landing-below-fold")}
         <nav class="seo-more" aria-label="${esc(chrome.relatedAria)}">
@@ -795,4 +913,13 @@ ${footerHtml(locale, chrome)}
   </body>
 </html>
 `;
+}
+
+/**
+ * The language menu offers every locale, so it has to resolve to a real URL
+ * even where this intent has no translation — those fall back to the locale
+ * home rather than 404ing.
+ */
+function intentLangHref(pageId: IntentPageId, locale: Locale): string {
+  return INTENT_PAGE_PATHS[pageId][locale] ?? pagePath("home", locale);
 }

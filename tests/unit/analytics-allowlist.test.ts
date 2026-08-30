@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
+  allowExpiry,
   allowInterval,
   allowPlan,
+  ANALYTICS_EXPIRIES,
   ANALYTICS_INTERVALS,
   ANALYTICS_PLANS,
   SENSITIVE_ANALYTICS_KEYS,
@@ -96,6 +98,18 @@ describe("analytics allowlist", () => {
     expect(allowInterval("lifetime")).toBe("");
   });
 
+  it("buckets every supported lifetime and nothing else", () => {
+    expect(ANALYTICS_EXPIRIES).toEqual(["1h", "24h", "7d", "30d", "90d"]);
+    expect(allowExpiry(3600)).toBe("1h");
+    expect(allowExpiry(86400)).toBe("24h");
+    expect(allowExpiry(604800)).toBe("7d");
+    expect(allowExpiry(2592000)).toBe("30d");
+    expect(allowExpiry(7776000)).toBe("90d");
+    for (const bad of [0, 1, 7200, 12345, -3600, null, undefined]) {
+      expect(allowExpiry(bad)).toBe("");
+    }
+  });
+
   it("forbids sensitive dimension names", () => {
     expect(SENSITIVE_ANALYTICS_KEYS).toEqual(
       expect.arrayContaining([
@@ -130,13 +144,15 @@ describe("analytics allowlist", () => {
         client: "web",
         pageIntent: "pro",
         slug: "should-be-optional",
+        expirySeconds: 604800,
       },
     );
     expect(writes).toHaveLength(1);
     const blobs = writes[0]!.blobs;
-    expect(blobs).toHaveLength(7);
+    expect(blobs).toHaveLength(8);
     expect(blobs).toContain("free");
     expect(blobs).toContain("annual");
+    expect(blobs).toContain("7d");
     expect(blobs).toContain("web");
     expect(blobs).toContain("pro");
     expect(blobs.join(" ")).not.toMatch(/@/);

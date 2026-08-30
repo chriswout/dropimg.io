@@ -331,7 +331,8 @@ describe("Integration tokens", () => {
         Authorization: `Bearer ${other.token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ expiry: 7 * 24 * 60 * 60 }),
+      // Pro-only lifetime, so the downgrade below invalidates the intent.
+      body: JSON.stringify({ expiry: 30 * 24 * 60 * 60 }),
     });
     const lateIntent = (await late.json()) as { uploadUrl: string };
     const env = await worker.getEnv();
@@ -359,18 +360,20 @@ describe("Integration tokens", () => {
   it("enforces Free vs Pro expiry and password on integration intents", async () => {
     const free = await signIn("tok-free@example.com");
     const freeTok = await createToken(free.cookie);
-    expect(
-      (
-        await worker.fetch("https://dropimg.io/api/integrations/upload-intent", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${freeTok.token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ expiry: 7 * 24 * 60 * 60 }),
-        })
-      ).status,
-    ).toBe(400);
+    const freeIntent = (expiry: number) =>
+      worker.fetch("https://dropimg.io/api/integrations/upload-intent", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${freeTok.token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ expiry }),
+      });
+    expect((await freeIntent(7 * 24 * 60 * 60)).status).toBe(200);
+    expect((await freeIntent(60 * 60)).status).toBe(200);
+    expect((await freeIntent(30 * 24 * 60 * 60)).status).toBe(400);
+    expect((await freeIntent(90 * 24 * 60 * 60)).status).toBe(400);
+    expect((await freeIntent(12345)).status).toBe(400);
     expect(
       (
         await worker.fetch("https://dropimg.io/api/integrations/upload-intent", {
@@ -395,7 +398,7 @@ describe("Integration tokens", () => {
             Authorization: `Bearer ${proTok.token}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ expiry: 7 * 24 * 60 * 60 }),
+          body: JSON.stringify({ expiry: 90 * 24 * 60 * 60 }),
         })
       ).status,
     ).toBe(200);
