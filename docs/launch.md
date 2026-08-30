@@ -42,7 +42,10 @@ explicitly support "electronically supplied business and web services", and
 DropIMG Pro is sold under a SaaS tax code, which is a much better fit than
 Paddle's read. **Get that confirmed in writing before taking live payments**,
 because being shut down after launch with a balance held is worse than being
-rejected before it.
+rejected before it. Pre-approval is not just prudence: the Services Agreement
+makes operating a restricted business without written approval a breach, and so
+a termination ground that skips the cure period. The request to send, and the
+two gaps to close first, are in [stripe-underwriting.md](stripe-underwriting.md).
 
 The compliance work done for Paddle's domain review all still applies and all
 still stands: the homepage and `/pro` are public with prices visible to

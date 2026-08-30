@@ -30,7 +30,7 @@ export function stripMetadata(
       case "image/webp":
         return stripWebp(bytes);
       case "image/gif":
-        return bytes;
+        return stripGif(bytes);
     }
   } catch (err) {
     if (err instanceof StripMetadataError) throw err;
@@ -184,6 +184,111 @@ function stripWebp(bytes: ArrayBuffer): ArrayBuffer {
     o += len;
   }
   return out.buffer;
+}
+
+/**
+ * Application extensions are where GIF keeps XMP, so they go, but two of them
+ * carry the animation loop count rather than metadata and dropping those would
+ * leave an animation playing once.
+ */
+const GIF_KEEP_APP_EXTENSIONS = new Set(["NETSCAPE2.0", "ANIMEXTS1.0"]);
+
+function stripGif(bytes: ArrayBuffer): ArrayBuffer {
+  const u8 = new Uint8Array(bytes);
+  const headerOk =
+    u8.length >= 14 &&
+    u8[0] === 0x47 &&
+    u8[1] === 0x49 &&
+    u8[2] === 0x46 &&
+    u8[3] === 0x38 &&
+    (u8[4] === 0x37 || u8[4] === 0x39) &&
+    u8[5] === 0x61;
+  if (!headerOk) {
+    throw new StripMetadataError("Invalid GIF while stripping metadata");
+  }
+
+  const screen = u8[10]!;
+  let i = 13;
+  if (screen & 0x80) i += 3 * (1 << ((screen & 0x07) + 1));
+  if (i > u8.length) {
+    throw new StripMetadataError("Truncated GIF colour table while stripping");
+  }
+
+  const spans: Span[] = [{ start: 0, end: i }];
+  let sawImage = false;
+
+  while (i < u8.length) {
+    const block = u8[i]!;
+
+    if (block === 0x3b) {
+      spans.push({ start: i, end: i + 1 });
+      break;
+    }
+
+    if (block === 0x21) {
+      if (i + 2 > u8.length) {
+        throw new StripMetadataError("Truncated GIF extension while stripping");
+      }
+      const label = u8[i + 1]!;
+      const dataStart = i + 2;
+      const end = skipGifSubBlocks(u8, dataStart);
+      const drop =
+        label === 0xfe ||
+        (label === 0xff && !isRetainedGifAppExtension(u8, dataStart));
+      if (!drop) spans.push({ start: i, end });
+      i = end;
+      continue;
+    }
+
+    if (block === 0x2c) {
+      if (i + 10 > u8.length) {
+        throw new StripMetadataError("Truncated GIF image header while stripping");
+      }
+      const local = u8[i + 9]!;
+      let cursor = i + 10;
+      if (local & 0x80) cursor += 3 * (1 << ((local & 0x07) + 1));
+      cursor += 1;
+      if (cursor > u8.length) {
+        throw new StripMetadataError("Truncated GIF image data while stripping");
+      }
+      const end = skipGifSubBlocks(u8, cursor);
+      spans.push({ start: i, end });
+      sawImage = true;
+      i = end;
+      continue;
+    }
+
+    throw new StripMetadataError("Unknown GIF block while stripping");
+  }
+
+  /**
+   * A missing trailer is tolerated because browsers render such files and GIF
+   * used to be passed through untouched, so rejecting them here would turn a
+   * metadata change into an upload regression. Losing the frames is not.
+   */
+  if (!sawImage) {
+    throw new StripMetadataError("GIF has no image data");
+  }
+  return copySpans(u8, spans);
+}
+
+/** The identifier is the first sub-block of an application extension, always 11 bytes. */
+function isRetainedGifAppExtension(u8: Uint8Array, dataStart: number): boolean {
+  if (u8[dataStart] !== 0x0b || dataStart + 12 > u8.length) return false;
+  let id = "";
+  for (let i = dataStart + 1; i < dataStart + 12; i++) id += String.fromCharCode(u8[i]!);
+  return GIF_KEEP_APP_EXTENSIONS.has(id);
+}
+
+/** Walks the length-prefixed chain and returns the index just past its terminator. */
+function skipGifSubBlocks(u8: Uint8Array, start: number): number {
+  let i = start;
+  while (i < u8.length) {
+    const len = u8[i]!;
+    if (len === 0) return i + 1;
+    i += 1 + len;
+  }
+  throw new StripMetadataError("Truncated GIF sub-block while stripping");
 }
 
 function spanBytes(spans: Span[]): number {

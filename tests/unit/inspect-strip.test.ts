@@ -117,11 +117,52 @@ describe("stripMetadata", () => {
     expect(() => stripMetadata(truncated, "image/png")).toThrow(StripMetadataError);
   });
 
-  it("leaves GIF unchanged", () => {
+  it("leaves a metadata-free GIF byte-identical", () => {
     const out = stripMetadata(GIF_1x1.buffer, "image/gif");
     expect(new Uint8Array(out)).toEqual(GIF_1x1);
   });
+
+  it("removes GIF comment and XMP blocks but keeps the animation loop", () => {
+    const gif = Uint8Array.from([
+      ...GIF_1x1.slice(0, 13),
+      0x21, 0xfe, 0x03, ...ascii("abc"), 0x00,
+      0x21, 0xff, 0x0b, ...ascii("XMP DataXMP"), 0x04, ...ascii("gps!"), 0x00,
+      0x21, 0xff, 0x0b, ...ascii("NETSCAPE2.0"), 0x03, 0x01, 0x00, 0x00, 0x00,
+      ...GIF_1x1.slice(13),
+    ]);
+
+    const out = new Uint8Array(stripMetadata(gif.buffer, "image/gif"));
+    expect(contains(out, "XMP Data")).toBe(false);
+    expect(contains(out, "gps!")).toBe(false);
+    expect(contains(out, "abc")).toBe(false);
+    expect(contains(out, "NETSCAPE2.0")).toBe(true);
+
+    const r = inspectImage(out.buffer);
+    expect(r.ok).toBe(true);
+    if (r.ok) expect(r.mime).toBe("image/gif");
+  });
+
+  it("fails closed on a GIF sub-block running past the end", () => {
+    const gif = Uint8Array.from([
+      ...GIF_1x1.slice(0, 13),
+      0x21, 0xfe, 0x40, 0x00,
+    ]);
+    expect(() => stripMetadata(gif.buffer, "image/gif")).toThrow(StripMetadataError);
+  });
 });
+
+function ascii(s: string): number[] {
+  return [...s].map((c) => c.charCodeAt(0));
+}
+
+function contains(haystack: Uint8Array, needle: string): boolean {
+  const n = ascii(needle);
+  outer: for (let i = 0; i + n.length <= haystack.length; i++) {
+    for (let j = 0; j < n.length; j++) if (haystack[i + j] !== n[j]) continue outer;
+    return true;
+  }
+  return false;
+}
 
 describe("resolveIpHashSecret", () => {
   it("allows placeholder only in development", () => {
