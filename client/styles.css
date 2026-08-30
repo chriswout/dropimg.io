@@ -4545,6 +4545,33 @@ html[data-theme="dark"] kbd {
   }
 }
 
+/* --- Popovers ------------------------------------------------------------
+ *
+ * The account, language and row menus are all a <details> with an absolutely
+ * positioned panel, so they share one short entrance. Anchored at the trigger
+ * corner and deliberately quicker than a dialog: these are menus, not moments.
+ */
+
+.account-menu[open] > .account-menu-panel,
+.lang-details[open] > .lang-menu,
+.drop-more[open] > .drop-more-panel {
+  transform-origin: top right;
+  animation: menu-in 150ms var(--ease-out) both;
+}
+
+@keyframes menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+}
+
+/* Revealed rather than always present: fade instead of snapping into place. */
+#pro-password:not([hidden]),
+.expiry-pill[data-pro-only]:not([hidden]) {
+  animation: dim-in var(--motion-standard) var(--ease-out) both;
+}
+
 /* --- Reduced motion ------------------------------------------------------ */
 
 @media (prefers-reduced-motion: reduce) {

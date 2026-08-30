@@ -15,6 +15,7 @@ const baseURL = process.env.E2E_BASE_URL || `http://127.0.0.1:${port}`;
 
 export default defineConfig({
   testDir: "tests/visual",
+  globalSetup: "./tests/visual/global-setup.ts",
   // Playwright wipes `outputDir` at the start of every run, so the captures
   // live in a sibling directory under the same ignored parent.
   outputDir: "tests/visual/.output/playwright",
@@ -43,10 +44,7 @@ export default defineConfig({
   webServer: process.env.E2E_BASE_URL
     ? undefined
     : {
-        // Runs the staging environment so QA sees the V2 lifecycle the design
-        // is for. Production keeps those flags off; the functional e2e gate
-        // still runs against the default, flag-off environment.
-        command: `npm run generate:pages && npm run generate:site-assets && npx wrangler d1 migrations apply dropimg --local && CLOUDFLARE_ENV=staging npx vite --host 127.0.0.1 --port ${port}`,
+        command: `npm run generate:pages && npm run generate:site-assets && npx wrangler d1 migrations apply dropimg --local && npx vite --host 127.0.0.1 --port ${port}`,
         url: `${baseURL}/health`,
         reuseExistingServer: !process.env.CI,
         timeout: 180_000,

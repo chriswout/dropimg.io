@@ -1,6 +1,10 @@
 # Copy to .dev.vars for local development
 IP_HASH_SECRET=dev-ip-hash-secret-change-me
 ADMIN_TOKEN=dev-admin-token-change-me
+# Local dev builds V2, so it runs the lifecycle gates staging has on.
+# Production keeps them off in wrangler.jsonc until the launch phase.
+LONG_TTL_ENABLED=true
+PRO_50MB_ENABLED=true
 # Optional: IndexNow key for notifying Bing when marketing pages change
 # INDEXNOW_KEY=
 # Magic-link mail uses the EMAIL binding (signin@dropimg.io). Local wrangler
