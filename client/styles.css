@@ -36,8 +36,6 @@
   --brand-soft: rgba(59, 79, 232, 0.09);
   --brand-text: #3347d6;
   --on-brand: #ffffff;
-  /* Accent edge the drop target takes on only while a file is over it. */
-  --dropzone-edge: rgba(59, 79, 232, 0.3);
   /* Inner top-edge highlight that makes the idle uploader read as lifted. */
   --dropzone-highlight: rgba(255, 255, 255, 0.9);
 
@@ -133,7 +131,6 @@ html[data-theme="dark"] {
   --brand-accent: #3ddcf5;
   --brand-soft: rgba(100, 116, 255, 0.16);
   --brand-text: #98a4ff;
-  --dropzone-edge: rgba(122, 137, 255, 0.38);
   --dropzone-highlight: rgba(255, 255, 255, 0.06);
 
   --success: #34d399;
@@ -175,7 +172,6 @@ html[data-theme="dark"] {
     --brand-accent: #3ddcf5;
     --brand-soft: rgba(100, 116, 255, 0.16);
     --brand-text: #98a4ff;
-    --dropzone-edge: rgba(122, 137, 255, 0.38);
     --dropzone-highlight: rgba(255, 255, 255, 0.06);
 
     --success: #34d399;
