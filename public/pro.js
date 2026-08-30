@@ -88,7 +88,7 @@
       items: [{ priceId: data.priceId, quantity: 1 }],
       customer: data.email ? { email: data.email } : void 0,
       customData: data.customData,
-      settings: { variant: "one-page" }
+      settings: { displayMode: "overlay", variant: "one-page" }
     });
   }
   async function pollUntilPro() {

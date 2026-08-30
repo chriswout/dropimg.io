@@ -18,14 +18,19 @@ describe("which Paddle account we talk to", () => {
     }
   });
 
-  it("falls back to sandbox for anything else, so a typo cannot charge anyone", () => {
-    for (const value of ["sandbox", "prod", "", undefined]) {
-      expect(paddleApiBase({ PADDLE_ENV: value })).toBe(
-        "https://sandbox-api.paddle.com",
-      );
-      expect(billingConfig({ ...configured, PADDLE_ENV: value })?.env).toBe(
-        "sandbox",
-      );
+  it("reads sandbox as sandbox", () => {
+    expect(paddleApiBase({ PADDLE_ENV: "sandbox" })).toBe(
+      "https://sandbox-api.paddle.com",
+    );
+    expect(billingConfig({ ...configured, PADDLE_ENV: "sandbox" })?.env).toBe(
+      "sandbox",
+    );
+  });
+
+  it("refuses to guess, so a typo cannot reach the wrong account", () => {
+    for (const value of ["prod", "PRODUCTION_", "", undefined]) {
+      expect(paddleApiBase({ PADDLE_ENV: value })).toBeNull();
+      expect(billingConfig({ ...configured, PADDLE_ENV: value })).toBeNull();
     }
   });
 });

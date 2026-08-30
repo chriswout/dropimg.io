@@ -10,8 +10,8 @@ declare global {
         open: (opts: {
           items: { priceId: string; quantity: number }[];
           customer?: { email: string };
-          customData?: Record<string, string>;
-          settings?: { variant?: string };
+        customData?: Record<string, string>;
+        settings?: { displayMode?: string; variant?: string };
         }) => void;
       };
     };
@@ -121,7 +121,7 @@ async function startCheckout(interval: "monthly" | "annual") {
     items: [{ priceId: data.priceId, quantity: 1 }],
     customer: data.email ? { email: data.email } : undefined,
     customData: data.customData,
-    settings: { variant: "one-page" },
+    settings: { displayMode: "overlay", variant: "one-page" },
   });
 }
 

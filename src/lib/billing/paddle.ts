@@ -11,18 +11,22 @@ export function billingEnabled(env: BillingEnv): boolean {
 }
 
 /**
- * Anything we don't recognise means sandbox, so a typo costs a broken checkout
- * rather than a real charge. Paddle's own word for production is "live", and
- * config written from their docs would otherwise be silently wrong.
+ * Which Paddle account we talk to has to be stated, never inferred: sandbox
+ * and live hold different price IDs and only one of them takes real money.
+ * An unreadable value disables billing rather than picking a side. "live" is
+ * Paddle's own word for production and is accepted as such.
  */
-function isLive(env: BillingEnv): boolean {
+function paddleEnvironment(env: BillingEnv): PaddleEnvironment | null {
   const value = env.PADDLE_ENV?.trim().toLowerCase();
-  return value === "production" || value === "live";
+  if (value === "sandbox") return "sandbox";
+  if (value === "production" || value === "live") return "production";
+  return null;
 }
 
 export function billingConfig(env: BillingEnv): BillingConfig | null {
   if (!billingEnabled(env)) return null;
-  const paddleEnv: PaddleEnvironment = isLive(env) ? "production" : "sandbox";
+  const paddleEnv = paddleEnvironment(env);
+  if (!paddleEnv) return null;
   const clientToken = env.PADDLE_CLIENT_TOKEN?.trim() || "";
   const priceMonthly = env.PADDLE_PRICE_MONTHLY?.trim() || "";
   const priceAnnual = env.PADDLE_PRICE_ANNUAL?.trim() || "";
@@ -37,8 +41,12 @@ export function priceIdForInterval(
   return interval === "annual" ? config.priceAnnual : config.priceMonthly;
 }
 
-export function paddleApiBase(env: BillingEnv): string {
-  return isLive(env) ? "https://api.paddle.com" : "https://sandbox-api.paddle.com";
+export function paddleApiBase(env: BillingEnv): string | null {
+  const name = paddleEnvironment(env);
+  if (!name) return null;
+  return name === "production"
+    ? "https://api.paddle.com"
+    : "https://sandbox-api.paddle.com";
 }
 
 function asRecord(value: unknown): Record<string, unknown> | null {
@@ -265,9 +273,10 @@ export async function cancelPaddleSubscriptionImmediately(
   fetchImpl: typeof fetch = fetch,
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   const key = env.PADDLE_API_KEY?.trim();
-  if (!key) return { ok: false, error: "paddle_unconfigured" };
+  const base = paddleApiBase(env);
+  if (!key || !base) return { ok: false, error: "paddle_unconfigured" };
   const res = await fetchImpl(
-    `${paddleApiBase(env)}/subscriptions/${encodeURIComponent(subscriptionId)}/cancel`,
+    `${base}/subscriptions/${encodeURIComponent(subscriptionId)}/cancel`,
     {
       method: "POST",
       headers: {
@@ -288,9 +297,10 @@ export async function createPortalUrl(
   subscriptionIds: string[] = [],
 ): Promise<string | null> {
   const key = env.PADDLE_API_KEY?.trim();
-  if (!key) return null;
+  const base = paddleApiBase(env);
+  if (!key || !base) return null;
   const res = await fetch(
-    `${paddleApiBase(env)}/customers/${encodeURIComponent(customerId)}/portal-sessions`,
+    `${base}/customers/${encodeURIComponent(customerId)}/portal-sessions`,
     {
       method: "POST",
       headers: {
