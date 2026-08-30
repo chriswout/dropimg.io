@@ -11,7 +11,17 @@ import type { APIRequestContext, Page } from "@playwright/test";
  * imported by production code.
  */
 
-export const SCREEN_DIR = path.join(process.cwd(), "tests/visual/__screens__");
+/**
+ * `__screens__` holds the approved reference captures and is committed. Normal
+ * runs write to the ignored output directory instead, so iterating on the
+ * design does not churn 6 MB of PNGs through git. Promote a run to the new
+ * baseline deliberately with `VISUAL_UPDATE_REFERENCE=1`.
+ */
+export const REFERENCE_DIR = path.join(process.cwd(), "tests/visual/__screens__");
+export const OUTPUT_DIR = path.join(process.cwd(), "tests/visual/.output/screens");
+
+const SCREEN_DIR =
+  process.env.VISUAL_UPDATE_REFERENCE === "1" ? REFERENCE_DIR : OUTPUT_DIR;
 
 export type Theme = "light" | "dark";
 
@@ -156,7 +166,7 @@ export async function renderServerView(page: Page, baseURL: string, html: string
   await page.setContent(withBase, { waitUntil: "load" });
 }
 
-async function renderFakeScreenshot(page: Page): Promise<Buffer> {
+export async function renderFakeScreenshot(page: Page): Promise<Buffer> {
   const scratch = await page.context().newPage();
   await scratch.setViewportSize({ width: 1200, height: 760 });
   await scratch.setContent(`<!DOCTYPE html>

@@ -36,8 +36,10 @@
   --brand-soft: rgba(59, 79, 232, 0.09);
   --brand-text: #3347d6;
   --on-brand: #ffffff;
-  /* Dashed edge of the drop target. Must read as "drop here" at a glance. */
+  /* Accent edge the drop target takes on only while a file is over it. */
   --dropzone-edge: rgba(59, 79, 232, 0.3);
+  /* Inner top-edge highlight that makes the idle uploader read as lifted. */
+  --dropzone-highlight: rgba(255, 255, 255, 0.9);
 
   /* Semantic */
   --success: #0e9f6e;
@@ -132,6 +134,7 @@ html[data-theme="dark"] {
   --brand-soft: rgba(100, 116, 255, 0.16);
   --brand-text: #98a4ff;
   --dropzone-edge: rgba(122, 137, 255, 0.38);
+  --dropzone-highlight: rgba(255, 255, 255, 0.06);
 
   --success: #34d399;
   --success-soft: rgba(52, 211, 153, 0.12);
@@ -173,6 +176,7 @@ html[data-theme="dark"] {
     --brand-soft: rgba(100, 116, 255, 0.16);
     --brand-text: #98a4ff;
     --dropzone-edge: rgba(122, 137, 255, 0.38);
+    --dropzone-highlight: rgba(255, 255, 255, 0.06);
 
     --success: #34d399;
     --success-soft: rgba(52, 211, 153, 0.12);
@@ -215,54 +219,82 @@ body {
 }
 
 /*
- * Ambient atmosphere. Two slow brand-tinted blooms painted behind all content.
- * Pure CSS so it costs nothing on the network and never blocks the uploader.
+ * Ambient environment.
+ *
+ * Three very large, very soft light fields behind everything. They exist to
+ * make the whitespace around the uploader feel deliberate rather than empty,
+ * so each one is wider than the viewport and the drift is slow enough to be
+ * felt rather than watched. Two fixed layers, no mesh, no repaint cost beyond
+ * a compositor transform.
  */
-body::before {
+
+body::before,
+body::after {
   content: "";
   position: fixed;
-  inset: -20vmax;
+  inset: -30vmax;
   z-index: -1;
   pointer-events: none;
+  will-change: transform;
+}
+
+body::before {
   background:
-    radial-gradient(
-      38vmax 30vmax at 22% 12%,
-      var(--ambient-a),
-      transparent 62%
-    ),
-    radial-gradient(
-      34vmax 28vmax at 82% 4%,
-      var(--ambient-b),
-      transparent 60%
-    );
+    radial-gradient(62vmax 48vmax at 14% 2%, var(--ambient-a), transparent 62%),
+    radial-gradient(56vmax 44vmax at 88% -4%, var(--ambient-b), transparent 60%);
   animation: ambient-drift var(--motion-ambient) ease-in-out infinite alternate;
 }
 
+/*
+ * Second layer sits under the hero and counter-drifts, so the uploader lands
+ * inside the light rather than on an empty field, and the two never read as
+ * one blob.
+ */
+body::after {
+  background: radial-gradient(
+    64vmax 44vmax at 50% 40%,
+    var(--ambient-c),
+    transparent 64%
+  );
+  animation: ambient-drift-slow calc(var(--motion-ambient) * 1.6) ease-in-out
+    infinite alternate;
+}
+
 :root {
-  --ambient-a: rgba(59, 79, 232, 0.11);
-  --ambient-b: rgba(123, 91, 242, 0.09);
+  --ambient-a: rgba(59, 79, 232, 0.28);
+  --ambient-b: rgba(123, 91, 242, 0.24);
+  --ambient-c: rgba(22, 184, 212, 0.17);
 }
 
 html[data-theme="dark"] {
-  --ambient-a: rgba(85, 102, 238, 0.2);
-  --ambient-b: rgba(155, 123, 255, 0.14);
+  --ambient-a: rgba(72, 88, 226, 0.36);
+  --ambient-b: rgba(139, 106, 255, 0.24);
+  --ambient-c: rgba(56, 92, 220, 0.2);
 }
 
 @media (prefers-color-scheme: dark) {
   html:not([data-theme="light"]) {
-    --ambient-a: rgba(85, 102, 238, 0.2);
-    --ambient-b: rgba(155, 123, 255, 0.14);
+    --ambient-a: rgba(72, 88, 226, 0.36);
+    --ambient-b: rgba(139, 106, 255, 0.24);
+    --ambient-c: rgba(56, 92, 220, 0.2);
   }
 }
 
 @keyframes ambient-drift {
   to {
-    transform: translate3d(2%, 1.5%, 0) scale(1.06);
+    transform: translate3d(2.5%, 2%, 0) scale(1.08);
+  }
+}
+
+@keyframes ambient-drift-slow {
+  to {
+    transform: translate3d(-3%, 1.5%, 0) scale(1.1);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  body::before {
+  body::before,
+  body::after {
     animation: none;
   }
 }
@@ -1306,6 +1338,262 @@ html[data-theme="dark"] .theme-icon-sun {
   margin: 0.4rem 0;
 }
 
+.seo-article:focus {
+  outline: none;
+}
+
+/* --- Browser extension page ---------------------------------------------
+ *
+ * Product presentation first, reference documentation below. The mock is a
+ * stylised composite of the popup and the copied-link toast, built from CSS
+ * rather than a screenshot so it stays sharp and theme-aware.
+ */
+
+.ext-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 4rem);
+  width: 100%;
+  max-width: var(--measure-narrow);
+  margin: 0 auto;
+  padding-top: clamp(1rem, 5vh, 3rem);
+}
+
+.ext-kicker {
+  display: inline-flex;
+  margin: 0 0 0.85rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: var(--radius-pill);
+  background: var(--brand-soft);
+  color: var(--brand-text);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.ext-title {
+  margin: 0 0 0.4rem;
+  font-size: clamp(2rem, 4.4vw, 3.25rem);
+  font-weight: 765;
+  letter-spacing: -0.04em;
+  line-height: 1.04;
+  color: var(--text);
+  text-wrap: balance;
+}
+
+.ext-tagline {
+  margin: 0 0 1rem;
+  font-size: clamp(1.125rem, 2vw, 1.5rem);
+  font-weight: 620;
+  letter-spacing: -0.028em;
+  color: var(--brand-text);
+}
+
+.ext-lede {
+  margin: 0 0 1.35rem;
+  max-width: 32rem;
+}
+
+.ext-facts {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.ext-facts li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text-soft);
+  font-size: 0.9375rem;
+}
+
+.ext-facts li::before {
+  content: "";
+  flex-shrink: 0;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+/* --- The mock ------------------------------------------------------------ */
+
+.ext-mock {
+  position: relative;
+  padding: 0 0 3.25rem;
+}
+
+.mock-window {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.mock-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid var(--border-soft);
+  background: var(--surface-soft);
+}
+
+.mock-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--border-strong);
+  opacity: 0.55;
+}
+
+.mock-omni {
+  flex: 1;
+  height: 1.4rem;
+  margin: 0 0.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+}
+
+.mock-icon {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--brand);
+  color: var(--on-brand);
+  box-shadow: 0 0 0 3px var(--brand-soft);
+}
+
+.mock-canvas {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  background:
+    radial-gradient(
+      70% 90% at 22% 18%,
+      color-mix(in srgb, var(--brand) 14%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      60% 80% at 84% 82%,
+      color-mix(in srgb, var(--brand-accent) 12%, transparent),
+      transparent 70%
+    ),
+    var(--surface-soft);
+}
+
+/* The dashed marquee the region mode draws on the page. */
+.mock-region {
+  position: absolute;
+  top: 18%;
+  left: 12%;
+  width: 46%;
+  height: 48%;
+  border: 1.5px dashed var(--brand);
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--brand) 10%, transparent);
+}
+
+.mock-popup {
+  position: absolute;
+  top: 2.2rem;
+  right: -0.5rem;
+  width: 10.5rem;
+  padding: 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-elevated);
+  box-shadow: var(--shadow-lg);
+}
+
+.mock-popup-title {
+  margin: 0 0 0.55rem;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.mock-modes {
+  display: flex;
+  gap: 0.3rem;
+  margin-bottom: 0.6rem;
+}
+
+.mock-mode {
+  flex: 1;
+  padding: 0.3rem 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  text-align: center;
+  font-size: 0.6875rem;
+  font-weight: 640;
+  color: var(--text-muted);
+}
+
+.mock-mode.is-on {
+  border-color: transparent;
+  background: var(--brand-soft);
+  color: var(--brand-text);
+}
+
+.mock-go {
+  display: block;
+  padding: 0.4rem 0;
+  border-radius: var(--radius-sm);
+  background: var(--brand);
+  color: var(--on-brand);
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 680;
+}
+
+.mock-toast {
+  position: absolute;
+  left: 1.5rem;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: calc(100% - 3rem);
+  padding: 0.6rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface-elevated);
+  box-shadow: var(--shadow-lg);
+  color: var(--success);
+}
+
+.mock-toast-text {
+  color: var(--text);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.mock-url {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.page-ext .seo-article {
+  margin-top: clamp(4rem, 12vh, 7rem);
+}
+
 .seo-more {
   max-width: 40rem;
   margin: clamp(2.5rem, 6vh, 3.5rem) auto 0;
@@ -1447,13 +1735,17 @@ main {
   text-align: center;
 }
 
+/*
+ * Trust strip. Deliberately presented but never loud: hairline glyphs, muted
+ * text, and a thin divider between items instead of chip backgrounds.
+ */
 .trust-chips {
   list-style: none;
-  margin: 1.35rem 0 0;
+  margin: 1.5rem 0 0;
   padding: 0;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.45rem;
+  gap: 0.4rem 0.95rem;
   justify-content: flex-start;
 }
 
@@ -1462,35 +1754,50 @@ main {
 }
 
 .trust-chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
   font-size: 0.8125rem;
-  font-weight: 550;
+  font-weight: 560;
   color: var(--text-muted);
   letter-spacing: -0.008em;
 }
 
-.trust-chips li:not(:last-child)::after {
-  content: "·";
-  margin-left: 0.45rem;
-  color: var(--text-muted);
-  font-weight: 500;
+.trust-chips svg {
+  flex-shrink: 0;
+  color: color-mix(in srgb, var(--brand-text) 72%, transparent);
 }
 
-/* --- Upload card --- */
+.trust-chips li:not(:last-child)::after {
+  content: "";
+  width: 1px;
+  height: 0.85rem;
+  margin-left: 0.5rem;
+  background: color-mix(in srgb, var(--text-muted) 28%, transparent);
+}
 
 /* --- The uploader -------------------------------------------------------- */
 
+/*
+ * Idle is a calm floating surface, not a drop target: a hairline border, real
+ * elevation, an inner highlight along the top edge. The dashed accent edge is
+ * reserved for `.dragover`, so actually dragging a file visibly transforms the
+ * component instead of merely tinting something that already looked active.
+ */
 .dropzone {
   position: relative;
   min-height: 380px;
   padding: 2.75rem 1.75rem;
-  border: 2px dashed var(--dropzone-edge);
+  border: 1px solid var(--border);
   border-radius: var(--radius-xl);
   background: linear-gradient(
     180deg,
     var(--surface-elevated),
     var(--surface)
   );
-  box-shadow: var(--shadow-lg);
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 0 var(--dropzone-highlight);
   cursor: pointer;
   outline: none;
   transition:
@@ -1500,26 +1807,26 @@ main {
     transform var(--motion-standard) var(--ease);
 }
 
-/* Brand halo behind the card, strongest while dragging. */
+/* Restrained brand halo behind the card, strongest while dragging. */
 .dropzone::after {
   content: "";
   position: absolute;
   inset: 0;
   z-index: -1;
   border-radius: inherit;
-  opacity: 0;
+  opacity: 0.55;
   box-shadow: var(--shadow-glow);
   transition: opacity var(--motion-standard) var(--ease);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .dropzone:hover {
-    border-color: color-mix(in srgb, var(--brand) 45%, transparent);
+    border-color: var(--border-strong);
     transform: translateY(-2px);
   }
 
   .dropzone:hover::after {
-    opacity: 0.6;
+    opacity: 0.75;
   }
 
   .dropzone:hover .icon-ring {
@@ -1530,7 +1837,6 @@ main {
 
 .dropzone:focus-visible {
   border-color: var(--brand);
-  border-style: solid;
   box-shadow:
     var(--shadow-lg),
     0 0 0 4px var(--brand-soft);
@@ -1539,15 +1845,15 @@ main {
 .dropzone.is-busy,
 .dropzone.is-done {
   cursor: default;
-  border-style: solid;
-  border-color: var(--border);
 }
 
 .dropzone.dragover {
-  border-color: var(--brand);
-  border-style: solid;
+  border: 2px dashed var(--brand);
   background: var(--surface-tint);
-  transform: translateY(-3px) scale(1.008);
+  transform: translateY(-4px) scale(1.012);
+  box-shadow:
+    var(--shadow-lg),
+    0 0 0 6px var(--brand-soft);
 }
 
 .dropzone.dragover::after {
@@ -1555,9 +1861,10 @@ main {
 }
 
 .dropzone.dragover .icon-ring {
-  transform: scale(1.1) translateY(-3px);
-  border-color: color-mix(in srgb, var(--brand) 45%, transparent);
+  transform: scale(1.12) translateY(-4px);
+  border-color: var(--brand);
   background: var(--brand-soft);
+  color: var(--brand-text);
 }
 
 .dropzone.dragover .dz-glyph-arrow {
@@ -1569,7 +1876,8 @@ body[data-dragging="true"] .dropzone {
   border-color: var(--brand);
 }
 
-body[data-dragging="true"]::after {
+/* On `.page`, not on `body::after`, which the ambient layer already owns. */
+body[data-dragging="true"] .page::after {
   content: "";
   position: fixed;
   inset: 0;
@@ -2050,15 +2358,19 @@ html[data-theme="dark"] kbd {
   color: var(--text-muted);
 }
 
+/*
+ * Editorial steps. No cards: a large ghosted numeral, a thin product vignette,
+ * then the copy. A hairline rule between columns does the separating work that
+ * a card border would otherwise do.
+ */
 .flow {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.5rem 2rem;
+  gap: 0 2.5rem;
   align-items: start;
-  counter-reset: flow;
 }
 
 .flow li {
@@ -2069,34 +2381,186 @@ html[data-theme="dark"] kbd {
   box-shadow: none;
 }
 
+.flow li + li {
+  padding-left: 2.5rem;
+  margin-left: -2.5rem;
+  border-left: 1px solid var(--border-soft);
+}
+
 .flow-step {
-  display: inline-grid;
-  place-items: center;
-  width: 1.75rem;
-  height: 1.75rem;
-  margin-bottom: 0.7rem;
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  background: var(--surface);
+  display: block;
+  font-size: clamp(2.25rem, 4.4vw, 3.25rem);
+  font-weight: 780;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  color: transparent;
+  background: linear-gradient(
+    170deg,
+    color-mix(in srgb, var(--brand) 78%, transparent),
+    color-mix(in srgb, var(--brand-secondary) 34%, transparent)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  font-variant-numeric: tabular-nums;
+}
+
+.flow-visual {
+  display: block;
+  margin: 1.1rem 0 1.35rem;
   color: var(--brand-text);
-  font-size: 0.75rem;
-  font-weight: 700;
+}
+
+.flow-visual svg {
+  display: block;
+  width: 104px;
+  max-width: 100%;
+  height: auto;
 }
 
 .flow strong {
   display: block;
-  margin: 0 0 0.25rem;
+  margin: 0 0 0.3rem;
   color: var(--text);
   font-weight: 680;
-  letter-spacing: -0.022em;
-  font-size: 1.0625rem;
+  letter-spacing: -0.024em;
+  font-size: 1.1875rem;
 }
 
 .flow .flow-detail {
   display: block;
   color: var(--text-muted);
   font-size: 0.9375rem;
-  line-height: 1.5;
+  line-height: 1.55;
+  max-width: 22ch;
+}
+
+/* --- Commercial feature moment ------------------------------------------- */
+
+.feature-moment {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: center;
+  gap: clamp(2rem, 6vw, 4.5rem);
+  margin: 0 0 clamp(3rem, 8vh, 4.5rem);
+  padding: clamp(2rem, 5vw, 3.25rem);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--brand) 7%, transparent),
+      transparent 58%
+    ),
+    var(--surface-glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+}
+
+.feature-kicker {
+  margin: 0 0 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-text);
+}
+
+.feature-title {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.75rem, 3.4vw, 2.5rem);
+  font-weight: 750;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  color: var(--text);
+  text-wrap: balance;
+}
+
+.feature-body {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 1rem;
+  line-height: 1.6;
+  max-width: 34rem;
+  text-wrap: pretty;
+}
+
+.feature-visual {
+  display: grid;
+  justify-items: center;
+  gap: 1.1rem;
+}
+
+.fv-stage {
+  position: relative;
+  width: min(100%, 15rem);
+}
+
+/* Stylised drop, mid-expiry. */
+.fv-card {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: linear-gradient(
+    150deg,
+    color-mix(in srgb, var(--brand) 16%, var(--surface)),
+    color-mix(in srgb, var(--brand-accent) 10%, var(--surface))
+  );
+  box-shadow: var(--shadow-md);
+  color: color-mix(in srgb, var(--brand-text) 70%, transparent);
+}
+
+.fv-card svg {
+  width: 44px;
+  height: 44px;
+}
+
+.fv-timer {
+  position: absolute;
+  top: -0.9rem;
+  right: -0.9rem;
+  width: 3.25rem;
+  height: 3.25rem;
+  padding: 0.3rem;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--surface-elevated);
+  box-shadow: var(--shadow-md);
+}
+
+.fv-timer svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.fv-timer-track,
+.fv-timer-arc {
+  fill: none;
+  stroke-width: 5;
+}
+
+.fv-timer-track {
+  stroke: var(--border);
+}
+
+/* ~62% of the circumference left, so it reads as "counting down". */
+.fv-timer-arc {
+  stroke: var(--brand);
+  stroke-linecap: round;
+  stroke-dasharray: 126;
+  stroke-dashoffset: 48;
+}
+
+.feature-note {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: -0.006em;
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
 }
 
 .faq-compact {
@@ -2379,14 +2843,109 @@ html[data-theme="dark"] kbd {
 
   .flow {
     grid-template-columns: 1fr;
-    gap: 1.25rem;
+    gap: 1.75rem;
   }
 
+  .flow li + li {
+    padding-left: 0;
+    margin-left: 0;
+    border-left: none;
+    padding-top: 1.75rem;
+    border-top: 1px solid var(--border-soft);
+  }
+
+  .flow-visual {
+    margin: 0.85rem 0 1rem;
+  }
+
+  .flow-visual svg {
+    width: 88px;
+  }
+
+  .flow .flow-detail {
+    max-width: none;
+  }
+
+  .feature-moment {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 1.75rem 1.35rem 2rem;
+  }
+
+  .fv-timer {
+    top: -0.75rem;
+    right: -0.5rem;
+  }
+
+  /*
+   * On mobile the Pro controls read as a compact tray hanging off the bottom
+   * of the uploader, not as a second panel competing with it: flush width,
+   * small radius, no elevation of its own, everything one step smaller.
+   */
   .pro-options {
     width: 100%;
-    justify-content: center;
-    padding: 0.85rem 1rem;
-    border-radius: var(--radius-lg);
+    justify-content: flex-start;
+    gap: 0.4rem 0.55rem;
+    margin-top: 0.5rem;
+    padding: 0.45rem 0.6rem;
+    border-radius: var(--radius-md);
+    background: var(--surface-soft);
+    box-shadow: none;
+  }
+
+  .pro-options-kicker {
+    padding: 0.1rem 0.45rem;
+    font-size: 0.625rem;
+  }
+
+  .pro-field {
+    gap: 0.45rem;
+    font-size: 0.75rem;
+  }
+
+  /* Password always takes its own line so the expiry row stays on one. */
+  #pro-password-wrap {
+    flex: 1 0 100%;
+  }
+
+  .expiry-pills {
+    padding: 0.1rem;
+  }
+
+  .expiry-pill {
+    min-height: 28px;
+    padding: 0 0.55rem;
+    font-size: 0.75rem;
+  }
+
+  .expiry-pill::before {
+    inset: -8px 0;
+  }
+
+  .switch {
+    width: 38px;
+    height: 22px;
+  }
+
+  .switch::before {
+    inset: -11px -3px;
+  }
+
+  .switch::after {
+    width: 16px;
+    height: 16px;
+  }
+
+  .switch[aria-checked="true"]::after {
+    transform: translateX(16px);
+  }
+
+  .pro-field input {
+    flex: 1;
+    min-width: 0;
+    min-height: 34px;
+    padding: 0.4rem 0.6rem;
+    font-size: 0.8125rem;
   }
 
   .foot {
@@ -2494,13 +3053,128 @@ html[data-theme="dark"] kbd {
   margin-top: 0.6rem;
 }
 
+/* --- The single Pro offer ------------------------------------------------
+ *
+ * DropIMG sells one product, so the page shows one composition: pick how you
+ * pay, see the price, get Pro. Monthly and Annual are a segmented control
+ * inside the card, never two competing cards.
+ */
+
+.pro-offer {
+  display: grid;
+  justify-items: center;
+  max-width: 38rem;
+  margin: 0 auto;
+  padding: clamp(1.75rem, 4vw, 2.5rem);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--brand) 6%, transparent),
+      transparent 42%
+    ),
+    var(--surface);
+  box-shadow: var(--shadow-lg);
+  text-align: center;
+}
+
+.pro-interval {
+  display: inline-flex;
+  padding: 0.25rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface-soft);
+}
+
+.pro-interval-opt {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 40px;
+  padding: 0 1.1rem;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-soft);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 640;
+  letter-spacing: -0.014em;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background var(--motion-micro) var(--ease),
+    color var(--motion-micro) var(--ease);
+}
+
+.pro-interval-opt:hover {
+  color: var(--text);
+}
+
+.pro-interval-opt[aria-checked="true"] {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: var(--shadow-sm);
+}
+
+.pro-interval-opt:focus-visible {
+  outline: 2px solid var(--brand);
+  outline-offset: 2px;
+}
+
+.pro-interval-save {
+  padding: 0.1rem 0.42rem;
+  border-radius: var(--radius-pill);
+  background: var(--brand-soft);
+  color: var(--brand-text);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+}
+
+.pro-interval-opt[aria-checked="true"] .pro-interval-save {
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.pro-figure {
+  display: grid;
+  justify-items: center;
+  gap: 0.4rem;
+  /* Reserve the taller of the two sub-lines so switching never shifts layout. */
+  min-height: 5.25rem;
+  margin: clamp(1.5rem, 4vw, 2rem) 0 clamp(1.25rem, 3vw, 1.75rem);
+}
+
+.pro-figure-sub {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.pro-figure-sub[hidden],
+.pro-price[hidden] {
+  display: none;
+}
+
+.pro-cta {
+  width: min(100%, 20rem);
+}
+
 .pro-perks {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem 2rem;
-  margin: 0 0 clamp(2.5rem, 6vh, 3.5rem);
-  padding: 0;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  align-content: start;
+  gap: 0.8rem 2rem;
+  width: 100%;
+  margin: clamp(1.75rem, 4vw, 2.25rem) 0 0;
+  padding: clamp(1.5rem, 4vw, 2rem) 0 0;
+  border-top: 1px solid var(--border-soft);
   list-style: none;
+  text-align: left;
 }
 
 .pro-perks li {
@@ -2521,62 +3195,15 @@ html[data-theme="dark"] kbd {
   stroke-width: 2.25;
 }
 
-.pro-plans {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  align-items: stretch;
-}
-
-.pro-card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  padding: 1.75rem 1.6rem 1.6rem;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  background: var(--surface);
-  box-shadow: var(--shadow-sm);
-}
-
-.pro-card-featured {
-  border-color: color-mix(in srgb, var(--brand) 40%, transparent);
-  background: var(--surface);
-  box-shadow: var(--shadow-md);
-}
-
-.pro-save {
-  position: absolute;
-  top: 1.1rem;
-  right: 1.1rem;
-  margin: 0;
-  padding: 0.25rem 0.6rem;
-  border-radius: var(--radius-pill);
-  background: var(--brand);
-  color: var(--on-brand);
-  font-size: 0.6875rem;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-}
-
-.pro-card h2 {
-  margin: 0;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-
 .pro-price {
   display: flex;
   align-items: baseline;
-  gap: 0.3rem;
-  margin: 0.6rem 0 0;
-  font-size: 2.5rem;
-  font-weight: 760;
-  letter-spacing: -0.04em;
+  justify-content: center;
+  gap: 0.35rem;
+  margin: 0;
+  font-size: clamp(2.75rem, 7vw, 3.75rem);
+  font-weight: 770;
+  letter-spacing: -0.045em;
   line-height: 1;
 }
 
@@ -2643,16 +3270,6 @@ html[data-theme="dark"] kbd {
   font-weight: 800;
   letter-spacing: 0.06em;
   color: var(--text-muted);
-}
-
-/* The note stretches so both cards line their CTA up on the same baseline. */
-.pro-card .pro-note {
-  flex: 1;
-}
-
-.pro-card .btn {
-  width: 100%;
-  margin-top: 1.5rem;
 }
 
 .pro-status {
@@ -2989,9 +3606,50 @@ html[data-theme="dark"] kbd {
 }
 
 @media (max-width: 640px) {
-  .pro-perks,
-  .pro-plans {
+  .pro-perks {
     grid-template-columns: 1fr;
+    gap: 0.7rem;
+  }
+
+  .ext-hero {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  .ext-mock {
+    padding-bottom: 2.75rem;
+  }
+
+  .mock-popup {
+    top: 1.6rem;
+    right: 0.5rem;
+    width: 9rem;
+    padding: 0.7rem;
+  }
+
+  .mock-toast {
+    left: 0.75rem;
+    max-width: calc(100% - 1.5rem);
+    padding: 0.5rem 0.7rem;
+  }
+
+  .mock-url {
+    display: none;
+  }
+
+  .pro-offer {
+    padding: 1.5rem 1.15rem 1.75rem;
+  }
+
+  .pro-interval {
+    width: 100%;
+  }
+
+  .pro-interval-opt {
+    flex: 1;
+    justify-content: center;
+    padding: 0 0.65rem;
+    font-size: 0.875rem;
   }
 }
 

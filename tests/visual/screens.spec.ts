@@ -4,6 +4,7 @@ import { renderGonePage } from "../../src/views/share";
 import {
   asAnonymous,
   asPro,
+  renderFakeScreenshot,
   renderServerView,
   seedOwnedDrops,
   seedSharedImage,
@@ -32,6 +33,39 @@ test.describe("homepage", () => {
       await shoot(page, `home-pro-${theme}-${testInfo.project.name}`);
     });
   }
+
+  /** Drives the real `dragenter` handler rather than toggling classes. */
+  test("dragover light", async ({ page }, testInfo) => {
+    await setTheme(page, "light");
+    await asAnonymous(page);
+    await page.goto("/");
+    await page.evaluate(() => {
+      const transfer = new DataTransfer();
+      transfer.items.add(new File(["x"], "shot.png", { type: "image/png" }));
+      window.dispatchEvent(
+        new DragEvent("dragenter", {
+          bubbles: true,
+          cancelable: true,
+          dataTransfer: transfer,
+        }),
+      );
+    });
+    await page.locator("#dropzone.dragover").waitFor();
+    await shoot(page, `home-dragover-light-${testInfo.project.name}`);
+  });
+
+  test("success light", async ({ page }, testInfo) => {
+    await setTheme(page, "light");
+    await asAnonymous(page);
+    await page.goto("/");
+    await page.setInputFiles("#file-input", {
+      name: "shot.png",
+      mimeType: "image/png",
+      buffer: await renderFakeScreenshot(page),
+    });
+    await page.locator("#state-success").waitFor({ state: "visible" });
+    await shoot(page, `home-success-light-${testInfo.project.name}`);
+  });
 });
 
 test.describe("public pages", () => {

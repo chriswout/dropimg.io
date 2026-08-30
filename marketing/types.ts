@@ -24,6 +24,14 @@ export type HomeCopy = PageSeo & {
   trust: [string, string, string];
   howtoHeading: string;
   howto: [HowToStep, HowToStep, HowToStep];
+  /** Single commercial beat between the steps and the FAQ. */
+  feature: {
+    kicker: string;
+    title: string;
+    body: string;
+    /** Caption under the expiry visual. */
+    note: string;
+  };
   faqHeading: string;
   faqs: [FaqItem, FaqItem, FaqItem];
   schemaAppDescription: string;

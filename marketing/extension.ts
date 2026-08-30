@@ -1,7 +1,21 @@
 import type { LandingCopy } from "./types";
 
+/**
+ * The extension page leads with a product hero and keeps the reference
+ * documentation below it, so `heroTitle` / `heroTagline` drive the visible
+ * headline while `h1`'s keyword-carrying copy stays on the page as the lede.
+ */
+type ExtensionCopy = LandingCopy & {
+  heroKicker: string;
+  heroTitle: string;
+  heroTagline: string;
+  heroFacts: [string, string, string];
+  detailsHeading: string;
+  skip: string;
+};
+
 /** English-only acquisition page for the Chrome/Edge extension. */
-export const EXTENSION_PAGE: LandingCopy = {
+export const EXTENSION_PAGE: ExtensionCopy = {
   title: "Chrome & Edge Screenshot Extension | dropimg.io",
   description:
     "Capture the visible tab or a region — get a temporary dropimg.io link. Chrome and Edge. English, Spanish, Portuguese, German. No account.",
@@ -13,6 +27,16 @@ export const EXTENSION_PAGE: LandingCopy = {
     "Screenshot → temporary link. Visible or region. No account. Expires in 24 hours.",
   h1: "Screenshot to link, from your toolbar",
   lede: "Capture what you see or draw a region — then get a temporary shareable link. No account. Expires in 24 hours. Available in English, Spanish, Portuguese (Brazil), and German.",
+  heroKicker: "Browser extension",
+  heroTitle: "DropIMG for your browser",
+  heroTagline: "Capture. Upload. Link copied.",
+  heroFacts: [
+    "Chrome and Edge",
+    "Alt+Shift+D for a silent capture",
+    "Links expire in 24 hours",
+  ],
+  detailsHeading: "Details",
+  skip: "Skip to details",
   blocks: [
     {
       type: "h2",

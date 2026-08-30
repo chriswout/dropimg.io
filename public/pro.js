@@ -125,9 +125,36 @@
     const body = await res.json();
     if (body.url) location.href = body.url;
   }
+  function setupIntervalSelector(page) {
+    const options = page.querySelectorAll(
+      "[data-select-interval]"
+    );
+    if (options.length === 0) return;
+    const cta = page.querySelector(".pro-cta");
+    const select = (interval) => {
+      options.forEach((opt) => {
+        opt.setAttribute(
+          "aria-checked",
+          opt.dataset.selectInterval === interval ? "true" : "false"
+        );
+      });
+      page.querySelectorAll("[data-interval-view]").forEach((el) => {
+        el.hidden = el.dataset.intervalView !== interval;
+      });
+      if (cta?.hasAttribute("data-interval")) {
+        cta.setAttribute("data-interval", interval);
+      }
+    };
+    options.forEach((opt) => {
+      opt.addEventListener("click", () => {
+        select(opt.dataset.selectInterval === "monthly" ? "monthly" : "annual");
+      });
+    });
+  }
   function setupProPage() {
     const page = root();
     if (!page) return;
+    setupIntervalSelector(page);
     page.querySelectorAll("[data-interval]").forEach((btn) => {
       btn.addEventListener("click", () => {
         const interval = btn.getAttribute("data-interval") === "annual" ? "annual" : "monthly";

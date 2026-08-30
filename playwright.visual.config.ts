@@ -4,6 +4,10 @@ import { defineConfig, devices } from "@playwright/test";
  * Visual QA only. Captures full-page screenshots of the redesign at the two
  * reference widths. Kept separate from `playwright.config.ts` so the
  * functional e2e gate stays fast and free of image artifacts.
+ *
+ * `npm run visual` writes to the ignored `tests/visual/.output/screens`.
+ * `npm run visual:approve` overwrites the committed reference set in
+ * `tests/visual/__screens__` — only do that at an approved checkpoint.
  */
 
 const port = Number(process.env.E2E_PORT || 8788);

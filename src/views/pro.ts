@@ -18,6 +18,10 @@ type Copy = {
   annualNote: string;
   annualPerMonth: string;
   save: string;
+  /** Accessible name for the Monthly / Annual segmented control. */
+  intervalAria: string;
+  /** Nudge shown while Monthly is selected. */
+  annualHint: string;
   getPro: string;
   signIn: string;
   manage: string;
@@ -52,6 +56,8 @@ export const PRO_COPY: Record<Locale, Copy> = {
     annualNote: "/ year",
     annualPerMonth: "$1.67/mo",
     save: "Save 16%",
+    intervalAria: "Billing interval",
+    annualHint: "Pay yearly and save 16%.",
     getPro: "Get Pro",
     signIn: "Sign in to get Pro",
     manage: "Manage billing",
@@ -93,6 +99,8 @@ export const PRO_COPY: Record<Locale, Copy> = {
     annualNote: "/ año",
     annualPerMonth: "$1.67/mes",
     save: "Ahorra 16%",
+    intervalAria: "Periodo de facturación",
+    annualHint: "Paga al año y ahorra un 16%.",
     getPro: "Get Pro",
     signIn: "Entra para obtener Pro",
     manage: "Gestionar facturación",
@@ -134,6 +142,8 @@ export const PRO_COPY: Record<Locale, Copy> = {
     annualNote: "/ ano",
     annualPerMonth: "$1.67/mês",
     save: "Economize 16%",
+    intervalAria: "Período de cobrança",
+    annualHint: "Pague por ano e economize 16%.",
     getPro: "Get Pro",
     signIn: "Entre para assinar Pro",
     manage: "Gerenciar cobrança",
@@ -175,6 +185,8 @@ export const PRO_COPY: Record<Locale, Copy> = {
     annualNote: "/ Jahr",
     annualPerMonth: "$1.67/Mo.",
     save: "16% sparen",
+    intervalAria: "Abrechnungszeitraum",
+    annualHint: "Jährlich zahlen und 16% sparen.",
     getPro: "Get Pro",
     signIn: "Anmelden, um Pro zu holen",
     manage: "Abrechnung verwalten",
@@ -224,27 +236,34 @@ export function renderProPage(opts: {
         : t.renews(formatDay(opts.periodEnd, opts.locale))
       : "";
 
-  const cta = (interval: "monthly" | "annual") =>
-    !opts.billingOn
-      ? ""
-      : !opts.signedIn
-        ? `<a class="btn ${interval === "annual" ? "primary" : "secondary"}" href="/login">${esc(t.getPro)}</a>`
-        : `<button type="button" class="btn ${interval === "annual" ? "primary" : "secondary"}" data-interval="${interval}">${esc(t.getPro)}</button>`;
+  /*
+   * One product, two ways to pay. Annual is the default so the page still
+   * renders a complete, buyable offer with JavaScript disabled; the selector
+   * only swaps which price is visible and which interval the single CTA
+   * carries, so the `[data-interval]` contract that drives checkout is
+   * unchanged.
+   */
+  const cta = !opts.billingOn
+    ? ""
+    : !opts.signedIn
+      ? `<a class="btn primary btn-lg pro-cta" href="/login">${esc(t.signIn)}</a>`
+      : `<button type="button" class="btn primary btn-lg pro-cta" data-interval="annual">${esc(t.getPro)}</button>`;
 
-  const plans = `<div class="pro-plans">
-      <article class="pro-card pro-card-featured">
-        <p class="pro-save">${esc(t.save)}</p>
-        <h2>${esc(t.annual)}</h2>
-        <p class="pro-price">${esc(t.annualPrice)}<span class="pro-per">${esc(t.annualNote)}</span></p>
-        <p class="pro-note">${esc(t.annualPerMonth)}</p>
-        ${cta("annual")}
-      </article>
-      <article class="pro-card">
-        <h2>${esc(t.monthly)}</h2>
-        <p class="pro-price">${esc(t.monthlyPrice)}<span class="pro-per">${esc(t.monthlyNote)}</span></p>
-        <p class="pro-note">&nbsp;</p>
-        ${cta("monthly")}
-      </article>
+  const offer = `<div class="pro-offer">
+      <div class="pro-interval" role="radiogroup" aria-label="${esc(t.intervalAria)}">
+        <button type="button" class="pro-interval-opt" role="radio" aria-checked="false" data-select-interval="monthly">${esc(t.monthly)}</button>
+        <button type="button" class="pro-interval-opt" role="radio" aria-checked="true" data-select-interval="annual">
+          ${esc(t.annual)}<span class="pro-interval-save">${esc(t.save)}</span>
+        </button>
+      </div>
+      <div class="pro-figure">
+        <p class="pro-price" data-interval-view="annual">${esc(t.annualPrice)}<span class="pro-per">${esc(t.annualNote)}</span></p>
+        <p class="pro-price" data-interval-view="monthly" hidden>${esc(t.monthlyPrice)}<span class="pro-per">${esc(t.monthlyNote)}</span></p>
+        <p class="pro-figure-sub" data-interval-view="annual">${esc(t.annualPerMonth)} · ${esc(t.save)}</p>
+        <p class="pro-figure-sub" data-interval-view="monthly" hidden>${esc(t.annualHint)}</p>
+      </div>
+      ${cta}
+      ${perks}
     </div>`;
 
   const billingOff = !opts.billingOn
@@ -277,8 +296,7 @@ export function renderProPage(opts: {
     data-unavailable="${esc(t.checkoutUnavailable)}"
     data-open-fail="${esc(t.checkoutCouldNotOpen)}">
     ${hero}
-    ${isPro ? "" : perks}
-    ${isPro ? "" : plans}
+    ${isPro ? "" : offer}
     ${isPro ? "" : `<p class="pro-fineprint">${esc(t.note)}</p>`}
     ${isPro ? "" : billingOff}
     <p id="pro-status" class="pro-note pro-status" hidden aria-live="polite">${esc(t.waiting)}</p>

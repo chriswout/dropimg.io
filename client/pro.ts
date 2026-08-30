@@ -162,10 +162,45 @@ async function openPortal() {
   if (body.url) location.href = body.url;
 }
 
+/**
+ * Monthly / Annual is a view switch, not two products: it only swaps which
+ * price is visible and re-tags the single CTA. Checkout still reads
+ * `[data-interval]` off the button that was clicked.
+ */
+function setupIntervalSelector(page: HTMLElement) {
+  const options = page.querySelectorAll<HTMLButtonElement>(
+    "[data-select-interval]",
+  );
+  if (options.length === 0) return;
+  const cta = page.querySelector<HTMLElement>(".pro-cta");
+
+  const select = (interval: "monthly" | "annual") => {
+    options.forEach((opt) => {
+      opt.setAttribute(
+        "aria-checked",
+        opt.dataset.selectInterval === interval ? "true" : "false",
+      );
+    });
+    page.querySelectorAll<HTMLElement>("[data-interval-view]").forEach((el) => {
+      el.hidden = el.dataset.intervalView !== interval;
+    });
+    if (cta?.hasAttribute("data-interval")) {
+      cta.setAttribute("data-interval", interval);
+    }
+  };
+
+  options.forEach((opt) => {
+    opt.addEventListener("click", () => {
+      select(opt.dataset.selectInterval === "monthly" ? "monthly" : "annual");
+    });
+  });
+}
+
 function setupProPage() {
   const page = root();
   if (!page) return;
-  page.querySelectorAll<HTMLButtonElement>("[data-interval]").forEach((btn) => {
+  setupIntervalSelector(page);
+  page.querySelectorAll<HTMLElement>("[data-interval]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const interval = btn.getAttribute("data-interval") === "annual" ? "annual" : "monthly";
       void startCheckout(interval);

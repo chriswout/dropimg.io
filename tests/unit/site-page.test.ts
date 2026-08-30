@@ -66,7 +66,7 @@ describe("Account pages share site chrome", () => {
     }
   });
 
-  it("pro page shows plans when not subscribed and a member hero when Pro", async () => {
+  it("pro page shows one offer when not subscribed and a member hero when Pro", async () => {
     const shop = renderProPage({
       locale: "en",
       env: { ENVIRONMENT: "staging" },
@@ -78,7 +78,12 @@ describe("Account pages share site chrome", () => {
     expect(shop.headers.get("Cache-Control")).toBe("private, no-store");
     const html = await shop.text();
     expect(html).toContain("Get Pro");
-    expect(html).toContain("pro-card-featured");
+    // One product, one CTA, with the interval as a selector rather than a
+    // second plan card.
+    expect(html).toContain('class="pro-offer"');
+    expect(html.match(/data-select-interval=/g)).toHaveLength(2);
+    expect(html.match(/data-interval="/g)).toHaveLength(1);
+    expect(html).toContain('data-interval="annual"');
 
     const member = renderProPage({
       locale: "en",

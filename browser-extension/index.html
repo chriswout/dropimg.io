@@ -39,8 +39,8 @@
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
   </head>
   <body>
-    <a class="skip-link" href="#dropzone">Skip to upload</a>
-    <div class="page page-seo">
+    <a class="skip-link" href="#ext-details">Skip to details</a>
+    <div class="page page-seo page-ext">
       <header class="top">
        <div class="top-inner">
         <a class="brand" href="/" aria-label="dropimg.io home">
@@ -114,142 +114,56 @@
       </header>
 
       <main>
-        <section class="seo-hero">
-          <h1 class="tagline">Screenshot to link, from your toolbar</h1>
-          <p class="sub seo-lede">Capture what you see or draw a region — then get a temporary shareable link. No account. Expires in 24 hours. Available in English, Spanish, Portuguese (Brazil), and German.</p>
-
-          <section
-            id="dropzone"
-            class="dropzone"
-            tabindex="0"
-            role="button"
-            aria-label="Paste, drop, or choose an image to upload"
-          >
-            <input
-              id="file-input"
-              type="file"
-              accept="image/png,image/jpeg,image/webp,image/gif"
-              hidden
-            />
-
-            <div id="status-live" class="visually-hidden" aria-live="polite"></div>
-
-            <div id="state-idle" class="state">
-              <div class="icon-ring" aria-hidden="true">
-                <svg class="dz-glyph" viewBox="0 0 24 24" width="34" height="34" fill="none"
-                  stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M10.3 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v7.3" />
-                  <path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L6 21" />
-                  <circle cx="9" cy="9" r="2" />
-                  <path class="dz-glyph-arrow" d="M19 22v-6m-3 3 3-3 3 3" />
-                </svg>
-              </div>
-              <p id="idle-title" class="dz-title">
-                <span class="idle-desktop">Paste, drop, or choose an image</span>
-                <span class="idle-mobile">Choose an image to share</span>
-              </p>
-              <p class="dz-hint">
-                <span class="hint-desktop"
-                  ><kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>V</kbd> ·
+        <section class="ext-hero">
+          <div class="ext-hero-copy">
+            <p class="ext-kicker">Browser extension</p>
+            <h1 class="ext-title">DropIMG for your browser</h1>
+            <p class="ext-tagline">Capture. Upload. Link copied.</p>
+            <p class="sub ext-lede">Capture what you see or draw a region — then get a temporary shareable link. No account. Expires in 24 hours. Available in English, Spanish, Portuguese (Brazil), and German.</p>
+            <ul class="ext-facts">
+              <li>Chrome and Edge</li>
+              <li>Alt+Shift+D for a silent capture</li>
+              <li>Links expire in 24 hours</li>
+            </ul>
+          </div>
+          <div class="ext-mock" aria-hidden="true">
+            <div class="mock-window">
+              <div class="mock-bar">
+                <span class="mock-dot"></span>
+                <span class="mock-dot"></span>
+                <span class="mock-dot"></span>
+                <span class="mock-omni"></span>
+                <span class="mock-icon">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <path d="M3 9V5h4M21 9V5h-4M3 15v4h4M21 15v4h-4" />
+                  </svg>
                 </span>
-                PNG, JPEG, WebP, GIF · max 10 MB
-              </p>
-              <button id="btn-choose" type="button" class="btn primary choose-btn">
-                Choose image
-              </button>
-            </div>
-
-            <div id="state-uploading" class="state hidden">
-              <img id="preview" class="preview" alt="" />
-              <p class="dz-title" data-i18n="uploading">Uploading…</p>
-              <div
-                class="progress"
-                role="progressbar"
-                aria-valuemin="0"
-                aria-valuemax="100"
-                aria-valuenow="0"
-                id="progress-wrap"
-              >
-                <div id="progress-bar" class="progress-bar"></div>
               </div>
-              <p id="progress-label" class="dz-hint">0%</p>
-            </div>
-
-            <div id="state-success" class="state hidden">
-              <div class="success-badge" aria-hidden="true">
-                <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
-                  <path
-                    d="M5 12.5l4.5 4.5L19 7.5"
-                    stroke="currentColor"
-                    stroke-width="2.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                  />
-                </svg>
-              </div>
-              <p id="success-title" class="dz-title success">Uploaded. Link copied.</p>
-              <div class="url-row">
-                <input id="share-url" class="url-input" readonly aria-label="Share URL" />
-                <button id="btn-copy" type="button" class="btn primary">Copy</button>
-              </div>
-              <p id="expires-label" class="dz-hint"></p>
-              <p id="protect-label" class="dz-hint" hidden>Password protected</p>
-              <div class="actions">
-                <a id="btn-open" class="btn secondary" href="#" target="_blank" rel="noopener"
-                  >Open</a
-                >
-                <button id="btn-delete" type="button" class="btn danger">
-                  Delete now
-                </button>
-                <button id="btn-another" type="button" class="btn secondary">
-                  Upload another
-                </button>
-                <a id="btn-manage" class="btn secondary" href="/app" hidden>Manage in My drops</a>
-              </div>
-              <p id="success-upsell" class="success-upsell" hidden>
-                <strong>Need it longer?</strong>
-                Keep links up to 30 days with Pro — $1.99/month.
-              </p>
-            </div>
-
-            <div id="state-error" class="state hidden">
-              <p id="error-title" class="dz-title error">Upload failed</p>
-              <p id="error-message" class="dz-hint"></p>
-              <button id="btn-retry" type="button" class="btn primary">Try again</button>
-            </div>
-          </section>
-          <div id="pro-options" class="pro-options" hidden>
-            <p class="pro-options-kicker">PRO</p>
-            <div class="pro-field">
-              <span id="pro-expiry-label">Expires</span>
-              <div id="pro-expiry" class="expiry-pills" role="radiogroup" aria-labelledby="pro-expiry-label" data-value="86400">
-                <button type="button" class="expiry-pill" role="radio" aria-checked="true" data-expiry="86400">24 hours</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="604800">7 days</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="2592000">30 days</button>
+              <div class="mock-canvas">
+                <span class="mock-region"></span>
               </div>
             </div>
-            <div class="pro-field" id="pro-password-wrap">
-              <span id="pro-password-label">Password</span>
-              <div class="pro-password-controls">
-                <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password" data-off="Off" data-on="Protect"></button>
-                <input id="pro-password" type="password" minlength="8" placeholder="Min. 8 characters" autocomplete="new-password" hidden />
+            <div class="mock-popup">
+              <p class="mock-popup-title">Capture</p>
+              <div class="mock-modes">
+                <span class="mock-mode is-on">Visible</span>
+                <span class="mock-mode">Region</span>
               </div>
+              <span class="mock-go">Capture</span>
+            </div>
+            <div class="mock-toast">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path d="m5 12.5 4.5 4.5L19 7.5" />
+              </svg>
+              <span class="mock-toast-text">Link copied</span>
+              <code class="mock-url">dropimg.io/a7k2x9</code>
             </div>
           </div>
-
-          <ul class="trust-chips" aria-label="Product highlights">
-            <li>No account</li>
-            <li>24h expiry</li>
-            <li>Metadata stripped</li>
-          </ul>
-
-          <section id="recent" class="recent" hidden>
-            <h2>Recent drops</h2>
-            <ul id="recent-list"></ul>
-          </section>
         </section>
 
-        <article class="seo-article">
+        <article class="seo-article" id="ext-details" tabindex="-1" aria-label="Details">
           <h2>What it does</h2>
 
           <ol>

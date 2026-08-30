@@ -13,7 +13,7 @@ import {
   type Locale,
 } from "./locales";
 import { alternateLinks, pagePath, pageUrl, type PageId } from "./pages";
-import type { LandingCopy, SeoBlock, SharedChrome } from "./types";
+import type { HowToStep, LandingCopy, SeoBlock, SharedChrome } from "./types";
 import { t } from "./ui";
 import { renderAdSlot } from "../src/lib/ads";
 
@@ -331,6 +331,150 @@ function langSuggestBanner(chrome: SharedChrome): string {
       <script type="application/json" id="lang-suggest-data">${JSON.stringify(chrome.langSuggest)}</script>`;
 }
 
+/** Hairline glyphs for the trust strip, in the same order as `copy.trust`. */
+const TRUST_GLYPHS: [string, string, string] = [
+  `<path d="M12 12.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" /><path d="M4.5 20a7.5 7.5 0 0 1 15 0" /><path d="m3 3 18 18" />`,
+  `<circle cx="12" cy="12" r="8.5" /><path d="M12 7.5V12l3 1.8" />`,
+  `<path d="M12 3.2 5 6v5.4c0 4.3 2.9 8.2 7 9.4 4.1-1.2 7-5.1 7-9.4V6l-7-2.8Z" /><path d="m9.2 12.2 2 2 3.8-4" />`,
+];
+
+function trustStripHtml(items: readonly string[], label: string): string {
+  const lis = items
+    .map(
+      (text, i) => `            <li>
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
+                focusable="false">${TRUST_GLYPHS[i]}</svg>
+              <span>${esc(text)}</span>
+            </li>`,
+    )
+    .join("\n");
+  return `          <ul class="trust-chips" aria-label="${esc(label)}">
+${lis}
+          </ul>`;
+}
+
+/**
+ * Thin-stroke vignettes for the three homepage steps. Decorative and
+ * `currentColor`-based, so they inherit the theme and cost no requests.
+ */
+const FLOW_VISUALS: [string, string, string] = [
+  `<svg viewBox="0 0 104 64" width="104" height="64" fill="none" stroke="currentColor"
+                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <path d="M52 2v13m-5-5 5 5 5-5" stroke-width="1.9" />
+                    <rect x="15.5" y="21.5" width="73" height="39" rx="9" stroke-width="1.5"
+                      stroke-dasharray="5 4.5" opacity=".5" />
+                    <circle cx="35" cy="34" r="3.2" stroke-width="1.5" opacity=".85" />
+                    <path d="M23 53l11-10a3.4 3.4 0 0 1 4.6 0L47 51" stroke-width="1.5" opacity=".85" />
+                    <path d="M50 47l6.5-6a3.4 3.4 0 0 1 4.6 0L74 53" stroke-width="1.5" opacity=".85" />
+                  </svg>`,
+  `<svg viewBox="0 0 104 64" width="104" height="64" fill="none" stroke="currentColor"
+                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <rect x="4.5" y="21.5" width="70" height="21" rx="10.5" stroke-width="1.5" opacity=".5" />
+                    <path d="M15 32h30" stroke-width="2.6" opacity=".4" />
+                    <path d="M50 32h13" stroke-width="2.6" opacity=".9" />
+                    <rect x="81.5" y="21.5" width="18" height="18" rx="5" stroke-width="1.5" />
+                    <path d="m86 30.5 3.2 3.2 6.3-6.4" stroke-width="1.9" />
+                  </svg>`,
+  `<svg viewBox="0 0 104 64" width="104" height="64" fill="none" stroke="currentColor"
+                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <path d="M11 13h50a7 7 0 0 1 7 7v13a7 7 0 0 1-7 7H27l-11 8v-8h-5a7 7 0 0 1-7-7V20a7 7 0 0 1 7-7Z"
+                      stroke-width="1.5" opacity=".5" />
+                    <path d="M17 24h32" stroke-width="2.2" opacity=".4" />
+                    <path d="M17 31h19" stroke-width="2.2" opacity=".85" />
+                    <path d="M78 32h18m-6-6 6 6-6 6" stroke-width="1.9" />
+                  </svg>`,
+];
+
+function flowStepHtml(index: number, step: HowToStep): string {
+  const n = String(index + 1).padStart(2, "0");
+  return `              <li>
+                <span class="flow-step" aria-hidden="true">${n}</span>
+                <span class="flow-visual" aria-hidden="true">
+                  ${FLOW_VISUALS[index]}
+                </span>
+                <strong>${esc(step.name)}</strong>
+                <span class="flow-detail">${esc(step.detail)}</span>
+              </li>`;
+}
+
+/**
+ * One commercial beat between the steps and the FAQ: expiry is the product,
+ * so it gets a headline and a visual rather than another bullet.
+ */
+function featureMomentHtml(copy: (typeof HOME)[Locale]): string {
+  const f = copy.feature;
+  return `          <section class="feature-moment" aria-labelledby="feature-heading" data-enter>
+            <div class="feature-copy">
+              <p class="feature-kicker">${esc(f.kicker)}</p>
+              <h2 id="feature-heading" class="feature-title">${esc(f.title)}</h2>
+              <p class="feature-body">${esc(f.body)}</p>
+            </div>
+            <div class="feature-visual">
+              <div class="fv-stage">
+                <div class="fv-card" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
+                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <rect x="3" y="3" width="18" height="18" rx="3" />
+                    <circle cx="9" cy="9.5" r="1.8" />
+                    <path d="m4 18 5.2-5.2a2 2 0 0 1 2.8 0L20 21" />
+                  </svg>
+                </div>
+                <div class="fv-timer" aria-hidden="true">
+                  <svg viewBox="0 0 48 48" focusable="false">
+                    <circle class="fv-timer-track" cx="24" cy="24" r="20" />
+                    <circle class="fv-timer-arc" cx="24" cy="24" r="20" />
+                  </svg>
+                </div>
+              </div>
+              <p class="feature-note">${esc(f.note)}</p>
+            </div>
+          </section>`;
+}
+
+/**
+ * Stylised browser + popup, showing capture → upload → copied link in one
+ * frame. Deliberately abstract: no store badges, no real screenshot, nothing
+ * that has to be re-rendered when the extension UI changes.
+ */
+function extensionMockHtml(): string {
+  return `          <div class="ext-mock" aria-hidden="true">
+            <div class="mock-window">
+              <div class="mock-bar">
+                <span class="mock-dot"></span>
+                <span class="mock-dot"></span>
+                <span class="mock-dot"></span>
+                <span class="mock-omni"></span>
+                <span class="mock-icon">
+                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                    <path d="M3 9V5h4M21 9V5h-4M3 15v4h4M21 15v4h-4" />
+                  </svg>
+                </span>
+              </div>
+              <div class="mock-canvas">
+                <span class="mock-region"></span>
+              </div>
+            </div>
+            <div class="mock-popup">
+              <p class="mock-popup-title">Capture</p>
+              <div class="mock-modes">
+                <span class="mock-mode is-on">Visible</span>
+                <span class="mock-mode">Region</span>
+              </div>
+              <span class="mock-go">Capture</span>
+            </div>
+            <div class="mock-toast">
+              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
+                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" focusable="false">
+                <path d="m5 12.5 4.5 4.5L19 7.5" />
+              </svg>
+              <span class="mock-toast-text">Link copied</span>
+              <code class="mock-url">dropimg.io/a7k2x9</code>
+            </div>
+          </div>`;
+}
+
 /** Subtle post-uploader extension promo — must not dominate the dropzone. */
 function extensionPromoHtml(locale: Locale, chrome: SharedChrome): string {
   if (locale !== DEFAULT_LOCALE) {
@@ -378,11 +522,7 @@ ${topBar("home", locale, chrome)}
 
 ${dropzoneHtml(locale, copy.dropzoneAria)}
 
-          <ul class="trust-chips" aria-label="${esc(chrome.productHighlights)}">
-            <li>${esc(copy.trust[0])}</li>
-            <li>${esc(copy.trust[1])}</li>
-            <li>${esc(copy.trust[2])}</li>
-          </ul>
+${trustStripHtml(copy.trust, chrome.productHighlights)}
 
           <section id="recent" class="recent" hidden>
             <h2>${esc(ui.recentDrops)}</h2>
@@ -396,23 +536,11 @@ ${extensionPromoHtml(locale, chrome)}
           <section class="howto-compact" aria-labelledby="howto-heading" data-enter>
             <h2 id="howto-heading">${esc(copy.howtoHeading)}</h2>
             <ol class="flow">
-              <li>
-                <span class="flow-step" aria-hidden="true">1</span>
-                <strong>${esc(copy.howto[0].name)}</strong>
-                <span class="flow-detail">${esc(copy.howto[0].detail)}</span>
-              </li>
-              <li>
-                <span class="flow-step" aria-hidden="true">2</span>
-                <strong>${esc(copy.howto[1].name)}</strong>
-                <span class="flow-detail">${esc(copy.howto[1].detail)}</span>
-              </li>
-              <li>
-                <span class="flow-step" aria-hidden="true">3</span>
-                <strong>${esc(copy.howto[2].name)}</strong>
-                <span class="flow-detail">${esc(copy.howto[2].detail)}</span>
-              </li>
+${copy.howto.map((step, i) => flowStepHtml(i, step)).join("\n")}
             </ol>
           </section>
+
+${featureMomentHtml(copy)}
 
           <section class="faq-compact" id="faq" aria-labelledby="faq-heading" data-enter>
             <h2 id="faq-heading">${esc(copy.faqHeading)}</h2>
@@ -473,11 +601,7 @@ ${topBar(pageId, locale, chrome)}
 
 ${dropzoneHtml(locale, homeCopy.dropzoneAria)}
 
-          <ul class="trust-chips" aria-label="${esc(chrome.productHighlights)}">
-            <li>${esc(homeCopy.trust[0])}</li>
-            <li>${esc(homeCopy.trust[1])}</li>
-            <li>${esc(homeCopy.trust[2])}</li>
-          </ul>
+${trustStripHtml(homeCopy.trust, chrome.productHighlights)}
 
           <section id="recent" class="recent" hidden>
             <h2>${esc(t(locale).recentDrops)}</h2>
@@ -549,30 +673,25 @@ ${themeBootScript()}
 ${head}
   </head>
   <body>
-    <a class="skip-link" href="#dropzone">${esc(chrome.skipToUpload)}</a>
-    <div class="page page-seo">
+    <a class="skip-link" href="#ext-details">${esc(copy.skip)}</a>
+    <div class="page page-seo page-ext">
 ${topBar("home", locale, chrome)}
 
       <main>
-        <section class="seo-hero">
-          <h1 class="tagline">${esc(copy.h1)}</h1>
-          <p class="sub seo-lede">${esc(copy.lede)}</p>
-
-${dropzoneHtml(locale, homeCopy.dropzoneAria)}
-
-          <ul class="trust-chips" aria-label="${esc(chrome.productHighlights)}">
-            <li>${esc(homeCopy.trust[0])}</li>
-            <li>${esc(homeCopy.trust[1])}</li>
-            <li>${esc(homeCopy.trust[2])}</li>
-          </ul>
-
-          <section id="recent" class="recent" hidden>
-            <h2>${esc(t(locale).recentDrops)}</h2>
-            <ul id="recent-list"></ul>
-          </section>
+        <section class="ext-hero">
+          <div class="ext-hero-copy">
+            <p class="ext-kicker">${esc(copy.heroKicker)}</p>
+            <h1 class="ext-title">${esc(copy.heroTitle)}</h1>
+            <p class="ext-tagline">${esc(copy.heroTagline)}</p>
+            <p class="sub ext-lede">${esc(copy.lede)}</p>
+            <ul class="ext-facts">
+${copy.heroFacts.map((f) => `              <li>${esc(f)}</li>`).join("\n")}
+            </ul>
+          </div>
+${extensionMockHtml()}
         </section>
 
-        <article class="seo-article">
+        <article class="seo-article" id="ext-details" tabindex="-1" aria-label="${esc(copy.detailsHeading)}">
 ${renderBlocks(copy.blocks)}
         </article>
 
@@ -647,11 +766,7 @@ ${topBar("home", locale, chrome)}
 
 ${dropzoneHtml(locale, homeCopy.dropzoneAria)}
 
-          <ul class="trust-chips" aria-label="${esc(chrome.productHighlights)}">
-            <li>${esc(homeCopy.trust[0])}</li>
-            <li>${esc(homeCopy.trust[1])}</li>
-            <li>${esc(homeCopy.trust[2])}</li>
-          </ul>
+${trustStripHtml(homeCopy.trust, chrome.productHighlights)}
 
           <section id="recent" class="recent" hidden>
             <h2>${esc(t(locale).recentDrops)}</h2>

@@ -23,6 +23,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "visual": "playwright test -c playwright.visual.config.ts",
+    "visual:approve": "VISUAL_UPDATE_REFERENCE=1 playwright test -c playwright.visual.config.ts",
     "waf:apply": "node scripts/apply-waf.mjs",
     "db:migrate:local": "wrangler d1 migrations apply dropimg --local",
     "db:migrate:staging": "wrangler d1 migrations apply dropimg-staging --remote --env staging",

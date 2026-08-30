@@ -187,6 +187,12 @@ export const HOME: Record<Locale, HomeCopy> = {
       { name: "Copy link", detail: "Short URL, ready to send" },
       { name: "Share it", detail: "Chat, email, tickets — done" },
     ],
+    feature: {
+      kicker: "Temporary by default",
+      title: "Share it. Forget it.",
+      body: "Every link deletes itself. Free drops are gone 24 hours after upload — no cleanup, no archive, nothing left sitting on a server.",
+      note: "Expires in 24h",
+    },
     faqHeading: "FAQ",
     faqs: [
       {
@@ -231,6 +237,12 @@ export const HOME: Record<Locale, HomeCopy> = {
       { name: "Copia el enlace", detail: "Corto y listo para mandar" },
       { name: "Compártelo", detail: "WhatsApp, email, ticket… y ya" },
     ],
+    feature: {
+      kicker: "Temporal por diseño",
+      title: "Compártelo y olvídate.",
+      body: "Cada enlace se borra solo. Las subidas gratis desaparecen 24 horas después: sin limpiar nada, sin archivo, sin restos en ningún servidor.",
+      note: "Caduca en 24 h",
+    },
     faqHeading: "Preguntas frecuentes",
     faqs: [
       {
@@ -275,6 +287,12 @@ export const HOME: Record<Locale, HomeCopy> = {
       { name: "Copia o link", detail: "Curto e pronto pra mandar" },
       { name: "Compartilha", detail: "WhatsApp, e-mail, ticket… acabou" },
     ],
+    feature: {
+      kicker: "Temporário por padrão",
+      title: "Compartilhe e esqueça.",
+      body: "Todo link se apaga sozinho. Os envios gratuitos somem 24 horas depois: sem faxina, sem arquivo, sem nada parado num servidor.",
+      note: "Expira em 24 h",
+    },
     faqHeading: "Perguntas frequentes",
     faqs: [
       {
@@ -319,6 +337,12 @@ export const HOME: Record<Locale, HomeCopy> = {
       { name: "Link kopieren", detail: "Kurz und sofort verschickbar" },
       { name: "Weitergeben", detail: "Chat, Mail, Ticket — fertig" },
     ],
+    feature: {
+      kicker: "Von Haus aus temporär",
+      title: "Teilen und vergessen.",
+      body: "Jeder Link löscht sich selbst. Kostenlose Uploads sind nach 24 Stunden weg — kein Aufräumen, kein Archiv, nichts, das auf einem Server liegen bleibt.",
+      note: "Läuft in 24 Std. ab",
+    },
     faqHeading: "Häufige Fragen",
     faqs: [
       {
