@@ -24,6 +24,8 @@ import {
 import {
   hashImagePassword,
   imageHasPassword,
+  isStoredScryptV1,
+  PASSWORD_KDF,
   PASSWORD_MIN_LENGTH,
 } from "../lib/image-password";
 import { clientIp, hashIp } from "../lib/ip";
@@ -251,8 +253,9 @@ accountRoutes.post("/api/account/upload-intent", async (c) => {
   await c.env.DB.prepare(
     `INSERT INTO upload_intents
       (id, user_id, expiry_seconds, max_bytes, created_at, expires_at,
-       password_hash, password_salt, password_kdf, password_iterations)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       password_hash, password_salt, password_kdf, password_iterations,
+       password_cost, password_block_size, password_parallelization)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
   )
     .bind(
       id,
@@ -274,7 +277,10 @@ accountRoutes.post("/api/account/upload-intent", async (c) => {
           )
         : null,
       hashed?.kdf ?? null,
-      hashed?.iterations ?? null,
+      null,
+      hashed?.cost ?? null,
+      hashed?.blockSize ?? null,
+      hashed?.parallelization ?? null,
     )
     .run();
 
@@ -293,7 +299,8 @@ accountRoutes.post("/api/account/upload/:intent", async (c) => {
   const intentId = c.req.param("intent");
   const now = Math.floor(Date.now() / 1000);
   const intent = await c.env.DB.prepare(
-    `SELECT expiry_seconds, max_bytes, password_hash, password_salt, password_kdf, password_iterations
+    `SELECT expiry_seconds, max_bytes, password_hash, password_salt, password_kdf,
+            password_cost, password_block_size, password_parallelization
      FROM upload_intents
      WHERE id = ? AND user_id = ? AND used_at IS NULL AND expires_at > ?`,
   )
@@ -304,7 +311,9 @@ accountRoutes.post("/api/account/upload/:intent", async (c) => {
       password_hash: unknown;
       password_salt: unknown;
       password_kdf: string | null;
-      password_iterations: number | null;
+      password_cost: number | null;
+      password_block_size: number | null;
+      password_parallelization: number | null;
     }>();
   if (!intent) {
     return c.json({ error: "Upload intent is invalid or expired." }, 400);
@@ -386,6 +395,12 @@ accountRoutes.post("/api/account/upload/:intent", async (c) => {
 
   const passHash = toArrayBuffer(taken.password_hash);
   const passSalt = toArrayBuffer(taken.password_salt);
+  if (passHash && passSalt && !isStoredScryptV1(taken)) {
+    return c.json(
+      { error: "This upload is no longer available. Create a new upload." },
+      400,
+    );
+  }
   const stored = await storeUploadedImage(c.env, c.executionCtx, {
     bytes,
     client,
@@ -397,12 +412,14 @@ accountRoutes.post("/api/account/upload/:intent", async (c) => {
     origin: new URL(c.req.url).origin,
     r2Class: entitlements.plan === "pro" ? "pro" : "24h",
     password:
-      passHash && passSalt && taken.password_iterations
+      passHash && passSalt && isStoredScryptV1(taken)
         ? {
             hash: new Uint8Array(passHash),
             salt: new Uint8Array(passSalt),
-            kdf: "pbkdf2-sha256",
-            iterations: taken.password_iterations,
+            kdf: PASSWORD_KDF,
+            cost: taken.password_cost as number,
+            blockSize: taken.password_block_size as number,
+            parallelization: taken.password_parallelization as number,
           }
         : null,
   });
@@ -503,7 +520,9 @@ accountRoutes.post("/api/account/images/:slug/password", async (c) => {
 
   if (!password) {
     await c.env.DB.prepare(
-      `UPDATE images SET password_hash = NULL, password_salt = NULL, password_kdf = NULL, password_iterations = NULL
+      `UPDATE images SET
+         password_hash = NULL, password_salt = NULL, password_kdf = NULL, password_iterations = NULL,
+         password_cost = NULL, password_block_size = NULL, password_parallelization = NULL
        WHERE slug = ?`,
     )
       .bind(slug)
@@ -515,7 +534,9 @@ accountRoutes.post("/api/account/images/:slug/password", async (c) => {
   try {
     const hashed = await hashImagePassword(password);
     await c.env.DB.prepare(
-      `UPDATE images SET password_hash = ?, password_salt = ?, password_kdf = ?, password_iterations = ?
+      `UPDATE images SET
+         password_hash = ?, password_salt = ?, password_kdf = ?, password_iterations = NULL,
+         password_cost = ?, password_block_size = ?, password_parallelization = ?
        WHERE slug = ?`,
     )
       .bind(
@@ -528,7 +549,9 @@ accountRoutes.post("/api/account/images/:slug/password", async (c) => {
           hashed.salt.byteOffset + hashed.salt.byteLength,
         ),
         hashed.kdf,
-        hashed.iterations,
+        hashed.cost,
+        hashed.blockSize,
+        hashed.parallelization,
         slug,
       )
       .run();

@@ -142,7 +142,10 @@ imageRoutes.post("/api/i/:slug/unlock", async (c) => {
     (await verifyImagePassword(password, {
       hash,
       salt,
-      iterations: row.password_iterations || 0,
+      kdf: row.password_kdf,
+      cost: row.password_cost,
+      blockSize: row.password_block_size,
+      parallelization: row.password_parallelization,
     }));
 
   if (!ok) {

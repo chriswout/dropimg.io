@@ -67,4 +67,7 @@ export type ImageRow = {
   password_salt?: unknown;
   password_kdf?: string | null;
   password_iterations?: number | null;
+  password_cost?: number | null;
+  password_block_size?: number | null;
+  password_parallelization?: number | null;
 };

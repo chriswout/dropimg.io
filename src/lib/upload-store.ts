@@ -187,8 +187,9 @@ export async function storeUploadedImage(
       await env.DB.prepare(
         `INSERT INTO images
           (id, slug, r2_key, mime, size, width, height, delete_token_hash, ip_hash, created_at, expires_at, user_id,
-           password_hash, password_salt, password_kdf, password_iterations)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+           password_hash, password_salt, password_kdf, password_iterations,
+           password_cost, password_block_size, password_parallelization)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       )
         .bind(
           id,
@@ -206,7 +207,10 @@ export async function storeUploadedImage(
           input.password ? input.password.hash : null,
           input.password ? input.password.salt : null,
           input.password ? input.password.kdf : null,
-          input.password ? input.password.iterations : null,
+          null,
+          input.password ? input.password.cost : null,
+          input.password ? input.password.blockSize : null,
+          input.password ? input.password.parallelization : null,
         )
         .run();
       inserted = true;

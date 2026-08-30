@@ -1,11 +1,21 @@
 import { Buffer } from "node:buffer";
-import { pbkdf2 as pbkdf2Callback } from "node:crypto";
+import { scrypt as scryptCallback } from "node:crypto";
 import { base64Url, cookieSecure, timingSafeEqualBytes } from "./auth/crypto";
 
-export const PASSWORD_KDF = "pbkdf2-sha256";
-/** OWASP PBKDF2-HMAC-SHA256 work factor. Stored on each row. */
-export const PASSWORD_ITERATIONS = 600_000;
-export const PASSWORD_KEY_LEN = 32;
+/** Versioned native scrypt. Do not reuse this label for any other KDF. */
+export const PASSWORD_KDF = "scrypt-v1";
+/** Legacy staging label. Verification must fail closed for this value. */
+export const PASSWORD_KDF_PBKDF2 = "pbkdf2-sha256";
+
+/** OWASP scrypt profile: N=2^14, r=8, p=5. */
+export const SCRYPT_N = 16384;
+export const SCRYPT_R = 8;
+export const SCRYPT_P = 5;
+export const SCRYPT_KEY_LEN = 32;
+export const SCRYPT_SALT_LEN = 16;
+/** Node scrypt maxmem; ~128 * N * r = 16 MiB for the adopted profile. */
+export const SCRYPT_MAXMEM = 32 * 1024 * 1024;
+
 export const PASSWORD_MIN_LENGTH = 8;
 export const UNLOCK_TTL_SECONDS = 60 * 60;
 
@@ -13,7 +23,18 @@ export type ImagePasswordRecord = {
   hash: Uint8Array;
   salt: Uint8Array;
   kdf: typeof PASSWORD_KDF;
-  iterations: number;
+  cost: number;
+  blockSize: number;
+  parallelization: number;
+};
+
+export type StoredImagePassword = {
+  hash: ArrayBuffer;
+  salt: ArrayBuffer;
+  kdf?: string | null;
+  cost?: number | null;
+  blockSize?: number | null;
+  parallelization?: number | null;
 };
 
 export function imageHasPassword(row: {
@@ -23,56 +44,93 @@ export function imageHasPassword(row: {
   return Boolean(row.password_hash && row.password_salt);
 }
 
+export function scryptParamsOk(N: number, r: number, p: number): boolean {
+  if (!Number.isInteger(N) || !Number.isInteger(r) || !Number.isInteger(p)) return false;
+  if (N < 2 || (N & (N - 1)) !== 0) return false;
+  if (r < 1 || r > 32 || p < 1 || p > 16) return false;
+  if (N > 1 << 16) return false;
+  return 128 * N * r <= SCRYPT_MAXMEM;
+}
+
+export function isStoredScryptV1(row: {
+  password_kdf?: string | null;
+  password_cost?: number | null;
+  password_block_size?: number | null;
+  password_parallelization?: number | null;
+}): boolean {
+  return (
+    row.password_kdf === PASSWORD_KDF &&
+    scryptParamsOk(
+      Number(row.password_cost),
+      Number(row.password_block_size),
+      Number(row.password_parallelization),
+    )
+  );
+}
+
 export async function hashImagePassword(
   password: string,
 ): Promise<ImagePasswordRecord> {
-  const salt = new Uint8Array(16);
+  const salt = new Uint8Array(SCRYPT_SALT_LEN);
   crypto.getRandomValues(salt);
-  const hash = await pbkdf2HmacSha256(
-    password,
-    salt,
-    PASSWORD_ITERATIONS,
-    PASSWORD_KEY_LEN,
-  );
+  const hash = await scryptDerive(password, salt, {
+    N: SCRYPT_N,
+    r: SCRYPT_R,
+    p: SCRYPT_P,
+    keyLen: SCRYPT_KEY_LEN,
+  });
   return {
     hash,
     salt,
     kdf: PASSWORD_KDF,
-    iterations: PASSWORD_ITERATIONS,
+    cost: SCRYPT_N,
+    blockSize: SCRYPT_R,
+    parallelization: SCRYPT_P,
   };
 }
 
 export async function verifyImagePassword(
   password: string,
-  stored: { hash: ArrayBuffer; salt: ArrayBuffer; iterations: number },
+  stored: StoredImagePassword,
 ): Promise<boolean> {
-  const iterations = stored.iterations > 0 ? stored.iterations : PASSWORD_ITERATIONS;
-  const derived = await pbkdf2HmacSha256(
-    password,
-    new Uint8Array(stored.salt),
-    iterations,
-    stored.hash.byteLength || PASSWORD_KEY_LEN,
-  );
-  return timingSafeEqualBytes(derived, stored.hash);
+  if (stored.kdf !== PASSWORD_KDF) return false;
+  const N = Number(stored.cost);
+  const r = Number(stored.blockSize);
+  const p = Number(stored.parallelization);
+  if (!scryptParamsOk(N, r, p)) return false;
+  const salt = new Uint8Array(stored.salt);
+  if (salt.byteLength < SCRYPT_SALT_LEN) return false;
+  const keyLen = stored.hash.byteLength || SCRYPT_KEY_LEN;
+  try {
+    const derived = await scryptDerive(password, salt, { N, r, p, keyLen });
+    return timingSafeEqualBytes(
+      derived.buffer.slice(derived.byteOffset, derived.byteOffset + derived.byteLength) as ArrayBuffer,
+      stored.hash,
+    );
+  } catch {
+    return false;
+  }
 }
 
 /**
- * Standard PBKDF2-HMAC-SHA256 via node:crypto (nodejs_compat).
- * Staging Worker (2026-08-29, version 62bccb6d) rejected 600_000 iterations:
- * "Pbkdf2 failed: iteration counts above 100000 are not supported (requested 600000)."
- * Do not invent a substitute KDF here.
+ * Asynchronous node:crypto scrypt. Not a JS implementation.
  */
-export function pbkdf2HmacSha256(
+export function scryptDerive(
   password: string,
   salt: Uint8Array,
-  iterations: number,
-  keyLen = PASSWORD_KEY_LEN,
+  opts: { N: number; r: number; p: number; keyLen: number },
 ): Promise<Uint8Array> {
   return new Promise((resolve, reject) => {
-    pbkdf2Callback(password, Buffer.from(salt), iterations, keyLen, "sha256", (err, key) => {
-      if (err) reject(err);
-      else resolve(new Uint8Array(key));
-    });
+    scryptCallback(
+      password,
+      Buffer.from(salt),
+      opts.keyLen,
+      { N: opts.N, r: opts.r, p: opts.p, maxmem: SCRYPT_MAXMEM },
+      (err, key) => {
+        if (err) reject(err);
+        else resolve(new Uint8Array(key));
+      },
+    );
   });
 }
 
