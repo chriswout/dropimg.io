@@ -134,7 +134,7 @@
       "vars": {
         "ENVIRONMENT": "production",
         "UGC_SHARE_ADS_ENABLED": "false",
-        "LONG_TTL_ENABLED": "false",
+        "LONG_TTL_ENABLED": "true",
         "PRO_50MB_ENABLED": "false",
         "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>",
         "BILLING_ENABLED": "false",

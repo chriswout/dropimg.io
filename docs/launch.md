@@ -12,9 +12,16 @@ Progress:
 | 3 R2 | done — three prefix rules applied and read back |
 | 4 deploy dark | done — all gates off, V1 behaviour verified live |
 | 5 billing | config complete; blocked on Paddle enabling checkouts for the account |
-| 6–9 | not started |
+| 6 first purchase | blocked on the same |
+| 7 lifecycle | done — `LONG_TTL_ENABLED=true`, brought forward past the Paddle block |
+| 8 `PRO_50MB_ENABLED` | waiting: it only affects Pro accounts, and there are none yet |
+| 9 final smoke | after billing |
 
-Deployed version: `906adcdf-3a87-4a5a-a336-0c8a7a0c6e0b`.
+Deployed version: `6b56cff8-6e50-4f6d-9e78-3fd557a64d47`.
+
+Step 7 was taken out of order deliberately. Its only prerequisite is the R2
+lifecycle from step 3, not billing, and leaving it dark would have held the
+free-tier lifecycle behind a third-party verification queue.
 
 Production before step 1, for reference: five pending migrations, a single
 blanket `o/` 2-day R2 rule, secrets limited to `ADMIN_TOKEN`, `INDEXNOW_KEY`
