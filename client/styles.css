@@ -955,6 +955,22 @@ html[data-theme="dark"] .theme-icon-sun {
   box-shadow: var(--shadow-lg);
 }
 
+.utility-glyph {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin: 0 auto 1.1rem;
+  border-radius: var(--radius-md);
+  background: var(--brand-soft);
+  color: var(--brand-text);
+}
+
+.utility-glyph svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
 .utility-card h1 {
   margin: 0 0 0.6rem;
   font-size: 1.4rem;
@@ -980,6 +996,165 @@ html[data-theme="dark"] .theme-icon-sun {
   margin-top: 1.15rem !important;
   font-weight: 620;
   color: var(--text) !important;
+}
+
+/* --- Share experience (/:slug) ------------------------------------------ */
+
+/*
+ * The image is the page. Chrome stays quiet at the edges so nothing competes
+ * with it, and the frame is sized so a typical screenshot fits without scroll.
+ */
+
+.page-share,
+.page-locked {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.share-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-5);
+  padding-top: max(var(--space-3), env(safe-area-inset-top));
+  padding-left: max(var(--space-5), env(safe-area-inset-left));
+  padding-right: max(var(--space-5), env(safe-area-inset-right));
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.share-report {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: color var(--motion-micro) var(--ease);
+}
+
+.share-report:hover {
+  color: var(--text);
+}
+
+.share-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  padding: var(--space-5) var(--space-4) var(--space-6);
+  padding-left: max(var(--space-4), env(safe-area-inset-left));
+  padding-right: max(var(--space-4), env(safe-area-inset-right));
+  padding-bottom: max(var(--space-6), env(safe-area-inset-bottom));
+}
+
+.share-frame {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: min(1100px, 100%);
+}
+
+.share-frame img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: min(72vh, 72dvh);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow-lg);
+}
+
+.share-meta {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  text-align: center;
+}
+
+.share-cta {
+  width: min(100%, 20rem);
+}
+
+.page-share .ad-slot {
+  display: grid;
+  place-items: center;
+  width: min(728px, 100%);
+  min-height: 90px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+
+.share-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2) var(--space-4);
+  padding: var(--space-4);
+  padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  border-top: 1px solid var(--border-soft);
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
+
+.share-foot a {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.share-foot a:hover {
+  color: var(--text);
+}
+
+@media (max-width: 640px) {
+  .share-frame img {
+    max-height: min(64vh, 64dvh);
+  }
+
+  .share-cta {
+    width: 100%;
+  }
+}
+
+/* Password gate. No script runs here, so theme follows the OS only. */
+
+.locked-main {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: var(--space-6) var(--space-4);
+  padding-bottom: max(var(--space-6), env(safe-area-inset-bottom));
+  text-align: center;
+}
+
+.locked-card .utility-form {
+  margin-top: var(--space-5);
+  text-align: left;
+}
+
+.locked-card .utility-form .field-label {
+  margin-top: 0;
+}
+
+.locked-card .err {
+  margin: var(--space-4) 0 0;
+  color: var(--danger);
+  font-weight: 620;
+}
+
+.locked-card .btn {
+  width: 100%;
 }
 
 /*

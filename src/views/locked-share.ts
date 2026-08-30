@@ -1,5 +1,6 @@
+import { CHROME } from "../../marketing/content";
 import type { Locale } from "../../marketing/locales";
-import { DEFAULT_LOCALE } from "../../marketing/locales";
+import { DEFAULT_LOCALE, LOCALE_CONFIG } from "../../marketing/locales";
 
 type Copy = {
   title: string;
@@ -63,16 +64,17 @@ export function renderLockedSharePage(opts: {
 }): string {
   const locale = opts.locale ?? DEFAULT_LOCALE;
   const t = LOCKED_COPY[locale];
+  const chrome = CHROME[locale];
   const pageUrl = `${opts.origin}/${opts.slug}`;
   const og = `${opts.origin}/og.png`;
   const err = opts.error
     ? `<p class="err" role="alert">${esc(opts.error)}</p>`
     : "";
   return `<!DOCTYPE html>
-<html lang="${esc(locale === "pt-BR" ? "pt-BR" : locale)}">
+<html lang="${esc(LOCALE_CONFIG[locale].htmlLang)}">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>${esc(t.title)}</title>
   <meta name="robots" content="noindex, nofollow" />
   <meta property="og:title" content="${esc(t.heading)}" />
@@ -80,126 +82,55 @@ export function renderLockedSharePage(opts: {
   <meta property="og:url" content="${esc(pageUrl)}" />
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:image" content="${esc(og)}" />
+  <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
+  <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
   <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-  <style>
-    :root {
-      --bg: #07101c;
-      --surface: #0f1b2e;
-      --text: #e8eef7;
-      --muted: #8b9bb4;
-      --border: rgba(255,255,255,.12);
-      --blue: #2563eb;
-      --danger: #f87171;
-    }
-    * { box-sizing: border-box; }
-    body {
-      font-family: "Segoe UI", ui-sans-serif, system-ui, sans-serif;
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background: var(--bg);
-      color: var(--text);
-    }
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 1rem;
-      padding: 0.9rem 1.25rem;
-      padding-top: max(0.9rem, env(safe-area-inset-top));
-      padding-left: max(1.25rem, env(safe-area-inset-left));
-      padding-right: max(1.25rem, env(safe-area-inset-right));
-      border-bottom: 1px solid var(--border);
-    }
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      line-height: 0;
-      text-decoration: none;
-      border-radius: 8px;
-    }
-    .brand:focus-visible {
-      outline: 2px solid var(--blue);
-      outline-offset: 3px;
-    }
-    .brand-logo {
-      display: block;
-      height: 28px;
-      width: auto;
-      max-width: min(148px, 55vw);
-    }
-    .report {
-      color: var(--muted);
-      font-size: 0.85rem;
-      text-decoration: none;
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
-      padding: 0 0.25rem;
-    }
-    .report:hover { color: #fff; }
-    main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-      padding-left: max(1.5rem, env(safe-area-inset-left));
-      padding-right: max(1.5rem, env(safe-area-inset-right));
-      padding-bottom: max(1.5rem, env(safe-area-inset-bottom));
-    }
-    h1 { margin: 0 0 0.5rem; font-size: 1.6rem; }
-    p { color: var(--muted); }
-    form { display: flex; flex-direction: column; gap: 0.55rem; width: min(22rem, 100%); }
-    label { font-weight: 650; color: var(--text); }
-    input {
-      min-height: 44px;
-      border-radius: 11px;
-      border: 1px solid var(--border);
-      background: var(--surface);
-      color: inherit;
-      padding: 0.65rem 0.85rem;
-      font: inherit;
-    }
-    button {
-      min-height: 44px;
-      border: 0;
-      border-radius: 11px;
-      background: var(--blue);
-      color: #fff;
-      font: inherit;
-      font-weight: 650;
-      cursor: pointer;
-    }
-    .err { color: var(--danger); }
-  </style>
+  <link rel="stylesheet" href="/site.css" />
 </head>
-<body>
-  <header>
-    <a class="brand" href="/" aria-label="dropimg.io home">
+<body class="page-locked">
+  <header class="share-top">
+    <a class="brand" href="/" aria-label="${esc(chrome.brandHomeAria)}">
       <img
-        class="brand-logo"
-        src="/brand/logo-dark-32.png"
-        srcset="/brand/logo-dark-32.png 1x, /brand/logo-dark-64.png 2x"
+        class="brand-logo brand-logo-light"
+        src="/brand/logo-32.png"
+        srcset="/brand/logo-32.png 1x, /brand/logo-64.png 2x"
         width="134"
         height="32"
         alt="dropimg.io"
         decoding="async"
       />
+      <img
+        class="brand-logo brand-logo-dark"
+        src="/brand/logo-dark-32.png"
+        srcset="/brand/logo-dark-32.png 1x, /brand/logo-dark-64.png 2x"
+        width="134"
+        height="32"
+        alt=""
+        decoding="async"
+        aria-hidden="true"
+      />
     </a>
-    <a class="report" href="/abuse?slug=${esc(opts.slug)}">${esc(t.report)}</a>
+    <a class="share-report" href="/abuse?slug=${esc(opts.slug)}">${esc(t.report)}</a>
   </header>
-  <main>
-    <h1>${esc(t.heading)}</h1>
-    <p>${esc(t.hint)}</p>
-    ${err}
-    <form method="post" action="/api/i/${esc(opts.slug)}/unlock" autocomplete="current-password">
-      <label for="share-password">${esc(t.passwordLabel)}</label>
-      <input id="share-password" type="password" name="password" required minlength="8" autofocus />
-      <button type="submit">${esc(t.unlock)}</button>
-    </form>
+  <main class="locked-main">
+    <div class="utility-card locked-card">
+      <div class="utility-glyph" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+          stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="10.5" width="16" height="10.5" rx="2.5" />
+          <path d="M8 10.5V7a4 4 0 0 1 8 0v3.5" />
+          <circle cx="12" cy="15.6" r="1.1" />
+        </svg>
+      </div>
+      <h1>${esc(t.heading)}</h1>
+      <p>${esc(t.hint)}</p>
+      ${err}
+      <form class="utility-form" method="post" action="/api/i/${esc(opts.slug)}/unlock" autocomplete="current-password">
+        <label class="field-label" for="share-password">${esc(t.passwordLabel)}</label>
+        <input class="field" id="share-password" type="password" name="password" required minlength="8" autofocus />
+        <button class="btn primary btn-lg" type="submit">${esc(t.unlock)}</button>
+      </form>
+    </div>
   </main>
 </body>
 </html>`;

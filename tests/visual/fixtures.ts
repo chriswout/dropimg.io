@@ -77,6 +77,74 @@ export async function asAnonymous(page: Page) {
   });
 }
 
+/**
+ * Renders a fake app screenshot and uploads it, so share-page captures show a
+ * realistic payload instead of a 1x1 pixel. Returns the slug.
+ */
+export async function seedSharedImage(
+  page: Page,
+  request: APIRequestContext,
+): Promise<string> {
+  const shot = await renderFakeScreenshot(page);
+  const res = await request.post("/api/upload", {
+    headers: { "Content-Type": "image/png" },
+    data: shot,
+  });
+  if (!res.ok()) throw new Error(`fixture upload failed: ${res.status()}`);
+  const body = (await res.json()) as { slug?: string };
+  if (!body.slug) throw new Error("fixture upload returned no slug");
+  return body.slug;
+}
+
+/**
+ * Renders a server view function straight into the page. Used for states that
+ * would otherwise need privileged data (a Pro-owned password-protected image),
+ * so QA never needs a backdoor route to reach them.
+ */
+export async function renderServerView(page: Page, baseURL: string, html: string) {
+  const withBase = html.replace(
+    "<head>",
+    `<head><base href="${new URL(baseURL).origin}/">`,
+  );
+  await page.setContent(withBase, { waitUntil: "load" });
+}
+
+async function renderFakeScreenshot(page: Page): Promise<Buffer> {
+  const scratch = await page.context().newPage();
+  await scratch.setViewportSize({ width: 1200, height: 760 });
+  await scratch.setContent(`<!DOCTYPE html>
+<html><body style="margin:0;font:16px ui-sans-serif,system-ui,sans-serif;
+  background:#0f172a;color:#e2e8f0;height:100vh;display:grid;
+  grid-template-rows:44px 1fr">
+  <div style="display:flex;align-items:center;gap:8px;padding:0 14px;
+    background:#111c33;border-bottom:1px solid #1f2b45">
+    <span style="width:11px;height:11px;border-radius:50%;background:#ef4444"></span>
+    <span style="width:11px;height:11px;border-radius:50%;background:#f59e0b"></span>
+    <span style="width:11px;height:11px;border-radius:50%;background:#22c55e"></span>
+    <span style="margin-left:12px;color:#7f8ea8;font-size:13px">build.log</span>
+  </div>
+  <pre style="margin:0;padding:20px 24px;line-height:1.7;font:14px ui-monospace,monospace">
+<span style="color:#38bdf8">$</span> npm run build
+
+  vite v7.1.4 building for production...
+  <span style="color:#4ade80">✓</span> 148 modules transformed
+  <span style="color:#4ade80">✓</span> built in 151ms
+
+<span style="color:#38bdf8">$</span> npm test
+
+  <span style="color:#4ade80">✓</span> tests/unit/entitlements.test.ts   (9 tests)
+  <span style="color:#4ade80">✓</span> tests/unit/i18n-v2.test.ts        (3 tests)
+  <span style="color:#f87171">✗</span> tests/unit/pricing.test.ts        (1 failed)
+
+    expected 1999 to be 1990
+      at pricing.test.ts:42:18
+  </pre>
+</body></html>`);
+  const buffer = await scratch.screenshot({ type: "png" });
+  await scratch.close();
+  return buffer;
+}
+
 /** Waits for fonts, images and the account nav to settle before capturing. */
 export async function settle(page: Page) {
   await page.waitForLoadState("networkidle").catch(() => {});

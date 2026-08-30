@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Page not found — dropimg.io</title>
+    <meta name="robots" content="noindex, follow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="stylesheet" href="/site.css" />
+    <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
+    <script>
+(function(){
+  try {
+    var t = localStorage.getItem("dropimg:theme");
+    if (t !== "light" && t !== "dark") {
+      t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    document.documentElement.dataset.theme = t;
+  } catch (e) {}
+})();
+</script>
+  </head>
+  <body class="page-utility">
+    <main class="utility-card">
+      <div class="utility-glyph" aria-hidden="true">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.6-3.6" />
+        </svg>
+      </div>
+      <h1>This page doesn't exist</h1>
+      <p>The link may be mistyped, or the page has moved.</p>
+      <div class="utility-actions">
+        <a class="btn primary" href="/">Share an image</a>
+        <a class="btn ghost" href="/pro">See Pro</a>
+      </div>
+    </main>
+  </body>
+</html>

@@ -98,6 +98,7 @@ shareRoutes.get("/:slug", async (c) => {
     height: row.height,
     size: row.size,
     expiresAt: row.expires_at,
+    locale,
     adsEnabled: ugcShareAdsEnabled(c.env),
   });
 

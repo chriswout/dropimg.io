@@ -8,7 +8,7 @@ import { APP_COPY } from "../../src/views/app";
 import { LOGIN_COPY } from "../../src/views/login";
 import { LOCKED_COPY } from "../../src/views/locked-share";
 import { PRO_COPY } from "../../src/views/pro";
-import { GONE_COPY } from "../../src/views/share";
+import { GONE_COPY, SHARE_COPY } from "../../src/views/share";
 
 const REQUIRED_UI = [
   "uploadedCopied",
@@ -58,6 +58,7 @@ describe("V2 locale completeness", () => {
     assertParity("APP_COPY", APP_COPY);
     assertParity("LOCKED_COPY", LOCKED_COPY);
     assertParity("GONE_COPY", GONE_COPY);
+    assertParity("SHARE_COPY", SHARE_COPY);
   });
 
   it("has required homepage / upload keys", () => {
