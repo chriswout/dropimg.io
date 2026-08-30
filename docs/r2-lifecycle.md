@@ -42,4 +42,4 @@ Staging carries all three prefix rules and has `LONG_TTL_ENABLED=true`.
 
 Production still has the old `o/` 2-day rule and `LONG_TTL_ENABLED=false`. Before
 production can enable long TTL, its bucket needs the same three prefix rules
-applied and read back. That is a launch-phase task, not a design-phase one.
+applied and read back. That is step 3 of the [launch runbook](launch.md).
