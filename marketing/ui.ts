@@ -32,15 +32,12 @@ export type UiStrings = {
   needLongerBody: string;
   proControlsKicker: string;
   expiresLabel: string;
-  expiryHint: string;
   expiry1h: string;
   expiry24h: string;
   expiry7d: string;
   expiry30d: string;
   expiry90d: string;
   passwordLabel: string;
-  passwordOff: string;
-  passwordOn: string;
   passwordPlaceholder: string;
   networkError: string;
   uploadAborted: string;
@@ -89,15 +86,12 @@ const en: UiStrings = {
   needLongerBody: "Keep links up to 90 days with Pro — $2.99/month.",
   proControlsKicker: "PRO",
   expiresLabel: "Expires",
-  expiryHint: "Choose how long the link lives.",
   expiry1h: "1 hour",
   expiry24h: "24 hours",
   expiry7d: "7 days",
   expiry30d: "30 days",
   expiry90d: "90 days",
   passwordLabel: "Password",
-  passwordOff: "Off",
-  passwordOn: "Protect",
   passwordPlaceholder: "Min. 8 characters",
   networkError: "Network error during upload",
   uploadAborted: "Upload aborted",
@@ -156,15 +150,12 @@ const es: UiStrings = {
   needLongerBody: "Conserva enlaces hasta 90 días con Pro — $2.99/mes.",
   proControlsKicker: "PRO",
   expiresLabel: "Caduca",
-  expiryHint: "Elige cuánto dura el enlace.",
   expiry1h: "1 hora",
   expiry24h: "24 horas",
   expiry7d: "7 días",
   expiry30d: "30 días",
   expiry90d: "90 días",
   passwordLabel: "Contraseña",
-  passwordOff: "No",
-  passwordOn: "Proteger",
   passwordPlaceholder: "Mín. 8 caracteres",
   networkError: "Error de red al subir",
   uploadAborted: "Subida cancelada",
@@ -223,15 +214,12 @@ const ptBR: UiStrings = {
   needLongerBody: "Mantenha links por até 90 dias com Pro — $2.99/mês.",
   proControlsKicker: "PRO",
   expiresLabel: "Expira",
-  expiryHint: "Escolha quanto tempo o link dura.",
   expiry1h: "1 hora",
   expiry24h: "24 horas",
   expiry7d: "7 dias",
   expiry30d: "30 dias",
   expiry90d: "90 dias",
   passwordLabel: "Senha",
-  passwordOff: "Não",
-  passwordOn: "Proteger",
   passwordPlaceholder: "Mín. 8 caracteres",
   networkError: "Erro de rede no envio",
   uploadAborted: "Envio cancelado",
@@ -290,15 +278,12 @@ const de: UiStrings = {
   needLongerBody: "Links bis 90 Tage mit Pro — $2.99/Monat.",
   proControlsKicker: "PRO",
   expiresLabel: "Läuft ab",
-  expiryHint: "Wähle, wie lange der Link lebt.",
   expiry1h: "1 Stunde",
   expiry24h: "24 Stunden",
   expiry7d: "7 Tage",
   expiry30d: "30 Tage",
   expiry90d: "90 Tage",
   passwordLabel: "Passwort",
-  passwordOff: "Aus",
-  passwordOn: "Schützen",
   passwordPlaceholder: "Mind. 8 Zeichen",
   networkError: "Netzwerkfehler beim Upload",
   uploadAborted: "Upload abgebrochen",

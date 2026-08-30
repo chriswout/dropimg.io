@@ -93,6 +93,28 @@ test.describe("public pages", () => {
     await shoot(page, `landing-light-${testInfo.project.name}`);
   });
 
+  /** The acquisition cluster the research put first, in all three locales. */
+  for (const [name, path] of [
+    ["image-to-url", "/image-to-url"],
+    ["imagen-a-url", "/es/imagen-a-url"],
+    ["imagem-para-url", "/pt-br/imagem-para-url"],
+  ] as const) {
+    test(`${name} light`, async ({ page }, testInfo) => {
+      await setTheme(page, "light");
+      await asAnonymous(page);
+      await page.goto(path);
+      await shoot(page, `intent-${name}-light-${testInfo.project.name}`);
+    });
+  }
+
+  /** German writes the longest labels, so it gets its own reference shot. */
+  test("german home light", async ({ page }, testInfo) => {
+    await setTheme(page, "light");
+    await asAnonymous(page);
+    await page.goto("/de");
+    await shoot(page, `home-de-light-${testInfo.project.name}`);
+  });
+
   test("legal light", async ({ page }, testInfo) => {
     await setTheme(page, "light");
     await page.goto("/privacy.html");

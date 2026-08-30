@@ -71,6 +71,43 @@ describe("V2 locale completeness", () => {
     }
   });
 
+  /**
+   * Guards the opposite failure from the parity check: a key that exists in
+   * every locale but still holds the English sentence. Only keys that must
+   * read as the local language are listed — brand words, prices and the
+   * German loanword "Upgrade" are deliberately shared.
+   */
+  it("translates the commercial calls to action", () => {
+    const proKeys = [
+      "getPro",
+      "signIn",
+      "manage",
+      "save",
+      "bestValue",
+      "annualHint",
+      "monthly",
+      "annual",
+    ] as const;
+    const uiKeys = ["expiry1h", "expiry24h", "expiry7d", "expiry30d", "expiry90d"] as const;
+
+    for (const locale of LOCALES) {
+      if (locale === "en") continue;
+      for (const key of proKeys) {
+        expect(PRO_COPY[locale][key], `PRO_COPY.${locale}.${key}`).not.toBe(
+          PRO_COPY.en[key],
+        );
+      }
+      for (const key of uiKeys) {
+        expect(UI[locale][key], `UI.${locale}.${key}`).not.toBe(UI.en[key]);
+      }
+      for (const [i, feature] of PRO_COPY[locale].features.entries()) {
+        expect(feature, `PRO_COPY.${locale}.features[${i}]`).not.toBe(
+          PRO_COPY.en.features[i],
+        );
+      }
+    }
+  });
+
   it("does not translate product names or file types", () => {
     const joined = LOCALES.map((locale) =>
       [

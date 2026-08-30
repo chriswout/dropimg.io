@@ -186,7 +186,7 @@ function dropOptionsHtml(ui: UiStrings): string {
               <span id="pro-password-label" class="drop-field-label">${esc(ui.passwordLabel)}</span>
               <div class="pro-password-controls">
                 <span class="drop-field-badge">${esc(ui.proControlsKicker)}</span>
-                <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password" data-off="${esc(ui.passwordOff)}" data-on="${esc(ui.passwordOn)}"></button>
+                <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password"></button>
                 <input id="pro-password" type="password" minlength="8" placeholder="${esc(ui.passwordPlaceholder)}" autocomplete="new-password" hidden />
               </div>
             </div>

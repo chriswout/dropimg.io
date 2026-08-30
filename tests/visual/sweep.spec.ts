@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import { LOCALE_COOKIE } from "../../src/lib/auth/locale-cookie";
 import { asPro, seedOwnedDrops, settle, signIn } from "./fixtures";
 
 /**
@@ -171,6 +172,12 @@ test.describe("stateful surfaces @sweep", () => {
         await page.locator("#pro-password-wrap").waitFor({ state: "visible" });
         await inspect(page, "/ (pro uploader)", width, theme);
 
+        // German writes every lifetime longer than English does, so the five
+        // Pro pills there are the worst case the expiry tray ever has to fit.
+        await page.goto("/de");
+        await page.locator("#pro-password-wrap").waitFor({ state: "visible" });
+        await inspect(page, "/de (pro uploader)", width, theme);
+
         // The password field only exists once Protect is armed.
         const protect = page.locator("#pro-password-toggle");
         if (await protect.count()) {
@@ -189,6 +196,34 @@ test.describe("stateful surfaces @sweep", () => {
         for (const path of ["/app/integrations", "/app/billing", "/app/account"]) {
           await page.goto(path);
           await inspect(page, path, width, theme);
+        }
+      });
+
+      test(`german worker pages ${theme} ${width}px`, async ({
+        page,
+        request,
+        baseURL,
+      }) => {
+        await prepare(page, theme, width);
+        await page.context().addCookies([
+          {
+            name: LOCALE_COOKIE,
+            value: "de",
+            url: baseURL!,
+          },
+        ]);
+        await page.goto("/login");
+        // Guards the cookie itself: an English render would make the rest of
+        // this sweep measure the wrong copy and pass for the wrong reason.
+        await expect(page.locator("html")).toHaveAttribute("lang", "de");
+        await inspect(page, "/login (de)", width, theme);
+
+        await signIn(page, request);
+        await seedOwnedDrops(page, baseURL!, 2);
+        for (const path of ["/de/pro", "/app", "/app/billing", "/app/account"]) {
+          await page.goto(path);
+          await expect(page.locator("html")).toHaveAttribute("lang", "de");
+          await inspect(page, `${path} (de)`, width, theme);
         }
       });
     }
