@@ -41,7 +41,11 @@ import { isValidSlug } from "../lib/slug";
 import { verifyDeleteToken } from "../lib/tokens";
 import { moveImageToProPrefix } from "../lib/upload-store";
 import type { ImageRow } from "../types";
-import { accountHtmlResponse } from "../views/account";
+import {
+  accountHtmlResponse,
+  billingHtmlResponse,
+  integrationsHtmlResponse,
+} from "../views/account";
 import { appHtmlResponse, type AppDrop } from "../views/app";
 
 type Env = {
@@ -76,14 +80,22 @@ accountRoutes.get("/api/account/me", async (c) => {
   });
 });
 
-accountRoutes.get("/account", async (c) => {
+type SettingsRenderer = (
+  props: Parameters<typeof accountHtmlResponse>[0],
+) => Response;
+
+/** Loads the session, entitlements, and subscription every settings page needs. */
+async function settingsPage(
+  c: Context<Env>,
+  render: SettingsRenderer,
+): Promise<Response> {
   const locale = resolveRequestLocale(c.req.raw);
   const session = await resolveSession(c.env.DB, c.req.header("cookie"));
   if (!session) return c.redirect("/login", 302);
 
   const entitlements = await entitlementsFor(c.env, session.id);
   const subscription = await loadSubscription(c.env.DB, session.id);
-  return accountHtmlResponse({
+  return render({
     locale,
     env: c.env,
     email: session.email,
@@ -91,7 +103,23 @@ accountRoutes.get("/account", async (c) => {
     periodEnd: subscription?.current_period_end ?? null,
     cancelAtPeriodEnd: Boolean(subscription?.cancel_at_period_end),
   });
-});
+}
+
+/*
+ * `/account` predates the /app/* structure and is hard-coded in shipped
+ * builds of the browser extension, which sends people here to mint a token.
+ * It stays a real page and renders Integrations so that flow still lands
+ * on the right screen.
+ */
+accountRoutes.get("/account", (c) => settingsPage(c, integrationsHtmlResponse));
+
+accountRoutes.get("/app/integrations", (c) =>
+  settingsPage(c, integrationsHtmlResponse),
+);
+
+accountRoutes.get("/app/billing", (c) => settingsPage(c, billingHtmlResponse));
+
+accountRoutes.get("/app/account", (c) => settingsPage(c, accountHtmlResponse));
 
 accountRoutes.get("/app", async (c) => {
   const locale = resolveRequestLocale(c.req.raw);

@@ -65,7 +65,7 @@ export type AccountProfile = {
 };
 
 export function accountUrl(origin = API_ORIGIN): string {
-  return `${origin.replace(/\/$/, "")}/account`;
+  return `${origin.replace(/\/$/, "")}/app/integrations`;
 }
 
 export function chooseExpirySeconds(

@@ -209,18 +209,28 @@ describe("Auth magic link", () => {
     expect(pro.entitlements.passwordProtection).toBe(true);
   });
 
-  it("serves /account when signed in and rejects delete without a session", async () => {
+  it("serves the settings pages when signed in and rejects delete without a session", async () => {
     const started = await startLogin("settings@example.com");
     const cb = await worker.fetch(started.devMagicUrl!, { redirect: "manual" });
     const cookie = cookieFrom(cb);
 
-    const anon = await worker.fetch("https://dropimg.io/account", {
-      redirect: "manual",
-    });
-    expect(anon.status).toBe(302);
-    expect(anon.headers.get("Location")).toBe("/login");
+    for (const path of ["/account", "/app/integrations", "/app/billing", "/app/account"]) {
+      const anon = await worker.fetch(`https://dropimg.io${path}`, {
+        redirect: "manual",
+      });
+      expect(anon.status, path).toBe(302);
+      expect(anon.headers.get("Location"), path).toBe("/login");
+    }
 
-    const page = await worker.fetch("https://dropimg.io/account", {
+    // /account is hard-coded in shipped extension builds; it must stay a real
+    // page and land on the screen that mints a token.
+    const compat = await worker.fetch("https://dropimg.io/account", {
+      headers: { Cookie: cookie },
+    });
+    expect(compat.status).toBe(200);
+    expect(await compat.text()).toContain("Connect extension");
+
+    const page = await worker.fetch("https://dropimg.io/app/account", {
       headers: { Cookie: cookie },
     });
     expect(page.status).toBe(200);

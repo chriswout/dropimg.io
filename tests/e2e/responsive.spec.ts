@@ -39,10 +39,12 @@ test("signed-in app and account fit 390px", async ({ page, request }) => {
   await page.goto(
     new URL(body.devMagicUrl!).pathname + new URL(body.devMagicUrl!).search,
   );
-  await page.goto("/app");
-  await expect(page.locator("h1")).toContainText(/my drops/i);
-  await assertNoHorizontalOverflow(page);
-  await page.goto("/account");
+  for (const path of ["/app", "/app/integrations", "/app/billing"]) {
+    await page.goto(path);
+    await expect(page.locator("h1")).toBeVisible();
+    await assertNoHorizontalOverflow(page);
+  }
+  await page.goto("/app/account");
   await expect(page.getByRole("heading", { name: "Account" }).first()).toBeVisible();
   await expect(page.getByRole("heading", { name: "Danger zone" })).toBeVisible();
   await page.locator("#account-delete").click();

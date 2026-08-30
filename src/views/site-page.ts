@@ -18,6 +18,8 @@ export function renderSitePage(opts: {
   extraBody?: string;
   extraHead?: string;
   robots?: "index" | "noindex";
+  bodyClass?: string;
+  mainClass?: string;
 }): string {
   const chrome = chromeFor(opts.locale);
   const cfg = LOCALE_CONFIG[opts.locale];
@@ -42,7 +44,7 @@ export function renderSitePage(opts: {
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     ${assets.head}
   </head>
-  <body>
+  <body${opts.bodyClass ? ` class="${esc(opts.bodyClass)}"` : ""}>
     <a class="skip-link" href="#account-main">${esc(opts.skipLabel)}</a>
     <div class="page">
 ${topBarHtml({
@@ -50,7 +52,7 @@ ${topBarHtml({
   chrome,
   langHref,
 })}
-      <main id="account-main" class="account-main">
+      <main id="account-main" class="account-main${opts.mainClass ? ` ${esc(opts.mainClass)}` : ""}">
         ${opts.main}
       </main>
 ${footerHtml(opts.locale, chrome)}

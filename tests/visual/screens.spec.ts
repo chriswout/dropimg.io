@@ -5,9 +5,11 @@ import {
   asAnonymous,
   asPro,
   renderServerView,
+  seedOwnedDrops,
   seedSharedImage,
   setTheme,
   shoot,
+  signIn,
   type Theme,
 } from "./fixtures";
 
@@ -103,5 +105,45 @@ test.describe("share experience", () => {
     await setTheme(page, "light");
     await page.goto("/404.html");
     await shoot(page, `notfound-light-${testInfo.project.name}`);
+  });
+});
+
+test.describe("signed-in app", () => {
+  for (const theme of THEMES) {
+    test(`my drops ${theme}`, async ({ page, request, baseURL }, testInfo) => {
+      await setTheme(page, theme);
+      await signIn(page, request);
+      await seedOwnedDrops(page, baseURL!, 3);
+      await page.goto("/app");
+      await shoot(page, `app-drops-${theme}-${testInfo.project.name}`);
+    });
+  }
+
+  test("my drops empty light", async ({ page, request }, testInfo) => {
+    await setTheme(page, "light");
+    await signIn(page, request);
+    await page.goto("/app");
+    await shoot(page, `app-drops-empty-light-${testInfo.project.name}`);
+  });
+
+  test("integrations light", async ({ page, request }, testInfo) => {
+    await setTheme(page, "light");
+    await signIn(page, request);
+    await page.goto("/app/integrations");
+    await shoot(page, `app-integrations-light-${testInfo.project.name}`);
+  });
+
+  test("billing light", async ({ page, request }, testInfo) => {
+    await setTheme(page, "light");
+    await signIn(page, request);
+    await page.goto("/app/billing");
+    await shoot(page, `app-billing-light-${testInfo.project.name}`);
+  });
+
+  test("account dark", async ({ page, request }, testInfo) => {
+    await setTheme(page, "dark");
+    await signIn(page, request);
+    await page.goto("/app/account");
+    await shoot(page, `app-account-dark-${testInfo.project.name}`);
   });
 });

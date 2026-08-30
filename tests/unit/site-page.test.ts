@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { renderAccountPage } from "../../src/views/account";
+import {
+  renderAccountPage,
+  renderBillingPage,
+  renderIntegrationsPage,
+} from "../../src/views/account";
 import { renderAppPage } from "../../src/views/app";
 import { renderLoginPage } from "../../src/views/login";
 import { renderProPage } from "../../src/views/pro";
@@ -28,25 +32,38 @@ describe("Account pages share site chrome", () => {
     expect(html).toContain("Upgrade");
     expect(html).toContain("Pro · $1.99");
     expect(html).toContain("Edit account");
-    expect(html).toContain('href="/account"');
+    expect(html).toContain('href="/app/account"');
   });
 
-  it("account page lists email, plan, and delete", () => {
-    const html = renderAccountPage({
+  it("splits settings into account, billing, and integrations sections", () => {
+    const props = {
       locale: "en",
       env: { ENVIRONMENT: "staging" },
       email: "user@example.com",
       plan: "pro",
       periodEnd: 1_790_721_044,
       cancelAtPeriodEnd: false,
-    });
-    expect(html).toContain("user@example.com");
-    expect(html).toContain("Manage billing");
-    expect(html).toContain("Delete account");
-    expect(html).toContain("/api/account/delete");
-    expect(html).toContain("Integrations");
-    expect(html).toContain("Connect extension");
-    expect(html).toContain("Create ShareX config");
+    } as const;
+
+    const account = renderAccountPage(props);
+    expect(account).toContain("user@example.com");
+    expect(account).toContain("Delete account");
+    expect(account).toContain("/api/account/delete");
+
+    const billing = renderBillingPage(props);
+    expect(billing).toContain("Manage billing");
+    expect(billing).toContain("/api/billing/portal");
+
+    const integrations = renderIntegrationsPage(props);
+    expect(integrations).toContain("Connect extension");
+    expect(integrations).toContain("Create ShareX config");
+    expect(integrations).toContain('id="revoke-modal"');
+
+    // Every section renders the same shell nav.
+    for (const html of [account, billing, integrations]) {
+      expect(html).toContain('class="app-nav"');
+      expect(html).toContain('href="/app/integrations"');
+    }
   });
 
   it("pro page shows plans when not subscribed and a member hero when Pro", async () => {
@@ -138,7 +155,6 @@ describe("Account pages share site chrome", () => {
     expect(html).toContain("sign you out everywhere");
     expect(html).toContain("This cannot be undone.");
     expect(html).toContain('id="delete-modal"');
-    expect(html).toContain('id="revoke-modal"');
   });
 
   it("Free My drops shows an upgrade path and empty-state upload", () => {

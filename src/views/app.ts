@@ -1,5 +1,6 @@
 import type { Locale } from "../../marketing/locales";
-import { renderSitePage, siteHtmlResponse } from "./site-page";
+import { renderAppShellPage } from "./app-shell";
+import { siteHtmlResponse } from "./site-page";
 
 export type AppDrop = {
   slug: string;
@@ -232,7 +233,14 @@ export function renderAppPage(opts: {
   const rows =
     opts.drops.length === 0
       ? `<div class="drops-empty">
-          <p>${esc(t.empty)}</p>
+          <div class="drops-empty-glyph" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 15.5V4.2" /><path d="m7.8 8.4 4.2-4.2 4.2 4.2" />
+              <path d="M4 15v3.4A1.6 1.6 0 0 0 5.6 20h12.8a1.6 1.6 0 0 0 1.6-1.6V15" />
+            </svg>
+          </div>
+          <p class="drops-empty-title">${esc(t.empty)}</p>
           <p>${esc(t.emptyHint)}</p>
           <a class="btn primary" href="/">${esc(t.uploadCta)}</a>
         </div>`
@@ -285,20 +293,15 @@ export function renderAppPage(opts: {
         <button type="button" class="drops-view-btn" data-view="list" aria-pressed="true">${esc(t.list)}</button>
       </div>`;
 
-  const upgrade =
-    !isPro
-      ? `<p class="drops-upgrade"><a href="/pro">${esc(t.upgrade)}</a></p>`
-      : "";
+  // The empty state carries its own upload CTA, so the header one would double up.
+  const actions = opts.drops.length
+    ? `<div class="app-head-actions">
+      ${toggle}
+      <a class="btn primary" href="/">${esc(t.uploadCta)}</a>
+    </div>`
+    : "";
 
   const main = `<section class="drops-page" data-view="list">
-    <header class="drops-head">
-      <div class="drops-head-text">
-        <h1 class="drops-title">${esc(t.heading)} <span class="plan-pill">${esc(isPro ? "PRO" : "Free")}</span></h1>
-        <p class="drops-sub">${esc(notes)}</p>
-        ${upgrade}
-      </div>
-      ${toggle}
-    </header>
     ${rows}
     ${more}
   </section>`;
@@ -474,12 +477,14 @@ export function renderAppPage(opts: {
     })();
   </script>`;
 
-  return renderSitePage({
+  return renderAppShellPage({
     locale: opts.locale,
-    title: t.title,
     env: opts.env,
-    skipLabel: t.skip,
-    stayPath: "/app",
+    section: "drops",
+    title: t.title,
+    plan: isPro ? "pro" : "free",
+    lede: notes,
+    actions,
     main,
     extraBody,
   });

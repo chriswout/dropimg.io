@@ -52,7 +52,10 @@ test("homepage header shows Sign in, then email after magic link", async ({
 
   await page.locator(".account-summary").click();
   await expect(page.locator("#account-email-full")).toHaveText(/@example\.com$/);
-  await expect(page.locator("#account-edit")).toHaveAttribute("href", "/account");
+  await expect(page.locator("#account-edit")).toHaveAttribute(
+    "href",
+    "/app/account",
+  );
   await page.locator("#account-signout").click();
   await expect(signin).toBeVisible();
   await expect(page.locator("#account-session")).toBeHidden();

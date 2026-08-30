@@ -1,14 +1,19 @@
 import { LOCALE_CONFIG, type Locale } from "../../marketing/locales";
-import { renderSitePage, siteHtmlResponse } from "./site-page";
+import { renderAppShellPage } from "./app-shell";
+import { siteHtmlResponse } from "./site-page";
 
 type Copy = {
   title: string;
+  titleIntegrations: string;
+  titleBilling: string;
   heading: string;
   lede: string;
   sectionAccount: string;
   email: string;
   emailHint: string;
   plan: string;
+  manageHint: string;
+  freePlanHint: string;
   planFree: string;
   planPro: string;
   renews: (date: string) => string;
@@ -65,12 +70,16 @@ type Copy = {
 export const ACCOUNT_COPY: Record<Locale, Copy> = {
   en: {
     title: "Account — dropimg.io",
+    titleIntegrations: "Integrations — dropimg.io",
+    titleBilling: "Billing — dropimg.io",
     heading: "Account",
     lede: "Email, plan, and tools for this sign-in.",
     sectionAccount: "Account",
     email: "Email",
     emailHint: "Sign-in uses a one-time link. There is no password.",
     plan: "Plan",
+    manageHint: "Update your card, download invoices, or cancel.",
+    freePlanHint: "10 MB uploads, 24-hour links, last 10 drops.",
     planFree: "Free",
     planPro: "Pro",
     renews: (date) => `Renews ${date}`,
@@ -126,12 +135,16 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
   },
   es: {
     title: "Cuenta — dropimg.io",
+    titleIntegrations: "Integraciones — dropimg.io",
+    titleBilling: "Facturación — dropimg.io",
     heading: "Cuenta",
     lede: "Correo, plan y herramientas de este acceso.",
     sectionAccount: "Cuenta",
     email: "Correo",
     emailHint: "Entras con un enlace de un solo uso. No hay contraseña.",
     plan: "Plan",
+    manageHint: "Cambia la tarjeta, descarga facturas o cancela.",
+    freePlanHint: "Subidas de 10 MB, enlaces de 24 h, últimos 10 envíos.",
     planFree: "Gratis",
     planPro: "Pro",
     renews: (date) => `Se renueva el ${date}`,
@@ -187,12 +200,16 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
   },
   "pt-BR": {
     title: "Conta — dropimg.io",
+    titleIntegrations: "Integrações — dropimg.io",
+    titleBilling: "Cobrança — dropimg.io",
     heading: "Conta",
     lede: "E-mail, plano e ferramentas deste login.",
     sectionAccount: "Conta",
     email: "E-mail",
     emailHint: "Você entra com um link de uso único. Não tem senha.",
     plan: "Plano",
+    manageHint: "Troque o cartão, baixe faturas ou cancele.",
+    freePlanHint: "Envios de 10 MB, links de 24 h, últimos 10 envios.",
     planFree: "Grátis",
     planPro: "Pro",
     renews: (date) => `Renova em ${date}`,
@@ -248,12 +265,16 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
   },
   de: {
     title: "Konto — dropimg.io",
+    titleIntegrations: "Integrationen — dropimg.io",
+    titleBilling: "Abrechnung — dropimg.io",
     heading: "Konto",
     lede: "E-Mail, Plan und Tools für diese Anmeldung.",
     sectionAccount: "Konto",
     email: "E-Mail",
     emailHint: "Anmeldung per Einmal-Link. Kein Passwort.",
     plan: "Plan",
+    manageHint: "Karte ändern, Rechnungen laden oder kündigen.",
+    freePlanHint: "10 MB pro Upload, 24-Stunden-Links, letzte 10 Drops.",
     planFree: "Kostenlos",
     planPro: "Pro",
     renews: (date) => `Verlängert sich am ${date}`,
@@ -310,14 +331,17 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
   },
 };
 
-export function renderAccountPage(opts: {
+type SettingsProps = {
   locale: Locale;
   env: { ENVIRONMENT?: string };
   email: string;
   plan: "free" | "pro";
   periodEnd: number | null;
   cancelAtPeriodEnd: boolean;
-}): string {
+};
+
+/** Plan state and the Paddle portal hand-off. */
+export function renderBillingPage(opts: SettingsProps): string {
   const t = ACCOUNT_COPY[opts.locale];
   const period =
     opts.periodEnd && opts.plan === "pro"
@@ -325,16 +349,69 @@ export function renderAccountPage(opts: {
         ? t.ends(formatDay(opts.periodEnd, opts.locale))
         : t.renews(formatDay(opts.periodEnd, opts.locale))
       : "";
-  const planActions =
-    opts.plan === "pro"
-      ? `<div class="settings-actions">
-          <button type="button" class="btn secondary" id="account-portal">${esc(t.manage)}</button>
-        </div>`
-      : `<div class="settings-actions">
-          <a class="btn primary" href="/pro">${esc(t.viewPlans)}</a>
-        </div>`;
 
-  const extraBody = `<div id="token-modal" class="modal" hidden>
+  const main = `<section class="settings-card">
+      <p class="settings-eyebrow">${esc(t.plan)}</p>
+      <p class="settings-value settings-value-lg">${esc(opts.plan === "pro" ? t.planPro : t.planFree)}</p>
+      ${period ? `<p class="account-muted">${esc(period)}</p>` : ""}
+      <p class="account-muted">${esc(opts.plan === "pro" ? t.manageHint : t.freePlanHint)}</p>
+      <div class="settings-actions">
+        ${
+          opts.plan === "pro"
+            ? `<button type="button" class="btn secondary" id="account-portal">${esc(t.manage)}</button>`
+            : `<a class="btn primary" href="/pro">${esc(t.viewPlans)}</a>`
+        }
+      </div>
+    </section>`;
+
+  return renderAppShellPage({
+    locale: opts.locale,
+    env: opts.env,
+    section: "billing",
+    title: t.titleBilling,
+    plan: opts.plan,
+    main,
+    extraBody: `<script>${PORTAL_SCRIPT}</script>`,
+  });
+}
+
+/** Extension and ShareX tokens. `/account` also lands here, see routes. */
+export function renderIntegrationsPage(opts: SettingsProps): string {
+  const t = ACCOUNT_COPY[opts.locale];
+
+  const main = `<section class="settings-card">
+      <div class="integ-tools">
+        <article class="integ-tool">
+          <h2>${esc(t.extensionTitle)}</h2>
+          <p>${esc(t.extensionBody)}</p>
+          <button type="button" class="btn primary" id="integ-extension">${esc(t.connectExtension)}</button>
+        </article>
+        <article class="integ-tool">
+          <h2>${esc(t.sharexTitle)}</h2>
+          <p>${esc(t.sharexBody)}</p>
+          <button type="button" class="btn primary" id="integ-sharex">${esc(t.createSharex)}</button>
+        </article>
+      </div>
+    </section>
+    <section class="settings-card">
+      <h2>${esc(t.connectedDevices)}</h2>
+      <div id="integ-list" class="integ-list"></div>
+      <p class="account-muted">${esc(t.lostConfig)}</p>
+    </section>`;
+
+  return renderAppShellPage({
+    locale: opts.locale,
+    env: opts.env,
+    section: "integrations",
+    title: t.titleIntegrations,
+    plan: opts.plan,
+    main,
+    extraBody: integrationsExtraBody(t, opts.locale),
+  });
+}
+
+function integrationsExtraBody(t: Copy, locale: Locale): string {
+  return `<div id="token-modal" class="modal" hidden>
     <div class="dialog dialog-wide" role="dialog" aria-modal="true" aria-labelledby="token-title">
       <h2 id="token-title">${esc(t.tokenTitle)}</h2>
       <p>${esc(t.tokenBody)}</p>
@@ -360,7 +437,11 @@ export function renderAccountPage(opts: {
       </div>
     </div>
   </div>
-  <div id="delete-modal" class="modal" hidden>
+  <script>${integrationsScript(t, locale)}</script>`;
+}
+
+function dangerExtraBody(t: Copy): string {
+  return `<div id="delete-modal" class="modal" hidden>
     <div class="dialog dialog-wide" role="dialog" aria-modal="true" aria-labelledby="delete-title">
       <h2 id="delete-title">${esc(t.delete)}</h2>
       <p>${esc(t.deleteWill)}</p>
@@ -388,20 +469,9 @@ export function renderAccountPage(opts: {
       </div>
     </div>
   </div>
+  <script>${PORTAL_SCRIPT}</script>
   <script>
     (() => {
-      async function openPortal() {
-        const res = await fetch("/api/billing/portal", {
-          method: "POST",
-          credentials: "same-origin",
-          headers: { "Content-Type": "application/json" },
-        });
-        if (!res.ok) return;
-        const body = await res.json();
-        if (body.url) location.href = body.url;
-      }
-      document.getElementById("account-portal")?.addEventListener("click", () => { void openPortal(); });
-      document.getElementById("delete-fail-billing")?.addEventListener("click", () => { void openPortal(); });
       document.getElementById("account-logout-all")?.addEventListener("click", async () => {
         await fetch("/api/auth/logout-all", {
           method: "POST",
@@ -447,7 +517,13 @@ export function renderAccountPage(opts: {
           banner.textContent = ${JSON.stringify(t.deleteFailed)};
         }
       });
+    })();
+  </script>`;
+}
 
+function integrationsScript(t: Copy, locale: Locale): string {
+  return `
+    (() => {
       const labels = {
         created: ${JSON.stringify(t.created)},
         lastUsed: ${JSON.stringify(t.lastUsed)},
@@ -459,7 +535,7 @@ export function renderAccountPage(opts: {
         justNow: ${JSON.stringify(t.justNow)},
         minutesAgo: ${JSON.stringify(["1 minute ago", "{n} minutes ago"])},
         hoursAgo: ${JSON.stringify(["1 hour ago", "{n} hours ago"])},
-        locale: ${JSON.stringify(LOCALE_CONFIG[opts.locale].htmlLang)},
+        locale: ${JSON.stringify(LOCALE_CONFIG[locale].htmlLang)},
       };
       const minAgo = ${JSON.stringify({ one: t.minutesAgo(1), many: t.minutesAgo(9) })};
       const hrAgo = ${JSON.stringify({ one: t.hoursAgo(1), many: t.hoursAgo(9) })};
@@ -606,70 +682,76 @@ export function renderAccountPage(opts: {
       });
       void loadTokens();
     })();
-  </script>`;
+  `;
+}
 
-  const main = `<section class="settings-page">
-    <h1>${esc(t.heading)}</h1>
-    <p class="settings-lead">${esc(t.lede)}</p>
-    <section class="settings-card">
-      <h2>${esc(t.sectionAccount)}</h2>
-      <p class="settings-value">${esc(opts.email)}</p>
+/** Sign-in identity, session control, and account deletion. */
+export function renderAccountPage(opts: SettingsProps): string {
+  const t = ACCOUNT_COPY[opts.locale];
+
+  const main = `<section class="settings-card">
+      <p class="settings-eyebrow">${esc(t.email)}</p>
+      <p class="settings-value settings-value-lg">${esc(opts.email)}</p>
       <p class="account-muted">${esc(t.emailHint)}</p>
-    </section>
-    <section class="settings-card">
-      <h2>${esc(t.plan)}</h2>
-      <p class="settings-value">${esc(opts.plan === "pro" ? t.planPro : t.planFree)}</p>
-      ${period ? `<p class="account-muted">${esc(period)}</p>` : ""}
-      ${planActions}
-    </section>
-    <section class="settings-card">
-      <h2>${esc(t.integrations)}</h2>
-      <p class="account-muted">${esc(t.integrationsHint)}</p>
-      <div class="integ-tools">
-        <article class="integ-tool">
-          <h3>${esc(t.extensionTitle)}</h3>
-          <p>${esc(t.extensionBody)}</p>
-          <button type="button" class="btn primary" id="integ-extension">${esc(t.connectExtension)}</button>
-        </article>
-        <article class="integ-tool">
-          <h3>${esc(t.sharexTitle)}</h3>
-          <p>${esc(t.sharexBody)}</p>
-          <button type="button" class="btn primary" id="integ-sharex">${esc(t.createSharex)}</button>
-        </article>
-      </div>
-      <h3 class="integ-subhead">${esc(t.connectedDevices)}</h3>
-      <div id="integ-list" class="integ-list"></div>
-      <p class="account-muted">${esc(t.lostConfig)}</p>
     </section>
     <section class="settings-card">
       <h2>${esc(t.sectionSecurity)}</h2>
       <p class="account-muted">${esc(t.sessionsHint)}</p>
-      <button type="button" class="btn secondary" id="account-logout-all">${esc(t.signOutAll)}</button>
+      <div class="settings-actions">
+        <button type="button" class="btn secondary" id="account-logout-all">${esc(t.signOutAll)}</button>
+      </div>
     </section>
     <section class="settings-card settings-danger">
       <h2>${esc(t.sectionDanger)}</h2>
       <p class="account-muted">${esc(t.deleteHint)}</p>
       <p id="account-delete-error" class="form-error" hidden role="alert"></p>
-      <button type="button" class="btn danger" id="account-delete">${esc(t.deleteAction)}</button>
-    </section>
-  </section>`;
+      <div class="settings-actions">
+        <button type="button" class="btn danger" id="account-delete">${esc(t.deleteAction)}</button>
+      </div>
+    </section>`;
 
-  return renderSitePage({
+  return renderAppShellPage({
     locale: opts.locale,
-    title: t.title,
     env: opts.env,
-    skipLabel: t.skip,
-    stayPath: "/account",
+    section: "account",
+    title: t.title,
+    plan: opts.plan,
     main,
-    extraBody,
+    extraBody: dangerExtraBody(t),
   });
 }
 
-export function accountHtmlResponse(
-  opts: Parameters<typeof renderAccountPage>[0],
+/** Opens the Paddle-hosted portal. Shared by Billing and the delete fallback. */
+const PORTAL_SCRIPT = `
+    (() => {
+      async function openPortal() {
+        const res = await fetch("/api/billing/portal", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+        });
+        if (!res.ok) return;
+        const body = await res.json();
+        if (body.url) location.href = body.url;
+      }
+      document.getElementById("account-portal")?.addEventListener("click", () => { void openPortal(); });
+      document.getElementById("delete-fail-billing")?.addEventListener("click", () => { void openPortal(); });
+    })();
+  `;
+
+export function accountHtmlResponse(opts: SettingsProps, status = 200): Response {
+  return siteHtmlResponse(renderAccountPage(opts), status);
+}
+
+export function integrationsHtmlResponse(
+  opts: SettingsProps,
   status = 200,
 ): Response {
-  return siteHtmlResponse(renderAccountPage(opts), status);
+  return siteHtmlResponse(renderIntegrationsPage(opts), status);
+}
+
+export function billingHtmlResponse(opts: SettingsProps, status = 200): Response {
+  return siteHtmlResponse(renderBillingPage(opts), status);
 }
 
 function formatDay(unix: number, locale: Locale): string {

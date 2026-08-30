@@ -109,7 +109,7 @@ export function topBarHtml(opts: {
                   <p id="account-email-full" class="account-email-full"></p>
                   <a id="account-app-menu" class="account-menu-item account-menu-mobile" href="/app">${esc(opts.chrome.myDrops)}</a>
                   <a id="account-plan-menu" class="account-menu-item account-menu-mobile" href="${esc(proPath(opts.locale))}" hidden>${esc(opts.chrome.upgradeToPro)}</a>
-                  <a id="account-edit" class="account-menu-item" href="/account">${esc(opts.chrome.editAccount)}</a>
+                  <a id="account-edit" class="account-menu-item" href="/app/account">${esc(opts.chrome.editAccount)}</a>
                   <button id="account-signout" type="button" class="account-menu-item">${esc(opts.chrome.signOut)}</button>
                 </div>
               </details>

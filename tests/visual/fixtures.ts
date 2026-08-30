@@ -26,14 +26,35 @@ export async function setTheme(page: Page, theme: Theme) {
   await page.emulateMedia({ colorScheme: theme, reducedMotion: "reduce" });
 }
 
-/** Signs in through the dev magic link so no mailbox is required. */
-export async function signIn(
-  page: Page,
-  request: APIRequestContext,
-  email = `visual-${Date.now()}@example.com`,
-) {
+/**
+ * Signs in through the dev magic link so no mailbox is required.
+ *
+ * The session is minted once per worker and replayed as cookies afterwards:
+ * magic-link requests are rate limited to 5/minute per IP, which a full
+ * screenshot run would otherwise blow through.
+ */
+/**
+ * Every signed-in screenshot gets a brand-new account, so what it captures
+ * depends only on what that test seeded.
+ *
+ * Magic links and uploads are rate limited per client IP over a rolling
+ * window. Each sign-in claims its own synthetic IP and pins it on the browser
+ * context, which keeps a full run (and repeat runs) clear of the limiter
+ * without weakening anything server-side.
+ */
+let ipCounter = 0;
+
+export async function signIn(page: Page, request: APIRequestContext) {
+  const ip = `203.0.113.${(ipCounter++ % 250) + 2}`;
+  const email = `visual-${Date.now()}-${ipCounter}@example.com`;
+  await page.context().setExtraHTTPHeaders({ "CF-Connecting-IP": ip });
+
   const started = await request.post("/login", {
-    headers: { Accept: "application/json", "Content-Type": "application/json" },
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      "CF-Connecting-IP": ip,
+    },
     data: { email },
   });
   if (!started.ok()) throw new Error(`dev login failed: ${started.status()}`);
@@ -94,6 +115,32 @@ export async function seedSharedImage(
   const body = (await res.json()) as { slug?: string };
   if (!body.slug) throw new Error("fixture upload returned no slug");
   return body.slug;
+}
+
+/**
+ * Uploads screenshots owned by the currently signed-in session, so My drops
+ * has rows. Uses `page.request` because that shares the page's session cookie.
+ */
+export async function seedOwnedDrops(
+  page: Page,
+  baseURL: string,
+  count: number,
+) {
+  const shot = await renderFakeScreenshot(page);
+  const origin = new URL(baseURL).origin;
+  for (let i = 0; i < count; i++) {
+    const intent = await page.request.post("/api/account/upload-intent", {
+      headers: { "Content-Type": "application/json", Origin: origin },
+      data: { expiry: 86400 },
+    });
+    if (!intent.ok()) throw new Error(`intent failed: ${intent.status()}`);
+    const { uploadUrl } = (await intent.json()) as { uploadUrl: string };
+    const up = await page.request.post(uploadUrl, {
+      headers: { "Content-Type": "image/png", Origin: origin },
+      data: shot,
+    });
+    if (!up.ok()) throw new Error(`owned upload failed: ${up.status()}`);
+  }
 }
 
 /**
