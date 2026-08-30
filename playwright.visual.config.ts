@@ -15,7 +15,9 @@ const baseURL = process.env.E2E_BASE_URL || `http://127.0.0.1:${port}`;
 
 export default defineConfig({
   testDir: "tests/visual",
-  outputDir: "tests/visual/.output",
+  // Playwright wipes `outputDir` at the start of every run, so the captures
+  // live in a sibling directory under the same ignored parent.
+  outputDir: "tests/visual/.output/playwright",
   timeout: 90_000,
   fullyParallel: false,
   workers: 1,
