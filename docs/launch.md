@@ -3,31 +3,44 @@
 Return point: tag `v2-pre-production` (`2993fe3`). Every step below is either
 reversible by flipping one variable and redeploying, or is additive to data.
 
-Production today, read back on the day this was written:
+Progress:
 
-| Thing | State |
-|-------|-------|
-| D1 `dropimg` | 5 migrations pending (`0003`–`0007`) |
-| R2 `dropimg-images` | one blanket rule, `o/` expire after 2 days |
-| Secrets | `ADMIN_TOKEN`, `INDEXNOW_KEY`, `IP_HASH_SECRET` |
-| Paddle config | none — no `PADDLE_*` var or secret exists on `env.production` |
-| Gates | `BILLING_ENABLED`, `LONG_TTL_ENABLED`, `PRO_50MB_ENABLED`, `UGC_SHARE_ADS_ENABLED` all false |
+| Step | State |
+|------|-------|
+| 1 snapshot | done — `.backup/prod-20260830-1116.sql`, 2 tables, 21 rows |
+| 2 migrate | done — `0003`–`0007` applied, none pending |
+| 3 R2 | done — three prefix rules applied and read back |
+| 4 deploy dark | done — version `b5238ca0-1df8-41fb-98e8-203d6b42181c`, all gates off |
+| 5 billing | blocked on the live Paddle catalog |
+| 6–9 | not started |
 
-## Before step 1: the Paddle live account
+Production before step 1, for reference: five pending migrations, a single
+blanket `o/` 2-day R2 rule, secrets limited to `ADMIN_TOKEN`, `INDEXNOW_KEY`
+and `IP_HASH_SECRET`, and no `PADDLE_*` var or secret of any kind.
 
-This is the only prerequisite that cannot be done from this repo, and steps 5
-onward are blocked on it. In the **live** Paddle dashboard:
+## The Paddle live account
 
-1. Create the DropIMG Pro product and two prices: `$2.99` monthly, `$24.99`
-   annual. Live prices are separate objects from the sandbox ones; their IDs go
-   into `env.production.vars`.
+The live account is empty: no products, prices, client tokens or checkout
+domains. The live MCP connection is authorized read-only, so creating the
+catalog through it needs write permission granted first, under
+**Paddle > Connectors > MCP** (`https://vendors.paddle.com/mcps`). With that
+granted, the product, prices, client token and webhook destination can all be
+created through the MCP; the rest of this list stays manual.
+
+In the **live** Paddle dashboard:
+
+1. Create the DropIMG Pro product (`saas`) and two prices: `$2.99` monthly,
+   `$24.99` annual. Live prices are separate objects from the sandbox ones;
+   their IDs go into `env.production.vars`.
 2. Set the default payment link to `https://dropimg.io/pro`. Without it,
    checkout 400s with `transaction_default_checkout_url_not_set`, and it cannot
    be set through the API.
 3. Approve `dropimg.io` as a checkout domain.
 4. Add the webhook destination `https://dropimg.io/api/billing/paddle/webhook`
-   and keep its signing secret.
-5. Generate a live API key and note the live client-side token.
+   subscribed to `subscription.*` and `transaction.completed`, and keep its
+   signing secret.
+5. Generate a live API key — the only item with no API of its own — and a live
+   client-side token.
 
 ## Step 1 — snapshot
 
