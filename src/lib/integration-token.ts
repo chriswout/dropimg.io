@@ -84,7 +84,7 @@ export function buildSharexConfig(origin: string, token: string): Record<string,
       "X-Dropimg-Client": "sharex",
     },
     Arguments: {
-      expiry: "24h",
+      expiry: "7d",
     },
     URL: "{json:url}",
     ThumbnailURL: "{json:imageUrl}",
