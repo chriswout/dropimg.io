@@ -359,6 +359,13 @@ async function storeOwnedBytes(
     password: input.password,
   });
   if (!stored.ok) return uploadFailResponse(stored);
+  if (input.password) {
+    track(c.env.ANALYTICS, "password_protection_used", {
+      client: input.client,
+      plan: input.entitlements.plan,
+      pageIntent: input.pageIntent,
+    });
+  }
   return c.json(stored.body, 201);
 }
 

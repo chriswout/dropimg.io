@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { track } from "../lib/analytics";
 import { csrfOriginOk } from "../lib/auth/csrf";
+import { resolveRequestLocale } from "../lib/auth/locale-cookie";
 import { resolveSession } from "../lib/auth/session";
 import { toArrayBuffer } from "../lib/d1-blob";
 import { imageResponseHeaders, lockedShareCsp, securityHeaders } from "../lib/headers";
@@ -16,7 +17,7 @@ import { clientIp, hashIp } from "../lib/ip";
 import { resolveIpHashSecret } from "../lib/secrets";
 import { isValidSlug } from "../lib/slug";
 import type { AllowedMime, ImageRow } from "../types";
-import { renderLockedSharePage } from "../views/locked-share";
+import { LOCKED_COPY, renderLockedSharePage } from "../views/locked-share";
 
 type Env = {
   Bindings: Cloudflare.Env;
@@ -78,6 +79,8 @@ imageRoutes.get("/i/:slug", async (c) => {
 imageRoutes.post("/api/i/:slug/unlock", async (c) => {
   const slug = c.req.param("slug");
   const origin = new URL(c.req.url).origin;
+  const locale = resolveRequestLocale(c.req.raw);
+  const locked = LOCKED_COPY[locale];
   const lockedHeaders = securityHeaders({
     "Content-Type": "text/html; charset=utf-8",
     "Content-Security-Policy": lockedShareCsp(),
@@ -104,7 +107,8 @@ imageRoutes.post("/api/i/:slug/unlock", async (c) => {
         renderLockedSharePage({
           slug,
           origin,
-          error: "Try again shortly.",
+          locale,
+          error: locked.tryAgain,
         }),
         { status: 429, headers: lockedHeaders },
       );
@@ -151,12 +155,13 @@ imageRoutes.post("/api/i/:slug/unlock", async (c) => {
   if (!ok) {
     track(c.env.ANALYTICS, "unlock_fail", { slug });
     const wantsJson = ct.includes("application/json");
-    if (wantsJson) return c.json({ error: "Wrong password." }, 401);
+    if (wantsJson) return c.json({ error: locked.wrong }, 401);
     return new Response(
       renderLockedSharePage({
         slug,
         origin,
-        error: "Wrong password.",
+        locale,
+        error: locked.wrong,
       }),
       { status: 401, headers: lockedHeaders },
     );

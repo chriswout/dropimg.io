@@ -14,6 +14,7 @@ export function renderSitePage(opts: {
   main: string;
   skipLabel: string;
   stayPath: string;
+  langHref?: (loc: Locale) => string;
   extraBody?: string;
   extraHead?: string;
   robots?: "index" | "noindex";
@@ -23,6 +24,7 @@ export function renderSitePage(opts: {
   const assets = clientAssetTags(opts.env);
   const robots =
     opts.robots === "index" ? "index, follow" : "noindex, nofollow";
+  const langHref = opts.langHref ?? ((_loc: Locale) => opts.stayPath);
 
   return `<!DOCTYPE html>
 <html lang="${esc(cfg.htmlLang)}" data-locale="${esc(opts.locale)}">
@@ -46,7 +48,7 @@ export function renderSitePage(opts: {
 ${topBarHtml({
   locale: opts.locale,
   chrome,
-  langHref: () => opts.stayPath,
+  langHref,
 })}
       <main id="account-main" class="account-main">
         ${opts.main}

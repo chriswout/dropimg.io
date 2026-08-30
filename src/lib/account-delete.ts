@@ -35,7 +35,8 @@ export async function deleteUserAccount(
       return {
         ok: false,
         status: 409,
-        error: "Could not cancel Pro billing. Try Manage billing first.",
+        error:
+          "We couldn't cancel your Pro subscription, so your DropIMG account was not deleted.",
       };
     }
     const canceled = await cancelPaddleSubscriptionImmediately(env, subscriptionId);
@@ -43,7 +44,8 @@ export async function deleteUserAccount(
       return {
         ok: false,
         status: canceled.error === "paddle_unconfigured" ? 409 : 502,
-        error: "Could not cancel Pro billing. Your account was not deleted.",
+        error:
+          "We couldn't cancel your Pro subscription, so your DropIMG account was not deleted.",
       };
     }
     await env.DB.prepare(

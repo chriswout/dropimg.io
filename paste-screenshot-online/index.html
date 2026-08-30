@@ -70,12 +70,13 @@
         </a>
         <div class="header-actions">
           <nav id="account-nav" class="account-nav" aria-label="Account">
+            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/pro">Pro · $1.99</a>
             <a id="account-signin" class="account-chip" href="/login">Sign in</a>
             <div id="account-session" class="account-session" hidden>
               <a id="account-app" class="account-nav-link" href="/app">My drops</a>
               <a id="account-plan" class="account-plan" href="/pro" hidden
                 data-label-pro="Pro"
-                data-label-upgrade="Upgrade to Pro"></a>
+                data-label-upgrade="Upgrade"></a>
               <details class="account-menu">
                 <summary class="account-chip account-summary">
                   <span id="account-plan-badge" class="account-plan-badge" hidden>Pro</span>
@@ -83,6 +84,8 @@
                 </summary>
                 <div class="account-menu-panel">
                   <p id="account-email-full" class="account-email-full"></p>
+                  <a id="account-app-menu" class="account-menu-item account-menu-mobile" href="/app">My drops</a>
+                  <a id="account-plan-menu" class="account-menu-item account-menu-mobile" href="/pro" hidden>Upgrade</a>
                   <a id="account-edit" class="account-menu-item" href="/account">Edit account</a>
                   <button id="account-signout" type="button" class="account-menu-item">Sign out</button>
                 </div>
@@ -221,6 +224,7 @@
                 <button id="btn-copy" type="button" class="btn primary">Copy</button>
               </div>
               <p id="expires-label" class="dz-hint"></p>
+              <p id="protect-label" class="dz-hint" hidden>Password protected</p>
               <div class="actions">
                 <a id="btn-open" class="btn secondary" href="#" target="_blank" rel="noopener"
                   >Open</a
@@ -231,7 +235,12 @@
                 <button id="btn-another" type="button" class="btn secondary">
                   Upload another
                 </button>
+                <a id="btn-manage" class="btn secondary" href="/app" hidden>Manage in My drops</a>
               </div>
+              <p id="success-upsell" class="success-upsell" hidden>
+                <strong>Need it longer?</strong>
+                Keep links up to 30 days with Pro — $1.99/month.
+              </p>
             </div>
 
             <div id="state-error" class="state hidden">
@@ -241,10 +250,11 @@
             </div>
           </section>
           <div id="pro-options" class="pro-options" hidden>
+            <p class="pro-options-kicker">PRO</p>
             <div class="pro-field">
               <span id="pro-expiry-label">Expires</span>
               <div id="pro-expiry" class="expiry-pills" role="radiogroup" aria-labelledby="pro-expiry-label" data-value="86400">
-                <button type="button" class="expiry-pill" role="radio" aria-checked="true" data-expiry="86400">24h</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="true" data-expiry="86400">24 hours</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="604800">7 days</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="2592000">30 days</button>
               </div>
@@ -252,7 +262,7 @@
             <div class="pro-field" id="pro-password-wrap">
               <span id="pro-password-label">Password</span>
               <div class="pro-password-controls">
-                <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password"></button>
+                <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password" data-off="Off" data-on="Protect"></button>
                 <input id="pro-password" type="password" minlength="8" placeholder="Min. 8 characters" autocomplete="new-password" hidden />
               </div>
             </div>

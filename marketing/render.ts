@@ -147,6 +147,7 @@ function dropzoneHtml(locale: Locale, dropzoneAria: string): string {
                 <button id="btn-copy" type="button" class="btn primary">${esc(ui.copy)}</button>
               </div>
               <p id="expires-label" class="dz-hint"></p>
+              <p id="protect-label" class="dz-hint" hidden>${esc(ui.passwordProtected)}</p>
               <div class="actions">
                 <a id="btn-open" class="btn secondary" href="#" target="_blank" rel="noopener"
                   >${esc(ui.open)}</a
@@ -157,7 +158,12 @@ function dropzoneHtml(locale: Locale, dropzoneAria: string): string {
                 <button id="btn-another" type="button" class="btn secondary">
                   ${esc(ui.uploadAnother)}
                 </button>
+                <a id="btn-manage" class="btn secondary" href="/app" hidden>${esc(ui.manageInDrops)}</a>
               </div>
+              <p id="success-upsell" class="success-upsell" hidden>
+                <strong>${esc(ui.needLongerTitle)}</strong>
+                ${esc(ui.needLongerBody)}
+              </p>
             </div>
 
             <div id="state-error" class="state hidden">
@@ -167,19 +173,20 @@ function dropzoneHtml(locale: Locale, dropzoneAria: string): string {
             </div>
           </section>
           <div id="pro-options" class="pro-options" hidden>
+            <p class="pro-options-kicker">${esc(ui.proControlsKicker)}</p>
             <div class="pro-field">
-              <span id="pro-expiry-label">Expires</span>
+              <span id="pro-expiry-label">${esc(ui.expiresLabel)}</span>
               <div id="pro-expiry" class="expiry-pills" role="radiogroup" aria-labelledby="pro-expiry-label" data-value="86400">
-                <button type="button" class="expiry-pill" role="radio" aria-checked="true" data-expiry="86400">24h</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="604800">7 days</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="2592000">30 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="true" data-expiry="86400">${esc(ui.expiry24h)}</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="604800">${esc(ui.expiry7d)}</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="2592000">${esc(ui.expiry30d)}</button>
               </div>
             </div>
             <div class="pro-field" id="pro-password-wrap">
-              <span id="pro-password-label">Password</span>
+              <span id="pro-password-label">${esc(ui.passwordLabel)}</span>
               <div class="pro-password-controls">
-                <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password"></button>
-                <input id="pro-password" type="password" minlength="8" placeholder="Min. 8 characters" autocomplete="new-password" hidden />
+                <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password" data-off="${esc(ui.passwordOff)}" data-on="${esc(ui.passwordOn)}"></button>
+                <input id="pro-password" type="password" minlength="8" placeholder="${esc(ui.passwordPlaceholder)}" autocomplete="new-password" hidden />
               </div>
             </div>
           </div>`;

@@ -1,6 +1,7 @@
 import { CHROME } from "./content";
 import { LOCALE_CONFIG, LOCALES, type Locale } from "./locales";
 import { pagePath } from "./pages";
+import { proPath } from "./pro";
 import type { SharedChrome } from "./types";
 
 export function esc(s: string): string {
@@ -91,10 +92,11 @@ export function topBarHtml(opts: {
         </a>
         <div class="header-actions">
           <nav id="account-nav" class="account-nav" aria-label="${esc(opts.chrome.accountAria)}">
+            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="${esc(proPath(opts.locale))}">${esc(opts.chrome.proPrice)}</a>
             <a id="account-signin" class="account-chip" href="/login">${esc(opts.chrome.signIn)}</a>
             <div id="account-session" class="account-session" hidden>
               <a id="account-app" class="account-nav-link" href="/app">${esc(opts.chrome.myDrops)}</a>
-              <a id="account-plan" class="account-plan" href="/pro" hidden
+              <a id="account-plan" class="account-plan" href="${esc(proPath(opts.locale))}" hidden
                 data-label-pro="${esc(opts.chrome.pro)}"
                 data-label-upgrade="${esc(opts.chrome.upgradeToPro)}"></a>
               <details class="account-menu">
@@ -104,6 +106,8 @@ export function topBarHtml(opts: {
                 </summary>
                 <div class="account-menu-panel">
                   <p id="account-email-full" class="account-email-full"></p>
+                  <a id="account-app-menu" class="account-menu-item account-menu-mobile" href="/app">${esc(opts.chrome.myDrops)}</a>
+                  <a id="account-plan-menu" class="account-menu-item account-menu-mobile" href="${esc(proPath(opts.locale))}" hidden>${esc(opts.chrome.upgradeToPro)}</a>
                   <a id="account-edit" class="account-menu-item" href="/account">${esc(opts.chrome.editAccount)}</a>
                   <button id="account-signout" type="button" class="account-menu-item">${esc(opts.chrome.signOut)}</button>
                 </div>

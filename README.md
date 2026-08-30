@@ -65,15 +65,29 @@ npx wrangler r2 bucket lifecycle add dropimg-images --name expire-o-prefix --pre
 
 ## Docs
 
+- [Auth](docs/auth.md)
+- [Accounts](docs/account.md)
+- [Pro](docs/pro.md)
+- [Paddle](docs/paddle.md)
+- [Integrations](docs/integrations.md)
 - [Browser extension](docs/extension.md)
 - [ShareX](docs/sharex.md)
-- [Moderation admin](docs/moderation.md)
+- [Moderation](docs/moderation.md)
+- [R2 lifecycle](docs/r2-lifecycle.md)
 
-## V1 scope
+## Current product
 
-- Upload via Worker (raw body), private R2, short 8-char Base58 URLs
-- 24h expiry, delete token, no accounts
-- Formats: PNG / JPEG / WebP / GIF (no SVG)
-- Rate limit: 10 uploads / 60s + 100 uploads / 500 MB per day (hashed IP)
-- Admin reports at `/admin` (cookie session from `ADMIN_TOKEN`)
-- Optional accounts: passwordless `/login`, My drops at `/app` (staging; see [docs/auth.md](docs/auth.md), [docs/account.md](docs/account.md))
+**Free / anonymous**
+
+- Paste, drop, or choose an image — no account required
+- 24-hour links, 10 MB, PNG / JPEG / WebP / GIF (no SVG)
+- Share pages are `noindex`
+
+**DropIMG Pro** ($1.99/mo or $19.99/yr)
+
+- Links up to 30 days, 50 MB when enabled, password protection, My drops history, extension + ShareX account uploads, ad-free
+- Still temporary — no permanent storage
+
+Optional passwordless accounts (`/login`, `/app`, `/account`) exist in the codebase. **Production V2 flags stay off** (`BILLING_ENABLED`, `LONG_TTL_ENABLED`, `PRO_50MB_ENABLED`). Staging has them on.
+
+ShareX authenticated uploads stay on a 10 MB multipart cap. Extension image passwords are deferred.

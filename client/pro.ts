@@ -21,6 +21,39 @@ declare global {
 let paddleReady: Promise<void> | null = null;
 let paddleInitialized = false;
 
+function root(): HTMLElement | null {
+  return document.getElementById("pro-app");
+}
+
+function copy(key: string, fallback: string): string {
+  return root()?.getAttribute(`data-${key}`) || fallback;
+}
+
+function setStatus(message: string) {
+  const status = document.getElementById("pro-status");
+  if (!status) return;
+  status.hidden = false;
+  status.textContent = message;
+}
+
+function trackClient(
+  event: string,
+  extra: { interval?: string; plan?: string } = {},
+) {
+  try {
+    const body = JSON.stringify({
+      event,
+      page_intent: "pro",
+      client: "web",
+      ...extra,
+    });
+    const blob = new Blob([body], { type: "application/json" });
+    if (navigator.sendBeacon) navigator.sendBeacon("/api/event", blob);
+  } catch {
+    // ignore
+  }
+}
+
 function loadPaddle(): Promise<void> {
   if (window.Paddle) return Promise.resolve();
   if (paddleReady) return paddleReady;
@@ -41,7 +74,8 @@ function loadPaddle(): Promise<void> {
 }
 
 async function startCheckout(interval: "monthly" | "annual") {
-  const status = document.getElementById("pro-status");
+  trackClient("pro_cta_click", { interval, plan: "free" });
+  setStatus(copy("waiting", "Opening checkout…"));
   const res = await fetch("/api/billing/checkout", {
     method: "POST",
     credentials: "same-origin",
@@ -53,10 +87,7 @@ async function startCheckout(interval: "monthly" | "annual") {
     return;
   }
   if (!res.ok) {
-    if (status) {
-      status.hidden = false;
-      status.textContent = "Checkout is unavailable right now.";
-    }
+    setStatus(copy("unavailable", "Checkout isn’t available right now. Try again shortly."));
     return;
   }
   const data = (await res.json()) as {
@@ -76,11 +107,11 @@ async function startCheckout(interval: "monthly" | "annual") {
       token: data.clientToken,
       eventCallback(event) {
         if (event.name === "checkout.completed") {
+          trackClient("checkout_completed_client", { interval, plan: "free" });
           void pollUntilPro();
         }
-        if (event.name === "checkout.error" && status) {
-          status.hidden = false;
-          status.textContent = "Checkout could not open. Check Paddle checkout settings.";
+        if (event.name === "checkout.error") {
+          setStatus(copy("open-fail", "Checkout could not open. Try again shortly."));
         }
       },
     });
@@ -95,8 +126,7 @@ async function startCheckout(interval: "monthly" | "annual") {
 }
 
 async function pollUntilPro() {
-  const status = document.getElementById("pro-status");
-  if (status) status.hidden = false;
+  setStatus(copy("activating", "Payment received. Activating Pro…"));
   for (let i = 0; i < 20; i++) {
     try {
       const res = await fetch("/api/account/me", { credentials: "same-origin" });
@@ -110,7 +140,12 @@ async function pollUntilPro() {
     }
     await new Promise((r) => setTimeout(r, 1500));
   }
-  if (status) status.textContent = "Payment received. Refresh My drops in a moment.";
+  setStatus(
+    copy(
+      "timeout",
+      "Your payment was received. Pro is still activating. Refresh My drops in a moment.",
+    ),
+  );
 }
 
 async function openPortal() {
@@ -119,15 +154,18 @@ async function openPortal() {
     credentials: "same-origin",
     headers: { "Content-Type": "application/json" },
   });
-  if (!res.ok) return;
+  if (!res.ok) {
+    setStatus(copy("unavailable", "Billing isn’t available right now."));
+    return;
+  }
   const body = (await res.json()) as { url?: string };
   if (body.url) location.href = body.url;
 }
 
 function setupProPage() {
-  const root = document.getElementById("pro-app");
-  if (!root) return;
-  root.querySelectorAll<HTMLButtonElement>("[data-interval]").forEach((btn) => {
+  const page = root();
+  if (!page) return;
+  page.querySelectorAll<HTMLButtonElement>("[data-interval]").forEach((btn) => {
     btn.addEventListener("click", () => {
       const interval = btn.getAttribute("data-interval") === "annual" ? "annual" : "monthly";
       void startCheckout(interval);

@@ -3,6 +3,31 @@
   // client/pro.ts
   var paddleReady = null;
   var paddleInitialized = false;
+  function root() {
+    return document.getElementById("pro-app");
+  }
+  function copy(key, fallback) {
+    return root()?.getAttribute(`data-${key}`) || fallback;
+  }
+  function setStatus(message) {
+    const status = document.getElementById("pro-status");
+    if (!status) return;
+    status.hidden = false;
+    status.textContent = message;
+  }
+  function trackClient(event, extra = {}) {
+    try {
+      const body = JSON.stringify({
+        event,
+        page_intent: "pro",
+        client: "web",
+        ...extra
+      });
+      const blob = new Blob([body], { type: "application/json" });
+      if (navigator.sendBeacon) navigator.sendBeacon("/api/event", blob);
+    } catch {
+    }
+  }
   function loadPaddle() {
     if (window.Paddle) return Promise.resolve();
     if (paddleReady) return paddleReady;
@@ -22,7 +47,8 @@
     return paddleReady;
   }
   async function startCheckout(interval) {
-    const status = document.getElementById("pro-status");
+    trackClient("pro_cta_click", { interval, plan: "free" });
+    setStatus(copy("waiting", "Opening checkout\u2026"));
     const res = await fetch("/api/billing/checkout", {
       method: "POST",
       credentials: "same-origin",
@@ -34,10 +60,7 @@
       return;
     }
     if (!res.ok) {
-      if (status) {
-        status.hidden = false;
-        status.textContent = "Checkout is unavailable right now.";
-      }
+      setStatus(copy("unavailable", "Checkout isn\u2019t available right now. Try again shortly."));
       return;
     }
     const data = await res.json();
@@ -51,11 +74,11 @@
         token: data.clientToken,
         eventCallback(event) {
           if (event.name === "checkout.completed") {
+            trackClient("checkout_completed_client", { interval, plan: "free" });
             void pollUntilPro();
           }
-          if (event.name === "checkout.error" && status) {
-            status.hidden = false;
-            status.textContent = "Checkout could not open. Check Paddle checkout settings.";
+          if (event.name === "checkout.error") {
+            setStatus(copy("open-fail", "Checkout could not open. Try again shortly."));
           }
         }
       });
@@ -69,8 +92,7 @@
     });
   }
   async function pollUntilPro() {
-    const status = document.getElementById("pro-status");
-    if (status) status.hidden = false;
+    setStatus(copy("activating", "Payment received. Activating Pro\u2026"));
     for (let i = 0; i < 20; i++) {
       try {
         const res = await fetch("/api/account/me", { credentials: "same-origin" });
@@ -83,7 +105,12 @@
       }
       await new Promise((r) => setTimeout(r, 1500));
     }
-    if (status) status.textContent = "Payment received. Refresh My drops in a moment.";
+    setStatus(
+      copy(
+        "timeout",
+        "Your payment was received. Pro is still activating. Refresh My drops in a moment."
+      )
+    );
   }
   async function openPortal() {
     const res = await fetch("/api/billing/portal", {
@@ -91,14 +118,17 @@
       credentials: "same-origin",
       headers: { "Content-Type": "application/json" }
     });
-    if (!res.ok) return;
+    if (!res.ok) {
+      setStatus(copy("unavailable", "Billing isn\u2019t available right now."));
+      return;
+    }
     const body = await res.json();
     if (body.url) location.href = body.url;
   }
   function setupProPage() {
-    const root = document.getElementById("pro-app");
-    if (!root) return;
-    root.querySelectorAll("[data-interval]").forEach((btn) => {
+    const page = root();
+    if (!page) return;
+    page.querySelectorAll("[data-interval]").forEach((btn) => {
       btn.addEventListener("click", () => {
         const interval = btn.getAttribute("data-interval") === "annual" ? "annual" : "monthly";
         void startCheckout(interval);

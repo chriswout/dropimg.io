@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { ugcShareAdsEnabled } from "../lib/ads";
 import { track } from "../lib/analytics";
+import { resolveRequestLocale } from "../lib/auth/locale-cookie";
 import { resolveSession } from "../lib/auth/session";
 import { lockedShareCsp, securityHeaders, sharePageCsp } from "../lib/headers";
 import {
@@ -34,6 +35,7 @@ shareRoutes.get("/:slug", async (c) => {
     .first<ImageRow>();
 
   const origin = new URL(c.req.url).origin;
+  const locale = resolveRequestLocale(c.req.raw);
   const headers = securityHeaders({
     "Content-Type": "text/html; charset=utf-8",
     "Content-Security-Policy": sharePageCsp(),
@@ -42,7 +44,7 @@ shareRoutes.get("/:slug", async (c) => {
   });
 
   if (!row) {
-    return new Response(renderGonePage({ reason: "missing" }), {
+    return new Response(renderGonePage({ reason: "missing", locale }), {
       status: 404,
       headers,
     });
@@ -52,6 +54,7 @@ shareRoutes.get("/:slug", async (c) => {
   if (row.deleted_at || row.expires_at <= now) {
     return new Response(
       renderGonePage({
+        locale,
         reason:
           row.delete_reason === "user" || row.delete_reason === "moderation"
             ? "deleted"
@@ -69,7 +72,7 @@ shareRoutes.get("/:slug", async (c) => {
       secretResolved.ok &&
       (await unlockCookieValid(slug, c.req.header("cookie"), secretResolved.secret));
     if (!owner && !unlocked) {
-      return new Response(renderLockedSharePage({ slug, origin }), {
+      return new Response(renderLockedSharePage({ slug, origin, locale }), {
         status: 200,
         headers: securityHeaders({
           "Content-Type": "text/html; charset=utf-8",

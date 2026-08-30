@@ -25,7 +25,8 @@ describe("Account pages share site chrome", () => {
     expect(html).toContain('id="account-plan"');
     expect(html).toContain('class="account-menu"');
     expect(html).toContain('href="/pro"');
-    expect(html).toContain("Upgrade to Pro");
+    expect(html).toContain("Upgrade");
+    expect(html).toContain("Pro · $1.99");
     expect(html).toContain("Edit account");
     expect(html).toContain('href="/account"');
   });
@@ -59,8 +60,7 @@ describe("Account pages share site chrome", () => {
     expect(shop.status).toBe(200);
     expect(shop.headers.get("Cache-Control")).toBe("private, no-store");
     const html = await shop.text();
-    expect(html).toContain("Get monthly");
-    expect(html).toContain("Get annual");
+    expect(html).toContain("Get Pro");
     expect(html).toContain("pro-card-featured");
 
     const member = renderProPage({
@@ -73,9 +73,9 @@ describe("Account pages share site chrome", () => {
       cancelAtPeriodEnd: false,
     });
     const memberHtml = await member.text();
-    expect(memberHtml).toContain("You’re on Pro");
+    expect(memberHtml).toContain("You're on DropIMG Pro");
     expect(memberHtml).toContain("Manage billing");
-    expect(memberHtml).not.toContain("Get monthly");
+    expect(memberHtml).not.toContain("Get Pro");
   });
 
   it("my drops uses the same shell", () => {
@@ -95,7 +95,7 @@ describe("Account pages share site chrome", () => {
     expect(html).toContain('href="/site.css"');
   });
 
-  it("my drops rows include a thumbnail and copy control", () => {
+  it("my drops rows include a share URL and copy control without loading the original", () => {
     const html = renderAppPage({
       locale: "en",
       env: { ENVIRONMENT: "staging" },
@@ -114,13 +114,48 @@ describe("Account pages share site chrome", () => {
       historyCapped: true,
       nextCursor: null,
     });
-    expect(html).toContain('src="/i/abc123XY"');
-    expect(html).toContain('value="/abc123XY"');
+    expect(html).not.toContain('src="/i/abc123XY"');
+    expect(html).toContain("dropimg.io/abc123XY");
     expect(html).toContain('data-url="https://dropimg.io/abc123XY"');
     expect(html).toContain("drop-url-input");
     expect(html).toContain("drop-copy");
-    expect(html).toContain('data-view="grid"');
     expect(html).toContain("drops-view-btn");
+  });
+
+  it("account deletion copy lists the real side effects", () => {
+    const html = renderAccountPage({
+      locale: "en",
+      env: { ENVIRONMENT: "staging" },
+      email: "user@example.com",
+      plan: "pro",
+      periodEnd: 1_790_721_044,
+      cancelAtPeriodEnd: false,
+    });
+    expect(html).toContain("Danger zone");
+    expect(html).toContain("cancel Pro if active");
+    expect(html).toContain("delete your active DropIMG images");
+    expect(html).toContain("revoke connected integrations");
+    expect(html).toContain("sign you out everywhere");
+    expect(html).toContain("This cannot be undone.");
+    expect(html).toContain('id="delete-modal"');
+    expect(html).toContain('id="revoke-modal"');
+  });
+
+  it("Free My drops shows an upgrade path and empty-state upload", () => {
+    const html = renderAppPage({
+      locale: "en",
+      env: { ENVIRONMENT: "staging" },
+      origin: "https://dropimg.io",
+      email: "user@example.com",
+      plan: "free",
+      drops: [],
+      historyCapped: true,
+      nextCursor: null,
+    });
+    expect(html).toContain("Your drops will show up here.");
+    expect(html).toContain("Upload image");
+    expect(html).toContain("Last 10 active uploads");
+    expect(html).toContain("Upgrade");
   });
 
   it("loads the Vite client on development pages", () => {

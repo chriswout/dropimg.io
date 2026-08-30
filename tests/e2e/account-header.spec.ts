@@ -45,7 +45,7 @@ test("homepage header shows Sign in, then email after magic link", async ({
 
   await page.goto(new URL(body.devMagicUrl!).pathname + new URL(body.devMagicUrl!).search);
   await expect(page.locator("#account-app")).toBeVisible();
-  await expect(page.locator("#account-plan")).toHaveText(/upgrade to pro/i);
+  await expect(page.locator("#account-plan")).toHaveText(/^upgrade$/i);
   await expect(page.locator("#account-plan")).toHaveAttribute("href", "/pro");
   await expect(page.locator("#account-plan-badge")).toBeHidden();
   await expect(signin).toBeHidden();

@@ -13,10 +13,15 @@ type Copy = {
   expires: string;
   resend: string;
   tryAgain: string;
+  invalidEmail: string;
+  sendFailed: string;
+  invalidLink: string;
+  expiredLink: string;
+  accountGone: string;
   skip: string;
 };
 
-const COPY: Record<Locale, Copy> = {
+export const LOGIN_COPY: Record<Locale, Copy> = {
   en: {
     title: "Sign in — dropimg.io",
     heading: "Sign in to DropIMG",
@@ -28,7 +33,12 @@ const COPY: Record<Locale, Copy> = {
     sentTo: (m) => `We sent a sign-in link to ${m}.`,
     expires: "Link expires in 15 minutes.",
     resend: "Resend",
-    tryAgain: "Try again shortly.",
+    tryAgain: "Too many sign-in attempts. Try again shortly.",
+    invalidEmail: "Enter a valid email.",
+    sendFailed: "Could not send the sign-in email. Try again shortly.",
+    invalidLink: "This sign-in link is invalid.",
+    expiredLink: "This sign-in link has expired. Request a new one.",
+    accountGone: "This account is no longer available.",
     skip: "Skip to sign in",
   },
   es: {
@@ -42,7 +52,12 @@ const COPY: Record<Locale, Copy> = {
     sentTo: (m) => `Enviamos un enlace a ${m}.`,
     expires: "El enlace caduca en 15 minutos.",
     resend: "Reenviar",
-    tryAgain: "Inténtalo de nuevo en un momento.",
+    tryAgain: "Demasiados intentos. Prueba en un momento.",
+    invalidEmail: "Escribe un correo válido.",
+    sendFailed: "No se pudo enviar el correo. Prueba en un momento.",
+    invalidLink: "Este enlace de acceso no es válido.",
+    expiredLink: "Este enlace caducó. Pide uno nuevo.",
+    accountGone: "Esta cuenta ya no está disponible.",
     skip: "Ir al inicio de sesión",
   },
   "pt-BR": {
@@ -56,7 +71,12 @@ const COPY: Record<Locale, Copy> = {
     sentTo: (m) => `Enviamos um link para ${m}.`,
     expires: "O link expira em 15 minutos.",
     resend: "Reenviar",
-    tryAgain: "Tente de novo em instantes.",
+    tryAgain: "Muitas tentativas. Tente de novo em instantes.",
+    invalidEmail: "Digite um e-mail válido.",
+    sendFailed: "Não deu pra enviar o e-mail. Tente de novo em instantes.",
+    invalidLink: "Este link de entrada é inválido.",
+    expiredLink: "Este link expirou. Peça outro.",
+    accountGone: "Esta conta não está mais disponível.",
     skip: "Ir para o login",
   },
   de: {
@@ -70,7 +90,12 @@ const COPY: Record<Locale, Copy> = {
     sentTo: (m) => `Wir haben einen Link an ${m} gesendet.`,
     expires: "Der Link läuft in 15 Minuten ab.",
     resend: "Erneut senden",
-    tryAgain: "Bitte gleich noch einmal versuchen.",
+    tryAgain: "Zu viele Versuche. Bitte gleich noch einmal.",
+    invalidEmail: "Bitte eine gültige E-Mail eingeben.",
+    sendFailed: "E-Mail ließ sich nicht senden. Bitte gleich nochmal.",
+    invalidLink: "Dieser Anmeldelink ist ungültig.",
+    expiredLink: "Dieser Anmeldelink ist abgelaufen. Bitte einen neuen anfordern.",
+    accountGone: "Dieses Konto ist nicht mehr verfügbar.",
     skip: "Zur Anmeldung",
   },
 };
@@ -78,18 +103,29 @@ const COPY: Record<Locale, Copy> = {
 export function renderLoginPage(opts: {
   locale: Locale;
   env: { ENVIRONMENT?: string };
-  state: "form" | "sent" | "rate_limited";
+  state: "form" | "sent" | "rate_limited" | "invalid" | "expired";
   email?: string;
   maskedEmail?: string;
   error?: string;
   devMagicUrl?: string;
 }): string {
-  const t = COPY[opts.locale];
-  const err = opts.error ? `<p class="form-error">${esc(opts.error)}</p>` : "";
+  const t = LOGIN_COPY[opts.locale];
+  const err = opts.error ? `<p class="form-error" role="alert">${esc(opts.error)}</p>` : "";
   const dev =
     opts.devMagicUrl && opts.state === "sent"
       ? `<p class="account-dev"><a href="${esc(opts.devMagicUrl)}">Dev sign-in link</a></p>`
       : "";
+
+  const form = (heading: string, hint: string, extraErr = "") =>
+    `<h1 class="tagline account-title">${esc(heading)}</h1>
+    <p class="sub">${esc(hint)}</p>
+    ${extraErr}${err}
+    <form method="post" action="/login" class="account-form" autocomplete="username">
+      <label for="email">${esc(t.emailLabel)}</label>
+      <input id="email" name="email" type="email" required autofocus placeholder="you@example.com" />
+      <button type="submit" class="btn primary">${esc(t.submit)}</button>
+    </form>
+    <p class="account-muted">${esc(t.noPassword)}</p>`;
 
   const inner =
     opts.state === "sent"
@@ -103,17 +139,13 @@ export function renderLoginPage(opts: {
     </form>`
       : opts.state === "rate_limited"
         ? `<h1 class="tagline account-title">${esc(t.heading)}</h1>
-    <p class="sub">${esc(t.tryAgain)}</p>
+    <p class="sub" role="alert">${esc(t.tryAgain)}</p>
     <p><a class="btn secondary" href="/login">${esc(t.resend)}</a></p>`
-        : `<h1 class="tagline account-title">${esc(t.heading)}</h1>
-    <p class="sub">${esc(t.hint)}</p>
-    ${err}
-    <form method="post" action="/login" class="account-form" autocomplete="username">
-      <label for="email">${esc(t.emailLabel)}</label>
-      <input id="email" name="email" type="email" required autofocus placeholder="you@example.com" />
-      <button type="submit" class="btn primary">${esc(t.submit)}</button>
-    </form>
-    <p class="account-muted">${esc(t.noPassword)}</p>`;
+        : opts.state === "invalid"
+          ? form(t.heading, t.invalidLink)
+          : opts.state === "expired"
+            ? form(t.heading, t.expiredLink)
+            : form(t.heading, t.hint);
 
   return renderSitePage({
     locale: opts.locale,

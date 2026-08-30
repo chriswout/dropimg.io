@@ -10,7 +10,7 @@ Anonymous uploads stay available. An integration token is optional and is not re
 - Stored as a SHA-256 hash only. The raw token is shown once at creation.
 - Scope is `upload`. Tokens are sent as `Authorization: Bearer <token>`.
 - Never put a token in a query string, cookie, or analytics event.
-- Revoke from Account → Connected devices. Existing share links stay live.
+- Revoke from Account → Connected integrations. Existing share links stay live.
 
 Browser disconnect (extension) removes the local copy only. Account-side Revoke invalidates the token.
 

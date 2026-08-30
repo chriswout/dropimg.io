@@ -6,7 +6,7 @@
     <title>Privacy Policy — dropimg.io</title>
     <meta
       name="description"
-      content="How dropimg.io handles temporary screenshots and images: no accounts, 24-hour deletion, metadata stripping, and hashed rate-limit fingerprints."
+      content="How DropIMG handles temporary images, optional accounts, magic-link sign-in, billing, integrations, and first-party analytics."
     />
     <link rel="canonical" href="https://dropimg.io/privacy.html" />
     <meta name="robots" content="index, follow" />
@@ -36,253 +36,224 @@
       </a>
 
       <h1>Privacy Policy</h1>
-      <p class="updated">Last updated: August 24, 2026</p>
+      <p class="updated">Last updated: August 29, 2026</p>
 
       <p>
-        dropimg.io (“<strong>dropimg.io</strong>,” “<strong>we</strong>,”
-        “<strong>us</strong>”) is a temporary screenshot and image sharing
-        utility. You paste, drop, or choose an image; we give you a short link
-        that expires. This Privacy Policy explains what we collect, why, how long
-        we keep it, and your choices.
+        DropIMG (“<strong>DropIMG</strong>,” “<strong>we</strong>,”
+        “<strong>us</strong>”) is a temporary image sharing utility. You paste,
+        drop, or choose an image; we give you a short link that expires. Optional
+        accounts add sign-in, history, and DropIMG Pro. This Policy explains what
+        we collect, why, how long we keep it, and your choices.
       </p>
       <p>
-        By using dropimg.io you agree to this Policy and our
+        By using DropIMG you agree to this Policy and our
         <a href="/terms.html">Terms of Use</a>.
       </p>
 
-      <h2>1. What dropimg.io is (and is not)</h2>
+      <h2>1. What DropIMG is (and is not)</h2>
       <ul>
-        <li>No user accounts or sign-in.</li>
+        <li>An account is optional. Anonymous 24-hour uploads still work.</li>
         <li>No public gallery or browseable library of uploads.</li>
         <li>Share pages are marked <code>noindex</code> so they are not meant for search results.</li>
-        <li>Image links are temporary by design (24 hours by default).</li>
-        <li>Anyone who has the unique link can view the image until it expires or is deleted.</li>
+        <li>Links are temporary. Free links expire in about 24 hours. Pro links expire after at most 30 days.</li>
+        <li>Anyone who has a working share link can view the image until it expires, is deleted, or (if protected) until they unlock it.</li>
       </ul>
 
-      <h2>2. Information we process</h2>
+      <h2>2. Optional accounts</h2>
+      <p>
+        If you sign in, we store the <strong>email address</strong> you provide
+        so we can send one-time magic links and recognize your account. There is
+        no account password.
+      </p>
 
-      <h3>2.1 Images you upload</h3>
+      <h2>3. Authentication</h2>
+      <ul>
+        <li>Sign-in uses a one-time magic link sent to your email.</li>
+        <li>The raw magic-link token is not stored. We keep a hash until the link is used or expires (about 15 minutes).</li>
+        <li>A signed-in session uses an HttpOnly session cookie. Only a hash of the session token is stored.</li>
+        <li>You can sign out of the current device or all devices from your account page.</li>
+      </ul>
+
+      <h2>4. Uploads</h2>
+      <h3>4.1 Images</h3>
       <p>When you upload an image we process and store:</p>
       <ul>
         <li>The image file bytes (after metadata handling described below).</li>
-        <li>Technical metadata we need to serve it: MIME type, file size, optional width/height, creation time, expiry time, and a random short URL slug.</li>
-        <li>A hashed delete token (not the raw token) so you can delete the image early if you still have the delete control from upload.</li>
+        <li>Technical metadata needed to serve it: MIME type, file size, optional width/height, creation time, expiry time, and a random short URL slug.</li>
+        <li>A hashed delete token so you can delete the image early if you still have the delete control.</li>
+        <li>If you are signed in, an association between the image and your account so it can appear in My drops.</li>
       </ul>
       <p>We do <strong>not</strong> store the original filename from your device.</p>
       <p>
-        Supported formats: PNG, JPEG, WebP, and GIF, up to 10&nbsp;MB. SVG and
-        other formats are rejected.
+        Supported formats: PNG, JPEG, WebP, and GIF. Anonymous and Free uploads
+        are limited to 10&nbsp;MB. Pro uploads may be up to 50&nbsp;MB when that
+        limit is enabled. SVG and other formats are rejected.
       </p>
 
-      <h3>2.2 Metadata stripping</h3>
+      <h3>4.2 Retention</h3>
+      <ul>
+        <li><strong>Anonymous and Free:</strong> about 24 hours, or sooner if you delete the image.</li>
+        <li><strong>Pro:</strong> up to 7 or 30 days, depending on the expiry you choose. Even Pro links expire. There is no permanent storage.</li>
+        <li>Expired or deleted images are removed from active hosting. Cleanup is not always instantaneous; background jobs and storage lifecycle rules finish the removal.</li>
+      </ul>
+
+      <h3>4.3 Metadata stripping</h3>
       <p>
         For JPEG, PNG, and WebP we attempt to strip EXIF and similar embedded
-        metadata (which can include GPS and camera details) before storage. If
-        stripping fails, the upload is <strong>rejected</strong> rather than
-        stored with that metadata intact. GIF files are stored as uploaded (GIF
-        does not use EXIF in the same way).
-      </p>
-      <p>
-        Stripping reduces risk; it is not a guarantee that an image cannot reveal
-        anything about you. Do not upload screenshots or photos you are not
-        willing to share with anyone who obtains the link.
+        metadata before storage. If stripping fails, the upload is rejected.
+        GIF files are stored as uploaded.
       </p>
 
-      <h3>2.3 Network and abuse-prevention data</h3>
+      <h3>4.4 Password-protected links</h3>
+      <p>
+        Pro users can put a password on a share link. The password value is
+        <strong>not stored in plaintext</strong>. We store a one-way hash used
+        only to check later unlock attempts. Recipients who unlock a link get a
+        short-lived cookie for that image only.
+      </p>
+
+      <h2>5. Security and abuse controls</h2>
       <p>
         To rate-limit uploads and reduce abuse we derive a
-        <strong>daily rotating hash</strong> from your IP address (using a server
-        secret). We store that hash with the upload record for quota purposes. We
-        do <strong>not</strong> store raw IP addresses in our application
-        database for uploads.
+        <strong>hashed fingerprint</strong> from your IP address using a server
+        secret. We store that hash for quota and abuse controls. We do
+        <strong>not</strong> store raw IP addresses in our application database
+        for uploads.
       </p>
       <p>
         Cloudflare (our hosting and security provider) may process IP addresses
         and request metadata as part of operating the network, CDN, DDoS
-        protection, and logs according to Cloudflare’s own terms and privacy
-        commitments.
+        protection, and logs.
       </p>
 
-      <h3>2.4 Aggregate product analytics</h3>
+      <h2>6. Integrations</h2>
       <p>
-        We may record product events (for example: upload succeeded or failed,
-        share page viewed, image deleted or expired) in Cloudflare Analytics
-        Engine. These events are for operating and improving the service. They
-        are designed around operational fields such as event type, MIME type,
-        size, reason codes, or upload surface (for example web vs browser
-        extension)—not account profiles.
+        You can create a personal integration token for the browser extension or
+        ShareX. The raw token is shown once. After that, DropIMG keeps only a
+        <strong>hash</strong> of the token. Treat the token like a password.
+        Revoking it stops new uploads from that connection. Existing share links
+        are not changed.
       </p>
 
-      <h3>2.5 Abuse reports</h3>
+      <h2>7. Billing</h2>
       <p>
-        If you submit a report via
-        <a href="/abuse">/abuse</a> or email, we process the information you
-        provide (such as the image link/slug, reason, and optional details) so we
-        can investigate and respond.
+        Paid DropIMG Pro checkout is handled by <strong>Paddle</strong>. Paddle
+        receives the payment and billing information needed to charge you.
+        DropIMG stores the subscription identifiers and status we need to provide
+        Pro (for example whether Pro is active, when the current period ends, and
+        whether cancellation is scheduled). We do not store your full card
+        number.
       </p>
 
-      <h3>2.6 Data stored only on your device</h3>
+      <h2>8. Analytics</h2>
       <p>
-        The browser may keep local data such as recent upload links (including
-        delete tokens) and language preference in <code>localStorage</code>. That
-        data stays on your device unless you clear site data. We do not use it to
-        build cross-device accounts.
+        We record first-party product events in Cloudflare Analytics Engine
+        (for example: a page view, an upload result, a sign-in request, a
+        checkout step, or a dashboard action). Events use low-cardinality fields
+        such as event name, plan, billing interval, upload surface, and reason
+        codes. We do <strong>not</strong> put raw integration tokens, passwords,
+        or email addresses in analytics.
       </p>
 
-      <h3>2.7 Browser extension</h3>
-      <p>
-        Our official Chrome / Edge extension (Manifest V3) can capture the
-        <strong>visible tab</strong> or a <strong>user-drawn region</strong> of
-        the current viewport when you use the toolbar popup or the documented
-        keyboard shortcut. Captures upload to dropimg.io using the same upload
-        API as the website. The extension UI is localized to English, Spanish,
-        Portuguese (Brazil), and German (matching your browser language). It
-        requests:
-      </p>
+      <h2>9. Account deletion</h2>
+      <p>When you delete your account we:</p>
       <ul>
-        <li>
-          <code>activeTab</code> — to capture the tab you are viewing when you
-          invoke the extension.
-        </li>
-        <li>
-          <code>scripting</code> — to show a temporary region-selection overlay
-          and a short-lived on-page toast with the share link on that tab.
-        </li>
-        <li>
-          <code>storage</code> — to remember the last capture mode and a short
-          list of recent share links
-          <strong>only on your device</strong> (not an account).
-        </li>
-        <li>
-          <code>offscreen</code> and <code>notifications</code> — to copy the
-          share link to the clipboard after a silent shortcut or region capture,
-          and to show a brief notice if an on-page toast cannot be displayed.
-        </li>
-        <li>
-          Host access to <code>https://dropimg.io/*</code> — to upload the
-          screenshot and receive a temporary share link.
-        </li>
+        <li>cancel an active Pro subscription first, if we can reach Paddle;</li>
+        <li>remove your active DropIMG images;</li>
+        <li>revoke connected integration tokens;</li>
+        <li>sign you out everywhere;</li>
+        <li>anonymize the local account record (the email is replaced with a tombstone address and the account is marked deleted).</li>
       </ul>
       <p>
-        Uploads from the extension are attributed with an
-        <code>X-Dropimg-Client</code> header (for example
-        <code>chrome-extension</code> or <code>edge-extension</code>) so we can
-        measure extension usage in aggregate analytics. The extension does not
-        require an account and does not sync a gallery across devices. Captured
-        images follow the same retention, metadata stripping, and sharing rules
-        as web uploads.
-      </p>
-      <p>
-        More product detail:
-        <a href="/browser-extension">/browser-extension</a>.
+        If billing cancellation fails, the account is <strong>not</strong>
+        deleted so we do not leave an unpaid or uncanceled subscription behind.
+        Deleted-account cleanup is not always instantaneous for every stored
+        object or log.
       </p>
 
-      <h3>2.8 Cookies</h3>
+      <h2>10. Browser extension and device data</h2>
       <p>
-        dropimg.io’s core upload and share flow does not require account cookies.
-        Essential infrastructure or security tooling operated by Cloudflare may
-        set cookies as needed to deliver and protect the site. We do not use
-        third-party advertising cookies on the marketing or share experience
-        described here.
+        The official Chrome / Edge extension can capture the visible tab or a
+        region you draw. Anonymous captures use the same upload rules as the
+        website. If you connect an account, the extension stores your personal
+        token only on that device (not in synced storage). Recent links and
+        language/theme preferences may also stay in local browser storage until
+        you clear them.
       </p>
 
-      <h2>3. How we use information</h2>
+      <h2>11. Cookies</h2>
+      <p>
+        Signed-in use needs a session cookie. A language cookie remembers your
+        locale choice. Unlocking a protected image sets a short-lived cookie for
+        that image. Cloudflare may set essential security cookies. We do not use
+        third-party advertising cookies on the product described here.
+      </p>
+
+      <h2>12. How we use information</h2>
       <ul>
-        <li>To provide temporary image hosting and share pages.</li>
-        <li>To enforce size, format, rate, and quota limits.</li>
-        <li>To delete expired or user-deleted images.</li>
+        <li>To provide temporary image hosting, share pages, and optional accounts.</li>
+        <li>To send magic-link emails and keep you signed in.</li>
+        <li>To enforce size, format, rate, quota, and plan limits.</li>
+        <li>To provide Pro features and talk to Paddle about your subscription.</li>
+        <li>To delete expired, user-deleted, or moderated images.</li>
         <li>To investigate abuse, security incidents, and legal requests.</li>
         <li>To understand aggregate reliability and usage of the service.</li>
       </ul>
 
-      <h2>4. How long we keep data</h2>
-      <ul>
-        <li>
-          <strong>Images:</strong> automatically deleted about
-          <strong>24 hours</strong> after upload, or earlier if you use the
-          delete control / delete link from the upload response.
-        </li>
-        <li>
-          <strong>Database records</strong> associated with an image are removed
-          or marked deleted as part of that lifecycle; expired objects are cleaned
-          up by our systems.
-        </li>
-        <li>
-          <strong>Abuse reports</strong> may be retained longer as needed to
-          handle the report and protect the service.
-        </li>
-        <li>
-          <strong>Security and infrastructure logs</strong> held by Cloudflare
-          follow Cloudflare’s retention practices.
-        </li>
-      </ul>
-      <p>
-        Deleting an image from dropimg.io removes it from our storage. We cannot
-        erase copies that viewers already downloaded, screenshotted, or
-        re-uploaded elsewhere.
-      </p>
-
-      <h2>5. Who can see your images</h2>
+      <h2>13. Who can see your images</h2>
       <p>
         Share URLs are randomly generated and not listed publicly, but they are
-        <strong>not a login</strong>. Anyone with the link can open the image
-        while it is live. Treat links like secrets: do not post them publicly if
-        the content is sensitive.
+        not a login. Anyone with the link can open an unprotected image while it
+        is live. A password only helps if you keep that password and the link
+        private.
       </p>
 
-      <h2>6. Sharing with processors</h2>
+      <h2>14. Processors</h2>
       <p>
-        We use infrastructure providers to run dropimg.io, including
+        We use infrastructure providers to run DropIMG, including
         <strong>Cloudflare</strong> (Workers, DNS/CDN, object storage, database,
-        analytics, and security). They process data only to provide those
-        services to us.
+        email sending, analytics, and security) and <strong>Paddle</strong> for
+        paid subscriptions. They process data to provide those services to us.
       </p>
       <p>
         We do not sell your personal information. We may disclose information if
         required by law, to protect rights and safety, or to address abuse.
       </p>
 
-      <h2>7. International processing</h2>
+      <h2>15. International processing</h2>
       <p>
-        dropimg.io is delivered over Cloudflare’s global network. Your uploads
-        and requests may be processed in data centers outside your country. If
-        you use the service, you understand that transfer.
+        DropIMG is delivered over Cloudflare’s global network. Uploads and
+        requests may be processed in data centers outside your country.
       </p>
 
-      <h2>8. Children</h2>
+      <h2>16. Children</h2>
       <p>
-        dropimg.io is not directed at children under 13 (or the equivalent minimum
-        age in your jurisdiction). Do not use the service to upload content that
-        exploits or endangers minors. See our
-        <a href="/terms.html">Terms of Use</a> and
-        <a href="/abuse">abuse reporting</a>.
+        DropIMG is not directed at children under 13 (or the equivalent minimum
+        age where you live). Do not upload content that exploits or endangers
+        minors.
       </p>
 
-      <h2>9. Your choices</h2>
+      <h2>17. Your choices</h2>
       <ul>
-        <li>Do not upload an image you do not want shared via link.</li>
-        <li>Use the delete control soon after upload if you need early removal.</li>
+        <li>Use DropIMG without an account.</li>
+        <li>Delete an image from the success screen or My drops while you still can.</li>
+        <li>Revoke integration tokens and sign out of all devices.</li>
+        <li>Cancel Pro from Manage billing (access continues until the period ends if you cancel at period end).</li>
+        <li>Delete your account from the account page.</li>
         <li>Clear site data in your browser to remove local recent-drop history.</li>
-        <li>Contact us about a privacy question or deletion request related to reports or residual records we control.</li>
       </ul>
 
-      <h2>10. Contact</h2>
+      <h2>18. Contact</h2>
       <p>
         Privacy and abuse:
         <a href="mailto:abuse@dropimg.io">abuse@dropimg.io</a>
       </p>
 
-      <h2>11. Changes</h2>
+      <h2>19. Changes</h2>
       <p>
-        We may update this Policy as the product changes. The “Last updated” date
-        at the top will change when we do. Continued use after an update means
-        you accept the revised Policy.
-      </p>
-
-      <p class="note">
-        This Policy describes our practices for a small utility service. It is
-        not legal advice. If you need advice for your situation, consult a
-        qualified lawyer.
+        We may update this Policy as the product changes. The “Last updated”
+        date at the top will change when we do. Continued use after an update
+        means you accept the revised Policy.
       </p>
 
       <nav class="foot-nav" aria-label="Legal">

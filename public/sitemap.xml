@@ -103,6 +103,30 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://dropimg.io/pro</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://dropimg.io/es/pro</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://dropimg.io/pt-br/pro</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
+    <loc>https://dropimg.io/de/pro</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
+  </url>
+  <url>
     <loc>https://dropimg.io/screenshot-to-link</loc>
     <lastmod>2026-08-29</lastmod>
     <changefreq>monthly</changefreq>
@@ -128,19 +152,19 @@
   </url>
   <url>
     <loc>https://dropimg.io/privacy.html</loc>
-    <lastmod>2026-08-24</lastmod>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://dropimg.io/terms.html</loc>
-    <lastmod>2026-08-24</lastmod>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
     <loc>https://dropimg.io/abuse</loc>
-    <lastmod>2026-08-24</lastmod>
+    <lastmod>2026-08-29</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.4</priority>
   </url>

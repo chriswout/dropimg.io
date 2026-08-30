@@ -109,7 +109,9 @@ export async function consumeMagicLink(
   db: D1Database,
   token: string,
   now = Math.floor(Date.now() / 1000),
-): Promise<{ ok: true; emailNorm: string } | { ok: false }> {
+): Promise<
+  { ok: true; emailNorm: string } | { ok: false; reason: "invalid" | "expired" }
+> {
   const hash = await sha256Bytes(token);
   const row = await db
     .prepare(
@@ -119,9 +121,9 @@ export async function consumeMagicLink(
     .bind(new Uint8Array(hash))
     .first<MagicRow>();
 
-  if (!row || row.used_at || row.expires_at < now) {
-    return { ok: false };
-  }
+  if (!row) return { ok: false, reason: "invalid" };
+  if (row.used_at) return { ok: false, reason: "invalid" };
+  if (row.expires_at < now) return { ok: false, reason: "expired" };
 
   const used = await db
     .prepare(
@@ -131,7 +133,7 @@ export async function consumeMagicLink(
     .bind(now, row.id)
     .run();
 
-  if (!used.meta.changes) return { ok: false };
+  if (!used.meta.changes) return { ok: false, reason: "invalid" };
   return { ok: true, emailNorm: row.email_norm };
 }
 

@@ -19,6 +19,7 @@ import {
   pageUrl,
   type PageId,
 } from "../marketing/pages";
+import { allProUrls } from "../marketing/pro";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 let failures = 0;
@@ -186,6 +187,14 @@ else {
   }
   if (sm.includes("/api/") || sm.includes("/i/") || sm.includes(":slug")) {
     fail("sitemap contains temporary/API patterns");
+  }
+  for (const privatePath of ["/login", "/app", "/account", "/admin"]) {
+    if (sm.includes(`${privatePath}<`) || sm.includes(`${privatePath}/`)) {
+      fail(`sitemap includes private route ${privatePath}`);
+    }
+  }
+  for (const url of allProUrls()) {
+    if (!sm.includes(`<loc>${url}</loc>`)) fail(`sitemap missing ${url}`);
   }
   if (!sm.includes(`<loc>https://dropimg.io/browser-extension</loc>`)) {
     fail("sitemap missing browser-extension");

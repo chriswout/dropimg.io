@@ -14,7 +14,9 @@ test("account integrations create and revoke a token", async ({ page, request })
     new URL(body.devMagicUrl!).pathname + new URL(body.devMagicUrl!).search,
   );
   await page.goto("/account");
-  await expect(page.getByRole("heading", { name: "Integrations" })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Integrations", exact: true }),
+  ).toBeVisible();
   await expect(page.getByText("Connect DropIMG to tools you already use.")).toBeVisible();
 
   await page.locator("#integ-extension").click();

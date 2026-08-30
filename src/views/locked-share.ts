@@ -1,21 +1,81 @@
+import type { Locale } from "../../marketing/locales";
+import { DEFAULT_LOCALE } from "../../marketing/locales";
+
+type Copy = {
+  title: string;
+  heading: string;
+  hint: string;
+  passwordLabel: string;
+  unlock: string;
+  wrong: string;
+  tryAgain: string;
+  report: string;
+};
+
+export const LOCKED_COPY: Record<Locale, Copy> = {
+  en: {
+    title: "Protected image — dropimg.io",
+    heading: "This image is protected",
+    hint: "Enter the password to view it.",
+    passwordLabel: "Password",
+    unlock: "Unlock",
+    wrong: "Wrong password.",
+    tryAgain: "Try again shortly.",
+    report: "Report",
+  },
+  es: {
+    title: "Imagen protegida — dropimg.io",
+    heading: "Esta imagen está protegida",
+    hint: "Escribe la contraseña para verla.",
+    passwordLabel: "Contraseña",
+    unlock: "Abrir",
+    wrong: "Contraseña incorrecta.",
+    tryAgain: "Prueba en un momento.",
+    report: "Denunciar",
+  },
+  "pt-BR": {
+    title: "Imagem protegida — dropimg.io",
+    heading: "Esta imagem está protegida",
+    hint: "Digite a senha para ver.",
+    passwordLabel: "Senha",
+    unlock: "Desbloquear",
+    wrong: "Senha errada.",
+    tryAgain: "Tente de novo em instantes.",
+    report: "Denunciar",
+  },
+  de: {
+    title: "Geschütztes Bild — dropimg.io",
+    heading: "Dieses Bild ist geschützt",
+    hint: "Passwort eingeben, um es zu sehen.",
+    passwordLabel: "Passwort",
+    unlock: "Freischalten",
+    wrong: "Falsches Passwort.",
+    tryAgain: "Bitte gleich nochmal.",
+    report: "Melden",
+  },
+};
+
 export function renderLockedSharePage(opts: {
   slug: string;
   origin: string;
+  locale?: Locale;
   error?: string;
 }): string {
+  const locale = opts.locale ?? DEFAULT_LOCALE;
+  const t = LOCKED_COPY[locale];
   const pageUrl = `${opts.origin}/${opts.slug}`;
   const og = `${opts.origin}/og.png`;
   const err = opts.error
-    ? `<p class="err">${esc(opts.error)}</p>`
+    ? `<p class="err" role="alert">${esc(opts.error)}</p>`
     : "";
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${esc(locale === "pt-BR" ? "pt-BR" : locale)}">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Protected image — dropimg.io</title>
+  <title>${esc(t.title)}</title>
   <meta name="robots" content="noindex, nofollow" />
-  <meta property="og:title" content="Protected image on dropimg.io" />
+  <meta property="og:title" content="${esc(t.heading)}" />
   <meta property="og:image" content="${esc(og)}" />
   <meta property="og:url" content="${esc(pageUrl)}" />
   <meta name="twitter:card" content="summary" />
@@ -29,6 +89,7 @@ export function renderLockedSharePage(opts: {
       --muted: #8b9bb4;
       --border: rgba(255,255,255,.12);
       --blue: #2563eb;
+      --danger: #f87171;
     }
     * { box-sizing: border-box; }
     body {
@@ -92,6 +153,7 @@ export function renderLockedSharePage(opts: {
     h1 { margin: 0 0 0.5rem; font-size: 1.6rem; }
     p { color: var(--muted); }
     form { display: flex; flex-direction: column; gap: 0.55rem; width: min(22rem, 100%); }
+    label { font-weight: 650; color: var(--text); }
     input {
       min-height: 44px;
       border-radius: 11px;
@@ -111,7 +173,7 @@ export function renderLockedSharePage(opts: {
       font-weight: 650;
       cursor: pointer;
     }
-    .err { color: #f87171; }
+    .err { color: var(--danger); }
   </style>
 </head>
 <body>
@@ -127,15 +189,16 @@ export function renderLockedSharePage(opts: {
         decoding="async"
       />
     </a>
-    <a class="report" href="/abuse?slug=${esc(opts.slug)}">Report</a>
+    <a class="report" href="/abuse?slug=${esc(opts.slug)}">${esc(t.report)}</a>
   </header>
   <main>
-    <h1>Protected image</h1>
-    <p>Enter the password to view this image.</p>
+    <h1>${esc(t.heading)}</h1>
+    <p>${esc(t.hint)}</p>
     ${err}
     <form method="post" action="/api/i/${esc(opts.slug)}/unlock" autocomplete="current-password">
-      <input type="password" name="password" required minlength="8" autofocus />
-      <button type="submit">Unlock</button>
+      <label for="share-password">${esc(t.passwordLabel)}</label>
+      <input id="share-password" type="password" name="password" required minlength="8" autofocus />
+      <button type="submit">${esc(t.unlock)}</button>
     </form>
   </main>
 </body>

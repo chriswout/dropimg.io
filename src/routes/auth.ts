@@ -23,7 +23,7 @@ import {
 import { magicLinkEmail, sendMail } from "../lib/email";
 import { clientIp, hashIp } from "../lib/ip";
 import { resolveIpHashSecret } from "../lib/secrets";
-import { loginHtmlResponse } from "../views/login";
+import { LOGIN_COPY, loginHtmlResponse } from "../views/login";
 
 type Env = {
   Bindings: Cloudflare.Env;
@@ -73,7 +73,7 @@ authRoutes.post("/login", async (c) => {
   if (!isValidEmail(emailNorm)) {
     if (json) return c.json({ error: "Invalid email" }, 400);
     return loginHtmlResponse(
-      { locale, env: c.env, state: "form", error: "Enter a valid email." },
+      { locale, env: c.env, state: "form", error: LOGIN_COPY[locale].invalidEmail },
       400,
     );
   }
@@ -132,7 +132,7 @@ authRoutes.post("/login", async (c) => {
         locale,
         env: c.env,
         state: "form",
-        error: "Could not send the sign-in email. Try again shortly.",
+        error: LOGIN_COPY[locale].sendFailed,
       },
       503,
     );
@@ -161,12 +161,7 @@ authRoutes.get("/auth/callback", async (c) => {
   const locale = resolveRequestLocale(c.req.raw);
   if (!token) {
     return loginHtmlResponse(
-      {
-        locale,
-        env: c.env,
-        state: "form",
-        error: "This sign-in link is invalid or expired.",
-      },
+      { locale, env: c.env, state: "invalid" },
       400,
     );
   }
@@ -174,12 +169,7 @@ authRoutes.get("/auth/callback", async (c) => {
   const consumed = await consumeMagicLink(c.env.DB, token);
   if (!consumed.ok) {
     return loginHtmlResponse(
-      {
-        locale,
-        env: c.env,
-        state: "form",
-        error: "This sign-in link is invalid or expired.",
-      },
+      { locale, env: c.env, state: consumed.reason },
       400,
     );
   }
@@ -191,7 +181,7 @@ authRoutes.get("/auth/callback", async (c) => {
         locale,
         env: c.env,
         state: "form",
-        error: "This account is no longer available.",
+        error: LOGIN_COPY[locale].accountGone,
       },
       403,
     );

@@ -1,4 +1,4 @@
-# Accounts — ownership (V2 Phase B)
+# Accounts
 
 Optional passwordless accounts. Anonymous paste-to-link is unchanged.
 
@@ -10,23 +10,32 @@ Optional passwordless accounts. Anonymous paste-to-link is unchanged.
 
 ## My drops
 
-`GET /app` (noindex, session required) lists owned, unexpired images. Free shows 10 most recent. Pro paginates with `?cursor=`.
+`GET /app` (noindex, session required) lists owned, unexpired images. Free shows the last 10 active uploads. Pro paginates with `?cursor=`.
+
+Rows show the share host path, type/size/dimensions, time left, and lock state. The dashboard does **not** load original images as thumbnails.
 
 `POST /api/account/images/:slug/delete` (session + CSRF) tombstones an owned image.
 
-## Phase C (Pro)
+## Pro extras (when flags are on)
 
-- Pro uploads go to `o/pro/{date}/{id}`. Anonymous/Free stay on `o/24h/`.
-- Staging: `LONG_TTL_ENABLED=true` (7d/30d + extend) and `PRO_50MB_ENABLED=true` after the isolate probe. Production flags stay false.
+- Uploads go to `o/pro/{date}/{id}`. Anonymous/Free stay on `o/24h/`.
+- Staging: `LONG_TTL_ENABLED=true` (7d/30d + extend) and `PRO_50MB_ENABLED=true`. Production flags stay false.
 - Extend copies `o/24h` → `o/pro` before bumping `expires_at`, cap `created_at+30d`.
-- JPEG strip is typed-array only. Pro password: `POST /api/account/images/:slug/password` and `POST /api/i/:slug/unlock`.
 - Pro can set a password on upload or later via `POST /api/account/images/:slug/password`. Recipients unlock at `POST /api/i/:slug/unlock`. `GET /i/:slug` is 401 without the unlock cookie or owner session.
 
 ## Header
 
-`GET /api/account/me` hydrates the header: Sign in, or My drops + `Upgrade to Pro` (Free) + an account menu (Edit account + Sign out). Pro accounts hide the upgrade button and show a Pro badge on the account chip. After sign-in the client claims `dropimg:recent`.
+`GET /api/account/me` hydrates the header:
 
-`GET /account` (noindex, session required) is the account page: email, plan, integrations, sign out all devices, delete account. `POST /api/account/delete` cancels live Pro billing, removes images, revokes integration tokens and sessions, then soft-deletes the user.
+- Anonymous: **Pro · $1.99** + Sign in
+- Free: My drops + **Upgrade** + account menu
+- Pro: My drops + **PRO** badge (no upgrade CTA)
+
+After sign-in the client claims `dropimg:recent`.
+
+`GET /account` (noindex, session required) is organized as Account, Plan, Integrations, Security, and Danger zone. Customer-facing billing copy uses “Renews …” / “Ends …” — not provider IDs.
+
+`POST /api/account/delete` cancels live Pro billing first, then removes images, revokes integration tokens and sessions, and soft-deletes the user. If Paddle cancel fails, the account is **not** deleted.
 
 ## Integrations
 
@@ -36,4 +45,4 @@ Session-only token management:
 - `POST /api/account/integrations` — create; raw token returned once
 - `POST /api/account/integrations/:id/revoke` — idempotent; rows keep `revoked_at`
 
-See [integrations.md](integrations.md). The public anonymous ShareX config and anonymous extension upload are unchanged.
+See [integrations.md](integrations.md). Anonymous ShareX and anonymous extension upload stay available.

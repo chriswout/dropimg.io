@@ -24,6 +24,21 @@ export type UiStrings = {
   couldNotDelete: string;
   invalidFormat: string;
   tooLarge: string;
+  tooLargeLimit: (mb: number) => string;
+  passwordTooShort: string;
+  passwordProtected: string;
+  manageInDrops: string;
+  needLongerTitle: string;
+  needLongerBody: string;
+  proControlsKicker: string;
+  expiresLabel: string;
+  expiry24h: string;
+  expiry7d: string;
+  expiry30d: string;
+  passwordLabel: string;
+  passwordOff: string;
+  passwordOn: string;
+  passwordPlaceholder: string;
   networkError: string;
   uploadAborted: string;
   expiresSoon: string;
@@ -63,6 +78,21 @@ const en: UiStrings = {
   couldNotDelete: "Could not delete image.",
   invalidFormat: "Please choose a PNG, JPEG, WebP, or GIF image.",
   tooLarge: "File exceeds the 10 MB limit.",
+  tooLargeLimit: (mb) => `File exceeds the ${mb} MB limit.`,
+  passwordTooShort: "Password must be at least 8 characters.",
+  passwordProtected: "Password protected",
+  manageInDrops: "Manage in My drops",
+  needLongerTitle: "Need it longer?",
+  needLongerBody: "Keep links up to 30 days with Pro — $1.99/month.",
+  proControlsKicker: "PRO",
+  expiresLabel: "Expires",
+  expiry24h: "24 hours",
+  expiry7d: "7 days",
+  expiry30d: "30 days",
+  passwordLabel: "Password",
+  passwordOff: "Off",
+  passwordOn: "Protect",
+  passwordPlaceholder: "Min. 8 characters",
   networkError: "Network error during upload",
   uploadAborted: "Upload aborted",
   expiresSoon: "soon",
@@ -112,6 +142,21 @@ const es: UiStrings = {
   couldNotDelete: "No se pudo borrar la imagen.",
   invalidFormat: "Elige una imagen PNG, JPEG, WebP o GIF.",
   tooLarge: "El archivo supera los 10 MB.",
+  tooLargeLimit: (mb) => `El archivo supera los ${mb} MB.`,
+  passwordTooShort: "La contraseña debe tener al menos 8 caracteres.",
+  passwordProtected: "Protegido con contraseña",
+  manageInDrops: "Gestionar en Mis envíos",
+  needLongerTitle: "¿Lo necesitas más tiempo?",
+  needLongerBody: "Conserva enlaces hasta 30 días con Pro — $1.99/mes.",
+  proControlsKicker: "PRO",
+  expiresLabel: "Caduca",
+  expiry24h: "24 horas",
+  expiry7d: "7 días",
+  expiry30d: "30 días",
+  passwordLabel: "Contraseña",
+  passwordOff: "No",
+  passwordOn: "Proteger",
+  passwordPlaceholder: "Mín. 8 caracteres",
   networkError: "Error de red al subir",
   uploadAborted: "Subida cancelada",
   expiresSoon: "enseguida",
@@ -161,6 +206,21 @@ const ptBR: UiStrings = {
   couldNotDelete: "Não deu pra excluir a imagem.",
   invalidFormat: "Escolha uma imagem PNG, JPEG, WebP ou GIF.",
   tooLarge: "O arquivo passa de 10 MB.",
+  tooLargeLimit: (mb) => `O arquivo passa de ${mb} MB.`,
+  passwordTooShort: "A senha precisa ter pelo menos 8 caracteres.",
+  passwordProtected: "Protegido por senha",
+  manageInDrops: "Gerenciar em Meus envios",
+  needLongerTitle: "Precisa por mais tempo?",
+  needLongerBody: "Mantenha links por até 30 dias com Pro — $1.99/mês.",
+  proControlsKicker: "PRO",
+  expiresLabel: "Expira",
+  expiry24h: "24 horas",
+  expiry7d: "7 dias",
+  expiry30d: "30 dias",
+  passwordLabel: "Senha",
+  passwordOff: "Não",
+  passwordOn: "Proteger",
+  passwordPlaceholder: "Mín. 8 caracteres",
   networkError: "Erro de rede no envio",
   uploadAborted: "Envio cancelado",
   expiresSoon: "já já",
@@ -210,6 +270,21 @@ const de: UiStrings = {
   couldNotDelete: "Bild ließ sich nicht löschen.",
   invalidFormat: "Bitte PNG, JPEG, WebP oder GIF wählen.",
   tooLarge: "Datei ist größer als 10 MB.",
+  tooLargeLimit: (mb) => `Datei ist größer als ${mb} MB.`,
+  passwordTooShort: "Passwort muss mindestens 8 Zeichen haben.",
+  passwordProtected: "Passwortgeschützt",
+  manageInDrops: "In Meine Drops verwalten",
+  needLongerTitle: "Länger behalten?",
+  needLongerBody: "Links bis 30 Tage mit Pro — $1.99/Monat.",
+  proControlsKicker: "PRO",
+  expiresLabel: "Läuft ab",
+  expiry24h: "24 Stunden",
+  expiry7d: "7 Tage",
+  expiry30d: "30 Tage",
+  passwordLabel: "Passwort",
+  passwordOff: "Aus",
+  passwordOn: "Schützen",
+  passwordPlaceholder: "Mind. 8 Zeichen",
   networkError: "Netzwerkfehler beim Upload",
   uploadAborted: "Upload abgebrochen",
   expiresSoon: "gleich",

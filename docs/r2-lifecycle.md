@@ -1,4 +1,4 @@
-# R2 lifecycle (V2 Phase C)
+# R2 lifecycle
 
 Do not put a 2-day expire on the whole `o/` prefix. That would delete Pro objects.
 

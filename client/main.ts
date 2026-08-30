@@ -41,12 +41,15 @@ function el<T extends HTMLElement>(id: string): T {
 
 function trackEvent(
   event: string,
-  extra: { page_intent?: string } = {},
+  extra: { page_intent?: string; plan?: string; interval?: string } = {},
 ): void {
   try {
     const body = JSON.stringify({
       event,
       page_intent: extra.page_intent ?? pageIntent,
+      plan: extra.plan,
+      interval: extra.interval,
+      client: "web",
     });
     const blob = new Blob([body], { type: "application/json" });
     if (navigator.sendBeacon) {
@@ -225,8 +228,9 @@ function clearPreview() {
 
 function mapUploadError(body: UploadErrorResponse | null, status: number): string {
   if (body?.code && ui.errors[body.code]) return ui.errors[body.code]!;
-  if (body?.error) return body.error;
-  return `${ui.uploadFailed} (${status})`;
+  if (status === 413) return ui.tooLarge;
+  if (status === 429) return ui.errors.rate_limited;
+  return ui.uploadFailed;
 }
 
 async function handleFile(file: File) {
@@ -237,13 +241,13 @@ async function handleFile(file: File) {
   }
   const limit = accountEntitlements?.maxUploadBytes ?? MAX_BYTES;
   if (file.size > limit) {
-    showError(ui.tooLarge);
+    showError(ui.tooLargeLimit(Math.round(limit / (1024 * 1024))));
     return;
   }
   if (proPasswordOn()) {
     const password = (document.getElementById("pro-password") as HTMLInputElement | null)?.value.trim() || "";
     if (password.length < 8) {
-      showError("Password must be at least 8 characters.");
+      showError(ui.passwordTooShort);
       document.getElementById("pro-password")?.focus();
       return;
     }
@@ -257,6 +261,9 @@ async function handleFile(file: File) {
   progressWrap.setAttribute("aria-valuenow", "0");
   setState("uploading");
   announce(ui.uploading);
+  trackEvent("upload_start", {
+    plan: accountEntitlements?.plan || (accountUser ? "free" : "anonymous"),
+  });
 
   try {
     const result = await uploadWithProgress(file, (pct) => {
@@ -343,9 +350,16 @@ async function tryCopy(text: string): Promise<boolean> {
 function showSuccess(result: UploadResponse, copied: boolean) {
   const title = copied ? ui.uploadedCopied : ui.uploaded;
   successTitle.textContent = title;
-  shareUrl.value = result.url;
+  shareUrl.value = result.url.replace(/^https?:\/\//, "");
+  shareUrl.dataset.url = result.url;
   btnOpen.href = result.url;
   expiresLabel.textContent = `${ui.expiresPrefix} ${formatExpiry(result.expiresAt)}`;
+  const protect = document.getElementById("protect-label");
+  if (protect) protect.hidden = !proPasswordOn();
+  const manage = document.getElementById("btn-manage") as HTMLAnchorElement | null;
+  if (manage) manage.hidden = !(accountUser && accountEntitlements?.plan === "pro");
+  const upsell = document.getElementById("success-upsell");
+  if (upsell) upsell.hidden = accountEntitlements?.plan === "pro";
   setState("success");
   announce(title);
   if (!copied) {

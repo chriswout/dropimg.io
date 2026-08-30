@@ -172,12 +172,13 @@
         </a>
         <div class="header-actions">
           <nav id="account-nav" class="account-nav" aria-label="Cuenta">
+            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/es/pro">Pro · $1.99</a>
             <a id="account-signin" class="account-chip" href="/login">Entrar</a>
             <div id="account-session" class="account-session" hidden>
               <a id="account-app" class="account-nav-link" href="/app">Mis envíos</a>
-              <a id="account-plan" class="account-plan" href="/pro" hidden
+              <a id="account-plan" class="account-plan" href="/es/pro" hidden
                 data-label-pro="Pro"
-                data-label-upgrade="Mejorar a Pro"></a>
+                data-label-upgrade="Mejorar"></a>
               <details class="account-menu">
                 <summary class="account-chip account-summary">
                   <span id="account-plan-badge" class="account-plan-badge" hidden>Pro</span>
@@ -185,6 +186,8 @@
                 </summary>
                 <div class="account-menu-panel">
                   <p id="account-email-full" class="account-email-full"></p>
+                  <a id="account-app-menu" class="account-menu-item account-menu-mobile" href="/app">Mis envíos</a>
+                  <a id="account-plan-menu" class="account-menu-item account-menu-mobile" href="/es/pro" hidden>Mejorar</a>
                   <a id="account-edit" class="account-menu-item" href="/account">Editar cuenta</a>
                   <button id="account-signout" type="button" class="account-menu-item">Salir</button>
                 </div>
@@ -326,6 +329,7 @@
                 <button id="btn-copy" type="button" class="btn primary">Copiar</button>
               </div>
               <p id="expires-label" class="dz-hint"></p>
+              <p id="protect-label" class="dz-hint" hidden>Protegido con contraseña</p>
               <div class="actions">
                 <a id="btn-open" class="btn secondary" href="#" target="_blank" rel="noopener"
                   >Abrir</a
@@ -336,7 +340,12 @@
                 <button id="btn-another" type="button" class="btn secondary">
                   Subir otra
                 </button>
+                <a id="btn-manage" class="btn secondary" href="/app" hidden>Gestionar en Mis envíos</a>
               </div>
+              <p id="success-upsell" class="success-upsell" hidden>
+                <strong>¿Lo necesitas más tiempo?</strong>
+                Conserva enlaces hasta 30 días con Pro — $1.99/mes.
+              </p>
             </div>
 
             <div id="state-error" class="state hidden">
@@ -346,19 +355,20 @@
             </div>
           </section>
           <div id="pro-options" class="pro-options" hidden>
+            <p class="pro-options-kicker">PRO</p>
             <div class="pro-field">
-              <span id="pro-expiry-label">Expires</span>
+              <span id="pro-expiry-label">Caduca</span>
               <div id="pro-expiry" class="expiry-pills" role="radiogroup" aria-labelledby="pro-expiry-label" data-value="86400">
-                <button type="button" class="expiry-pill" role="radio" aria-checked="true" data-expiry="86400">24h</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="604800">7 days</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="2592000">30 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="true" data-expiry="86400">24 horas</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="604800">7 días</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" data-expiry="2592000">30 días</button>
               </div>
             </div>
             <div class="pro-field" id="pro-password-wrap">
-              <span id="pro-password-label">Password</span>
+              <span id="pro-password-label">Contraseña</span>
               <div class="pro-password-controls">
-                <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password"></button>
-                <input id="pro-password" type="password" minlength="8" placeholder="Min. 8 characters" autocomplete="new-password" hidden />
+                <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password" data-off="No" data-on="Proteger"></button>
+                <input id="pro-password" type="password" minlength="8" placeholder="Mín. 8 caracteres" autocomplete="new-password" hidden />
               </div>
             </div>
           </div>
@@ -425,11 +435,11 @@
 
       <footer class="foot">
         <div class="foot-legal">
-          <a href="/privacy.html">Privacy</a>
+          <a href="/privacy.html">Privacidad</a>
           <span aria-hidden="true">·</span>
-          <a href="/terms.html">Terms</a>
+          <a href="/terms.html">Términos</a>
           <span aria-hidden="true">·</span>
-          <a href="/abuse">Abuse</a>
+          <a href="/abuse">Abuso</a>
         </div>
         <nav class="foot-seo" aria-label="Más información">
           <a href="/es/alojamiento-temporal-imagenes">Alojamiento temporal de imágenes</a>

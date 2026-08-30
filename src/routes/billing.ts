@@ -14,6 +14,7 @@ import type { BillingEnv, CheckoutInterval, PaddleWebhookEvent } from "../lib/bi
 import { verifyPaddleSignature } from "../lib/billing/verify";
 import { entitlementsFor, loadSubscription } from "../lib/entitlements";
 import { sha256Hex } from "../lib/auth/crypto";
+import { localeFromProPath } from "../../marketing/pro";
 import { renderProPage } from "../views/pro";
 
 type Env = {
@@ -26,23 +27,55 @@ function asBillingEnv(env: Cloudflare.Env): BillingEnv {
   return env as Cloudflare.Env & BillingEnv;
 }
 
-billingRoutes.get("/pro", async (c) => {
-  const locale = resolveRequestLocale(c.req.raw);
+function intervalFromPrice(
+  env: BillingEnv,
+  data: Record<string, unknown>,
+): "monthly" | "annual" | "" {
+  const monthly = env.PADDLE_PRICE_MONTHLY?.trim() || "";
+  const annual = env.PADDLE_PRICE_ANNUAL?.trim() || "";
+  const ids: string[] = [];
+  if (typeof data.price_id === "string") ids.push(data.price_id);
+  const items = Array.isArray(data.items) ? data.items : [];
+  for (const item of items) {
+    if (!item || typeof item !== "object") continue;
+    const rec = item as { price?: { id?: string }; price_id?: string };
+    if (typeof rec.price?.id === "string") ids.push(rec.price.id);
+    if (typeof rec.price_id === "string") ids.push(rec.price_id);
+  }
+  if (annual && ids.includes(annual)) return "annual";
+  if (monthly && ids.includes(monthly)) return "monthly";
+  return "";
+}
+
+async function servePro(c: { req: { raw: Request; header: (n: string) => string | undefined }; env: Cloudflare.Env }) {
+  const pathLocale = localeFromProPath(new URL(c.req.raw.url).pathname);
+  const locale = pathLocale ?? resolveRequestLocale(c.req.raw);
   const session = await resolveSession(c.env.DB, c.req.header("cookie"));
   const entitlements = session
     ? await entitlementsFor(c.env, session.id)
     : null;
   const subscription = session ? await loadSubscription(c.env.DB, session.id) : null;
+  const plan = entitlements?.plan ?? "anonymous";
+  track(c.env.ANALYTICS, "pro_page_view", {
+    plan,
+    pageIntent: "pro",
+    client: "web",
+  });
   return renderProPage({
     locale,
     env: c.env,
     signedIn: Boolean(session),
-    plan: entitlements?.plan ?? "anonymous",
+    plan,
     billingOn: billingEnabled(asBillingEnv(c.env)),
     periodEnd: subscription?.current_period_end ?? null,
     cancelAtPeriodEnd: Boolean(subscription?.cancel_at_period_end),
   });
-});
+}
+
+billingRoutes.get("/pro", (c) => servePro(c));
+billingRoutes.get("/es/pro", (c) => servePro(c));
+billingRoutes.get("/pt-br/pro", (c) => servePro(c));
+billingRoutes.get("/de/pro", (c) => servePro(c));
 
 billingRoutes.get("/api/billing/config", (c) => {
   const config = billingConfig(asBillingEnv(c.env));
@@ -62,13 +95,18 @@ billingRoutes.post("/api/billing/checkout", async (c) => {
     const body = (await c.req.json()) as { interval?: string };
     if (body.interval === "annual") interval = "annual";
     else if (body.interval && body.interval !== "monthly") {
-      return c.json({ error: "Unknown plan." }, 400);
+      return c.json({ error: "That billing option isn’t available." }, 400);
     }
   } catch {
     interval = "monthly";
   }
 
-  track(c.env.ANALYTICS, "checkout_started", { reason: interval });
+  track(c.env.ANALYTICS, "checkout_started", {
+    reason: interval,
+    interval,
+    plan: "free",
+    client: "web",
+  });
   return c.json({
     env: config.env,
     clientToken: config.clientToken,
@@ -160,8 +198,27 @@ billingRoutes.post("/api/billing/paddle/webhook", async (c) => {
     .run();
   track(c.env.ANALYTICS, "billing_webhook_ok", {
     reason: event.event_type,
-    slug: handled.subscriptionId ?? "",
   });
+  const status = typeof event.data.status === "string" ? event.data.status : "";
+  const interval = intervalFromPrice(asBillingEnv(c.env), event.data);
+  if (
+    event.event_type === "subscription.activated" ||
+    event.event_type === "subscription.created" ||
+    (event.event_type === "transaction.completed" && status === "completed")
+  ) {
+    track(c.env.ANALYTICS, "pro_activated", {
+      reason: event.event_type,
+      interval: interval || undefined,
+      plan: "pro",
+    });
+  }
+  if (event.event_type === "subscription.canceled" || status === "canceled") {
+    track(c.env.ANALYTICS, "pro_canceled", {
+      reason: event.event_type,
+      interval: interval || undefined,
+      plan: "pro",
+    });
+  }
   void inserted;
   return c.json({ received: true });
 });

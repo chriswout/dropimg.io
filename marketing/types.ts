@@ -64,6 +64,7 @@ export type SharedChrome = {
   signOut: string;
   myDrops: string;
   pro: string;
+  proPrice: string;
   upgradeToPro: string;
   editAccount: string;
   accountAria: string;

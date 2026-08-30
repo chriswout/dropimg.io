@@ -1,6 +1,12 @@
 import { Hono } from "hono";
-import { track, type AnalyticsEvent } from "../lib/analytics";
+import {
+  allowInterval,
+  allowPlan,
+  track,
+  type AnalyticsEvent,
+} from "../lib/analytics";
 import { normalizePageIntent } from "../lib/page-intent";
+import { normalizeUploadClient } from "../lib/upload-client";
 
 type Env = {
   Bindings: Cloudflare.Env;
@@ -12,16 +18,30 @@ const CLIENT_EVENTS = new Set<AnalyticsEvent>([
   "share_cta_click",
   "recent_link_open",
   "recent_delete",
+  "upload_start",
+  "pro_cta_click",
+  "checkout_completed_client",
+  "dashboard_open",
+  "dashboard_copy",
+  "dashboard_delete",
 ]);
 
 export const eventRoutes = new Hono<Env>();
 
 /**
  * Lightweight product analytics beacon.
- * Accepts only allowlisted event names + page_intent values.
+ * Accepts only allowlisted event names + low-cardinality fields.
  */
 eventRoutes.post("/api/event", async (c) => {
-  let body: { event?: string; page_intent?: string; pageIntent?: string };
+  let body: {
+    event?: string;
+    page_intent?: string;
+    pageIntent?: string;
+    plan?: string;
+    interval?: string;
+    client?: string;
+    reason?: string;
+  };
   try {
     const text = await c.req.text();
     body = text ? (JSON.parse(text) as typeof body) : {};
@@ -37,10 +57,17 @@ eventRoutes.post("/api/event", async (c) => {
   const pageIntent = normalizePageIntent(
     body.page_intent ?? body.pageIntent ?? "",
   );
+  const reason =
+    event === "landing_view"
+      ? pageIntent || undefined
+      : allowInterval(body.reason) || allowInterval(body.interval) || undefined;
 
   track(c.env.ANALYTICS, event, {
     pageIntent: pageIntent || undefined,
-    reason: event === "landing_view" ? pageIntent || undefined : undefined,
+    reason,
+    plan: allowPlan(body.plan) || undefined,
+    interval: allowInterval(body.interval) || undefined,
+    client: body.client ? normalizeUploadClient(body.client) : undefined,
   });
 
   return c.json({ ok: true });

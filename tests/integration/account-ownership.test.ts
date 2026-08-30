@@ -214,7 +214,7 @@ describe("Account ownership", () => {
       headers: { Cookie: cookie },
     });
     const html = await page.text();
-    expect(html).toContain("Showing your 10 most recent");
+    expect(html).toContain("Last 10 active uploads");
     expect(html).toContain(slugs[11]);
     expect(html).not.toContain(slugs[0]);
     expect(html).not.toContain(slugs[1]);

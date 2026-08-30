@@ -5,6 +5,7 @@ type Copy = {
   title: string;
   heading: string;
   lede: string;
+  sectionAccount: string;
   email: string;
   emailHint: string;
   plan: string;
@@ -14,7 +15,7 @@ type Copy = {
   ends: (date: string) => string;
   viewPlans: string;
   manage: string;
-  sessions: string;
+  sectionSecurity: string;
   sessionsHint: string;
   signOutAll: string;
   integrations: string;
@@ -29,6 +30,9 @@ type Copy = {
   neverUsed: string;
   created: string;
   lastUsed: string;
+  justNow: string;
+  minutesAgo: (n: number) => string;
+  hoursAgo: (n: number) => string;
   revoke: string;
   noDevices: string;
   lostConfig: string;
@@ -42,47 +46,58 @@ type Copy = {
   revokeTitle: string;
   revokeBody: string;
   cancel: string;
+  sectionDanger: string;
   delete: string;
   deleteHint: string;
+  deleteWill: string;
+  deleteCancelPro: string;
+  deleteImages: string;
+  deleteIntegrations: string;
+  deleteSignOut: string;
+  deleteUndo: string;
   deleteAction: string;
-  deleteConfirm: string;
   deleteFailed: string;
+  billingFail: string;
+  billingFailHint: string;
   skip: string;
 };
 
-const COPY: Record<Locale, Copy> = {
+export const ACCOUNT_COPY: Record<Locale, Copy> = {
   en: {
     title: "Account — dropimg.io",
     heading: "Account",
     lede: "Email, plan, and tools for this sign-in.",
+    sectionAccount: "Account",
     email: "Email",
     emailHint: "Sign-in uses a one-time link. There is no password.",
     plan: "Plan",
     planFree: "Free",
     planPro: "Pro",
-    renews: (date) => `Renews ${date}.`,
-    ends: (date) => `Ends ${date}.`,
+    renews: (date) => `Renews ${date}`,
+    ends: (date) => `Ends ${date}`,
     viewPlans: "View plans",
     manage: "Manage billing",
-    sessions: "Sessions",
+    sectionSecurity: "Security",
     sessionsHint: "Sign out everywhere this account is open.",
     signOutAll: "Sign out of all devices",
     integrations: "Integrations",
     integrationsHint: "Connect DropIMG to tools you already use.",
     extensionTitle: "Browser extension",
-    extensionBody: "Capture and upload screenshots directly to your DropIMG account.",
+    extensionBody: "Capture screenshots and save them directly to My drops.",
     connectExtension: "Connect extension",
     sharexTitle: "ShareX",
-    sharexBody: "Send ShareX captures directly to your DropIMG account.",
+    sharexBody: "Send ShareX screenshots directly to your DropIMG account.",
     createSharex: "Create ShareX config",
-    connectedDevices: "Connected devices",
+    connectedDevices: "Connected integrations",
     neverUsed: "Never used",
     created: "Created",
     lastUsed: "Last used",
+    justNow: "just now",
+    minutesAgo: (n) => (n === 1 ? "1 minute ago" : `${n} minutes ago`),
+    hoursAgo: (n) => (n === 1 ? "1 hour ago" : `${n} hours ago`),
     revoke: "Revoke",
     noDevices: "No connected tools yet.",
-    lostConfig:
-      "Already lost the config? Revoke the old token and create a new one.",
+    lostConfig: "Already lost the config? Revoke the old token and create a new one.",
     tokenTitle: "Integration connected",
     tokenBody: "Copy this token now. DropIMG will not show it again.",
     copyToken: "Copy token",
@@ -92,45 +107,55 @@ const COPY: Record<Locale, Copy> = {
     done: "Done",
     revokeTitle: "Revoke this integration?",
     revokeBody:
-      "Uploads from this device/app will stop immediately. Existing DropIMG links will not be affected.",
+      "Uploads from this device or app will stop immediately. Existing DropIMG links will not be affected.",
     cancel: "Cancel",
+    sectionDanger: "Danger zone",
     delete: "Delete account",
-    deleteHint:
-      "Deletes your drops and signs you out. An active Pro subscription is canceled immediately first.",
+    deleteHint: "This permanently closes the account.",
+    deleteWill: "Deleting your account will:",
+    deleteCancelPro: "cancel Pro if active",
+    deleteImages: "delete your active DropIMG images",
+    deleteIntegrations: "revoke connected integrations",
+    deleteSignOut: "sign you out everywhere",
+    deleteUndo: "This cannot be undone.",
     deleteAction: "Delete account",
-    deleteConfirm:
-      "Delete this account? Active Pro billing is canceled immediately and your images are removed.",
     deleteFailed: "Could not delete this account.",
+    billingFail: "We couldn't cancel your Pro subscription, so your DropIMG account was not deleted.",
+    billingFailHint: "Manage billing or try again.",
     skip: "Skip to account",
   },
   es: {
     title: "Cuenta — dropimg.io",
     heading: "Cuenta",
     lede: "Correo, plan y herramientas de este acceso.",
+    sectionAccount: "Cuenta",
     email: "Correo",
     emailHint: "Entras con un enlace de un solo uso. No hay contraseña.",
     plan: "Plan",
     planFree: "Gratis",
     planPro: "Pro",
-    renews: (date) => `Se renueva el ${date}.`,
-    ends: (date) => `Termina el ${date}.`,
+    renews: (date) => `Se renueva el ${date}`,
+    ends: (date) => `Termina el ${date}`,
     viewPlans: "Ver planes",
     manage: "Gestionar facturación",
-    sessions: "Sesiones",
+    sectionSecurity: "Seguridad",
     sessionsHint: "Cierra sesión en todos los dispositivos.",
     signOutAll: "Salir de todos los dispositivos",
     integrations: "Integraciones",
     integrationsHint: "Conecta DropIMG a las herramientas que ya usas.",
     extensionTitle: "Extensión del navegador",
-    extensionBody: "Captura y sube capturas de pantalla directo a tu cuenta DropIMG.",
+    extensionBody: "Captura pantallas y guárdalas directo en Mis envíos.",
     connectExtension: "Conectar extensión",
     sharexTitle: "ShareX",
     sharexBody: "Envía capturas de ShareX directo a tu cuenta DropIMG.",
     createSharex: "Crear config de ShareX",
-    connectedDevices: "Dispositivos conectados",
+    connectedDevices: "Integraciones conectadas",
     neverUsed: "Sin uso",
     created: "Creado",
     lastUsed: "Último uso",
+    justNow: "ahora mismo",
+    minutesAgo: (n) => (n === 1 ? "hace 1 minuto" : `hace ${n} minutos`),
+    hoursAgo: (n) => (n === 1 ? "hace 1 hora" : `hace ${n} horas`),
     revoke: "Revocar",
     noDevices: "Aún no hay herramientas conectadas.",
     lostConfig: "¿Perdiste la config? Revoca el token viejo y crea uno nuevo.",
@@ -145,43 +170,53 @@ const COPY: Record<Locale, Copy> = {
     revokeBody:
       "Las subidas de este dispositivo o app se detienen al momento. Los enlaces existentes no cambian.",
     cancel: "Cancelar",
+    sectionDanger: "Zona de peligro",
     delete: "Borrar cuenta",
-    deleteHint:
-      "Borra tus imágenes y cierra la sesión. Si hay Pro activo, se cancela al momento.",
+    deleteHint: "Esto cierra la cuenta de forma permanente.",
+    deleteWill: "Al borrar tu cuenta:",
+    deleteCancelPro: "se cancela Pro si está activo",
+    deleteImages: "se borran tus imágenes activas de DropIMG",
+    deleteIntegrations: "se revocan las integraciones conectadas",
+    deleteSignOut: "se cierra la sesión en todos lados",
+    deleteUndo: "Esto no se puede deshacer.",
     deleteAction: "Borrar cuenta",
-    deleteConfirm:
-      "¿Borrar esta cuenta? La facturación Pro se cancela al momento y se eliminan tus imágenes.",
     deleteFailed: "No se pudo borrar la cuenta.",
+    billingFail: "No pudimos cancelar tu suscripción Pro, así que la cuenta no se borró.",
+    billingFailHint: "Gestiona la facturación o inténtalo de nuevo.",
     skip: "Ir a la cuenta",
   },
   "pt-BR": {
     title: "Conta — dropimg.io",
     heading: "Conta",
     lede: "E-mail, plano e ferramentas deste login.",
+    sectionAccount: "Conta",
     email: "E-mail",
     emailHint: "Você entra com um link de uso único. Não tem senha.",
     plan: "Plano",
     planFree: "Grátis",
     planPro: "Pro",
-    renews: (date) => `Renova em ${date}.`,
-    ends: (date) => `Termina em ${date}.`,
+    renews: (date) => `Renova em ${date}`,
+    ends: (date) => `Termina em ${date}`,
     viewPlans: "Ver planos",
     manage: "Gerenciar cobrança",
-    sessions: "Sessões",
+    sectionSecurity: "Segurança",
     sessionsHint: "Sair de todos os dispositivos desta conta.",
     signOutAll: "Sair de todos os dispositivos",
     integrations: "Integrações",
     integrationsHint: "Conecte o DropIMG às ferramentas que você já usa.",
     extensionTitle: "Extensão do navegador",
-    extensionBody: "Capture e envie prints direto para sua conta DropIMG.",
+    extensionBody: "Capture prints e salve direto em Meus envios.",
     connectExtension: "Conectar extensão",
     sharexTitle: "ShareX",
     sharexBody: "Envie capturas do ShareX direto para sua conta DropIMG.",
     createSharex: "Criar config do ShareX",
-    connectedDevices: "Dispositivos conectados",
+    connectedDevices: "Integrações conectadas",
     neverUsed: "Nunca usado",
     created: "Criado",
     lastUsed: "Último uso",
+    justNow: "agora",
+    minutesAgo: (n) => (n === 1 ? "há 1 minuto" : `há ${n} minutos`),
+    hoursAgo: (n) => (n === 1 ? "há 1 hora" : `há ${n} horas`),
     revoke: "Revogar",
     noDevices: "Nenhuma ferramenta conectada ainda.",
     lostConfig: "Perdeu a config? Revogue o token antigo e crie outro.",
@@ -196,43 +231,53 @@ const COPY: Record<Locale, Copy> = {
     revokeBody:
       "Envios deste dispositivo ou app param na hora. Links existentes do DropIMG não mudam.",
     cancel: "Cancelar",
+    sectionDanger: "Zona de perigo",
     delete: "Excluir conta",
-    deleteHint:
-      "Apaga seus envios e encerra a sessão. Uma assinatura Pro ativa é cancelada na hora.",
+    deleteHint: "Isso encerra a conta de forma permanente.",
+    deleteWill: "Excluir sua conta vai:",
+    deleteCancelPro: "cancelar o Pro se estiver ativo",
+    deleteImages: "apagar suas imagens ativas do DropIMG",
+    deleteIntegrations: "revogar integrações conectadas",
+    deleteSignOut: "sair da conta em todos os lugares",
+    deleteUndo: "Isso não tem como desfazer.",
     deleteAction: "Excluir conta",
-    deleteConfirm:
-      "Excluir esta conta? A cobrança Pro é cancelada na hora e suas imagens são removidas.",
     deleteFailed: "Não foi possível excluir a conta.",
+    billingFail: "Não foi possível cancelar sua assinatura Pro, então a conta não foi excluída.",
+    billingFailHint: "Gerencie a cobrança ou tente de novo.",
     skip: "Ir para a conta",
   },
   de: {
     title: "Konto — dropimg.io",
     heading: "Konto",
     lede: "E-Mail, Plan und Tools für diese Anmeldung.",
+    sectionAccount: "Konto",
     email: "E-Mail",
     emailHint: "Anmeldung per Einmal-Link. Kein Passwort.",
     plan: "Plan",
     planFree: "Kostenlos",
     planPro: "Pro",
-    renews: (date) => `Verlängert sich am ${date}.`,
-    ends: (date) => `Endet am ${date}.`,
+    renews: (date) => `Verlängert sich am ${date}`,
+    ends: (date) => `Endet am ${date}`,
     viewPlans: "Pläne ansehen",
     manage: "Abrechnung verwalten",
-    sessions: "Sitzungen",
+    sectionSecurity: "Sicherheit",
     sessionsHint: "Überall abmelden, wo dieses Konto offen ist.",
     signOutAll: "Auf allen Geräten abmelden",
     integrations: "Integrationen",
     integrationsHint: "Verbinde DropIMG mit Tools, die du schon nutzt.",
     extensionTitle: "Browser-Erweiterung",
-    extensionBody: "Screenshots direkt in dein DropIMG-Konto hochladen.",
+    extensionBody: "Screenshots aufnehmen und direkt in Meine Drops speichern.",
     connectExtension: "Erweiterung verbinden",
     sharexTitle: "ShareX",
     sharexBody: "ShareX-Aufnahmen direkt in dein DropIMG-Konto senden.",
     createSharex: "ShareX-Config erstellen",
-    connectedDevices: "Verbundene Geräte",
+    connectedDevices: "Verbundene Integrationen",
     neverUsed: "Noch nicht genutzt",
     created: "Erstellt",
     lastUsed: "Zuletzt genutzt",
+    justNow: "gerade eben",
+    minutesAgo: (n) => (n === 1 ? "vor 1 Minute" : `vor ${n} Minuten`),
+    hoursAgo: (n) => (n === 1 ? "vor 1 Stunde" : `vor ${n} Stunden`),
     revoke: "Widerrufen",
     noDevices: "Noch keine verbundenen Tools.",
     lostConfig: "Config weg? Alten Token widerrufen und einen neuen erstellen.",
@@ -247,13 +292,20 @@ const COPY: Record<Locale, Copy> = {
     revokeBody:
       "Uploads von diesem Gerät oder dieser App stoppen sofort. Bestehende DropIMG-Links bleiben.",
     cancel: "Abbrechen",
+    sectionDanger: "Gefahrenzone",
     delete: "Konto löschen",
-    deleteHint:
-      "Löscht deine Drops und meldet dich ab. Ein aktives Pro-Abo wird zuerst sofort gekündigt.",
+    deleteHint: "Das schließt das Konto dauerhaft.",
+    deleteWill: "Wenn du dein Konto löschst:",
+    deleteCancelPro: "Pro wird gekündigt, falls aktiv",
+    deleteImages: "deine aktiven DropIMG-Bilder werden gelöscht",
+    deleteIntegrations: "verbundene Integrationen werden widerrufen",
+    deleteSignOut: "du wirst überall abgemeldet",
+    deleteUndo: "Das lässt sich nicht rückgängig machen.",
     deleteAction: "Konto löschen",
-    deleteConfirm:
-      "Dieses Konto löschen? Aktives Pro wird sofort gekündigt und deine Bilder werden entfernt.",
     deleteFailed: "Konto konnte nicht gelöscht werden.",
+    billingFail:
+      "Wir konnten dein Pro-Abo nicht kündigen, daher wurde das DropIMG-Konto nicht gelöscht.",
+    billingFailHint: "Abrechnung verwalten oder erneut versuchen.",
     skip: "Zum Konto",
   },
 };
@@ -266,7 +318,7 @@ export function renderAccountPage(opts: {
   periodEnd: number | null;
   cancelAtPeriodEnd: boolean;
 }): string {
-  const t = COPY[opts.locale];
+  const t = ACCOUNT_COPY[opts.locale];
   const period =
     opts.periodEnd && opts.plan === "pro"
       ? opts.cancelAtPeriodEnd
@@ -277,7 +329,6 @@ export function renderAccountPage(opts: {
     opts.plan === "pro"
       ? `<div class="settings-actions">
           <button type="button" class="btn secondary" id="account-portal">${esc(t.manage)}</button>
-          <a class="btn secondary" href="/pro">${esc(t.viewPlans)}</a>
         </div>`
       : `<div class="settings-actions">
           <a class="btn primary" href="/pro">${esc(t.viewPlans)}</a>
@@ -309,10 +360,37 @@ export function renderAccountPage(opts: {
       </div>
     </div>
   </div>
+  <div id="delete-modal" class="modal" hidden>
+    <div class="dialog dialog-wide" role="dialog" aria-modal="true" aria-labelledby="delete-title">
+      <h2 id="delete-title">${esc(t.delete)}</h2>
+      <p>${esc(t.deleteWill)}</p>
+      <ul class="delete-list">
+        <li>${esc(t.deleteCancelPro)}</li>
+        <li>${esc(t.deleteImages)}</li>
+        <li>${esc(t.deleteIntegrations)}</li>
+        <li>${esc(t.deleteSignOut)}</li>
+      </ul>
+      <p>${esc(t.deleteUndo)}</p>
+      <div class="dialog-actions">
+        <button type="button" class="btn secondary" id="delete-cancel">${esc(t.cancel)}</button>
+        <button type="button" class="btn danger" id="delete-ok">${esc(t.deleteAction)}</button>
+      </div>
+    </div>
+  </div>
+  <div id="delete-fail-modal" class="modal" hidden>
+    <div class="dialog dialog-wide" role="dialog" aria-modal="true" aria-labelledby="delete-fail-title">
+      <h2 id="delete-fail-title">${esc(t.delete)}</h2>
+      <p>${esc(t.billingFail)}</p>
+      <p>${esc(t.billingFailHint)}</p>
+      <div class="dialog-actions">
+        <button type="button" class="btn secondary" id="delete-fail-close">${esc(t.cancel)}</button>
+        <button type="button" class="btn primary" id="delete-fail-billing">${esc(t.manage)}</button>
+      </div>
+    </div>
+  </div>
   <script>
     (() => {
-      const portal = document.getElementById("account-portal");
-      portal?.addEventListener("click", async () => {
+      async function openPortal() {
         const res = await fetch("/api/billing/portal", {
           method: "POST",
           credentials: "same-origin",
@@ -321,7 +399,9 @@ export function renderAccountPage(opts: {
         if (!res.ok) return;
         const body = await res.json();
         if (body.url) location.href = body.url;
-      });
+      }
+      document.getElementById("account-portal")?.addEventListener("click", () => { void openPortal(); });
+      document.getElementById("delete-fail-billing")?.addEventListener("click", () => { void openPortal(); });
       document.getElementById("account-logout-all")?.addEventListener("click", async () => {
         await fetch("/api/auth/logout-all", {
           method: "POST",
@@ -330,10 +410,22 @@ export function renderAccountPage(opts: {
         });
         location.href = "/";
       });
-      document.getElementById("account-delete")?.addEventListener("click", async (event) => {
-        const btn = event.currentTarget;
-        const msg = btn?.getAttribute("data-confirm") || "";
-        if (msg && !confirm(msg)) return;
+      const deleteModal = document.getElementById("delete-modal");
+      const deleteFail = document.getElementById("delete-fail-modal");
+      document.getElementById("account-delete")?.addEventListener("click", () => {
+        if (deleteModal) deleteModal.hidden = false;
+      });
+      document.getElementById("delete-cancel")?.addEventListener("click", () => {
+        if (deleteModal) deleteModal.hidden = true;
+      });
+      document.getElementById("delete-fail-close")?.addEventListener("click", () => {
+        if (deleteFail) deleteFail.hidden = true;
+      });
+      deleteModal?.addEventListener("click", (e) => { if (e.target === deleteModal) deleteModal.hidden = true; });
+      deleteFail?.addEventListener("click", (e) => { if (e.target === deleteFail) deleteFail.hidden = true; });
+      document.getElementById("delete-ok")?.addEventListener("click", async () => {
+        const ok = document.getElementById("delete-ok");
+        if (ok) ok.disabled = true;
         const res = await fetch("/api/account/delete", {
           method: "POST",
           credentials: "same-origin",
@@ -343,12 +435,17 @@ export function renderAccountPage(opts: {
           location.href = "/";
           return;
         }
-        let err = btn?.getAttribute("data-error") || "";
-        try {
-          const body = await res.json();
-          if (body.error) err = body.error;
-        } catch {}
-        if (err) alert(err);
+        if (deleteModal) deleteModal.hidden = true;
+        if (ok) ok.disabled = false;
+        if (res.status === 409 || res.status === 502) {
+          if (deleteFail) deleteFail.hidden = false;
+          return;
+        }
+        const banner = document.getElementById("account-delete-error");
+        if (banner) {
+          banner.hidden = false;
+          banner.textContent = ${JSON.stringify(t.deleteFailed)};
+        }
       });
 
       const labels = {
@@ -359,8 +456,13 @@ export function renderAccountPage(opts: {
         noDevices: ${JSON.stringify(t.noDevices)},
         copyToken: ${JSON.stringify(t.copyToken)},
         tokenCopied: ${JSON.stringify(t.tokenCopied)},
+        justNow: ${JSON.stringify(t.justNow)},
+        minutesAgo: ${JSON.stringify(["1 minute ago", "{n} minutes ago"])},
+        hoursAgo: ${JSON.stringify(["1 hour ago", "{n} hours ago"])},
         locale: ${JSON.stringify(LOCALE_CONFIG[opts.locale].htmlLang)},
       };
+      const minAgo = ${JSON.stringify({ one: t.minutesAgo(1), many: t.minutesAgo(9) })};
+      const hrAgo = ${JSON.stringify({ one: t.hoursAgo(1), many: t.hoursAgo(9) })};
       const list = document.getElementById("integ-list");
       const tokenModal = document.getElementById("token-modal");
       const tokenInput = document.getElementById("token-value");
@@ -378,10 +480,10 @@ export function renderAccountPage(opts: {
         const date = new Date(unix * 1000);
         const delta = Date.now() - date.getTime();
         const mins = Math.floor(delta / 60000);
-        if (mins < 1) return "just now";
-        if (mins < 60) return mins + " min ago";
+        if (mins < 1) return labels.justNow;
+        if (mins < 60) return mins === 1 ? minAgo.one : minAgo.many.replace("9", String(mins));
         const hours = Math.floor(mins / 60);
-        if (hours < 24) return hours + "h ago";
+        if (hours < 24) return hours === 1 ? hrAgo.one : hrAgo.many.replace("9", String(hours));
         return date.toLocaleDateString(labels.locale, { month: "short", day: "numeric" });
       }
 
@@ -407,8 +509,9 @@ export function renderAccountPage(opts: {
           title.textContent = row.label;
           const sub = document.createElement("p");
           sub.className = "account-muted";
-          sub.textContent = labels.created + " " + formatWhen(row.createdAt, "") + " · " +
-            (row.lastUsedAt ? labels.lastUsed + " " + formatWhen(row.lastUsedAt, labels.neverUsed) : labels.neverUsed);
+          sub.textContent = row.lastUsedAt
+            ? labels.lastUsed + " " + formatWhen(row.lastUsedAt, labels.neverUsed)
+            : labels.neverUsed;
           meta.append(title, sub);
           const btn = document.createElement("button");
           btn.type = "button";
@@ -509,7 +612,7 @@ export function renderAccountPage(opts: {
     <h1>${esc(t.heading)}</h1>
     <p class="settings-lead">${esc(t.lede)}</p>
     <section class="settings-card">
-      <h2>${esc(t.email)}</h2>
+      <h2>${esc(t.sectionAccount)}</h2>
       <p class="settings-value">${esc(opts.email)}</p>
       <p class="account-muted">${esc(t.emailHint)}</p>
     </section>
@@ -539,14 +642,15 @@ export function renderAccountPage(opts: {
       <p class="account-muted">${esc(t.lostConfig)}</p>
     </section>
     <section class="settings-card">
-      <h2>${esc(t.sessions)}</h2>
+      <h2>${esc(t.sectionSecurity)}</h2>
       <p class="account-muted">${esc(t.sessionsHint)}</p>
       <button type="button" class="btn secondary" id="account-logout-all">${esc(t.signOutAll)}</button>
     </section>
     <section class="settings-card settings-danger">
-      <h2>${esc(t.delete)}</h2>
+      <h2>${esc(t.sectionDanger)}</h2>
       <p class="account-muted">${esc(t.deleteHint)}</p>
-      <button type="button" class="btn" id="account-delete" data-confirm="${esc(t.deleteConfirm)}" data-error="${esc(t.deleteFailed)}">${esc(t.deleteAction)}</button>
+      <p id="account-delete-error" class="form-error" hidden role="alert"></p>
+      <button type="button" class="btn danger" id="account-delete">${esc(t.deleteAction)}</button>
     </section>
   </section>`;
 
@@ -571,7 +675,7 @@ export function accountHtmlResponse(
 function formatDay(unix: number, locale: Locale): string {
   return new Date(unix * 1000).toLocaleDateString(LOCALE_CONFIG[locale].htmlLang, {
     year: "numeric",
-    month: "short",
+    month: "long",
     day: "numeric",
   });
 }

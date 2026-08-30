@@ -31,12 +31,15 @@ export function setupAccountNav() {
   const emailEl = document.getElementById("account-email");
   const emailFullEl = document.getElementById("account-email-full");
   const planEl = document.getElementById("account-plan");
+  const planMenu = document.getElementById("account-plan-menu");
   const planBadge = document.getElementById("account-plan-badge");
+  const proAnon = document.getElementById("account-pro-anon");
   const signout = document.getElementById("account-signout");
   const accountMenu = document.querySelector<HTMLDetailsElement>(".account-menu");
   if (!signin || !sessionEl || !emailEl || !signout) return;
 
   exclusiveDetails();
+  setupModals();
 
   accountReady = (async () => {
     try {
@@ -50,7 +53,7 @@ export function setupAccountNav() {
       emailEl.textContent = local;
       emailEl.title = data.user.email;
       if (emailFullEl) emailFullEl.textContent = data.user.email;
-      applyPlanState(planEl, planBadge, data.entitlements?.plan === "pro");
+      applyPlanState(planEl, planBadge, planMenu, proAnon, true, data.entitlements?.plan === "pro");
       signin.hidden = true;
       sessionEl.hidden = false;
       await claimLocalRecent();
@@ -75,7 +78,7 @@ export function setupAccountNav() {
     emailEl.textContent = "";
     if (emailFullEl) emailFullEl.textContent = "";
     if (accountMenu) accountMenu.open = false;
-    applyPlanState(planEl, planBadge, false);
+    applyPlanState(planEl, planBadge, planMenu, proAnon, false, false);
     if (planEl) {
       planEl.hidden = true;
       planEl.textContent = "";
@@ -87,6 +90,9 @@ export function setupAccountNav() {
 function applyPlanState(
   planEl: HTMLElement | null,
   badgeEl: HTMLElement | null,
+  planMenu: HTMLElement | null,
+  proAnon: HTMLElement | null,
+  signedIn: boolean,
   isPro: boolean,
 ) {
   if (planEl) {
@@ -95,12 +101,68 @@ function applyPlanState(
       planEl.removeAttribute("data-plan");
     } else {
       planEl.textContent =
-        planEl.getAttribute("data-label-upgrade") || "Upgrade to Pro";
+        planEl.getAttribute("data-label-upgrade") || "Upgrade";
       planEl.dataset.plan = "free";
       planEl.hidden = false;
     }
   }
+  if (planMenu) planMenu.hidden = !signedIn || isPro;
   if (badgeEl) badgeEl.hidden = !isPro;
+  if (proAnon) proAnon.hidden = signedIn;
+}
+
+function setupModals() {
+  document.querySelectorAll<HTMLElement>(".modal").forEach(bindModal);
+}
+
+function bindModal(modal: HTMLElement) {
+  let lastFocus: HTMLElement | null = null;
+
+  const focusables = () =>
+    [
+      ...modal.querySelectorAll<HTMLElement>(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+      ),
+    ].filter((el) => !el.hasAttribute("disabled") && !el.closest("[hidden]"));
+
+  const onKey = (event: KeyboardEvent) => {
+    if (modal.hidden) return;
+    if (event.key === "Escape") {
+      event.preventDefault();
+      closeModal(modal);
+      return;
+    }
+    if (event.key !== "Tab") return;
+    const items = focusables();
+    if (items.length === 0) return;
+    const first = items[0]!;
+    const last = items[items.length - 1]!;
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
+  const observer = new MutationObserver(() => {
+    if (modal.hidden) {
+      document.removeEventListener("keydown", onKey, true);
+      lastFocus?.focus();
+      lastFocus = null;
+      return;
+    }
+    lastFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    document.addEventListener("keydown", onKey, true);
+    const items = focusables();
+    (items[0] || modal.querySelector<HTMLElement>(".dialog") || modal).focus();
+  });
+  observer.observe(modal, { attributes: true, attributeFilter: ["hidden"] });
+}
+
+export function closeModal(modal: HTMLElement) {
+  modal.hidden = true;
 }
 
 function headerMenus(): HTMLDetailsElement[] {

@@ -34,22 +34,22 @@ test("signed-in upload appears on My drops", async ({ page, request }) => {
   await page.locator("#file-input").setInputFiles(fixture);
   await expect(page.locator("#state-success")).toBeVisible({ timeout: 30_000 });
   const shareUrl = await page.locator("#share-url").inputValue();
-  const slug = shareUrl.replace(/^https?:\/\/[^/]+\//, "");
+  const slug = shareUrl.split("/").pop() || "";
 
   await page.locator("#account-app").click();
   await expect(page.locator("h1")).toContainText(/my drops/i);
   await expect(page.locator(".brand-logo").first()).toBeVisible();
   await expect(page.locator("footer.foot")).toBeVisible();
   const pageRoot = page.locator(".drops-page");
-  await expect(pageRoot).toHaveAttribute("data-view", "grid");
+  await expect(pageRoot).toHaveAttribute("data-view", "list");
   const urlInput = page.locator(`li[data-slug="${slug}"] .drop-url-input`);
-  await expect(urlInput).toHaveValue(new RegExp(`/${slug}$`));
-  await expect(page.locator(`img[src="/i/${slug}"]`)).toBeVisible();
+  await expect(urlInput).toHaveValue(new RegExp(`dropimg\\.io/${slug}$`));
+  await expect(page.locator(`img[src="/i/${slug}"]`)).toHaveCount(0);
   const copy = page.locator(`li[data-slug="${slug}"] button.drop-copy`);
   await expect(copy).toBeVisible();
   await page.context().grantPermissions(["clipboard-read", "clipboard-write"]);
   await copy.click();
   await expect(copy).toHaveText(/copied/i);
-  await page.locator('.drops-view-btn[data-view="list"]').click();
-  await expect(pageRoot).toHaveAttribute("data-view", "list");
+  await page.locator('.drops-view-btn[data-view="grid"]').click();
+  await expect(pageRoot).toHaveAttribute("data-view", "grid");
 });

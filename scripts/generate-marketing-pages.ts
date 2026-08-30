@@ -20,6 +20,7 @@ import {
   pageUrl,
   type PageId,
 } from "../marketing/pages";
+import { allProUrls } from "../marketing/pro";
 import {
   renderExtensionPage,
   renderIntentPage,
@@ -28,7 +29,7 @@ import {
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const LASTMOD = "2026-08-29";
-const LEGAL_LASTMOD = "2026-08-24";
+const LEGAL_LASTMOD = "2026-08-29";
 
 function htmlOutPath(pageId: PageId, locale: (typeof LOCALES)[number]): string {
   const dir = pageDir(pageId, locale);
@@ -53,6 +54,7 @@ function writeSitemap() {
   ];
   const extension = [EXTENSION_URL];
   const intents = allIntentUrls();
+  const pro = allProUrls();
 
   const urls = [
     ...marketing.map((loc) => {
@@ -72,6 +74,12 @@ function writeSitemap() {
       loc,
       priority: "0.7",
       changefreq: "monthly",
+      lastmod: LASTMOD,
+    })),
+    ...pro.map((loc) => ({
+      loc,
+      priority: "0.85",
+      changefreq: "weekly",
       lastmod: LASTMOD,
     })),
     ...intents.map((loc) => ({

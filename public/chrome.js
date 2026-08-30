@@ -20,11 +20,14 @@
     const emailEl = document.getElementById("account-email");
     const emailFullEl = document.getElementById("account-email-full");
     const planEl = document.getElementById("account-plan");
+    const planMenu = document.getElementById("account-plan-menu");
     const planBadge = document.getElementById("account-plan-badge");
+    const proAnon = document.getElementById("account-pro-anon");
     const signout = document.getElementById("account-signout");
     const accountMenu = document.querySelector(".account-menu");
     if (!signin || !sessionEl || !emailEl || !signout) return;
     exclusiveDetails();
+    setupModals();
     accountReady = (async () => {
       try {
         const res = await fetch("/api/account/me", { credentials: "same-origin" });
@@ -37,7 +40,7 @@
         emailEl.textContent = local;
         emailEl.title = data.user.email;
         if (emailFullEl) emailFullEl.textContent = data.user.email;
-        applyPlanState(planEl, planBadge, data.entitlements?.plan === "pro");
+        applyPlanState(planEl, planBadge, planMenu, proAnon, true, data.entitlements?.plan === "pro");
         signin.hidden = true;
         sessionEl.hidden = false;
         await claimLocalRecent();
@@ -59,7 +62,7 @@
       emailEl.textContent = "";
       if (emailFullEl) emailFullEl.textContent = "";
       if (accountMenu) accountMenu.open = false;
-      applyPlanState(planEl, planBadge, false);
+      applyPlanState(planEl, planBadge, planMenu, proAnon, false, false);
       if (planEl) {
         planEl.hidden = true;
         planEl.textContent = "";
@@ -67,18 +70,67 @@
       }
     });
   }
-  function applyPlanState(planEl, badgeEl, isPro) {
+  function applyPlanState(planEl, badgeEl, planMenu, proAnon, signedIn, isPro) {
     if (planEl) {
       if (isPro) {
         planEl.hidden = true;
         planEl.removeAttribute("data-plan");
       } else {
-        planEl.textContent = planEl.getAttribute("data-label-upgrade") || "Upgrade to Pro";
+        planEl.textContent = planEl.getAttribute("data-label-upgrade") || "Upgrade";
         planEl.dataset.plan = "free";
         planEl.hidden = false;
       }
     }
+    if (planMenu) planMenu.hidden = !signedIn || isPro;
     if (badgeEl) badgeEl.hidden = !isPro;
+    if (proAnon) proAnon.hidden = signedIn;
+  }
+  function setupModals() {
+    document.querySelectorAll(".modal").forEach(bindModal);
+  }
+  function bindModal(modal) {
+    let lastFocus = null;
+    const focusables = () => [
+      ...modal.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      )
+    ].filter((el) => !el.hasAttribute("disabled") && !el.closest("[hidden]"));
+    const onKey = (event) => {
+      if (modal.hidden) return;
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closeModal(modal);
+        return;
+      }
+      if (event.key !== "Tab") return;
+      const items = focusables();
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+    const observer = new MutationObserver(() => {
+      if (modal.hidden) {
+        document.removeEventListener("keydown", onKey, true);
+        lastFocus?.focus();
+        lastFocus = null;
+        return;
+      }
+      lastFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      document.addEventListener("keydown", onKey, true);
+      const items = focusables();
+      (items[0] || modal.querySelector(".dialog") || modal).focus();
+    });
+    observer.observe(modal, { attributes: true, attributeFilter: ["hidden"] });
+  }
+  function closeModal(modal) {
+    modal.hidden = true;
   }
   function headerMenus() {
     return [

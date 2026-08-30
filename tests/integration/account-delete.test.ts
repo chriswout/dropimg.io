@@ -173,7 +173,7 @@ describe("Account deletion", () => {
     });
     expect([409, 502]).toContain(del.status);
     const err = (await del.json()) as { error?: string };
-    expect(err.error).toMatch(/cancel Pro billing/i);
+    expect(err.error).toMatch(/couldn'?t cancel your Pro subscription/i);
 
     const user = await env.DB.prepare(
       `SELECT deleted_at, email_norm FROM users WHERE id = ?`,

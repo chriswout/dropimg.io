@@ -236,22 +236,68 @@ export function renderSharePage(p: ShareProps): string {
 </html>`;
 }
 
+type GoneCopy = {
+  deleted: string;
+  expired: string;
+  missing: string;
+  missingBody: string;
+  goneBody: string;
+  shareNew: string;
+};
+
+export const GONE_COPY: Record<
+  import("../../marketing/locales").Locale,
+  GoneCopy
+> = {
+  en: {
+    deleted: "This image was deleted",
+    expired: "This image has expired",
+    missing: "Image not found",
+    missingBody: "No image exists at this link.",
+    goneBody: "Temporary images on dropimg.io are automatically removed.",
+    shareNew: "Share a new image",
+  },
+  es: {
+    deleted: "Esta imagen fue borrada",
+    expired: "Esta imagen caducó",
+    missing: "Imagen no encontrada",
+    missingBody: "No hay ninguna imagen en este enlace.",
+    goneBody: "Las imágenes temporales de dropimg.io se eliminan solas.",
+    shareNew: "Compartir otra imagen",
+  },
+  "pt-BR": {
+    deleted: "Esta imagem foi excluída",
+    expired: "Esta imagem expirou",
+    missing: "Imagem não encontrada",
+    missingBody: "Não existe imagem neste link.",
+    goneBody: "Imagens temporárias no dropimg.io são removidas automaticamente.",
+    shareNew: "Compartilhar outra imagem",
+  },
+  de: {
+    deleted: "Dieses Bild wurde gelöscht",
+    expired: "Dieses Bild ist abgelaufen",
+    missing: "Bild nicht gefunden",
+    missingBody: "Unter diesem Link gibt es kein Bild.",
+    goneBody: "Temporäre Bilder auf dropimg.io werden automatisch entfernt.",
+    shareNew: "Neues Bild teilen",
+  },
+};
+
 export function renderGonePage(opts: {
   reason: "missing" | "expired" | "deleted";
+  locale?: import("../../marketing/locales").Locale;
 }): string {
+  const t = GONE_COPY[opts.locale ?? "en"];
   const title =
     opts.reason === "deleted"
-      ? "This image was deleted"
+      ? t.deleted
       : opts.reason === "expired"
-        ? "This image has expired"
-        : "Image not found";
-  const copy =
-    opts.reason === "missing"
-      ? "No image exists at this link."
-      : "Temporary images on dropimg.io are automatically removed after 24 hours.";
+        ? t.expired
+        : t.missing;
+  const copy = opts.reason === "missing" ? t.missingBody : t.goneBody;
 
   return `<!DOCTYPE html>
-<html lang="en">
+<html lang="${esc(opts.locale === "pt-BR" ? "pt-BR" : opts.locale || "en")}">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
@@ -293,7 +339,7 @@ export function renderGonePage(opts: {
   <div class="card">
     <h1>${esc(title)}</h1>
     <p>${esc(copy)}</p>
-    <a href="/">Share a new image</a>
+    <a href="/">${esc(t.shareNew)}</a>
   </div>
 </body>
 </html>`;

@@ -1,4 +1,5 @@
 import { LOCALE_CONFIG, type Locale } from "../../marketing/locales";
+import { proHeadTags, proPath, PRO_SEO } from "../../marketing/pro";
 import { renderSitePage, siteHtmlResponse } from "./site-page";
 
 type Copy = {
@@ -7,6 +8,7 @@ type Copy = {
   heading: string;
   memberHeading: string;
   lede: string;
+  ledeMore: string;
   memberLede: string;
   monthly: string;
   annual: string;
@@ -14,138 +16,187 @@ type Copy = {
   annualPrice: string;
   monthlyNote: string;
   annualNote: string;
+  annualPerMonth: string;
   save: string;
-  buyMonthly: string;
-  buyAnnual: string;
+  getPro: string;
   signIn: string;
   manage: string;
-  account: string;
   waiting: string;
+  activating: string;
+  activatingTimeout: string;
+  checkoutUnavailable: string;
+  checkoutCouldNotOpen: string;
+  billingOff: string;
   skip: string;
+  note: string;
   renews: (date: string) => string;
   ends: (date: string) => string;
-  features: [string, string, string, string];
+  features: [string, string, string, string, string, string, string];
 };
 
-const COPY: Record<Locale, Copy> = {
+export const PRO_COPY: Record<Locale, Copy> = {
   en: {
-    title: "DropIMG Pro — $1.99/month",
+    title: PRO_SEO.en.title,
     kicker: "DropIMG Pro",
-    heading: "Longer links. Passwords. Bigger files.",
-    memberHeading: "You’re on Pro",
-    lede: "Anonymous 24h drops stay free. Pro is for the links you need to keep around.",
+    heading: "DropIMG Pro",
+    memberHeading: "You're on DropIMG Pro",
+    lede: "More control for people who use DropIMG every day.",
+    ledeMore:
+      "Keep links longer, manage your uploads across devices, and protect what you share.",
     memberLede: "Cancel anytime from billing.",
     monthly: "Monthly",
     annual: "Annual",
     monthlyPrice: "$1.99",
     annualPrice: "$19.99",
-    monthlyNote: "per month",
-    annualNote: "per year",
-    save: "Two months free",
-    buyMonthly: "Get monthly",
-    buyAnnual: "Get annual",
-    signIn: "Sign in to upgrade",
+    monthlyNote: "/ month",
+    annualNote: "/ year",
+    annualPerMonth: "$1.67/mo",
+    save: "Save 16%",
+    getPro: "Get Pro",
+    signIn: "Sign in to get Pro",
     manage: "Manage billing",
-    account: "Account",
-    waiting: "Activating Pro…",
+    waiting: "Opening checkout…",
+    activating: "Payment received. Activating Pro…",
+    activatingTimeout:
+      "Your payment was received. Pro is still activating. Refresh My drops in a moment.",
+    checkoutUnavailable: "Checkout isn’t available right now. Try again shortly.",
+    checkoutCouldNotOpen: "Checkout could not open. Try again shortly.",
+    billingOff: "Billing isn’t available right now.",
     skip: "Skip to plans",
-    renews: (date) => `Renews ${date}.`,
-    ends: (date) => `Access through ${date}.`,
+    note: "DropIMG stays temporary. Even Pro links expire after a maximum of 30 days.",
+    renews: (date) => `Renews ${date}`,
+    ends: (date) => `Ends ${date}`,
     features: [
-      "7-day and 30-day links",
-      "Password-protected drops",
-      "50 MB uploads",
-      "Full history in My drops",
+      "Keep links for 7 or 30 days",
+      "Upload images up to 50 MB",
+      "Full active upload history",
+      "Sync across devices",
+      "Password-protected links",
+      "Extension + ShareX account uploads",
+      "Always ad-free",
     ],
   },
   es: {
-    title: "DropIMG Pro — $1.99/mes",
+    title: PRO_SEO.es.title,
     kicker: "DropIMG Pro",
-    heading: "Enlaces más largos. Contraseña. Archivos más grandes.",
-    memberHeading: "Ya tienes Pro",
-    lede: "Los envíos anónimos de 24 h siguen gratis. Pro es para los enlaces que quieres conservar.",
+    heading: "DropIMG Pro",
+    memberHeading: "Estás en DropIMG Pro",
+    lede: "Más control si usas DropIMG a diario.",
+    ledeMore:
+      "Conserva enlaces más tiempo, gestiona tus envíos en todos tus dispositivos y protege lo que compartes.",
     memberLede: "Cancela cuando quieras desde facturación.",
     monthly: "Mensual",
     annual: "Anual",
     monthlyPrice: "$1.99",
     annualPrice: "$19.99",
-    monthlyNote: "al mes",
-    annualNote: "al año",
-    save: "Dos meses gratis",
-    buyMonthly: "Elegir mensual",
-    buyAnnual: "Elegir anual",
-    signIn: "Entra para mejorar",
+    monthlyNote: "/ mes",
+    annualNote: "/ año",
+    annualPerMonth: "$1.67/mes",
+    save: "Ahorra 16%",
+    getPro: "Get Pro",
+    signIn: "Entra para obtener Pro",
     manage: "Gestionar facturación",
-    account: "Cuenta",
-    waiting: "Activando Pro…",
+    waiting: "Abriendo el pago…",
+    activating: "Pago recibido. Activando Pro…",
+    activatingTimeout:
+      "Recibimos el pago. Pro se está activando. Actualiza Mis envíos en un momento.",
+    checkoutUnavailable: "El pago no está disponible ahora. Prueba en un momento.",
+    checkoutCouldNotOpen: "No se pudo abrir el pago. Prueba en un momento.",
+    billingOff: "La facturación no está disponible ahora.",
     skip: "Ir a los planes",
-    renews: (date) => `Se renueva el ${date}.`,
-    ends: (date) => `Acceso hasta el ${date}.`,
+    note: "DropIMG sigue siendo temporal. Incluso los enlaces Pro caducan a los 30 días como máximo.",
+    renews: (date) => `Se renueva el ${date}`,
+    ends: (date) => `Termina el ${date}`,
     features: [
-      "Enlaces de 7 y 30 días",
-      "Drops con contraseña",
-      "Subidas de 50 MB",
-      "Historial completo",
+      "Enlaces de 7 o 30 días",
+      "Imágenes de hasta 50 MB",
+      "Historial activo completo",
+      "Sincroniza entre dispositivos",
+      "Enlaces con contraseña",
+      "Subidas con extensión y ShareX",
+      "Siempre sin anuncios",
     ],
   },
   "pt-BR": {
-    title: "DropIMG Pro — $1.99/mês",
+    title: PRO_SEO["pt-BR"].title,
     kicker: "DropIMG Pro",
-    heading: "Links mais longos. Senha. Arquivos maiores.",
-    memberHeading: "Você já é Pro",
-    lede: "Drops anônimos de 24h continuam grátis. Pro é para o link que você precisa manter.",
+    heading: "DropIMG Pro",
+    memberHeading: "Você está no DropIMG Pro",
+    lede: "Mais controle pra quem usa o DropIMG todo dia.",
+    ledeMore:
+      "Mantenha links por mais tempo, gerencie envios em todos os dispositivos e proteja o que você compartilha.",
     memberLede: "Cancele quando quiser na cobrança.",
     monthly: "Mensal",
     annual: "Anual",
     monthlyPrice: "$1.99",
     annualPrice: "$19.99",
-    monthlyNote: "por mês",
-    annualNote: "por ano",
-    save: "Dois meses grátis",
-    buyMonthly: "Assinar mensal",
-    buyAnnual: "Assinar anual",
-    signIn: "Entre para assinar",
+    monthlyNote: "/ mês",
+    annualNote: "/ ano",
+    annualPerMonth: "$1.67/mês",
+    save: "Economize 16%",
+    getPro: "Get Pro",
+    signIn: "Entre para assinar Pro",
     manage: "Gerenciar cobrança",
-    account: "Conta",
-    waiting: "Ativando Pro…",
+    waiting: "Abrindo o pagamento…",
+    activating: "Pagamento recebido. Ativando Pro…",
+    activatingTimeout:
+      "Seu pagamento foi recebido. O Pro ainda está ativando. Atualize Meus envios daqui a pouco.",
+    checkoutUnavailable: "O pagamento não está disponível agora. Tente em instantes.",
+    checkoutCouldNotOpen: "Não deu pra abrir o pagamento. Tente de novo.",
+    billingOff: "A cobrança não está disponível agora.",
     skip: "Ir para os planos",
-    renews: (date) => `Renova em ${date}.`,
-    ends: (date) => `Acesso até ${date}.`,
+    note: "O DropIMG continua temporário. Até links Pro expiram no máximo em 30 dias.",
+    renews: (date) => `Renova em ${date}`,
+    ends: (date) => `Termina em ${date}`,
     features: [
-      "Links de 7 e 30 dias",
-      "Drops com senha",
-      "Uploads de 50 MB",
-      "Histórico completo",
+      "Links de 7 ou 30 dias",
+      "Imagens de até 50 MB",
+      "Histórico ativo completo",
+      "Sincroniza entre dispositivos",
+      "Links com senha",
+      "Envios pela extensão e ShareX",
+      "Sempre sem anúncios",
     ],
   },
   de: {
-    title: "DropIMG Pro — $1.99/Monat",
+    title: PRO_SEO.de.title,
     kicker: "DropIMG Pro",
-    heading: "Längere Links. Passwort. Größere Dateien.",
-    memberHeading: "Du bist Pro",
-    lede: "Anonyme 24h-Drops bleiben kostenlos. Pro ist für Links, die bleiben sollen.",
+    heading: "DropIMG Pro",
+    memberHeading: "Du bist auf DropIMG Pro",
+    lede: "Mehr Kontrolle für alle, die DropIMG täglich nutzen.",
+    ledeMore:
+      "Links länger behalten, Uploads auf allen Geräten verwalten und Freigaben schützen.",
     memberLede: "Jederzeit in der Abrechnung kündbar.",
     monthly: "Monatlich",
     annual: "Jährlich",
     monthlyPrice: "$1.99",
     annualPrice: "$19.99",
-    monthlyNote: "pro Monat",
-    annualNote: "pro Jahr",
-    save: "Zwei Monate gratis",
-    buyMonthly: "Monatlich holen",
-    buyAnnual: "Jährlich holen",
-    signIn: "Anmelden zum Upgrade",
+    monthlyNote: "/ Monat",
+    annualNote: "/ Jahr",
+    annualPerMonth: "$1.67/Mo.",
+    save: "16% sparen",
+    getPro: "Get Pro",
+    signIn: "Anmelden, um Pro zu holen",
     manage: "Abrechnung verwalten",
-    account: "Konto",
-    waiting: "Pro wird aktiviert…",
+    waiting: "Checkout wird geöffnet…",
+    activating: "Zahlung erhalten. Pro wird aktiviert…",
+    activatingTimeout:
+      "Deine Zahlung ist da. Pro wird noch aktiviert. Meine Drops gleich neu laden.",
+    checkoutUnavailable: "Checkout ist gerade nicht verfügbar. Bitte gleich nochmal.",
+    checkoutCouldNotOpen: "Checkout ließ sich nicht öffnen. Bitte gleich nochmal.",
+    billingOff: "Abrechnung ist gerade nicht verfügbar.",
     skip: "Zu den Plänen",
-    renews: (date) => `Verlängert sich am ${date}.`,
-    ends: (date) => `Zugang bis ${date}.`,
+    note: "DropIMG bleibt temporär. Auch Pro-Links laufen nach höchstens 30 Tagen ab.",
+    renews: (date) => `Verlängert sich am ${date}`,
+    ends: (date) => `Endet am ${date}`,
     features: [
-      "7- und 30-Tage-Links",
-      "Passwortgeschützte Drops",
-      "50-MB-Uploads",
-      "Volle Historie",
+      "Links 7 oder 30 Tage behalten",
+      "Bilder bis 50 MB hochladen",
+      "Vollständige aktive Historie",
+      "Auf allen Geräten synchron",
+      "Passwortgeschützte Links",
+      "Uploads per Erweiterung und ShareX",
+      "Immer werbefrei",
     ],
   },
 };
@@ -159,7 +210,7 @@ export function renderProPage(opts: {
   periodEnd?: number | null;
   cancelAtPeriodEnd?: boolean;
 }): Response {
-  const t = COPY[opts.locale];
+  const t = PRO_COPY[opts.locale];
   const perks = `<ul class="pro-perks">${t.features
     .map((f) => `<li>${esc(f)}</li>`)
     .join("")}</ul>`;
@@ -171,59 +222,65 @@ export function renderProPage(opts: {
         : t.renews(formatDay(opts.periodEnd, opts.locale))
       : "";
 
-  const memberLede = [period, t.memberLede].filter(Boolean).join(" ");
-  const cardCta = (interval: "monthly" | "annual", label: string) =>
+  const cta = (interval: "monthly" | "annual") =>
     !opts.billingOn
       ? ""
       : !opts.signedIn
-        ? `<a class="btn primary" href="/login">${esc(t.signIn)}</a>`
-        : `<button type="button" class="btn primary" data-interval="${interval}">${esc(label)}</button>`;
+        ? `<a class="btn ${interval === "annual" ? "primary" : "secondary"}" href="/login">${esc(t.getPro)}</a>`
+        : `<button type="button" class="btn ${interval === "annual" ? "primary" : "secondary"}" data-interval="${interval}">${esc(t.getPro)}</button>`;
 
   const plans = `<div class="pro-plans">
-      <article class="pro-card">
-        <h2>${esc(t.monthly)}</h2>
-        <p class="pro-price">${esc(t.monthlyPrice)}</p>
-        <p class="pro-note">${esc(t.monthlyNote)}</p>
-        ${cardCta("monthly", t.buyMonthly)}
-      </article>
       <article class="pro-card pro-card-featured">
         <p class="pro-save">${esc(t.save)}</p>
         <h2>${esc(t.annual)}</h2>
         <p class="pro-price">${esc(t.annualPrice)}</p>
         <p class="pro-note">${esc(t.annualNote)}</p>
-        ${cardCta("annual", t.buyAnnual)}
+        <p class="pro-note">${esc(t.annualPerMonth)}</p>
+        ${cta("annual")}
+      </article>
+      <article class="pro-card">
+        <h2>${esc(t.monthly)}</h2>
+        <p class="pro-price">${esc(t.monthlyPrice)}</p>
+        <p class="pro-note">${esc(t.monthlyNote)}</p>
+        ${cta("monthly")}
       </article>
     </div>`;
 
   const billingOff = !opts.billingOn
-    ? `<p class="pro-note">Checkout is off in this environment.</p>`
+    ? `<p class="pro-note">${esc(t.billingOff)}</p>`
     : "";
 
   const hero = isPro
     ? `<header class="pro-hero">
       <p class="pro-kicker">${esc(t.kicker)}</p>
       <h1>${esc(t.memberHeading)}</h1>
-      <p class="pro-lede">${esc(memberLede)}</p>
+      <p class="pro-lede">${esc([period, t.memberLede].filter(Boolean).join(". "))}</p>
       <div class="pro-hero-actions">
         ${opts.billingOn ? `<button type="button" class="btn primary" id="pro-portal">${esc(t.manage)}</button>` : ""}
-        <a class="btn secondary" href="/account">${esc(t.account)}</a>
       </div>
     </header>`
     : `<header class="pro-hero">
       <p class="pro-kicker">${esc(t.kicker)}</p>
       <h1>${esc(t.heading)}</h1>
       <p class="pro-lede">${esc(t.lede)}</p>
+      <p class="pro-lede">${esc(t.ledeMore)}</p>
     </header>`;
 
   const main = `<section class="pro-page" id="pro-app"
     data-signed-in="${opts.signedIn ? "1" : "0"}"
     data-plan="${esc(opts.plan)}"
-    data-billing="${opts.billingOn ? "1" : "0"}">
+    data-billing="${opts.billingOn ? "1" : "0"}"
+    data-waiting="${esc(t.waiting)}"
+    data-activating="${esc(t.activating)}"
+    data-timeout="${esc(t.activatingTimeout)}"
+    data-unavailable="${esc(t.checkoutUnavailable)}"
+    data-open-fail="${esc(t.checkoutCouldNotOpen)}">
     ${hero}
-    ${perks}
+    ${isPro ? "" : perks}
     ${isPro ? "" : plans}
-    ${billingOff}
-    <p id="pro-status" class="pro-note pro-status" hidden>${esc(t.waiting)}</p>
+    ${isPro ? "" : `<p class="pro-fineprint">${esc(t.note)}</p>`}
+    ${isPro ? "" : billingOff}
+    <p id="pro-status" class="pro-note pro-status" hidden aria-live="polite">${esc(t.waiting)}</p>
   </section>`;
 
   const html = renderSitePage({
@@ -232,12 +289,15 @@ export function renderProPage(opts: {
     env: opts.env,
     main,
     skipLabel: t.skip,
-    stayPath: "/pro",
+    stayPath: proPath(opts.locale),
+    langHref: (loc) => proPath(loc),
     robots: "index",
-    extraHead:
+    extraHead: `${proHeadTags(opts.locale)}
+    ${
       opts.env.ENVIRONMENT === "development"
         ? ""
-        : `<script src="https://cdn.paddle.com/paddle/v2/paddle.js" defer></script>`,
+        : `<script src="https://cdn.paddle.com/paddle/v2/paddle.js" defer></script>`
+    }`,
     extraBody:
       opts.env.ENVIRONMENT === "development"
         ? `<script type="module" src="/client/pro.ts"></script>`
@@ -249,7 +309,7 @@ export function renderProPage(opts: {
 function formatDay(unix: number, locale: Locale): string {
   return new Date(unix * 1000).toLocaleDateString(LOCALE_CONFIG[locale].htmlLang, {
     year: "numeric",
-    month: "short",
+    month: "long",
     day: "numeric",
   });
 }

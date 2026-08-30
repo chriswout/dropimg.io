@@ -107,7 +107,7 @@ accountRoutes.get("/app", async (c) => {
     entitlements.historyLimit == null ? PRO_HISTORY_PAGE : entitlements.historyLimit;
 
   const rows = await c.env.DB.prepare(
-    `SELECT slug, mime, size, created_at, expires_at,
+    `SELECT slug, mime, size, width, height, created_at, expires_at,
             CASE WHEN password_hash IS NOT NULL THEN 1 ELSE 0 END AS locked
      FROM images
      WHERE user_id = ? AND deleted_at IS NULL AND expires_at > ?
@@ -405,7 +405,7 @@ accountRoutes.post("/api/account/images/:slug/password", async (c) => {
     )
       .bind(slug)
       .run();
-    track(c.env.ANALYTICS, "password_set", { slug, reason: "removed" });
+    track(c.env.ANALYTICS, "password_set", { reason: "removed" });
     return c.json({ ok: true, locked: false });
   }
 
@@ -439,8 +439,12 @@ accountRoutes.post("/api/account/images/:slug/password", async (c) => {
     return c.json({ error: "Could not save password." }, 500);
   }
   track(c.env.ANALYTICS, "password_set", {
-    slug,
     reason: imageHasPassword(row) ? "changed" : "set",
+  });
+  track(c.env.ANALYTICS, "password_protection_used", {
+    plan: "pro",
+    client: "web",
+    reason: "dashboard",
   });
   return c.json({ ok: true, locked: true, alreadyLocked: imageHasPassword(row) });
 });
