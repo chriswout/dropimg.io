@@ -33,3 +33,29 @@ test("homepage upload happy path", async ({ page }) => {
   expect(share.status()).toBe(200);
   expect(await share.text()).toContain("Shared image");
 });
+
+/**
+ * When entitlements fail to load, the tray keeps the lifetime it was rendered
+ * with, which the visitor's plan may not allow. Asking for it anyway would have
+ * the server reject the upload; asking for nothing lets the server decide.
+ */
+test("an upload with no entitlements asks for no expiry", async ({ page }) => {
+  const fixtureDir = join(process.cwd(), "tests/e2e/.fixtures");
+  mkdirSync(fixtureDir, { recursive: true });
+  const fixture = join(fixtureDir, "pixel.png");
+  writeFileSync(fixture, PNG_1x1);
+
+  await page.route("**/api/account/me", (route) => route.abort());
+
+  let asked: string | null | undefined;
+  await page.route("**/api/upload", async (route) => {
+    asked = route.request().headers()["x-dropimg-expiry"] ?? null;
+    await route.continue();
+  });
+
+  await page.goto("/");
+  await page.locator("#file-input").setInputFiles(fixture);
+
+  await expect(page.locator("#state-success")).toBeVisible({ timeout: 30_000 });
+  expect(asked).toBeNull();
+});

@@ -323,8 +323,11 @@ function uploadWithProgress(
       xhr.open("POST", url);
       xhr.setRequestHeader("Content-Type", "application/octet-stream");
       xhr.setRequestHeader("X-Dropimg-Client", "web");
-      if (!accountUser) {
-        // Signed-in uploads carry the expiry on the intent instead.
+      // Signed-in uploads carry the expiry on the intent instead. Until
+      // entitlements land, the tray still shows its rendered default, which
+      // the plan may not actually allow — send nothing and let the server
+      // apply its own default rather than have the upload rejected.
+      if (!accountUser && accountEntitlements) {
         xhr.setRequestHeader("X-Dropimg-Expiry", String(selectedExpiry()));
       }
       if (pageIntent) {
