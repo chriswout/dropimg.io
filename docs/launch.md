@@ -11,7 +11,7 @@ Progress:
 | 2 migrate | done — `0003`–`0007` applied, none pending |
 | 3 R2 | done — three prefix rules applied and read back |
 | 4 deploy dark | done — all gates off, V1 behaviour verified live |
-| 5 billing | catalog, token, webhook and config done; needs the API key and the payment link |
+| 5 billing | config complete; blocked on Paddle enabling checkouts for the account |
 | 6–9 | not started |
 
 Deployed version: `906adcdf-3a87-4a5a-a336-0c8a7a0c6e0b`.
@@ -38,15 +38,22 @@ the site advertises. The webhook is subscribed to the nine events the handler
 acts on, and its signing secret is already the `PADDLE_WEBHOOK_SECRET` secret
 on `env.production`.
 
-Two things remain, and neither has an API:
+`PADDLE_API_KEY` is set as a production secret.
 
-1. **A live API key**, with at least subscription and customer-portal write.
-   Without it checkout still works — that is client-side — but "Manage billing"
-   and cancellation fail, so it belongs in place before billing is enabled.
-2. **The default payment link**, set to `https://dropimg.io/pro`. Without it
-   checkout 400s with `transaction_default_checkout_url_not_set`.
+**Checkouts are not enabled on the account yet.** Creating a live transaction
+returns "Checkouts aren't enabled for this account. This typically means that
+you haven't fully completed the Paddle onboarding process." Until Paddle
+finishes verifying the account, no live checkout can open and no real purchase
+can be made, so steps 5 and 6 cannot proceed regardless of what this repo does.
 
-Also confirm `dropimg.io` is approved as a checkout domain.
+Once Paddle approves the account:
+
+1. Set **the default payment link** to `https://dropimg.io/pro`. Without it
+   checkout 400s with `transaction_default_checkout_url_not_set`, and it cannot
+   be set through the API.
+2. Confirm `dropimg.io` is approved as a checkout domain.
+3. Re-run the throwaway-transaction check to confirm a checkout URL is issued
+   before exposing a purchase button.
 
 ## Step 1 — snapshot
 
