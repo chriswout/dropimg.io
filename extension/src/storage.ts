@@ -1,11 +1,16 @@
 import {
   DEFAULT_SETTINGS,
+  EXPIRY_24H,
+  type AccountProfile,
   type ExtSettings,
   type RecentItem,
 } from "./shared";
 
 const SETTINGS_KEY = "settings";
 const RECENT_KEY = "recent";
+const TOKEN_KEY = "integrationToken";
+const ACCOUNT_KEY = "accountProfile";
+const EXPIRY_KEY = "lastExpirySeconds";
 const MAX_RECENT = 10;
 
 export async function loadSettings(): Promise<ExtSettings> {
@@ -52,4 +57,39 @@ export async function removeRecent(slug: string): Promise<RecentItem[]> {
   return next;
 }
 
-export { DEFAULT_SETTINGS, MAX_RECENT };
+export async function loadIntegrationToken(): Promise<string | null> {
+  const data = await chrome.storage.local.get(TOKEN_KEY);
+  const token = data[TOKEN_KEY];
+  return typeof token === "string" && token ? token : null;
+}
+
+export async function saveIntegrationToken(token: string): Promise<void> {
+  await chrome.storage.local.set({ [TOKEN_KEY]: token });
+}
+
+export async function loadAccountProfile(): Promise<AccountProfile | null> {
+  const data = await chrome.storage.local.get(ACCOUNT_KEY);
+  const raw = data[ACCOUNT_KEY] as AccountProfile | undefined;
+  if (!raw || typeof raw.emailMasked !== "string") return null;
+  return raw;
+}
+
+export async function saveAccountProfile(profile: AccountProfile): Promise<void> {
+  await chrome.storage.local.set({ [ACCOUNT_KEY]: profile });
+}
+
+export async function loadLastExpiry(): Promise<number> {
+  const data = await chrome.storage.local.get(EXPIRY_KEY);
+  const value = Number(data[EXPIRY_KEY]);
+  return Number.isFinite(value) && value > 0 ? value : EXPIRY_24H;
+}
+
+export async function saveLastExpiry(seconds: number): Promise<void> {
+  await chrome.storage.local.set({ [EXPIRY_KEY]: seconds });
+}
+
+export async function disconnectAccount(): Promise<void> {
+  await chrome.storage.local.remove([TOKEN_KEY, ACCOUNT_KEY, EXPIRY_KEY]);
+}
+
+export { DEFAULT_SETTINGS, MAX_RECENT, TOKEN_KEY, ACCOUNT_KEY, EXPIRY_KEY };

@@ -1,8 +1,12 @@
 /// <reference types="chrome" />
-import { pushRecent } from "./storage";
 import {
-  API_ORIGIN,
+  uploadAnonymous,
+  uploadWithIntegrationToken,
+} from "./account-upload";
+import { pushRecent, loadIntegrationToken, loadAccountProfile, loadLastExpiry } from "./storage";
+import {
   CAPTURE_GAP_MS,
+  chooseExpirySeconds,
   dataUrlToArrayBuffer,
   isRestrictedUrl,
   mapError,
@@ -11,8 +15,6 @@ import {
   type CaptureMode,
   type CaptureResult,
   type RegionRect,
-  type UploadErrorBody,
-  type UploadResponse,
 } from "./shared";
 
 const OFFSCREEN_PATH = "offscreen.html";
@@ -278,40 +280,23 @@ async function uploadDataUrl(dataUrl: string): Promise<CaptureResult> {
     };
   }
 
-  try {
-    const res = await fetch(`${API_ORIGIN}/api/upload`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/octet-stream",
-        "X-Dropimg-Client": dropimgClient(),
-      },
-      body,
+  const token = await loadIntegrationToken();
+  if (token) {
+    const profile = await loadAccountProfile();
+    const preferred = await loadLastExpiry();
+    const expirySeconds = chooseExpirySeconds(
+      profile?.allowedExpirySeconds,
+      preferred,
+    );
+    return uploadWithIntegrationToken({
+      token,
+      bytes: body,
+      expirySeconds,
+      client: dropimgClient(),
     });
-
-    if (!res.ok) {
-      let code: string | undefined;
-      let errText = `Upload failed (${res.status})`;
-      try {
-        const err = (await res.json()) as UploadErrorBody;
-        code = err.code;
-        if (err.error) errText = err.error;
-      } catch {
-        // ignore
-      }
-      return { ok: false, error: mapError(code, errText), code };
-    }
-
-    const data = (await res.json()) as UploadResponse;
-    return {
-      ok: true,
-      url: data.url,
-      expiresAt: data.expiresAt,
-      slug: data.slug,
-      deleteToken: data.deleteToken,
-    };
-  } catch {
-    return { ok: false, error: mapError("network"), code: "network" };
   }
+
+  return uploadAnonymous(body, dropimgClient());
 }
 
 async function showPageToast(tabId: number, url: string): Promise<boolean> {

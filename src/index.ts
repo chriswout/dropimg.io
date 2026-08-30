@@ -8,6 +8,7 @@ import { deletePageRoutes } from "./routes/delete-page";
 import { deleteRoutes } from "./routes/delete";
 import { eventRoutes } from "./routes/event";
 import { imageRoutes } from "./routes/image";
+import { integrationRoutes } from "./routes/integrations";
 import { sharexRoutes } from "./routes/integrations-sharex";
 import { reportRoutes } from "./routes/report";
 import { shareRoutes } from "./routes/share";
@@ -41,6 +42,7 @@ app.route("/", deleteRoutes);
 app.route("/", deletePageRoutes);
 app.route("/", reportRoutes);
 app.route("/", adminRoutes);
+app.route("/", integrationRoutes);
 app.route("/", sharexRoutes);
 app.route("/", shareRoutes);
 

@@ -20,7 +20,11 @@ export type AnalyticsEvent =
   | "password_set"
   | "checkout_started"
   | "billing_webhook_ok"
-  | "account_deleted";
+  | "account_deleted"
+  | "integration_token_created"
+  | "integration_token_revoked"
+  | "integration_connected_extension"
+  | "integration_upload_ok";
 
 export function track(
   analytics: AnalyticsEngineDataset | undefined,

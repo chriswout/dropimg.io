@@ -51,6 +51,33 @@
         <h2 id="recent-heading"></h2>
         <ul id="recent-list"></ul>
       </section>
+
+      <section id="account-panel" class="account-panel">
+        <h2 id="account-heading"></h2>
+        <div id="account-anon">
+          <p id="account-anon-hint" class="hint"></p>
+          <button id="btn-connect" type="button" class="btn secondary"></button>
+        </div>
+        <div id="account-connect" class="hidden">
+          <p id="connect-steps" class="hint"></p>
+          <a id="open-account" class="btn secondary" href="#" target="_blank" rel="noopener"></a>
+          <label class="sr-only" for="token-input" id="token-input-label"></label>
+          <input id="token-input" type="password" autocomplete="off" spellcheck="false" />
+          <div class="account-actions">
+            <button id="btn-connect-save" type="button" class="btn primary"></button>
+            <button id="btn-connect-cancel" type="button" class="btn secondary"></button>
+          </div>
+          <p id="connect-error" class="hint err" hidden></p>
+        </div>
+        <div id="account-connected" class="hidden">
+          <p id="account-email" class="account-email"></p>
+          <p id="account-plan" class="account-plan"></p>
+          <label class="expiry-label" for="expiry-select" id="expiry-label"></label>
+          <select id="expiry-select"></select>
+          <button id="btn-disconnect" type="button" class="btn secondary"></button>
+          <p id="disconnect-hint" class="hint subtle"></p>
+        </div>
+      </section>
     </main>
 
     <script type="module" src="popup.js"></script>

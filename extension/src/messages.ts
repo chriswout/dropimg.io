@@ -85,6 +85,26 @@ const en: MessageMap = {
   notifyFailTitle: "Upload failed",
 
   regionHint: "Drag to select · Esc to cancel",
+
+  accountHeading: "DropIMG account",
+  accountAnonHint: "Save captures to My drops and use Pro options.",
+  connect: "Connect",
+  connectTitle: "Connect your DropIMG account",
+  connectSteps: "1. Open DropIMG Account\n2. Create a Browser Extension token\n3. Paste it here",
+  openAccount: "Open DropIMG account",
+  tokenPlaceholder: "dropimg_it_…",
+  connectSave: "Connect",
+  connectCancel: "Cancel",
+  disconnect: "Disconnect",
+  disconnectHint: "Disconnect from this browser",
+  planPro: "PRO",
+  planFree: "Free",
+  expiresLabel: "Expires",
+  expiry24h: "24 hours",
+  expiry7d: "7 days",
+  expiry30d: "30 days",
+  err_account_expired: "DropIMG account connection expired. Open the extension to reconnect.",
+  connectInvalid: "That token could not be verified.",
 };
 
 const es: MessageMap = {
@@ -166,6 +186,26 @@ const es: MessageMap = {
   notifyFailTitle: "No se pudo subir",
 
   regionHint: "Arrastra para seleccionar · Esc para cancelar",
+
+  accountHeading: "Cuenta DropIMG",
+  accountAnonHint: "Guarda capturas en My drops y usa opciones Pro.",
+  connect: "Conectar",
+  connectTitle: "Conecta tu cuenta DropIMG",
+  connectSteps: "1. Abre la cuenta DropIMG\n2. Crea un token de extensión\n3. Pégalo aquí",
+  openAccount: "Abrir cuenta DropIMG",
+  tokenPlaceholder: "dropimg_it_…",
+  connectSave: "Conectar",
+  connectCancel: "Cancelar",
+  disconnect: "Desconectar",
+  disconnectHint: "Desconectar de este navegador",
+  planPro: "PRO",
+  planFree: "Gratis",
+  expiresLabel: "Caduca",
+  expiry24h: "24 horas",
+  expiry7d: "7 días",
+  expiry30d: "30 días",
+  err_account_expired: "La conexión de la cuenta caducó. Abre la extensión para reconectar.",
+  connectInvalid: "No se pudo verificar ese token.",
 };
 
 const pt_BR: MessageMap = {
@@ -247,6 +287,26 @@ const pt_BR: MessageMap = {
   notifyFailTitle: "Não deu pra enviar",
 
   regionHint: "Arraste pra selecionar · Esc pra cancelar",
+
+  accountHeading: "Conta DropIMG",
+  accountAnonHint: "Salve prints em My drops e use opções Pro.",
+  connect: "Conectar",
+  connectTitle: "Conecte sua conta DropIMG",
+  connectSteps: "1. Abra a conta DropIMG\n2. Crie um token da extensão\n3. Cole aqui",
+  openAccount: "Abrir conta DropIMG",
+  tokenPlaceholder: "dropimg_it_…",
+  connectSave: "Conectar",
+  connectCancel: "Cancelar",
+  disconnect: "Desconectar",
+  disconnectHint: "Desconectar deste navegador",
+  planPro: "PRO",
+  planFree: "Grátis",
+  expiresLabel: "Expira",
+  expiry24h: "24 horas",
+  expiry7d: "7 dias",
+  expiry30d: "30 dias",
+  err_account_expired: "A conexão da conta expirou. Abra a extensão para reconectar.",
+  connectInvalid: "Não deu pra verificar esse token.",
 };
 
 const de: MessageMap = {
@@ -328,6 +388,26 @@ const de: MessageMap = {
   notifyFailTitle: "Upload fehlgeschlagen",
 
   regionHint: "Ziehen zum Auswählen · Esc zum Abbrechen",
+
+  accountHeading: "DropIMG-Konto",
+  accountAnonHint: "Aufnahmen in My Drops speichern und Pro-Optionen nutzen.",
+  connect: "Verbinden",
+  connectTitle: "DropIMG-Konto verbinden",
+  connectSteps: "1. DropIMG-Konto öffnen\n2. Browser-Erweiterungs-Token erstellen\n3. Hier einfügen",
+  openAccount: "DropIMG-Konto öffnen",
+  tokenPlaceholder: "dropimg_it_…",
+  connectSave: "Verbinden",
+  connectCancel: "Abbrechen",
+  disconnect: "Trennen",
+  disconnectHint: "Von diesem Browser trennen",
+  planPro: "PRO",
+  planFree: "Kostenlos",
+  expiresLabel: "Läuft ab",
+  expiry24h: "24 Stunden",
+  expiry7d: "7 Tage",
+  expiry30d: "30 Tage",
+  err_account_expired: "Kontoverbindung abgelaufen. Erweiterung öffnen und neu verbinden.",
+  connectInvalid: "Dieser Token ließ sich nicht prüfen.",
 };
 
 export const MESSAGES: Record<ChromeLocale, MessageMap> = {

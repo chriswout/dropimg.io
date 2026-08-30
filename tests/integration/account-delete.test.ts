@@ -99,6 +99,17 @@ describe("Account deletion", () => {
   it("tombstones images, anonymizes the user, and revokes sessions", async () => {
     const { cookie, userId } = await signIn("delete-free@example.com");
     const slug = await claimOne(cookie);
+    const tokenRes = await worker.fetch("https://dropimg.io/api/account/integrations", {
+      method: "POST",
+      headers: {
+        Cookie: cookie,
+        Origin: "https://dropimg.io",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ label: "Chrome extension", kind: "extension" }),
+    });
+    const created = (await tokenRes.json()) as { token: string };
+    expect(tokenRes.status).toBe(200);
 
     const del = await worker.fetch("https://dropimg.io/api/account/delete", {
       method: "POST",
@@ -128,6 +139,18 @@ describe("Account deletion", () => {
     });
     const body = (await me.json()) as { user: unknown };
     expect(body.user).toBeNull();
+
+    const still = await worker.fetch("https://dropimg.io/api/integrations/me", {
+      headers: { Authorization: `Bearer ${created.token}` },
+    });
+    expect(still.status).toBe(401);
+    const tokens = await env.DB.prepare(
+      `SELECT revoked_at FROM integration_tokens WHERE user_id = ?`,
+    )
+      .bind(userId)
+      .all<{ revoked_at: number | null }>();
+    expect(tokens.results?.length).toBe(1);
+    expect(tokens.results?.[0]?.revoked_at).toBeTruthy();
   });
 
   it("stops deletion when a live Paddle subscription cannot be canceled", async () => {

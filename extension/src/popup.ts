@@ -1,13 +1,27 @@
 /// <reference types="chrome" />
+import { validateIntegrationToken } from "./account-upload";
 import {
+  disconnectAccount,
+  loadAccountProfile,
+  loadIntegrationToken,
+  loadLastExpiry,
   loadRecent,
   loadSettings,
   pushRecent,
   removeRecent,
+  saveAccountProfile,
+  saveIntegrationToken,
+  saveLastExpiry,
   saveSettings,
 } from "./storage";
 import {
   API_ORIGIN,
+  EXPIRY_24H,
+  EXPIRY_30D,
+  EXPIRY_7D,
+  accountUrl,
+  chooseExpirySeconds,
+  integrationTokenLooksValid,
   msg,
   type CaptureMode,
   type CaptureResult,
@@ -60,7 +74,60 @@ function applyI18n() {
   btnCapture.textContent = msg("capture");
   btnAnother.textContent = msg("captureAnother");
   el("recent-heading").textContent = msg("recentDrops");
+  el("account-heading").textContent = msg("accountHeading");
+  el("account-anon-hint").textContent = msg("accountAnonHint");
+  el<HTMLButtonElement>("btn-connect").textContent = msg("connect");
+  el("connect-steps").textContent = msg("connectSteps");
+  el<HTMLAnchorElement>("open-account").textContent = msg("openAccount");
+  el<HTMLAnchorElement>("open-account").href = accountUrl();
+  el("token-input-label").textContent = msg("tokenPlaceholder");
+  el<HTMLInputElement>("token-input").placeholder = msg("tokenPlaceholder");
+  el<HTMLButtonElement>("btn-connect-save").textContent = msg("connectSave");
+  el<HTMLButtonElement>("btn-connect-cancel").textContent = msg("connectCancel");
+  el("expiry-label").textContent = msg("expiresLabel");
+  el<HTMLButtonElement>("btn-disconnect").textContent = msg("disconnect");
+  el("disconnect-hint").textContent = msg("disconnectHint");
   document.documentElement.lang = chrome.i18n.getUILanguage() || "en";
+}
+
+function showAccount(view: "anon" | "connect" | "connected") {
+  el("account-anon").classList.toggle("hidden", view !== "anon");
+  el("account-connect").classList.toggle("hidden", view !== "connect");
+  el("account-connected").classList.toggle("hidden", view !== "connected");
+}
+
+function fillExpirySelect(allowed: number[], selected: number) {
+  const select = el<HTMLSelectElement>("expiry-select");
+  const options: Array<{ value: number; label: string }> = [
+    { value: EXPIRY_24H, label: msg("expiry24h") },
+    { value: EXPIRY_7D, label: msg("expiry7d") },
+    { value: EXPIRY_30D, label: msg("expiry30d") },
+  ];
+  select.innerHTML = "";
+  for (const opt of options) {
+    if (!allowed.includes(opt.value)) continue;
+    const node = document.createElement("option");
+    node.value = String(opt.value);
+    node.textContent = opt.label;
+    if (opt.value === selected) node.selected = true;
+    select.append(node);
+  }
+}
+
+async function renderAccount() {
+  const token = await loadIntegrationToken();
+  const profile = await loadAccountProfile();
+  if (!token || !profile) {
+    showAccount("anon");
+    return;
+  }
+  el("account-email").textContent = profile.emailMasked;
+  el("account-plan").textContent =
+    profile.plan === "pro" ? msg("planPro") : msg("planFree");
+  const preferred = await loadLastExpiry();
+  const selected = chooseExpirySeconds(profile.allowedExpirySeconds, preferred);
+  fillExpirySelect(profile.allowedExpirySeconds, selected);
+  showAccount("connected");
 }
 
 function formatTakenAgo(createdAtSec: number): string {
@@ -316,6 +383,47 @@ async function init() {
     copyNote.textContent = ok ? msg("linkCopied") : msg("copyManual");
   });
   shareUrl.addEventListener("focus", () => shareUrl.select());
+
+  el("btn-connect").addEventListener("click", () => {
+    el<HTMLInputElement>("token-input").value = "";
+    el("connect-error").hidden = true;
+    showAccount("connect");
+    el<HTMLInputElement>("token-input").focus();
+  });
+  el("btn-connect-cancel").addEventListener("click", () => showAccount("anon"));
+  el("btn-connect-save").addEventListener("click", async () => {
+    const token = el<HTMLInputElement>("token-input").value.trim();
+    const err = el("connect-error");
+    if (!integrationTokenLooksValid(token)) {
+      err.textContent = msg("connectInvalid");
+      err.hidden = false;
+      return;
+    }
+    const checked = await validateIntegrationToken(token);
+    if (!checked.ok) {
+      err.textContent = checked.error || msg("connectInvalid");
+      err.hidden = false;
+      return;
+    }
+    await saveIntegrationToken(token);
+    await saveAccountProfile({
+      emailMasked: checked.emailMasked,
+      plan: checked.plan,
+      maxUploadBytes: checked.maxUploadBytes,
+      allowedExpirySeconds: checked.allowedExpirySeconds,
+    });
+    el<HTMLInputElement>("token-input").value = "";
+    await renderAccount();
+  });
+  el("btn-disconnect").addEventListener("click", async () => {
+    await disconnectAccount();
+    await renderAccount();
+  });
+  el<HTMLSelectElement>("expiry-select").addEventListener("change", async (event) => {
+    const value = Number((event.currentTarget as HTMLSelectElement).value);
+    if (Number.isFinite(value) && value > 0) await saveLastExpiry(value);
+  });
+  await renderAccount();
 
   const items = await loadRecent();
   const newest = items[0];

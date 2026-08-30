@@ -80,4 +80,7 @@ cpSync(join(src, "src/offscreen.html"), join(dist, "offscreen.html"));
 cpSync(join(src, "manifest.json"), join(dist, "manifest.json"));
 cpSync(join(src, "icons"), join(dist, "icons"), { recursive: true });
 
-console.log(`Extension built → extension/dist/ (v1.5.0)`);
+const builtManifest = JSON.parse(readFileSync(join(dist, "manifest.json"), "utf8")) as {
+  version?: string;
+};
+console.log(`Extension built → extension/dist/ (v${builtManifest.version ?? "?"})`);

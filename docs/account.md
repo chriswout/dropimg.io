@@ -26,4 +26,14 @@ Optional passwordless accounts. Anonymous paste-to-link is unchanged.
 
 `GET /api/account/me` hydrates the header: Sign in, or My drops + `Upgrade to Pro` (Free) + an account menu (Edit account + Sign out). Pro accounts hide the upgrade button and show a Pro badge on the account chip. After sign-in the client claims `dropimg:recent`.
 
-`GET /account` (noindex, session required) is the account page: email, plan, sign out all devices, delete account. `POST /api/account/delete` soft-deletes the user and revokes sessions. Pro billing is not canceled automatically.
+`GET /account` (noindex, session required) is the account page: email, plan, integrations, sign out all devices, delete account. `POST /api/account/delete` cancels live Pro billing, removes images, revokes integration tokens and sessions, then soft-deletes the user.
+
+## Integrations
+
+Session-only token management:
+
+- `GET /api/account/integrations` — metadata only (never the raw token)
+- `POST /api/account/integrations` — create; raw token returned once
+- `POST /api/account/integrations/:id/revoke` — idempotent; rows keep `revoked_at`
+
+See [integrations.md](integrations.md). The public anonymous ShareX config and anonymous extension upload are unchanged.

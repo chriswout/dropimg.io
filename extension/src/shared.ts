@@ -53,6 +53,34 @@ export const DEFAULT_SETTINGS: ExtSettings = {
   lastMode: "visible",
 };
 
+export const EXPIRY_24H = 24 * 60 * 60;
+export const EXPIRY_7D = 7 * 24 * 60 * 60;
+export const EXPIRY_30D = 30 * 24 * 60 * 60;
+
+export type AccountProfile = {
+  emailMasked: string;
+  plan: "free" | "pro" | "anonymous";
+  maxUploadBytes: number;
+  allowedExpirySeconds: number[];
+};
+
+export function accountUrl(origin = API_ORIGIN): string {
+  return `${origin.replace(/\/$/, "")}/account`;
+}
+
+export function chooseExpirySeconds(
+  allowed: number[] | undefined,
+  preferred: number | undefined,
+): number {
+  const list = allowed?.length ? allowed : [EXPIRY_24H];
+  if (preferred && list.includes(preferred)) return preferred;
+  return list.includes(EXPIRY_24H) ? EXPIRY_24H : list[0]!;
+}
+
+export function integrationTokenLooksValid(token: string): boolean {
+  return /^dropimg_it_[A-Za-z0-9_-]{22,128}$/.test(token.trim());
+}
+
 export type ExtMessage =
   | { type: "CAPTURE_AND_UPLOAD"; mode: CaptureMode }
   | { type: "OFFSCREEN_WRITE_CLIPBOARD"; text: string }

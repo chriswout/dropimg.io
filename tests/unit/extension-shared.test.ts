@@ -1,7 +1,12 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   CAPTURE_GAP_MS,
+  chooseExpirySeconds,
   dataUrlToArrayBuffer,
+  EXPIRY_24H,
+  EXPIRY_7D,
+  integrationTokenLooksValid,
   isRestrictedUrl,
 } from "../../extension/src/shared";
 import { MESSAGES } from "../../extension/src/messages";
@@ -23,6 +28,18 @@ describe("extension shared helpers", () => {
     }
     expect(MESSAGES.en.takenSecsAgo).toContain("$1$");
     expect(MESSAGES.en.takenMinsAgoPlural).toContain("$1$");
+  });
+
+  it("keeps tokens in the expected format and clamps expiry", () => {
+    expect(integrationTokenLooksValid("dropimg_it_abcdefghijklmnopqr_stu")).toBe(true);
+    expect(chooseExpirySeconds([EXPIRY_24H], EXPIRY_7D)).toBe(EXPIRY_24H);
+  });
+
+  it("leaves the public anonymous ShareX config without an Authorization header", () => {
+    const raw = readFileSync("integrations/sharex/dropimg.sxcu", "utf8");
+    expect(raw).toContain("https://dropimg.io/api/integrations/sharex");
+    expect(raw).not.toContain("Authorization");
+    expect(raw).not.toContain("dropimg_it_");
   });
 
   it("decodes a tiny PNG data URL", () => {

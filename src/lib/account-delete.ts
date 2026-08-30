@@ -1,4 +1,5 @@
 import { revokeAllSessions } from "./auth/session";
+import { revokeAllIntegrationTokens } from "./integration-token";
 import {
   cancelPaddleSubscriptionImmediately,
   isLivePaddleStatus,
@@ -71,6 +72,7 @@ export async function deleteUserAccount(
     await removeImage(env, row, "user", now);
   }
 
+  await revokeAllIntegrationTokens(env.DB, userId, now);
   await revokeAllSessions(env.DB, userId, now);
   const tombstoneEmail = `deleted.${userId}@deleted.dropimg.invalid`;
   await env.DB.prepare(

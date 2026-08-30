@@ -43,6 +43,9 @@ describe("Account pages share site chrome", () => {
     expect(html).toContain("Manage billing");
     expect(html).toContain("Delete account");
     expect(html).toContain("/api/account/delete");
+    expect(html).toContain("Integrations");
+    expect(html).toContain("Connect extension");
+    expect(html).toContain("Create ShareX config");
   });
 
   it("pro page shows plans when not subscribed and a member hero when Pro", async () => {

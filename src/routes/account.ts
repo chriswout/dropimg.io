@@ -3,15 +3,14 @@ import type { Context } from "hono";
 import { track } from "../lib/analytics";
 import { deleteUserAccount } from "../lib/account-delete";
 import { csrfOriginOk } from "../lib/auth/csrf";
+import { toArrayBuffer } from "../lib/d1-blob";
 import { resolveRequestLocale } from "../lib/auth/locale-cookie";
 import {
   clearSessionCookie,
   resolveSession,
   type SessionUser,
 } from "../lib/auth/session";
-import { toArrayBuffer } from "../lib/d1-blob";
 import {
-  EXPIRY_24H,
   EXPIRY_30D,
   entitlementsFor,
   flagsFromEnv,
@@ -19,28 +18,28 @@ import {
   loadSubscription,
   PRO_HISTORY_PAGE,
   resolveEntitlements,
-  uploadIntentAllowed,
 } from "../lib/entitlements";
 import {
   hashImagePassword,
   imageHasPassword,
-  isStoredScryptV1,
-  PASSWORD_KDF,
   PASSWORD_MIN_LENGTH,
 } from "../lib/image-password";
-import { clientIp, hashIp } from "../lib/ip";
-import { normalizePageIntent } from "../lib/page-intent";
-import { removeImage } from "../lib/remove-image";
-import { resolveIpHashSecret } from "../lib/secrets";
-import { isValidSlug } from "../lib/slug";
-import { uuid, verifyDeleteToken } from "../lib/tokens";
-import { normalizeUploadClient } from "../lib/upload-client";
 import {
-  moveImageToProPrefix,
-  overDailyQuota,
-  storeUploadedImage,
-  uploadFailResponse,
-} from "../lib/upload-store";
+  buildSharexConfig,
+  createIntegrationToken,
+  listIntegrationTokens,
+  normalizeIntegrationKind,
+  revokeIntegrationToken,
+  validateIntegrationLabel,
+} from "../lib/integration-token";
+import {
+  createOwnedUploadIntent,
+  executeOwnedUploadFromRequest,
+} from "../lib/owned-upload";
+import { removeImage } from "../lib/remove-image";
+import { isValidSlug } from "../lib/slug";
+import { verifyDeleteToken } from "../lib/tokens";
+import { moveImageToProPrefix } from "../lib/upload-store";
 import type { ImageRow } from "../types";
 import { accountHtmlResponse } from "../views/account";
 import { appHtmlResponse, type AppDrop } from "../views/app";
@@ -51,7 +50,6 @@ type Env = {
 
 export const accountRoutes = new Hono<Env>();
 
-const INTENT_TTL_SECONDS = 10 * 60;
 const CLAIM_MAX_ITEMS = 20;
 
 accountRoutes.get("/api/account/me", async (c) => {
@@ -208,9 +206,8 @@ accountRoutes.post("/api/account/upload-intent", async (c) => {
   const session = await requireSession(c);
   if (!session) return c.json({ error: "Unauthorized" }, 401);
 
-  const entitlements = await entitlementsFor(c.env, session.id);
-  let expiry = EXPIRY_24H;
-  let password: string | null = null;
+  let expiry: number | undefined;
+  let password: string | undefined;
   try {
     const body = (await c.req.json()) as { expiry?: number; password?: string };
     if (body.expiry != null) expiry = Number(body.expiry);
@@ -218,213 +215,94 @@ accountRoutes.post("/api/account/upload-intent", async (c) => {
       password = body.password;
     }
   } catch {
-    expiry = EXPIRY_24H;
-  }
-  if (!entitlements.allowedExpirySeconds.includes(expiry)) {
-    return c.json({ error: "That expiry is not available." }, 400);
-  }
-  if (password) {
-    if (!entitlements.passwordProtection) {
-      return c.json({ error: "Password protection is not available." }, 400);
-    }
-    if (password.length < PASSWORD_MIN_LENGTH) {
-      return c.json({ error: "Password must be at least 8 characters." }, 400);
-    }
+    expiry = undefined;
   }
 
-  let hashed = null;
-  if (password) {
-    try {
-      hashed = await hashImagePassword(password);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : "hash_failed";
-      console.error("password_intent_hash_failed", msg);
-      return c.json(
-        {
-          error: "Could not save password.",
-          ...(c.env.ENVIRONMENT === "production" ? {} : { detail: msg }),
-        },
-        500,
-      );
-    }
+  const created = await createOwnedUploadIntent(c.env, session.id, { expiry, password });
+  if (!created.ok) {
+    return c.json(
+      { error: created.error, ...(created.detail ? { detail: created.detail } : {}) },
+      created.status,
+    );
   }
-  const now = Math.floor(Date.now() / 1000);
-  const id = uuid();
-  await c.env.DB.prepare(
-    `INSERT INTO upload_intents
-      (id, user_id, expiry_seconds, max_bytes, created_at, expires_at,
-       password_hash, password_salt, password_kdf, password_iterations,
-       password_cost, password_block_size, password_parallelization)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-  )
-    .bind(
-      id,
-      session.id,
-      expiry,
-      entitlements.maxUploadBytes,
-      now,
-      now + INTENT_TTL_SECONDS,
-      hashed
-        ? hashed.hash.buffer.slice(
-            hashed.hash.byteOffset,
-            hashed.hash.byteOffset + hashed.hash.byteLength,
-          )
-        : null,
-      hashed
-        ? hashed.salt.buffer.slice(
-            hashed.salt.byteOffset,
-            hashed.salt.byteOffset + hashed.salt.byteLength,
-          )
-        : null,
-      hashed?.kdf ?? null,
-      null,
-      hashed?.cost ?? null,
-      hashed?.blockSize ?? null,
-      hashed?.parallelization ?? null,
-    )
-    .run();
-
   return c.json({
-    id,
-    uploadUrl: `/api/account/upload/${id}`,
-    maxBytes: entitlements.maxUploadBytes,
-    expirySeconds: expiry,
+    id: created.id,
+    uploadUrl: `/api/account/upload/${created.id}`,
+    maxBytes: created.maxBytes,
+    expirySeconds: created.expirySeconds,
   });
 });
 
 accountRoutes.post("/api/account/upload/:intent", async (c) => {
   const session = await requireSession(c);
   if (!session) return c.json({ error: "Unauthorized" }, 401);
+  return executeOwnedUploadFromRequest(c, session.id, c.req.param("intent"));
+});
 
-  const intentId = c.req.param("intent");
-  const now = Math.floor(Date.now() / 1000);
-  const intent = await c.env.DB.prepare(
-    `SELECT expiry_seconds, max_bytes, password_hash, password_salt, password_kdf,
-            password_cost, password_block_size, password_parallelization
-     FROM upload_intents
-     WHERE id = ? AND user_id = ? AND used_at IS NULL AND expires_at > ?`,
-  )
-    .bind(intentId, session.id, now)
-    .first<{
-      expiry_seconds: number;
-      max_bytes: number;
-      password_hash: unknown;
-      password_salt: unknown;
-      password_kdf: string | null;
-      password_cost: number | null;
-      password_block_size: number | null;
-      password_parallelization: number | null;
-    }>();
-  if (!intent) {
-    return c.json({ error: "Upload intent is invalid or expired." }, 400);
-  }
-
-  const entitlements = await entitlementsFor(c.env, session.id);
-  const hasPassword = Boolean(intent.password_hash && intent.password_salt);
-  if (
-    !uploadIntentAllowed(
-      {
-        expiry_seconds: intent.expiry_seconds,
-        max_bytes: intent.max_bytes,
-        hasPassword,
-      },
-      entitlements,
-    )
-  ) {
-    await c.env.DB.prepare(
-      `UPDATE upload_intents SET used_at = ?
-       WHERE id = ? AND user_id = ? AND used_at IS NULL`,
-    )
-      .bind(now, intentId, session.id)
-      .run();
-    return c.json(
-      { error: "This upload is no longer available. Create a new upload." },
-      400,
-    );
-  }
-
-  const used = await c.env.DB.prepare(
-    `UPDATE upload_intents SET used_at = ?
-     WHERE id = ? AND user_id = ? AND used_at IS NULL AND expires_at > ?`,
-  )
-    .bind(now, intentId, session.id, now)
-    .run();
-  if (!used.meta.changes) {
-    return c.json({ error: "Upload intent is invalid or expired." }, 400);
-  }
-  const taken = intent;
-
-  const client = normalizeUploadClient(c.req.header("x-dropimg-client"));
-  const pageIntent = normalizePageIntent(c.req.header("x-dropimg-page-intent"));
-  const contentLength = Number(c.req.header("content-length") || 0);
-  const maxBytes = Math.min(taken.max_bytes, entitlements.maxUploadBytes);
-  if (contentLength > maxBytes) {
-    return c.json({ error: "File exceeds the size limit", code: "too_large" }, 413);
-  }
-
-  const secretResolved = resolveIpHashSecret(c.env);
-  if (!secretResolved.ok) {
-    return c.json({ error: "Upload temporarily unavailable", code: "server_error" }, 500);
-  }
-  const ip = clientIp(c.req.raw);
-  const ipHash = await hashIp(ip, secretResolved.secret);
-
-  const limiter = c.env.UPLOAD_LIMIT;
-  if (limiter) {
-    const { success } = await limiter.limit({ key: `upload:${ipHash}` });
-    if (!success) {
-      track(c.env.ANALYTICS, "rate_limited", { reason: "burst", client, pageIntent });
-      return c.json({ error: "Too many uploads. Try again shortly.", code: "rate_limited" }, 429);
-    }
-  }
-
-  if (await overDailyQuota(c.env.DB, { ipHash, userId: session.id })) {
-    track(c.env.ANALYTICS, "rate_limited", { reason: "daily_quota", client, pageIntent });
-    return c.json(
-      { error: "Daily upload limit reached. Try again tomorrow.", code: "quota_exceeded" },
-      429,
-    );
-  }
-
-  let bytes: ArrayBuffer;
-  try {
-    bytes = await c.req.arrayBuffer();
-  } catch {
-    return c.json({ error: "Could not read upload body", code: "invalid_image" }, 400);
-  }
-
-  const passHash = toArrayBuffer(taken.password_hash);
-  const passSalt = toArrayBuffer(taken.password_salt);
-  if (passHash && passSalt && !isStoredScryptV1(taken)) {
-    return c.json(
-      { error: "This upload is no longer available. Create a new upload." },
-      400,
-    );
-  }
-  const stored = await storeUploadedImage(c.env, c.executionCtx, {
-    bytes,
-    client,
-    pageIntent,
-    ipHash,
-    userId: session.id,
-    expirySeconds: taken.expiry_seconds,
-    maxBytes,
-    origin: new URL(c.req.url).origin,
-    r2Class: entitlements.plan === "pro" ? "pro" : "24h",
-    password:
-      passHash && passSalt && isStoredScryptV1(taken)
-        ? {
-            hash: new Uint8Array(passHash),
-            salt: new Uint8Array(passSalt),
-            kdf: PASSWORD_KDF,
-            cost: taken.password_cost as number,
-            blockSize: taken.password_block_size as number,
-            parallelization: taken.password_parallelization as number,
-          }
-        : null,
+accountRoutes.get("/api/account/integrations", async (c) => {
+  const session = await requireSession(c);
+  if (!session) return c.json({ error: "Unauthorized" }, 401);
+  const tokens = await listIntegrationTokens(c.env.DB, session.id);
+  return c.json({
+    tokens: tokens.map((row) => ({
+      id: row.id,
+      label: row.label,
+      scope: row.scope,
+      createdAt: row.created_at,
+      lastUsedAt: row.last_used_at,
+      revokedAt: row.revoked_at,
+    })),
   });
-  if (!stored.ok) return uploadFailResponse(stored);
-  return c.json(stored.body, 201);
+});
+
+accountRoutes.post("/api/account/integrations", async (c) => {
+  if (!csrfOriginOk(c.req.raw)) return c.json({ error: "Invalid origin" }, 403);
+  const session = await requireSession(c);
+  if (!session) return c.json({ error: "Unauthorized" }, 401);
+
+  let labelRaw: unknown;
+  let kindRaw: unknown;
+  try {
+    const body = (await c.req.json()) as { label?: unknown; kind?: unknown };
+    labelRaw = body.label;
+    kindRaw = body.kind;
+  } catch {
+    return c.json({ error: "Label is required." }, 400);
+  }
+  const label = validateIntegrationLabel(labelRaw);
+  if (!label) {
+    return c.json({ error: "Enter a label between 1 and 50 characters." }, 400);
+  }
+  const kind = normalizeIntegrationKind(kindRaw);
+  const created = await createIntegrationToken(c.env.DB, {
+    userId: session.id,
+    label,
+  });
+  track(c.env.ANALYTICS, "integration_token_created", { reason: kind });
+  if (kind === "extension") {
+    track(c.env.ANALYTICS, "integration_connected_extension", { reason: "created" });
+  }
+  const origin = new URL(c.req.url).origin;
+  return c.json({
+    id: created.id,
+    label: created.label,
+    token: created.token,
+    createdAt: created.createdAt,
+    sharexConfig: buildSharexConfig(origin, created.token),
+  });
+});
+
+accountRoutes.post("/api/account/integrations/:id/revoke", async (c) => {
+  if (!csrfOriginOk(c.req.raw)) return c.json({ error: "Invalid origin" }, 403);
+  const session = await requireSession(c);
+  if (!session) return c.json({ error: "Unauthorized" }, 401);
+  const result = await revokeIntegrationToken(c.env.DB, {
+    userId: session.id,
+    tokenId: c.req.param("id"),
+  });
+  if (result === "missing") return c.json({ error: "Not found" }, 404);
+  track(c.env.ANALYTICS, "integration_token_revoked", { reason: result });
+  return c.json({ ok: true, revoked: true });
 });
 
 accountRoutes.post("/api/account/images/:slug/delete", async (c) => {
