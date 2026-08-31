@@ -52,6 +52,8 @@ test.afterAll(() => {
 async function prepare(page: Page, theme: string, width: number) {
   await page.addInitScript((value) => {
     localStorage.setItem("dropimg:theme", value as string);
+    /** Keeps the analytics prompt out of the layout sweep. */
+    localStorage.setItem("dropimg:analytics", "denied");
   }, theme);
   await page.emulateMedia({
     colorScheme: theme as "light" | "dark",

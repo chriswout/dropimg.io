@@ -6,8 +6,10 @@ import {
   dataUrlToArrayBuffer,
   EXPIRY_24H,
   EXPIRY_7D,
+  formatBytes,
   integrationTokenLooksValid,
   isRestrictedUrl,
+  MAX_UPLOAD_BYTES,
 } from "../../extension/src/shared";
 import { MESSAGES } from "../../extension/src/messages";
 
@@ -40,6 +42,30 @@ describe("extension shared helpers", () => {
     expect(raw).toContain("https://dropimg.io/api/integrations/sharex");
     expect(raw).not.toContain("Authorization");
     expect(raw).not.toContain("dropimg_it_");
+  });
+
+  it("names the caller's own upload limit rather than a fixed one", () => {
+    expect(formatBytes(MAX_UPLOAD_BYTES)).toBe("10 MB");
+    expect(formatBytes(50 * 1024 * 1024)).toBe("50 MB");
+    expect(formatBytes(1.5 * 1024 * 1024)).toBe("1.5 MB");
+  });
+
+  /**
+   * The sized variant is used for the client-side pre-check, which knows the
+   * limit; the bare one covers a server rejection, which arrives without it.
+   * Mixing them up renders "max )." to the user.
+   */
+  it("keeps the sized and unsized too-large messages distinct in every locale", () => {
+    for (const locale of ["en", "es", "pt_BR", "de"] as const) {
+      expect(MESSAGES[locale].err_too_large_max).toContain("$1$");
+      expect(MESSAGES[locale].err_too_large).not.toContain("$1$");
+    }
+  });
+
+  it("ships no strings for the dropped full-page capture", () => {
+    const keys = Object.keys(MESSAGES.en);
+    expect(keys.filter((k) => /fullpage/i.test(k))).toEqual([]);
+    expect(keys).not.toContain("stitching");
   });
 
   it("decodes a tiny PNG data URL", () => {

@@ -18,8 +18,6 @@ const en: MessageMap = {
   capturing: "Capturing…",
   uploading: "Uploading screenshot",
   preparingRegion: "Select a region on the page…",
-  preparingFullpage: "Capturing full page…",
-  stitching: "Stitching screenshots…",
 
   uploaded: "Screenshot uploaded",
   linkCopied: "Link copied",
@@ -33,10 +31,8 @@ const en: MessageMap = {
 
   modeVisible: "Visible",
   modeRegion: "Region",
-  modeFullpage: "Full page",
   modeHintVisible: "Captures what you see in the tab.",
   modeHintRegion: "Draw a rectangle on the page, then upload.",
-  modeHintFullpage: "Scrolls the page and stitches a tall screenshot.",
 
   formatPng: "PNG",
   formatJpeg: "JPEG",
@@ -63,10 +59,10 @@ const en: MessageMap = {
   offline: "You're offline. Connect and try again.",
   bgUnavailable: "Extension background unavailable. Try reloading the extension.",
   regionCancelled: "Region capture cancelled.",
-  fullpageFailed: "Could not capture the full page.",
   tabChanged: "Tab changed during capture. Try again.",
 
-  err_too_large: "Screenshot is too large (max 10 MB).",
+  err_too_large: "Screenshot is too large.",
+  err_too_large_max: "Screenshot is too large (max $1$).",
   err_unsupported_type: "Unsupported image type.",
   err_invalid_image: "Could not process this screenshot.",
   err_rate_limited: "Too many uploads. Try again shortly.",
@@ -77,7 +73,6 @@ const en: MessageMap = {
   err_network: "Network error during upload.",
   err_offline: "You're offline. Connect and try again.",
   err_region_cancelled: "Region capture cancelled.",
-  err_fullpage_failed: "Could not capture the full page.",
   err_tab_changed: "Tab changed during capture. Try again.",
 
   notifyOkTitle: "Screenshot uploaded",
@@ -121,8 +116,6 @@ const es: MessageMap = {
   capturing: "Capturando…",
   uploading: "Subiendo captura",
   preparingRegion: "Selecciona una región en la página…",
-  preparingFullpage: "Capturando página completa…",
-  stitching: "Uniendo capturas…",
 
   uploaded: "Captura subida",
   linkCopied: "Enlace copiado",
@@ -136,10 +129,8 @@ const es: MessageMap = {
 
   modeVisible: "Visible",
   modeRegion: "Región",
-  modeFullpage: "Página",
   modeHintVisible: "Captura lo que ves en la pestaña.",
   modeHintRegion: "Dibuja un rectángulo en la página y súbelo.",
-  modeHintFullpage: "Desplaza la página y une una captura alta.",
 
   formatPng: "PNG",
   formatJpeg: "JPEG",
@@ -166,10 +157,10 @@ const es: MessageMap = {
   offline: "Sin conexión. Conéctate e inténtalo de nuevo.",
   bgUnavailable: "El fondo de la extensión no responde. Recarga la extensión.",
   regionCancelled: "Captura de región cancelada.",
-  fullpageFailed: "No se pudo capturar la página completa.",
   tabChanged: "La pestaña cambió durante la captura. Inténtalo de nuevo.",
 
-  err_too_large: "La captura supera los 10 MB.",
+  err_too_large: "La captura es demasiado grande.",
+  err_too_large_max: "La captura supera el máximo de $1$.",
   err_unsupported_type: "Tipo de imagen no admitido.",
   err_invalid_image: "No se pudo procesar esta captura.",
   err_rate_limited: "Demasiadas subidas. Prueba en un momento.",
@@ -180,7 +171,6 @@ const es: MessageMap = {
   err_network: "Error de red al subir.",
   err_offline: "Sin conexión. Conéctate e inténtalo de nuevo.",
   err_region_cancelled: "Captura de región cancelada.",
-  err_fullpage_failed: "No se pudo capturar la página completa.",
   err_tab_changed: "La pestaña cambió durante la captura. Inténtalo de nuevo.",
 
   notifyOkTitle: "Captura subida",
@@ -224,8 +214,6 @@ const pt_BR: MessageMap = {
   capturing: "Capturando…",
   uploading: "Enviando print",
   preparingRegion: "Selecione uma região na página…",
-  preparingFullpage: "Capturando página inteira…",
-  stitching: "Unindo capturas…",
 
   uploaded: "Print enviado",
   linkCopied: "Link copiado",
@@ -239,10 +227,8 @@ const pt_BR: MessageMap = {
 
   modeVisible: "Visível",
   modeRegion: "Região",
-  modeFullpage: "Página",
   modeHintVisible: "Captura o que você vê na aba.",
   modeHintRegion: "Desenhe um retângulo na página e envie.",
-  modeHintFullpage: "Rola a página e junta um print alto.",
 
   formatPng: "PNG",
   formatJpeg: "JPEG",
@@ -269,10 +255,10 @@ const pt_BR: MessageMap = {
   offline: "Você está offline. Conecte e tente de novo.",
   bgUnavailable: "O background da extensão falhou. Recarregue a extensão.",
   regionCancelled: "Captura de região cancelada.",
-  fullpageFailed: "Não deu pra capturar a página inteira.",
   tabChanged: "A aba mudou durante a captura. Tente de novo.",
 
-  err_too_large: "O print passa de 10 MB.",
+  err_too_large: "O print é grande demais.",
+  err_too_large_max: "O print passa do limite de $1$.",
   err_unsupported_type: "Tipo de imagem não aceito.",
   err_invalid_image: "Não deu pra processar este print.",
   err_rate_limited: "Muitos envios. Tenta de novo daqui a pouco.",
@@ -283,7 +269,6 @@ const pt_BR: MessageMap = {
   err_network: "Erro de rede no envio.",
   err_offline: "Você está offline. Conecte e tente de novo.",
   err_region_cancelled: "Captura de região cancelada.",
-  err_fullpage_failed: "Não deu pra capturar a página inteira.",
   err_tab_changed: "A aba mudou durante a captura. Tente de novo.",
 
   notifyOkTitle: "Print enviado",
@@ -327,8 +312,6 @@ const de: MessageMap = {
   capturing: "Wird erfasst…",
   uploading: "Screenshot wird hochgeladen",
   preparingRegion: "Bereich auf der Seite wählen…",
-  preparingFullpage: "Ganzseite wird erfasst…",
-  stitching: "Screenshots werden zusammengefügt…",
 
   uploaded: "Screenshot hochgeladen",
   linkCopied: "Link kopiert",
@@ -342,10 +325,8 @@ const de: MessageMap = {
 
   modeVisible: "Sichtbar",
   modeRegion: "Bereich",
-  modeFullpage: "Ganzseite",
   modeHintVisible: "Erfasst, was du im Tab siehst.",
   modeHintRegion: "Rechteck auf der Seite ziehen, dann hochladen.",
-  modeHintFullpage: "Scrollt die Seite und fügt ein hohes Bild zusammen.",
 
   formatPng: "PNG",
   formatJpeg: "JPEG",
@@ -372,10 +353,10 @@ const de: MessageMap = {
   offline: "Du bist offline. Verbinden und nochmal versuchen.",
   bgUnavailable: "Hintergrund der Erweiterung nicht erreichbar. Erweiterung neu laden.",
   regionCancelled: "Bereichserfassung abgebrochen.",
-  fullpageFailed: "Ganzseite ließ sich nicht erfassen.",
   tabChanged: "Tab hat sich während der Erfassung geändert. Nochmal versuchen.",
 
-  err_too_large: "Screenshot ist größer als 10 MB.",
+  err_too_large: "Screenshot ist zu groß.",
+  err_too_large_max: "Screenshot ist größer als $1$.",
   err_unsupported_type: "Nicht unterstützter Bildtyp.",
   err_invalid_image: "Screenshot ließ sich nicht verarbeiten.",
   err_rate_limited: "Zu viele Uploads. Kurz warten und nochmal.",
@@ -386,7 +367,6 @@ const de: MessageMap = {
   err_network: "Netzwerkfehler beim Upload.",
   err_offline: "Du bist offline. Verbinden und nochmal versuchen.",
   err_region_cancelled: "Bereichserfassung abgebrochen.",
-  err_fullpage_failed: "Ganzseite ließ sich nicht erfassen.",
   err_tab_changed: "Tab hat sich während der Erfassung geändert. Nochmal versuchen.",
 
   notifyOkTitle: "Screenshot hochgeladen",

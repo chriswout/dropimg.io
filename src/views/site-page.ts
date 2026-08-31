@@ -1,6 +1,7 @@
 import { LOCALE_CONFIG, type Locale } from "../../marketing/locales";
 import {
   chromeFor,
+  consentScriptTag,
   footerHtml,
   themeBootScript,
   topBarHtml,
@@ -42,6 +43,7 @@ export function renderSitePage(opts: {
     ${themeBootScript()}
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    ${consentScriptTag()}
     ${assets.head}
   </head>
   <body${opts.bodyClass ? ` class="${esc(opts.bodyClass)}"` : ""}>

@@ -16,7 +16,7 @@ Anonymous capture is unchanged and remains the default.
 ## Account connection
 
 1. Open the popup → DropIMG account → Connect
-2. Open [dropimg.io/account](https://dropimg.io/account) and create a Browser Extension token
+2. Open [dropimg.io/app/integrations](https://dropimg.io/app/integrations) and create a Browser Extension token
 3. Paste the token. The extension validates it with `GET /api/integrations/me` before saving.
 
 The token is stored in `chrome.storage.local` only (never `sync`, never analytics, never console). Disconnect removes the local token; it does **not** revoke it. Revoke from the account page to invalidate uploads immediately.
@@ -25,9 +25,17 @@ Connected captures use `POST /api/integrations/upload-intent` then `POST /api/in
 
 If the token is revoked or invalid, the extension shows a connection error and does **not** fall back to an anonymous upload.
 
+Upload size comes from the account's `maxUploadBytes` rather than a constant, so
+Pro's larger cap applies as soon as a token is connected, and the "too large"
+message names the caller's own limit. The size is checked client-side only to
+avoid spending an upload to be told a number we already had; the server still
+enforces it.
+
 Image passwords are not in the extension popup for this release.
 
-Full-page capture is **deferred** (Chrome capture-rate + sticky-header fragility).
+Full-page capture was **dropped**, not deferred — Chrome's capture rate limit and
+sticky headers made it too unreliable to ship. The strings and source were removed
+in v1.6 rather than left dead in the store package.
 
 ## Build
 
@@ -47,6 +55,10 @@ See `/browser-extension` and Privacy Policy §2.7. Host access is limited to dro
 Uploads send `X-Dropimg-Client: chrome-extension` or `edge-extension` (UA detect).
 
 ## Store listing
+
+Listing copy, single-purpose statement, permission justifications and the data-use
+declarations live in [`extension/store/LISTING.md`](../extension/store/LISTING.md).
+Screenshots are generated — see that file.
 
 When the Chrome Web Store / Edge Add-ons URLs are live, update:
 

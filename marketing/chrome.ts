@@ -26,6 +26,15 @@ export function themeBootScript(): string {
 </script>`;
 }
 
+/**
+ * The consent gate, and with it Google Analytics. Deferred because it must not
+ * block paint, and emitted from here so marketing, app and static legal pages
+ * all get the identical tag. Deliberately absent from share pages.
+ */
+export function consentScriptTag(): string {
+  return `<script src="/consent.js" defer></script>`;
+}
+
 export function themeToggleHtml(chrome: SharedChrome): string {
   return `        <button type="button" id="theme-toggle" class="theme-toggle"
           aria-label="${esc(chrome.themeToggleAria)}"

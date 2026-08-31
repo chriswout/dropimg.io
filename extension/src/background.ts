@@ -8,8 +8,10 @@ import {
   CAPTURE_GAP_MS,
   chooseExpirySeconds,
   dataUrlToArrayBuffer,
+  formatBytes,
   isRestrictedUrl,
   mapError,
+  MAX_UPLOAD_BYTES,
   msg,
   sleep,
   type CaptureMode,
@@ -281,8 +283,23 @@ async function uploadDataUrl(dataUrl: string): Promise<CaptureResult> {
   }
 
   const token = await loadIntegrationToken();
+  const profile = token ? await loadAccountProfile() : null;
+
+  /**
+   * Checked here so the message can name the caller's own limit, which Pro
+   * raises. The server enforces it too; this only avoids spending the upload
+   * to be told a number we already knew.
+   */
+  const limit = profile?.maxUploadBytes || MAX_UPLOAD_BYTES;
+  if (body.byteLength > limit) {
+    return {
+      ok: false,
+      error: mapError("too_large_max", "", formatBytes(limit)),
+      code: "too_large",
+    };
+  }
+
   if (token) {
-    const profile = await loadAccountProfile();
     const preferred = await loadLastExpiry();
     const expirySeconds = chooseExpirySeconds(
       profile?.allowedExpirySeconds,

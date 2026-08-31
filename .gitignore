@@ -12,8 +12,10 @@ test-results
 playwright-report
 .backup
 tests/e2e/.fixtures
+tests/e2e/.output
 tests/visual/.output
 tests/visual/.session.json
+.output
 cloudflare token
 .cloudflare-api-token
 *.pem

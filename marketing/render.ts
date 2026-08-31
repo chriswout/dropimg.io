@@ -1,4 +1,9 @@
-import { footerHtml, themeBootScript, topBarHtml } from "./chrome";
+import {
+  consentScriptTag,
+  footerHtml,
+  themeBootScript,
+  topBarHtml,
+} from "./chrome";
 import { CHROME, HOME, LANDINGS } from "./content";
 import { EXTENSION_PAGE, EXTENSION_URL } from "./extension";
 import {
@@ -237,7 +242,8 @@ ${themeBootScript()}
     <meta name="twitter:description" content="${esc(seo.twitterDescription)}" />
     <meta name="twitter:image" content="${SITE_ORIGIN}/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />`;
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    ${consentScriptTag()}`;
 }
 
 function homeJsonLd(locale: Locale, copy: (typeof HOME)[Locale]): string {
@@ -694,7 +700,8 @@ ${themeBootScript()}
     <meta name="twitter:description" content="${esc(copy.twitterDescription)}" />
     <meta name="twitter:image" content="${SITE_ORIGIN}/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />`;
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    ${consentScriptTag()}`;
 
   return `<!DOCTYPE html>
 <html lang="${esc(cfg.htmlLang)}" data-locale="${esc(locale)}" data-page-intent="browser-extension">
@@ -854,7 +861,8 @@ ${themeBootScript()}
     <meta name="twitter:description" content="${esc(copy.twitterDescription)}" />
     <meta name="twitter:image" content="${SITE_ORIGIN}/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />`;
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    ${consentScriptTag()}`;
 
   return `<!DOCTYPE html>
 <html lang="${esc(cfg.htmlLang)}" data-locale="${esc(locale)}" data-page-intent="${esc(pageId)}">

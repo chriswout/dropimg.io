@@ -30,3 +30,17 @@ await esbuild.build({
   sourcemap: false,
   logLevel: "info",
 });
+
+/**
+ * Its own bundle rather than part of chrome.js: the static legal pages load no
+ * chrome, and the consent gate has to reach them too.
+ */
+await esbuild.build({
+  entryPoints: [join(root, "client/consent-boot.ts")],
+  outfile: join(root, "public/consent.js"),
+  bundle: true,
+  format: "iife",
+  target: ["es2022"],
+  sourcemap: false,
+  logLevel: "info",
+});

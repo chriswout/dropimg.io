@@ -2,7 +2,17 @@
 
 export const API_ORIGIN = "https://dropimg.io";
 
+/**
+ * What an upload is allowed to weigh before a token is connected. Pro raises
+ * it, so anything account-shaped reads the limit off the profile instead —
+ * this is only the floor we can assume without asking.
+ */
 export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+
+export function formatBytes(bytes: number): string {
+  const mb = bytes / (1024 * 1024);
+  return `${Number.isInteger(mb) ? mb : mb.toFixed(1)} MB`;
+}
 
 /** Chrome limits captureVisibleTab to 2/sec — stay comfortably under. */
 export const CAPTURE_GAP_MS = 650;
@@ -97,8 +107,7 @@ export type ExtMessage =
   | { type: "CAPTURE_AND_UPLOAD"; mode: CaptureMode }
   | { type: "OFFSCREEN_WRITE_CLIPBOARD"; text: string }
   | { type: "REGION_RESULT"; ok: true; rect: RegionRect }
-  | { type: "REGION_RESULT"; ok: false; code: "region_cancelled" }
-  | { type: "FULLPAGE_PROGRESS"; phase: string };
+  | { type: "REGION_RESULT"; ok: false; code: "region_cancelled" };
 
 export type RegionRect = {
   x: number;
@@ -118,9 +127,13 @@ export function msg(key: string, substitutions?: string | string[]): string {
   return key;
 }
 
-export function mapError(code: string | undefined, fallback = ""): string {
+export function mapError(
+  code: string | undefined,
+  fallback = "",
+  substitutions?: string | string[],
+): string {
   if (code) {
-    const localized = msg(`err_${code}`);
+    const localized = msg(`err_${code}`, substitutions);
     if (localized && localized !== `err_${code}`) return localized;
   }
   if (fallback) return fallback;

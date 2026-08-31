@@ -7,6 +7,7 @@ import {
 import { renderAppPage } from "../../src/views/app";
 import { renderLoginPage } from "../../src/views/login";
 import { renderProPage } from "../../src/views/pro";
+import { renderSharePage } from "../../src/views/share";
 
 describe("Account pages share site chrome", () => {
   it("login uses the homepage header/footer shell", () => {
@@ -222,6 +223,61 @@ describe("Account pages share site chrome", () => {
     expect(html).toContain("Upload image");
     expect(html).toContain("Last 10 active uploads");
     expect(html).toContain("Upgrade");
+  });
+
+  /**
+   * Analytics is consent-gated, and the gate only exists where the script is
+   * loaded. Share pages are the one surface that must never carry it: they hold
+   * someone else's content behind an unguessable link, and their CSP would
+   * refuse the tag anyway.
+   */
+  it("loads the consent gate on site pages but never on share pages", async () => {
+    const env = { ENVIRONMENT: "production" } as const;
+
+    const pages = [
+      renderLoginPage({ locale: "en", env, state: "form" }),
+      renderAccountPage({
+        locale: "en",
+        env,
+        email: "user@example.com",
+        plan: "free",
+        periodEnd: 1_790_721_044,
+        cancelAtPeriodEnd: false,
+      }),
+      renderAppPage({
+        locale: "en",
+        env,
+        origin: "https://dropimg.io",
+        email: "user@example.com",
+        plan: "free",
+        drops: [],
+        historyCapped: true,
+        nextCursor: null,
+      }),
+      await renderProPage({
+        locale: "en",
+        env,
+        signedIn: true,
+        plan: "free",
+        billingOn: true,
+      }).text(),
+    ];
+    for (const html of pages) {
+      expect(html).toContain('<script src="/consent.js" defer></script>');
+    }
+
+    const share = renderSharePage({
+      locale: "en",
+      slug: "abc123XY",
+      origin: "https://dropimg.io",
+      mime: "image/png",
+      width: 800,
+      height: 600,
+      size: 12_345,
+      expiresAt: 1_790_721_044,
+    });
+    expect(share).not.toContain("consent.js");
+    expect(share).not.toContain("googletagmanager");
   });
 
   it("loads the Vite client on development pages", () => {

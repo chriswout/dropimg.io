@@ -6,12 +6,13 @@
     <title>Privacy Policy — dropimg.io</title>
     <meta
       name="description"
-      content="How DropIMG handles temporary images, optional accounts, magic-link sign-in, billing, integrations, and first-party analytics."
+      content="How DropIMG handles temporary images, optional accounts, magic-link sign-in, billing, integrations, cookies, and consent-gated analytics."
     />
     <link rel="canonical" href="https://dropimg.io/privacy.html" />
     <meta name="robots" content="index, follow" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/site.css" />
+    <script src="/consent.js" defer></script>
     <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
     <script>
@@ -49,7 +50,7 @@
       </a>
 
       <h1>Privacy Policy</h1>
-      <p class="updated">Last updated: August 30, 2026</p>
+      <p class="updated">Last updated: August 31, 2026</p>
 
       <p>
         DropIMG (“<strong>DropIMG</strong>,” “<strong>we</strong>,”
@@ -65,7 +66,7 @@
 
       <h2>1. What DropIMG is (and is not)</h2>
       <ul>
-        <li>An account is optional. Anonymous 24-hour uploads still work.</li>
+        <li>An account is optional. Anonymous uploads still work, and expire after 7 days by default.</li>
         <li>No public gallery or browseable library of uploads.</li>
         <li>Share pages are marked <code>noindex</code> so they are not meant for search results.</li>
         <li>Links are temporary. Free links expire after 1 hour, 24 hours, or 7 days, whichever you chose. Pro links expire after at most 90 days.</li>
@@ -166,7 +167,36 @@
         checkout step, or a dashboard action). Events use low-cardinality fields
         such as event name, plan, billing interval, upload surface, and reason
         codes. We do <strong>not</strong> put raw integration tokens, passwords,
-        or email addresses in analytics.
+        or email addresses in analytics. This is first-party, sets no cookies,
+        and runs for everyone.
+      </p>
+      <p>
+        We also use <strong>Google Analytics 4</strong>, provided by Google
+        Ireland Limited, to understand which pages are worth keeping. This is a
+        third-party service, it sets cookies, and it is
+        <strong>off until you agree to it</strong>. Until you accept, no request
+        is made to Google at all — the tag is never loaded, so Google does not
+        receive your IP address or know that you visited. If you accept, Google
+        receives the usual measurement data for the pages you view: IP address
+        (which Google truncates), device and browser, approximate location, page
+        addresses and referrer.
+      </p>
+      <p>
+        Your choice is remembered in your browser. You can change it at any time
+        below, and declining costs you no functionality.
+      </p>
+      <p>
+        <button type="button" class="btn secondary" id="cookie-prefs" hidden>
+          Change cookie choice
+        </button>
+      </p>
+      <p>
+        Analytics is never loaded on share pages
+        (<code>dropimg.io/i/…</code>), so viewing an image someone sent you is
+        not measured by Google whatever your choice. We also honour the
+        <a href="https://globalprivacycontrol.org/" rel="nofollow noopener" target="_blank">Global
+        Privacy Control</a> signal: if your browser sends it, we treat it as a
+        decline and never ask.
       </p>
 
       <h2>9. Account deletion</h2>
@@ -190,17 +220,29 @@
         The official Chrome / Edge extension can capture the visible tab or a
         region you draw. Anonymous captures use the same upload rules as the
         website. If you connect an account, the extension stores your personal
-        token only on that device (not in synced storage). Recent links and
-        language/theme preferences may also stay in local browser storage until
-        you clear them.
+        token only on that device (not in synced storage), along with your recent
+        links and chosen link lifetime. Your last capture mode is kept in your
+        browser's synced settings, so it may follow your browser profile to your
+        other devices. All of it stays until you clear it or disconnect.
       </p>
 
       <h2>11. Cookies</h2>
       <p>
         Signed-in use needs a session cookie. A language cookie remembers your
         locale choice. Unlocking a protected image sets a short-lived cookie for
-        that image. Cloudflare may set essential security cookies. We do not use
-        third-party advertising cookies on the product described here.
+        that image. Cloudflare may set essential security cookies. These are
+        needed to run the service and are always on.
+      </p>
+      <p>
+        If — and only if — you accept analytics, Google Analytics sets its own
+        cookies (<code>_ga</code> and <code>_ga_*</code>) to recognise repeat
+        visits. Declining, or never answering, means they are never set. Your
+        answer itself is stored in your browser's local storage rather than in a
+        cookie, so refusing costs you nothing and leaves nothing behind.
+      </p>
+      <p>
+        We do not use third-party advertising cookies on the product described
+        here.
       </p>
 
       <h2>12. How we use information</h2>
@@ -230,6 +272,13 @@
         paid subscriptions. They process data to provide those services to us.
       </p>
       <p>
+        If you accept analytics cookies, <strong>Google</strong> (Google Ireland
+        Limited, with onward transfer to Google LLC in the United States) also
+        processes measurement data as described in section 8. This is the only
+        provider that depends on your consent, and the only one that receives
+        nothing at all if you decline.
+      </p>
+      <p>
         We do not sell your personal information. We may disclose information if
         required by law, to protect rights and safety, or to address abuse.
       </p>
@@ -255,6 +304,7 @@
         <li>Cancel Pro from Manage billing (access continues until the period ends if you cancel at period end).</li>
         <li>Delete your account from the account page.</li>
         <li>Clear site data in your browser to remove local recent-drop history.</li>
+        <li>Accept or decline analytics cookies, and change that answer whenever you like from section 8.</li>
       </ul>
 
       <h2>18. Contact</h2>
@@ -278,5 +328,20 @@
         <a href="/abuse">Report abuse</a>
       </nav>
     </div>
+    <script>
+// Revealed only once the consent gate is present, so the control is never a
+// dead button if /consent.js fails to load or is blocked.
+(function(){
+  var btn = document.getElementById("cookie-prefs");
+  if (!btn) return;
+  function wire() {
+    if (!window.dropimgConsent) return false;
+    btn.hidden = false;
+    btn.addEventListener("click", function(){ window.dropimgConsent.open(); });
+    return true;
+  }
+  if (!wire()) window.addEventListener("load", wire, { once: true });
+})();
+</script>
   </body>
 </html>

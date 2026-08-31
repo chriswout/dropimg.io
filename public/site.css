@@ -4598,3 +4598,94 @@ html[data-theme="dark"] kbd {
     transform: none;
   }
 }
+
+/* Cookie consent ---------------------------------------------------------
+   Sits above every other layer (top bar peaks at 100) because a choice that
+   can be covered by page furniture is not a choice. Bottom-anchored and
+   non-blocking: it never traps focus or gates the page, but it is first in
+   the DOM so keyboard and screen-reader users reach it before the content. */
+.consent {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 120;
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4);
+  pointer-events: none;
+}
+
+.consent-card {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  width: min(58rem, 100%);
+  padding: var(--space-4) var(--space-5);
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-lg);
+  animation: consent-in var(--motion-standard) var(--ease-out) both;
+}
+
+.consent-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.consent-title {
+  margin: 0 0 0.2rem;
+  font-size: 0.9375rem;
+  font-weight: 650;
+  letter-spacing: -0.005em;
+  color: var(--text);
+}
+
+.consent-body {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.consent-body a {
+  color: var(--brand-text);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.consent-actions {
+  flex: 0 0 auto;
+  display: flex;
+  gap: var(--space-2);
+}
+
+@keyframes consent-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+}
+
+@media (max-width: 40rem) {
+  .consent {
+    padding: var(--space-3);
+  }
+
+  .consent-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-3);
+  }
+
+  .consent-actions .btn {
+    flex: 1 1 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .consent-card {
+    animation: none;
+  }
+}

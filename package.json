@@ -6,9 +6,11 @@
   "scripts": {
     "generate:pages": "tsx scripts/generate-marketing-pages.ts",
     "generate:site-assets": "tsx scripts/build-site-assets.ts",
+    "consent:check": "npm run generate:site-assets && npm run generate:pages && tsx scripts/verify-consent.ts",
     "seo:check": "tsx scripts/seo-check.ts",
     "ext:build": "tsx scripts/build-extension.ts",
-    "ext:pack": "npm run ext:build && cd extension/dist && zip -r ../dropimg-extension.zip . && echo Packed extension/dropimg-extension.zip",
+    "ext:screens": "npm run ext:build && tsx scripts/build-extension-screens.ts",
+    "ext:pack": "npm run ext:build && rm -f extension/dropimg-extension.zip && cd extension/dist && zip -rX ../dropimg-extension.zip . -x '.*' '*/.*' && echo Packed extension/dropimg-extension.zip",
     "predev": "npm run generate:pages && npm run generate:site-assets",
     "dev": "vite",
     "prebuild": "npm run generate:pages && npm run generate:site-assets",

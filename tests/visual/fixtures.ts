@@ -29,6 +29,11 @@ export async function setTheme(page: Page, theme: Theme) {
   await page.addInitScript((value) => {
     try {
       localStorage.setItem("dropimg:theme", value as string);
+      /**
+       * Answer the analytics prompt so it never lands in a baseline. Declining
+       * rather than accepting also keeps screenshot runs from loading Google.
+       */
+      localStorage.setItem("dropimg:analytics", "denied");
     } catch {
       // first navigation may run before storage is available
     }
