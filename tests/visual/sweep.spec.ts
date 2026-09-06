@@ -19,6 +19,7 @@ const PAGES = [
   "/de/pro",
   "/login",
   "/browser-extension",
+  "/sharex",
   "/image-to-url",
   "/es/imagen-a-url",
   "/pt-br/imagem-para-url",

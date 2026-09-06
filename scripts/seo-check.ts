@@ -203,6 +203,9 @@ else {
   if (!sm.includes(`<loc>https://dropimg.io/browser-extension</loc>`)) {
     fail("sitemap missing browser-extension");
   }
+  if (!sm.includes(`<loc>https://dropimg.io/sharex</loc>`)) {
+    fail("sitemap missing sharex");
+  }
   for (const url of allIntentUrls()) {
     if (!sm.includes(`<loc>${url}</loc>`)) fail(`sitemap missing ${url}`);
   }
@@ -226,6 +229,25 @@ else {
       fail("browser-extension: missing data-page-intent");
     }
     ok("browser-extension page present");
+  }
+}
+
+{
+  const path = join(root, "sharex/index.html");
+  if (!existsSync(path)) fail("missing sharex/index.html");
+  else {
+    const html = readFileSync(path, "utf8");
+    if (!html.includes('rel="canonical" href="https://dropimg.io/sharex"')) {
+      fail("sharex: bad canonical");
+    }
+    if (!html.includes("DropIMG for ShareX")) fail("sharex: missing H1 copy");
+    if (!html.includes('data-page-intent="sharex"')) {
+      fail("sharex: missing data-page-intent");
+    }
+    if (!html.includes('href="/sharex/dropimg.sxcu"')) {
+      fail("sharex: missing anonymous config download");
+    }
+    ok("sharex page present");
   }
 }
 

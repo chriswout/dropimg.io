@@ -2,7 +2,7 @@
  * Copy homepage CSS and bundle header/chrome JS for Worker-rendered
  * pages (/login, /app) that are not part of the Vite MPA graph.
  */
-import { cpSync } from "node:fs";
+import { cpSync, mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import * as esbuild from "esbuild";
@@ -10,6 +10,11 @@ import * as esbuild from "esbuild";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
 cpSync(join(root, "client/styles.css"), join(root, "public/site.css"));
+mkdirSync(join(root, "public/sharex"), { recursive: true });
+cpSync(
+  join(root, "integrations/sharex/dropimg.sxcu"),
+  join(root, "public/sharex/dropimg.sxcu"),
+);
 
 await esbuild.build({
   entryPoints: [join(root, "client/chrome-boot.ts")],

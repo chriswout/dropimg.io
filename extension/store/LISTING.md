@@ -3,7 +3,7 @@
 Everything the dashboard asks for, in the order it asks. Edge Add-ons reuses the
 same package and copy.
 
-Package: `npm run ext:pack` → `extension/dropimg-extension.zip` (v1.6.0).
+Package: `npm run ext:pack` → `extension/dropimg-extension.zip` (v1.6.1).
 
 ---
 
@@ -70,6 +70,9 @@ Questions: https://dropimg.io/contact
 **Homepage URL:** `https://dropimg.io/browser-extension`
 **Support URL:** `https://dropimg.io/contact`
 **Privacy policy URL:** `https://dropimg.io/privacy`
+**Official URL:** add `dropimg.io` via Search Console (you already own it), then pick it from the dropdown. Leave “None” only if the property is not verified yet.
+**Mature content:** off
+**Promo videos / promo tiles:** leave empty — screenshots are enough.
 
 ---
 
@@ -192,8 +195,49 @@ npm run ext:screens
 
 They are rendered from the real popup markup and CSS, so they cannot drift from
 what ships. Chrome requires at least one 1280×800 or 640×400 shot; up to five are
-allowed. Promo tiles (440×280 small, 1400×560 marquee) are optional and not
-supplied.
+allowed. Upload all four under **Localized screenshots** (English). Leave Global
+screenshots and the promo tiles empty unless you want duplicates.
+
+The store icon must be 128×128 **24-bit PNG with no alpha**. Flattened file:
+`extension/store/store-icon-128.png`.
+
+---
+
+## Test instructions (Access → Test instructions)
+
+```
+Unpacked source is not needed — the uploaded zip is the review build.
+
+1. Pin the extension. Open any ordinary https page (example: https://dropimg.io).
+2. Click the toolbar icon. Read the first-run notice and click I understand.
+3. Leave mode on Visible. Click Capture.
+   Expect: a share link on the clipboard and a success state in the popup.
+4. Switch mode to Region. Click Capture. Drag a rectangle on the page.
+   Expect: overlay appears, then a toast with the new link after you release.
+5. Press Alt+Shift+D on a normal https page (no popup).
+   Expect: link copied and a small toast on the page. No dialog.
+6. Open the popup again. Confirm the last captures appear under Recent.
+   Re-copy one, open one, delete one.
+7. Optional account: on https://dropimg.io sign in, open /app/integrations,
+   create a Browser Extension token, paste it under Connect in the popup.
+   Expect: lifetime picker appears. Capture once more. Disconnect afterwards.
+
+Do not test on chrome://, the Web Store, or PDFs — those pages cannot host the
+region overlay or toast; a notification is the fallback there.
+
+Nothing is paid. Billing is off. Anonymous capture is the default and is enough
+to review the single purpose.
+```
+
+---
+
+## Privacy tab
+
+Paste the single-purpose statement and the six permission justifications from
+“Privacy practices” above. Check the three certifications. Remote code: **No**.
+
+Data use: Website content = Yes, Authentication information = Yes, everything
+else = No, as in the table.
 
 ---
 

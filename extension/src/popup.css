@@ -142,6 +142,20 @@ main {
   font-weight: 600;
 }
 
+.disclosure-link {
+  display: inline-block;
+  margin-top: 0.65rem;
+  color: var(--blue);
+  font-size: 0.82rem;
+}
+
+body.gated .modes,
+body.gated .mode-hint,
+body.gated .recent,
+body.gated .account-panel {
+  display: none;
+}
+
 .url {
   width: 100%;
   padding: 0.55rem 0.65rem;

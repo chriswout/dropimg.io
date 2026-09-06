@@ -103,6 +103,7 @@ describe("Account pages share site chrome", () => {
     const integrations = renderIntegrationsPage(props);
     expect(integrations).toContain("Connect extension");
     expect(integrations).toContain("Create ShareX config");
+    expect(integrations).toContain('href="/sharex"');
     expect(integrations).toContain('id="revoke-modal"');
 
     // Every section renders the same shell nav.
@@ -278,6 +279,8 @@ describe("Account pages share site chrome", () => {
     });
     expect(share).not.toContain("consent.js");
     expect(share).not.toContain("googletagmanager");
+    expect(share).toContain('href="/privacy"');
+    expect(share).not.toContain("privacy.html");
   });
 
   it("loads the Vite client on development pages", () => {

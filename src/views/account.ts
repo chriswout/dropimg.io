@@ -96,6 +96,7 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     connectExtension: "Connect extension",
     sharexTitle: "ShareX",
     sharexBody: "Send ShareX screenshots directly to your DropIMG account.",
+    sharexHelp: "Anonymous config (no account)",
     createSharex: "Create ShareX config",
     connectedDevices: "Connected integrations",
     neverUsed: "Never used",
@@ -161,6 +162,7 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     connectExtension: "Conectar extensión",
     sharexTitle: "ShareX",
     sharexBody: "Envía capturas de ShareX directo a tu cuenta DropIMG.",
+    sharexHelp: "Config anónima (sin cuenta)",
     createSharex: "Crear config de ShareX",
     connectedDevices: "Integraciones conectadas",
     neverUsed: "Sin uso",
@@ -226,6 +228,7 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     connectExtension: "Conectar extensão",
     sharexTitle: "ShareX",
     sharexBody: "Envie capturas do ShareX direto para sua conta DropIMG.",
+    sharexHelp: "Config anônima (sem conta)",
     createSharex: "Criar config do ShareX",
     connectedDevices: "Integrações conectadas",
     neverUsed: "Nunca usado",
@@ -291,6 +294,7 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     connectExtension: "Erweiterung verbinden",
     sharexTitle: "ShareX",
     sharexBody: "ShareX-Aufnahmen direkt in dein DropIMG-Konto senden.",
+    sharexHelp: "Anonyme Config (kein Konto)",
     createSharex: "ShareX-Config erstellen",
     connectedDevices: "Verbundene Integrationen",
     neverUsed: "Noch nicht genutzt",
@@ -390,6 +394,7 @@ export function renderIntegrationsPage(opts: SettingsProps): string {
           <h2>${esc(t.sharexTitle)}</h2>
           <p>${esc(t.sharexBody)}</p>
           <button type="button" class="btn primary" id="integ-sharex">${esc(t.createSharex)}</button>
+          <p class="account-muted"><a href="/sharex">${esc(t.sharexHelp)}</a></p>
         </article>
       </div>
     </section>

@@ -8,6 +8,7 @@ export const PAGE_INTENTS = [
   "paste-screenshot",
   "share-link",
   "browser-extension",
+  "sharex",
   "screenshot-to-link",
   "image-to-url",
   "anonymous-image-hosting",

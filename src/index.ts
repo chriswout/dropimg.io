@@ -20,9 +20,20 @@ type Env = {
 
 const app = new Hono<Env>();
 
-/** Canonicalize www → apex so analytics and share URLs stay on one host. */
+/**
+ * One public origin: https://dropimg.io/…
+ * HTTP and www both 301 here so Search Console does not treat them as
+ * alternates. Local wrangler (127.0.0.1) is left alone.
+ */
 app.use("*", async (c, next) => {
   const url = new URL(c.req.url);
+  const publicHost =
+    url.hostname === "dropimg.io" || url.hostname === "www.dropimg.io";
+  if (publicHost && url.protocol === "http:") {
+    url.protocol = "https:";
+    url.hostname = "dropimg.io";
+    return c.redirect(url.toString(), 301);
+  }
   if (url.hostname === "www.dropimg.io") {
     url.hostname = "dropimg.io";
     return c.redirect(url.toString(), 301);

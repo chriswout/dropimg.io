@@ -11,6 +11,7 @@ const RECENT_KEY = "recent";
 const TOKEN_KEY = "integrationToken";
 const ACCOUNT_KEY = "accountProfile";
 const EXPIRY_KEY = "lastExpirySeconds";
+const DISCLOSURE_KEY = "captureDisclosureAccepted";
 const MAX_RECENT = 10;
 
 export async function loadSettings(): Promise<ExtSettings> {
@@ -92,4 +93,20 @@ export async function disconnectAccount(): Promise<void> {
   await chrome.storage.local.remove([TOKEN_KEY, ACCOUNT_KEY, EXPIRY_KEY]);
 }
 
-export { DEFAULT_SETTINGS, MAX_RECENT, TOKEN_KEY, ACCOUNT_KEY, EXPIRY_KEY };
+export async function loadDisclosureAccepted(): Promise<boolean> {
+  const data = await chrome.storage.local.get(DISCLOSURE_KEY);
+  return data[DISCLOSURE_KEY] === true;
+}
+
+export async function saveDisclosureAccepted(): Promise<void> {
+  await chrome.storage.local.set({ [DISCLOSURE_KEY]: true });
+}
+
+export {
+  DEFAULT_SETTINGS,
+  MAX_RECENT,
+  TOKEN_KEY,
+  ACCOUNT_KEY,
+  EXPIRY_KEY,
+  DISCLOSURE_KEY,
+};

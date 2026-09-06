@@ -1,4 +1,4 @@
-# dropimg.io browser extension (Chrome / Edge) — v1.6.0
+# dropimg.io browser extension (Chrome / Edge) — v1.6.1
 
 Screenshot → temporary share link on [dropimg.io](https://dropimg.io). Manifest V3.
 Locales: English, Spanish, Portuguese (Brazil), German.

@@ -1,10 +1,10 @@
 # ShareX
 
-Upload screenshots from [ShareX](https://getsharex.com/) to dropimg.io.
+Upload screenshots from [ShareX](https://getsharex.com/) to dropimg.io. Public setup: [dropimg.io/sharex](https://dropimg.io/sharex).
 
 ## Anonymous setup
 
-1. Download [`integrations/sharex/dropimg.sxcu`](../integrations/sharex/dropimg.sxcu)
+1. Download [`dropimg.sxcu`](https://dropimg.io/sharex/dropimg.sxcu) (or [`integrations/sharex/dropimg.sxcu`](../integrations/sharex/dropimg.sxcu) from this repo)
 2. Open the file (or Import in ShareX → Destinations → Custom uploader)
 3. Set dropimg.io as the image uploader destination
 
@@ -12,8 +12,8 @@ Anonymous uploads stay at 10 MB, are not attached to an account, and default to 
 
 ## Account setup
 
-1. Sign in at [dropimg.io/account](https://dropimg.io/account)
-2. Integrations → Create ShareX config
+1. Sign in and open [dropimg.io/app/integrations](https://dropimg.io/app/integrations)
+2. Create ShareX config
 3. Download `dropimg-sharex.sxcu` immediately — DropIMG will not show the token again
 4. Import that file in ShareX
 

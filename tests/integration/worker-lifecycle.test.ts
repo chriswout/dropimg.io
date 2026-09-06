@@ -131,6 +131,30 @@ describe("Worker integration", () => {
     expect(res.headers.get("Location")).toBe("https://dropimg.io/abuse");
   });
 
+  it("redirects http on the public host to https", async () => {
+    const res = await worker.fetch("http://dropimg.io/", {
+      redirect: "manual",
+    });
+    expect(res.status).toBe(301);
+    expect(res.headers.get("Location")).toBe("https://dropimg.io/");
+  });
+
+  it("collapses http www onto https apex in one hop", async () => {
+    const res = await worker.fetch("http://www.dropimg.io/privacy", {
+      redirect: "manual",
+    });
+    expect(res.status).toBe(301);
+    expect(res.headers.get("Location")).toBe("https://dropimg.io/privacy");
+  });
+
+  it("does not upgrade localhost http", async () => {
+    const res = await worker.fetch("http://127.0.0.1/health", {
+      redirect: "manual",
+    });
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Location")).toBeNull();
+  });
+
   it("refuses uploads when production secret is missing", async () => {
     await server.update({
       workers: [

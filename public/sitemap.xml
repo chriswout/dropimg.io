@@ -103,6 +103,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://dropimg.io/sharex</loc>
+    <lastmod>2026-08-29</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://dropimg.io/pro</loc>
     <lastmod>2026-08-29</lastmod>
     <changefreq>weekly</changefreq>

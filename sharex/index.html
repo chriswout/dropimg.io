@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" data-locale="en" data-page-intent="browser-extension">
+<html lang="en" data-locale="en" data-page-intent="sharex">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Chrome &amp; Edge Screenshot Extension | dropimg.io</title>
-    <meta name="description" content="Capture the visible tab or a region — get a temporary dropimg.io link. Chrome and Edge. English, Spanish, Portuguese, German. No account required." />
-    <link rel="canonical" href="https://dropimg.io/browser-extension" />
+    <title>ShareX Screenshot Uploader | dropimg.io</title>
+    <meta name="description" content="Send ShareX screenshots to dropimg.io. Double-click the config, get a temporary share link. No account required." />
+    <link rel="canonical" href="https://dropimg.io/sharex" />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
@@ -23,24 +23,24 @@
 </script>
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
-    <meta property="og:url" content="https://dropimg.io/browser-extension" />
-    <meta property="og:title" content="Screenshot to link — Chrome &amp; Edge extension | dropimg.io" />
-    <meta property="og:description" content="Visible or region capture. Upload to dropimg.io, copy a temporary share link. Alt+Shift+D for silent capture." />
+    <meta property="og:url" content="https://dropimg.io/sharex" />
+    <meta property="og:title" content="ShareX → temporary link | dropimg.io" />
+    <meta property="og:description" content="Import a .sxcu, capture as usual, get a dropimg.io link. Anonymous or attached to your account." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="dropimg.io" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="dropimg.io browser extension" />
-    <meta name="twitter:description" content="Screenshot → temporary link. Visible or region. No account required, and you pick the expiry." />
+    <meta name="twitter:title" content="dropimg.io for ShareX" />
+    <meta name="twitter:description" content="Screenshot → temporary link from ShareX. No account required." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <script src="/consent.js" defer></script>
   </head>
   <body>
-    <a class="skip-link" href="#ext-details">Skip to details</a>
+    <a class="skip-link" href="#sharex-details">Skip to setup</a>
     <div class="page page-seo page-ext">
       <header class="top">
        <div class="top-inner">
@@ -115,99 +115,54 @@
       </header>
 
       <main>
-        <section class="ext-hero">
+        <section class="ext-hero ext-hero-solo">
           <div class="ext-hero-copy">
-            <p class="ext-kicker">Browser extension</p>
-            <h1 class="ext-title">DropIMG for your browser</h1>
+            <p class="ext-kicker">ShareX</p>
+            <h1 class="ext-title">DropIMG for ShareX</h1>
             <p class="ext-tagline">Capture. Upload. Link copied.</p>
-            <p class="sub ext-lede">Capture what you see or draw a region — then get a temporary shareable link. No account required, and you choose whether it lasts 1 hour, 24 hours, or 7 days. Available in English, Spanish, Portuguese (Brazil), and German.</p>
+            <p class="sub ext-lede">Import a one-file config. ShareX keeps capturing the way it already does. dropimg.io returns a temporary link — 7 days by default, or 1 hour / 24 hours / 7 days if you set the expiry field.</p>
             <ul class="ext-facts">
-              <li>Chrome and Edge</li>
-              <li>Alt+Shift+D for a silent capture</li>
-              <li>Links expire in 1 hour, 24 hours, or 7 days</li>
+              <li>Windows. ShareX 15+</li>
+              <li>Anonymous config — no account</li>
+              <li>Account config attaches uploads to My drops</li>
             </ul>
-          </div>
-          <div class="ext-mock" aria-hidden="true">
-            <div class="mock-window">
-              <div class="mock-bar">
-                <span class="mock-dot"></span>
-                <span class="mock-dot"></span>
-                <span class="mock-dot"></span>
-                <span class="mock-omni"></span>
-                <span class="mock-icon">
-                  <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false">
-                    <path d="M3 9V5h4M21 9V5h-4M3 15v4h4M21 15v4h-4" />
-                  </svg>
-                </span>
-              </div>
-              <div class="mock-canvas">
-                <span class="mock-region"></span>
-              </div>
-            </div>
-            <div class="mock-popup">
-              <p class="mock-popup-title">Capture</p>
-              <div class="mock-modes">
-                <span class="mock-mode is-on">Visible</span>
-                <span class="mock-mode">Region</span>
-              </div>
-              <span class="mock-go">Capture</span>
-            </div>
-            <div class="mock-toast">
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor"
-                stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" focusable="false">
-                <path d="m5 12.5 4.5 4.5L19 7.5" />
-              </svg>
-              <span class="mock-toast-text">Link copied</span>
-              <code class="mock-url">dropimg.io/a7k2x9</code>
+            <div class="ext-actions">
+              <a class="btn primary" href="/sharex/dropimg.sxcu" download="dropimg.sxcu">Download anonymous config</a>
+              <a class="btn secondary" href="/app/integrations">Create an account config</a>
             </div>
           </div>
         </section>
 
-        <article class="seo-article" id="ext-details" tabindex="-1" aria-label="Details">
-          <h2>What it does</h2>
+        <article class="seo-article" id="sharex-details" tabindex="-1" aria-label="Setup">
+          <h2>Anonymous (no account)</h2>
 
           <ol>
-            <li>Click the toolbar icon, choose Visible or Region, then Capture.</li>
-            <li>Press Alt+Shift+D anytime for a silent visible capture — link copied, toast on the page.</li>
-            <li>Uploads go to dropimg.io; the share URL is copied automatically.</li>
-            <li>Recent drops (last 10) stay on your device — copy, open, or delete.</li>
+            <li>Download dropimg.sxcu and double-click it, or Import it in ShareX → Destinations → Custom uploader.</li>
+            <li>Set dropimg.io as the image uploader destination.</li>
+            <li>Capture as usual. The share URL is copied. Links default to 7 days and stay at 10 MB.</li>
           </ol>
 
-          <h2>Capture modes</h2>
+          <h2>With a DropIMG account</h2>
 
-          <ul>
-            <li>Visible — what you see in the tab.</li>
-            <li>Region — draw a rectangle on the page, then upload the crop.</li>
-          </ul>
+          <ol>
+            <li>Sign in, open Integrations, and click Create ShareX config.</li>
+            <li>Download dropimg-sharex.sxcu immediately — the token is shown once.</li>
+            <li>Import that file. Uploads appear in My drops and use your plan's expiry options.</li>
+          </ol>
 
-          <h2>Install</h2>
+          <h2>Expiry field</h2>
 
-          <p>Chrome Web Store and Microsoft Edge Add-ons listings will appear here once published. Until then, developers can load the unpacked build from the open-source repository (see the extension README).</p>
+          <p>The public config sends expiry=7d. Change it to 1h or 24h for a shorter link. Pro account configs also accept 30d and 90d. Image passwords are not in the ShareX config.</p>
 
-          <p>Store links: coming soon — same Manifest V3 package for Chrome and Edge.</p>
+          <h2>If you lose the file</h2>
 
-          <h2>Permissions</h2>
-
-          <ul>
-            <li>activeTab — capture the tab you invoke on.</li>
-            <li>scripting — temporary region-selection overlay on that tab.</li>
-            <li>storage — local recent drops (not synced to an account).</li>
-            <li>offscreen + notifications — clipboard write and fallback notice for silent / region completion.</li>
-            <li>Host access to dropimg.io — upload screenshots to our API.</li>
-          </ul>
-
-          <p>We do not sell data or require an account. Uploads follow the same rules as the website: metadata stripping when supported, and the expiry you choose. Details are in the Privacy Policy.</p>
-
-          <h2>What it is not</h2>
-
-          <p>No annotation tools, OCR, AI analysis, or cloud sync. One job: capture → link. Signing in is optional and only adds history, longer links, and larger uploads.</p>
+          <p>Revoke the old token on Integrations and create a new config. DropIMG cannot regenerate a previous token or .sxcu.</p>
         </article>
 
         <nav class="seo-more" aria-label="Related">
-          <a href="/paste-screenshot-online">Paste screenshot online</a>
+          <a href="/browser-extension">Chrome / Edge extension</a>
           <span aria-hidden="true">·</span>
-          <a href="/share-image-with-link">Share image with a link</a>
+          <a href="/paste-screenshot-online">Paste screenshot online</a>
           <span aria-hidden="true">·</span>
           <a href="/">Home</a>
         </nav>

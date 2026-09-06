@@ -102,6 +102,13 @@ const en: MessageMap = {
   expiry90d: "90 days",
   err_account_expired: "DropIMG account connection expired. Open the extension to reconnect.",
   connectInvalid: "That token could not be verified.",
+  disclosureTitle: "Before you capture",
+  disclosureBody:
+    "DropIMG captures the current tab, or a region you draw, and uploads that image to dropimg.io over HTTPS to create a temporary share link. Nothing is captured until you click Capture or press Alt+Shift+D. Recent links stay on this device.",
+  disclosureAccept: "I understand",
+  disclosurePrivacy: "Privacy policy",
+  err_disclosure_required:
+    "Open the extension once and accept the capture notice first.",
 };
 
 const es: MessageMap = {
@@ -200,6 +207,13 @@ const es: MessageMap = {
   expiry90d: "90 días",
   err_account_expired: "La conexión de la cuenta caducó. Abre la extensión para reconectar.",
   connectInvalid: "No se pudo verificar ese token.",
+  disclosureTitle: "Antes de capturar",
+  disclosureBody:
+    "DropIMG captura la pestaña actual, o una región que dibujes, y sube esa imagen a dropimg.io por HTTPS para crear un enlace temporal. No se captura nada hasta que pulses Capturar o Alt+Shift+D. Los enlaces recientes se quedan en este dispositivo.",
+  disclosureAccept: "Entendido",
+  disclosurePrivacy: "Política de privacidad",
+  err_disclosure_required:
+    "Abre la extensión una vez y acepta el aviso de captura.",
 };
 
 const pt_BR: MessageMap = {
@@ -298,6 +312,13 @@ const pt_BR: MessageMap = {
   expiry90d: "90 dias",
   err_account_expired: "A conexão da conta expirou. Abra a extensão para reconectar.",
   connectInvalid: "Não deu pra verificar esse token.",
+  disclosureTitle: "Antes de capturar",
+  disclosureBody:
+    "O DropIMG captura a aba atual, ou uma região que você desenhar, e envia essa imagem ao dropimg.io por HTTPS para criar um link temporário. Nada é capturado até você clicar em Capturar ou pressionar Alt+Shift+D. Os links recentes ficam neste dispositivo.",
+  disclosureAccept: "Entendi",
+  disclosurePrivacy: "Política de privacidade",
+  err_disclosure_required:
+    "Abra a extensão uma vez e aceite o aviso de captura.",
 };
 
 const de: MessageMap = {
@@ -396,6 +417,13 @@ const de: MessageMap = {
   expiry90d: "90 Tage",
   err_account_expired: "Kontoverbindung abgelaufen. Erweiterung öffnen und neu verbinden.",
   connectInvalid: "Dieser Token ließ sich nicht prüfen.",
+  disclosureTitle: "Bevor du aufnimmst",
+  disclosureBody:
+    "DropIMG erfasst den aktuellen Tab oder einen von dir gezeichneten Bereich und lädt das Bild per HTTPS zu dropimg.io hoch, um einen temporären Link zu erzeugen. Es wird nichts erfasst, bis du auf Capture klickst oder Alt+Shift+D drückst. Letzte Links bleiben auf diesem Gerät.",
+  disclosureAccept: "Verstanden",
+  disclosurePrivacy: "Datenschutzerklärung",
+  err_disclosure_required:
+    "Öffne die Erweiterung einmal und bestätige den Hinweis.",
 };
 
 export const MESSAGES: Record<ChromeLocale, MessageMap> = {

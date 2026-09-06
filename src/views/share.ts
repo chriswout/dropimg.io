@@ -143,7 +143,7 @@ export function renderSharePage(p: ShareProps): string {
   <footer class="share-foot">
     <span>${esc(chrome.footerTagline)}</span>
     <a href="/">dropimg.io</a>
-    <a href="/privacy.html">${esc(chrome.privacy)}</a>
+    <a href="/privacy">${esc(chrome.privacy)}</a>
   </footer>
   <script>
     (function () {

@@ -17,6 +17,7 @@ export const MARKETING_URLS = [
   "https://dropimg.io/pt-br/compartilhar-imagem-com-link",
   "https://dropimg.io/de/bild-per-link-teilen",
   "https://dropimg.io/browser-extension",
+  "https://dropimg.io/sharex",
   "https://dropimg.io/screenshot-to-link",
   "https://dropimg.io/es/captura-de-pantalla-a-enlace",
   "https://dropimg.io/pt-br/colar-print-online",

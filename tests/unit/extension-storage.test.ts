@@ -28,7 +28,9 @@ const {
   EXPIRY_KEY,
   TOKEN_KEY,
   disconnectAccount,
+  loadDisclosureAccepted,
   loadIntegrationToken,
+  saveDisclosureAccepted,
   saveIntegrationToken,
   saveLastExpiry,
   saveSettings,
@@ -54,5 +56,12 @@ describe("extension token storage", () => {
     expect(await loadIntegrationToken()).toBeNull();
     expect(local.has(TOKEN_KEY)).toBe(false);
     expect(sync.has("settings")).toBe(true);
+  });
+
+  it("keeps the capture disclosure on the device only", async () => {
+    expect(await loadDisclosureAccepted()).toBe(false);
+    await saveDisclosureAccepted();
+    expect(await loadDisclosureAccepted()).toBe(true);
+    expect(sync.has("captureDisclosureAccepted")).toBe(false);
   });
 });

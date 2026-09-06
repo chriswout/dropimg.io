@@ -79,6 +79,11 @@ describe("normalizePageIntent", () => {
     expect(PAGE_INTENTS).toContain("pro");
     expect(normalizePageIntent("pro")).toBe("pro");
   });
+
+  it("includes the ShareX page intent", () => {
+    expect(PAGE_INTENTS).toContain("sharex");
+    expect(normalizePageIntent("sharex")).toBe("sharex");
+  });
 });
 
 describe("analytics allowlist", () => {

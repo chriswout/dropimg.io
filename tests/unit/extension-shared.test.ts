@@ -40,6 +40,7 @@ describe("extension shared helpers", () => {
   it("leaves the public anonymous ShareX config without an Authorization header", () => {
     const raw = readFileSync("integrations/sharex/dropimg.sxcu", "utf8");
     expect(raw).toContain("https://dropimg.io/api/integrations/sharex");
+    expect(raw).toContain('"expiry": "7d"');
     expect(raw).not.toContain("Authorization");
     expect(raw).not.toContain("dropimg_it_");
   });
@@ -59,6 +60,13 @@ describe("extension shared helpers", () => {
     for (const locale of ["en", "es", "pt_BR", "de"] as const) {
       expect(MESSAGES[locale].err_too_large_max).toContain("$1$");
       expect(MESSAGES[locale].err_too_large).not.toContain("$1$");
+    }
+  });
+
+  it("ships a first-run disclosure in every locale", () => {
+    for (const locale of ["en", "es", "pt_BR", "de"] as const) {
+      expect(MESSAGES[locale].disclosureBody).toMatch(/dropimg\.io/i);
+      expect(MESSAGES[locale].err_disclosure_required.length).toBeGreaterThan(10);
     }
   });
 

@@ -6,6 +6,7 @@ import {
 } from "./chrome";
 import { CHROME, HOME, LANDINGS } from "./content";
 import { EXTENSION_PAGE, EXTENSION_URL } from "./extension";
+import { SHAREX_PAGE, SHAREX_URL } from "./sharex";
 import {
   INTENT_PAGE_PATHS,
   intentAlternateLinks,
@@ -523,9 +524,19 @@ function extensionPromoHtml(locale: Locale, chrome: SharedChrome): string {
         : locale === "de"
           ? "Auch als Chrome- und Edge-Erweiterung"
           : "Also available as a Chrome / Edge extension";
+  const sharexLabel =
+    locale === "es"
+      ? "También desde ShareX"
+      : locale === "pt-BR"
+        ? "Também pelo ShareX"
+        : locale === "de"
+          ? "Auch über ShareX"
+          : "or from ShareX";
   return `          <p class="ext-promo">
             <a href="${esc(EXTENSION_URL)}">${esc(label)}</a>
-            <span class="visually-hidden"> — ${esc(chrome.footerSeo.extension)}</span>
+            <span aria-hidden="true"> · </span>
+            <a href="${esc(SHAREX_URL)}">${esc(sharexLabel)}</a>
+            <span class="visually-hidden"> — ${esc(chrome.footerSeo.extension)}, ${esc(chrome.footerSeo.sharex)}</span>
           </p>`;
 }
 
@@ -735,6 +746,90 @@ ${renderBlocks(copy.blocks)}
           <a href="${esc(pagePath("paste-screenshot", locale))}">${esc(chrome.footerSeo.paste)}</a>
           <span aria-hidden="true">·</span>
           <a href="${esc(pagePath("share-link", locale))}">${esc(chrome.footerSeo.share)}</a>
+          <span aria-hidden="true">·</span>
+          <a href="${esc(pagePath("home", locale))}">${esc(chrome.homeLink)}</a>
+        </nav>
+      </main>
+
+${footerHtml(locale, chrome)}
+    </div>
+
+    <script type="module" src="/client/main.ts"></script>
+  </body>
+</html>
+`;
+}
+
+export function renderSharexPage(): string {
+  const locale = DEFAULT_LOCALE;
+  const copy = SHAREX_PAGE;
+  const chrome = CHROME[locale];
+  const cfg = LOCALE_CONFIG[locale];
+  const url = SHAREX_URL;
+
+  const head = `    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>${esc(copy.title)}</title>
+    <meta name="description" content="${esc(copy.description)}" />
+    <link rel="canonical" href="${esc(url)}" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+${themeBootScript()}
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="${esc(cfg.ogLocale)}" />
+    <meta property="og:url" content="${esc(url)}" />
+    <meta property="og:title" content="${esc(copy.ogTitle)}" />
+    <meta property="og:description" content="${esc(copy.ogDescription)}" />
+    <meta property="og:site_name" content="dropimg.io" />
+    <meta property="og:image" content="${SITE_ORIGIN}/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="dropimg.io" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${esc(copy.twitterTitle)}" />
+    <meta name="twitter:description" content="${esc(copy.twitterDescription)}" />
+    <meta name="twitter:image" content="${SITE_ORIGIN}/og.png" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    ${consentScriptTag()}`;
+
+  return `<!DOCTYPE html>
+<html lang="${esc(cfg.htmlLang)}" data-locale="${esc(locale)}" data-page-intent="sharex">
+  <head>
+${head}
+  </head>
+  <body>
+    <a class="skip-link" href="#sharex-details">${esc(copy.skip)}</a>
+    <div class="page page-seo page-ext">
+${topBar("home", locale, chrome)}
+
+      <main>
+        <section class="ext-hero ext-hero-solo">
+          <div class="ext-hero-copy">
+            <p class="ext-kicker">${esc(copy.heroKicker)}</p>
+            <h1 class="ext-title">${esc(copy.heroTitle)}</h1>
+            <p class="ext-tagline">${esc(copy.heroTagline)}</p>
+            <p class="sub ext-lede">${esc(copy.lede)}</p>
+            <ul class="ext-facts">
+${copy.heroFacts.map((f) => `              <li>${esc(f)}</li>`).join("\n")}
+            </ul>
+            <div class="ext-actions">
+              <a class="btn primary" href="${esc(copy.downloadHref)}" download="dropimg.sxcu">${esc(copy.downloadAnon)}</a>
+              <a class="btn secondary" href="${esc(copy.accountHref)}">${esc(copy.accountCta)}</a>
+            </div>
+          </div>
+        </section>
+
+        <article class="seo-article" id="sharex-details" tabindex="-1" aria-label="${esc(copy.detailsHeading)}">
+${renderBlocks(copy.blocks)}
+        </article>
+
+        <nav class="seo-more" aria-label="${esc(chrome.relatedAria)}">
+          <a href="/browser-extension">${esc(chrome.footerSeo.extension)}</a>
+          <span aria-hidden="true">·</span>
+          <a href="${esc(pagePath("paste-screenshot", locale))}">${esc(chrome.footerSeo.paste)}</a>
           <span aria-hidden="true">·</span>
           <a href="${esc(pagePath("home", locale))}">${esc(chrome.homeLink)}</a>
         </nav>

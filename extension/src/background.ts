@@ -3,7 +3,13 @@ import {
   uploadAnonymous,
   uploadWithIntegrationToken,
 } from "./account-upload";
-import { pushRecent, loadIntegrationToken, loadAccountProfile, loadLastExpiry } from "./storage";
+import {
+  pushRecent,
+  loadDisclosureAccepted,
+  loadIntegrationToken,
+  loadAccountProfile,
+  loadLastExpiry,
+} from "./storage";
 import {
   CAPTURE_GAP_MS,
   chooseExpirySeconds,
@@ -132,6 +138,14 @@ async function runSilentCapture() {
 }
 
 async function captureAndUpload(mode: CaptureMode): Promise<CaptureResult> {
+  if (!(await loadDisclosureAccepted())) {
+    return {
+      ok: false,
+      error: mapError("disclosure_required"),
+      code: "disclosure_required",
+    };
+  }
+
   if (typeof navigator !== "undefined" && navigator.onLine === false) {
     return { ok: false, error: mapError("offline"), code: "offline" };
   }

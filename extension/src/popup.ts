@@ -3,6 +3,7 @@ import { validateIntegrationToken } from "./account-upload";
 import {
   disconnectAccount,
   loadAccountProfile,
+  loadDisclosureAccepted,
   loadIntegrationToken,
   loadLastExpiry,
   loadRecent,
@@ -10,6 +11,7 @@ import {
   pushRecent,
   removeRecent,
   saveAccountProfile,
+  saveDisclosureAccepted,
   saveIntegrationToken,
   saveLastExpiry,
   saveSettings,
@@ -59,11 +61,13 @@ function el<T extends HTMLElement = HTMLElement>(id: string): T {
   return node as T;
 }
 
-function show(state: "idle" | "loading" | "success" | "error") {
+function show(state: "idle" | "loading" | "success" | "error" | "disclosure") {
   idle.classList.toggle("hidden", state !== "idle");
   loading.classList.toggle("hidden", state !== "loading");
   success.classList.toggle("hidden", state !== "success");
   errorState.classList.toggle("hidden", state !== "error");
+  el("state-disclosure").classList.toggle("hidden", state !== "disclosure");
+  document.body.classList.toggle("gated", state === "disclosure");
 }
 
 function applyI18n() {
@@ -90,6 +94,12 @@ function applyI18n() {
   el("expiry-label").textContent = msg("expiresLabel");
   el<HTMLButtonElement>("btn-disconnect").textContent = msg("disconnect");
   el("disconnect-hint").textContent = msg("disconnectHint");
+  el("disclosure-title").textContent = msg("disclosureTitle");
+  el("disclosure-body").textContent = msg("disclosureBody");
+  el<HTMLButtonElement>("btn-disclosure-accept").textContent =
+    msg("disclosureAccept");
+  el<HTMLAnchorElement>("disclosure-privacy").textContent =
+    msg("disclosurePrivacy");
   document.documentElement.lang = chrome.i18n.getUILanguage() || "en";
 }
 
@@ -434,7 +444,16 @@ async function init() {
     const value = Number((event.currentTarget as HTMLSelectElement).value);
     if (Number.isFinite(value) && value > 0) await saveLastExpiry(value);
   });
+  el("btn-disclosure-accept").addEventListener("click", async () => {
+    await saveDisclosureAccepted();
+    show("idle");
+  });
   await renderAccount();
+
+  if (!(await loadDisclosureAccepted())) {
+    show("disclosure");
+    return;
+  }
 
   const items = await loadRecent();
   const newest = items[0];
