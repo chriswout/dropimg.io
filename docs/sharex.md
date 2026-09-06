@@ -1,6 +1,9 @@
 # ShareX
 
-Upload screenshots from [ShareX](https://getsharex.com/) to dropimg.io. Public setup: [dropimg.io/sharex](https://dropimg.io/sharex).
+Upload screenshots from [ShareX](https://getsharex.com/) to dropimg.io.
+
+- Public setup: [dropimg.io/sharex](https://dropimg.io/sharex)
+- GitHub custom uploader: [chriswout/dropimg-sharex](https://github.com/chriswout/dropimg-sharex)
 
 ## Anonymous setup
 

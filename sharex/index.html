@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>ShareX Screenshot Uploader | dropimg.io</title>
-    <meta name="description" content="Send ShareX screenshots to dropimg.io. Double-click the config, get a temporary share link. No account required." />
+    <title>ShareX Custom Uploader — Free Temporary Image Host | dropimg.io</title>
+    <meta name="description" content="Free ShareX image uploader. Import the custom uploader .sxcu, capture a screenshot, get a temporary URL. No account. Links expire in 7 days." />
     <link rel="canonical" href="https://dropimg.io/sharex" />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
@@ -24,20 +24,112 @@
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:url" content="https://dropimg.io/sharex" />
-    <meta property="og:title" content="ShareX → temporary link | dropimg.io" />
-    <meta property="og:description" content="Import a .sxcu, capture as usual, get a dropimg.io link. Anonymous or attached to your account." />
+    <meta property="og:title" content="ShareX custom uploader | dropimg.io" />
+    <meta property="og:description" content="Upload a ShareX screenshot to a URL that expires. Anonymous config or attach uploads to your account." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="dropimg.io" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="dropimg.io for ShareX" />
-    <meta name="twitter:description" content="Screenshot → temporary link from ShareX. No account required." />
+    <meta name="twitter:title" content="ShareX image uploader for dropimg.io" />
+    <meta name="twitter:description" content="Free temporary ShareX image host. Double-click the .sxcu, capture as usual, link copied." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <script src="/consent.js" defer></script>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": "https://dropimg.io/sharex#page",
+            "url": "https://dropimg.io/sharex",
+            "name": "ShareX Custom Uploader — Free Temporary Image Host | dropimg.io",
+            "description": "Free ShareX image uploader. Import the custom uploader .sxcu, capture a screenshot, get a temporary URL. No account. Links expire in 7 days.",
+            "inLanguage": "en",
+            "isPartOf": {
+              "@type": "WebSite",
+              "name": "dropimg.io",
+              "url": "https://dropimg.io"
+            }
+          },
+          {
+            "@type": "HowTo",
+            "@id": "https://dropimg.io/sharex#howto",
+            "name": "Add dropimg.io as a ShareX custom uploader",
+            "description": "Download the dropimg.sxcu custom uploader, import it in ShareX, and upload a screenshot to a temporary URL.",
+            "inLanguage": "en",
+            "totalTime": "PT1M",
+            "tool": {
+              "@type": "HowToTool",
+              "name": "ShareX",
+              "url": "https://getsharex.com/"
+            },
+            "step": [
+              {
+                "@type": "HowToStep",
+                "position": 1,
+                "name": "Download the custom uploader",
+                "text": "Download dropimg.sxcu and double-click it, or import it in ShareX → Destinations → Custom uploader."
+              },
+              {
+                "@type": "HowToStep",
+                "position": 2,
+                "name": "Set the image destination",
+                "text": "Set dropimg.io as the ShareX image uploader destination."
+              },
+              {
+                "@type": "HowToStep",
+                "position": 3,
+                "name": "Capture and copy the URL",
+                "text": "Capture as usual. ShareX uploads the screenshot to dropimg.io and copies the temporary URL."
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://dropimg.io/sharex#faq",
+            "inLanguage": "en",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Is this a free ShareX image host?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Yes. The anonymous custom uploader needs no account. Screenshots upload to dropimg.io and return a temporary URL. Max 10 MB. SVG is not accepted."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How do I add the ShareX custom uploader?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Download dropimg.sxcu and double-click it. ShareX imports the destination automatically. Or Import it from Destinations → Custom uploader, then set dropimg.io as the image uploader."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Do I need an account to upload a ShareX screenshot to a URL?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "No. The public .sxcu is anonymous. Sign in only if you want uploads in My drops, or longer Pro expiries (30 or 90 days)."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "How long do temporary ShareX links last?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "The public config sends expiry=7d. Change the field to 1h or 24h for a shorter link. Account configs can use 30d and 90d on Pro. Images are not kept forever."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <a class="skip-link" href="#sharex-details">Skip to setup</a>
@@ -117,47 +209,72 @@
       <main>
         <section class="ext-hero ext-hero-solo">
           <div class="ext-hero-copy">
-            <p class="ext-kicker">ShareX</p>
-            <h1 class="ext-title">DropIMG for ShareX</h1>
-            <p class="ext-tagline">Capture. Upload. Link copied.</p>
-            <p class="sub ext-lede">Import a one-file config. ShareX keeps capturing the way it already does. dropimg.io returns a temporary link — 7 days by default, or 1 hour / 24 hours / 7 days if you set the expiry field.</p>
+            <p class="ext-kicker">ShareX custom uploader</p>
+            <h1 class="ext-title">ShareX image uploader</h1>
+            <p class="ext-tagline">Upload a screenshot to a URL</p>
+            <p class="sub ext-lede">dropimg.io is a free ShareX image host: import one custom uploader file, keep capturing the way you already do, and get a temporary URL. No account required. The public config is anonymous; an account config attaches uploads to My drops.</p>
             <ul class="ext-facts">
-              <li>Windows. ShareX 15+</li>
-              <li>Anonymous config — no account</li>
-              <li>Account config attaches uploads to My drops</li>
+              <li>One-click .sxcu — ShareX 15+</li>
+              <li>Anonymous. No account.</li>
+              <li>Temporary links — 7 days by default</li>
             </ul>
             <div class="ext-actions">
               <a class="btn primary" href="/sharex/dropimg.sxcu" download="dropimg.sxcu">Download anonymous config</a>
               <a class="btn secondary" href="/app/integrations">Create an account config</a>
             </div>
+            <p class="ext-github"><a href="https://github.com/chriswout/dropimg-sharex" rel="noopener">Custom uploader on GitHub</a></p>
           </div>
         </section>
 
         <article class="seo-article" id="sharex-details" tabindex="-1" aria-label="Setup">
-          <h2>Anonymous (no account)</h2>
+          <h2>One-click install</h2>
 
           <ol>
-            <li>Download dropimg.sxcu and double-click it, or Import it in ShareX → Destinations → Custom uploader.</li>
+            <li>Download dropimg.sxcu and double-click it. ShareX activates the custom uploader automatically. You can also Import it under Destinations → Custom uploader.</li>
             <li>Set dropimg.io as the image uploader destination.</li>
-            <li>Capture as usual. The share URL is copied. Links default to 7 days and stay at 10 MB.</li>
+            <li>Capture as usual. ShareX uploads the screenshot and copies the temporary URL.</li>
           </ol>
 
-          <h2>With a DropIMG account</h2>
+          <h2>Anonymous vs account</h2>
 
-          <ol>
-            <li>Sign in, open Integrations, and click Create ShareX config.</li>
-            <li>Download dropimg-sharex.sxcu immediately — the token is shown once.</li>
-            <li>Import that file. Uploads appear in My drops and use your plan's expiry options.</li>
-          </ol>
+          <p>Anonymous: the public .sxcu. No token, no sign-in, 10 MB, 7-day default. Uploads are not listed in an account. This is the free ShareX image host most people want.</p>
 
-          <h2>Expiry field</h2>
+          <p>Account: sign in, open Integrations, and click Create ShareX config. Download dropimg-sharex.sxcu immediately — the token is shown once. Those uploads appear in My drops and follow your plan’s expiry options. Never commit that file.</p>
 
-          <p>The public config sends expiry=7d. Change it to 1h or 24h for a shorter link. Pro account configs also accept 30d and 90d. Image passwords are not in the ShareX config.</p>
+          <h2>Privacy and expiry</h2>
 
-          <h2>If you lose the file</h2>
+          <p>dropimg.io is a temporary ShareX uploader, not a permanent archive. Links default to 7 days and then go away. The public config can send expiry=1h, 24h, or 7d. Pro account configs also accept 30d and 90d. Image passwords are not in the ShareX config. See the privacy policy for what is stored.</p>
+
+          <h2>If you lose an account config</h2>
 
           <p>Revoke the old token on Integrations and create a new config. DropIMG cannot regenerate a previous token or .sxcu.</p>
+
+          <h2>Source on GitHub</h2>
+
+          <p>The anonymous custom uploader lives at github.com/chriswout/dropimg-sharex — .sxcu, screenshots, and the same install steps. ShareX users who browse GitHub can clone or download the file from there. This page is the canonical setup URL.</p>
         </article>
+
+          <section class="faq-compact" id="faq" aria-labelledby="intent-faq" data-enter>
+            <h2 id="intent-faq">ShareX questions</h2>
+            <div class="faq-list">
+              <details>
+                <summary>Is this a free ShareX image host?</summary>
+                <p>Yes. The anonymous custom uploader needs no account. Screenshots upload to dropimg.io and return a temporary URL. Max 10 MB. SVG is not accepted.</p>
+              </details>
+              <details>
+                <summary>How do I add the ShareX custom uploader?</summary>
+                <p>Download dropimg.sxcu and double-click it. ShareX imports the destination automatically. Or Import it from Destinations → Custom uploader, then set dropimg.io as the image uploader.</p>
+              </details>
+              <details>
+                <summary>Do I need an account to upload a ShareX screenshot to a URL?</summary>
+                <p>No. The public .sxcu is anonymous. Sign in only if you want uploads in My drops, or longer Pro expiries (30 or 90 days).</p>
+              </details>
+              <details>
+                <summary>How long do temporary ShareX links last?</summary>
+                <p>The public config sends expiry=7d. Change the field to 1h or 24h for a shorter link. Account configs can use 30d and 90d on Pro. Images are not kept forever.</p>
+              </details>
+            </div>
+          </section>
 
         <nav class="seo-more" aria-label="Related">
           <a href="/browser-extension">Chrome / Edge extension</a>

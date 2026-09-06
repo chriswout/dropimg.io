@@ -240,7 +240,11 @@ else {
     if (!html.includes('rel="canonical" href="https://dropimg.io/sharex"')) {
       fail("sharex: bad canonical");
     }
-    if (!html.includes("DropIMG for ShareX")) fail("sharex: missing H1 copy");
+    if (!html.includes("ShareX image uploader")) fail("sharex: missing H1 copy");
+    if (!html.includes("ShareX Custom Uploader")) fail("sharex: missing title query");
+    if (!html.includes("github.com/chriswout/dropimg-sharex")) {
+      fail("sharex: missing GitHub repo link");
+    }
     if (!html.includes('data-page-intent="sharex"')) {
       fail("sharex: missing data-page-intent");
     }

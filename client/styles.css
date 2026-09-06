@@ -1447,6 +1447,16 @@ html[data-theme="dark"] .theme-icon-sun {
   margin-top: 1.5rem;
 }
 
+.ext-github {
+  margin: 0.85rem 0 0;
+  font-size: 0.9375rem;
+}
+
+.ext-github a {
+  color: var(--text-soft);
+  text-underline-offset: 0.15em;
+}
+
 /* --- The mock ------------------------------------------------------------ */
 
 .ext-mock {

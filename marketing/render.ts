@@ -7,6 +7,7 @@ import {
 import { CHROME, HOME, LANDINGS } from "./content";
 import { EXTENSION_PAGE, EXTENSION_URL } from "./extension";
 import { SHAREX_PAGE, SHAREX_URL } from "./sharex";
+import type { FaqItem as SharexFaq } from "./types";
 import {
   INTENT_PAGE_PATHS,
   intentAlternateLinks,
@@ -793,7 +794,8 @@ ${themeBootScript()}
     <meta name="twitter:image" content="${SITE_ORIGIN}/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    ${consentScriptTag()}`;
+    ${consentScriptTag()}
+${sharexJsonLd(copy)}`;
 
   return `<!DOCTYPE html>
 <html lang="${esc(cfg.htmlLang)}" data-locale="${esc(locale)}" data-page-intent="sharex">
@@ -819,12 +821,15 @@ ${copy.heroFacts.map((f) => `              <li>${esc(f)}</li>`).join("\n")}
               <a class="btn primary" href="${esc(copy.downloadHref)}" download="dropimg.sxcu">${esc(copy.downloadAnon)}</a>
               <a class="btn secondary" href="${esc(copy.accountHref)}">${esc(copy.accountCta)}</a>
             </div>
+            <p class="ext-github"><a href="${esc(copy.githubHref)}" rel="noopener">${esc(copy.githubCta)}</a></p>
           </div>
         </section>
 
         <article class="seo-article" id="sharex-details" tabindex="-1" aria-label="${esc(copy.detailsHeading)}">
 ${renderBlocks(copy.blocks)}
         </article>
+
+${faqHtml(copy.faqHeading, copy.faqs)}
 
         <nav class="seo-more" aria-label="${esc(chrome.relatedAria)}">
           <a href="/browser-extension">${esc(chrome.footerSeo.extension)}</a>
@@ -842,6 +847,71 @@ ${footerHtml(locale, chrome)}
   </body>
 </html>
 `;
+}
+
+function sharexJsonLd(copy: typeof SHAREX_PAGE): string {
+  const graph = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebPage",
+        "@id": `${SHAREX_URL}#page`,
+        url: SHAREX_URL,
+        name: copy.title,
+        description: copy.description,
+        inLanguage: "en",
+        isPartOf: { "@type": "WebSite", name: "dropimg.io", url: SITE_ORIGIN },
+      },
+      {
+        "@type": "HowTo",
+        "@id": `${SHAREX_URL}#howto`,
+        name: copy.schemaHowtoName,
+        description: copy.schemaHowtoDescription,
+        inLanguage: "en",
+        totalTime: "PT1M",
+        tool: {
+          "@type": "HowToTool",
+          name: "ShareX",
+          url: "https://getsharex.com/",
+        },
+        step: [
+          {
+            "@type": "HowToStep",
+            position: 1,
+            name: "Download the custom uploader",
+            text: "Download dropimg.sxcu and double-click it, or import it in ShareX → Destinations → Custom uploader.",
+          },
+          {
+            "@type": "HowToStep",
+            position: 2,
+            name: "Set the image destination",
+            text: "Set dropimg.io as the ShareX image uploader destination.",
+          },
+          {
+            "@type": "HowToStep",
+            position: 3,
+            name: "Capture and copy the URL",
+            text: "Capture as usual. ShareX uploads the screenshot to dropimg.io and copies the temporary URL.",
+          },
+        ],
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${SHAREX_URL}#faq`,
+        inLanguage: "en",
+        mainEntity: copy.faqs.map((f) => ({
+          "@type": "Question",
+          name: f.q,
+          acceptedAnswer: { "@type": "Answer", text: f.a },
+        })),
+      },
+    ],
+  };
+  const json = JSON.stringify(graph, null, 2)
+    .split("\n")
+    .map((line, i) => (i === 0 ? line : `      ${line}`))
+    .join("\n");
+  return `    <script type="application/ld+json">\n      ${json}\n    </script>`;
 }
 
 /** Steps + FAQ as HowTo and FAQPage, scoped to this URL. */
