@@ -10,14 +10,17 @@ const workerConfig = {
   secrets: {
     IP_HASH_SECRET: "integration-test-ip-hash-secret",
     ADMIN_TOKEN: "integration-test-admin",
-    STRIPE_WEBHOOK_SECRET: SECRET,
-    STRIPE_SECRET_KEY: "sk_test_integration",
+    PAYPAL_WEBHOOK_SECRET: SECRET,
+    PAYPAL_WEBHOOK_ID: "",
+    PAYPAL_CLIENT_ID: "paypal_client_integration",
+    PAYPAL_CLIENT_SECRET: "paypal_secret_integration",
   },
   vars: {
     ENVIRONMENT: "development",
     BILLING_ENABLED: "true",
-    STRIPE_PRICE_MONTHLY: "price_monthly",
-    STRIPE_PRICE_ANNUAL: "price_annual",
+    PAYPAL_ENV: "sandbox",
+    PAYPAL_PLAN_MONTHLY: "P-monthly",
+    PAYPAL_PLAN_ANNUAL: "P-annual",
     AUTH_FROM_EMAIL: "DropIMG <signin@dropimg.io>",
   },
 } as const;
@@ -44,11 +47,11 @@ afterAll(async () => {
 
 async function signedRequest(body: string, ts = Math.floor(Date.now() / 1000)) {
   const v1 = await hmacSha256Hex(SECRET, `${ts}.${body}`);
-  return worker.fetch("https://dropimg.io/api/billing/stripe/webhook", {
+  return worker.fetch("https://dropimg.io/api/billing/paypal/webhook", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Stripe-Signature": `t=${ts},v1=${v1}`,
+      "PayPal-Signature": `t=${ts},v1=${v1}`,
     },
     body,
   });
@@ -66,36 +69,34 @@ async function seedUser(email: string) {
   return { env, now };
 }
 
-/** Basil puts the billing period on the item, not the subscription. */
-function subscriptionObject(overrides: Record<string, unknown> = {}) {
+function isoFromUnix(unix: number): string {
+  return new Date(unix * 1000).toISOString();
+}
+
+function subscriptionResource(overrides: Record<string, unknown> = {}) {
   const now = Math.floor(Date.now() / 1000);
   return {
-    id: "sub_01billingtest",
-    status: "active",
-    customer: "cus_01billingtest",
-    cancel_at_period_end: false,
-    metadata: { dropimg_user_id: USER_ID },
-    items: {
-      data: [
-        {
-          price: { id: "price_monthly" },
-          current_period_end: now + 30 * 86400,
-        },
-      ],
+    id: "I-01billingtest",
+    status: "ACTIVE",
+    custom_id: USER_ID,
+    plan_id: "P-monthly",
+    subscriber: { payer_id: "PAYER01BILLING" },
+    billing_info: {
+      next_billing_time: isoFromUnix(now + 30 * 86400),
     },
     ...overrides,
   };
 }
 
-describe("Stripe billing webhook", () => {
-  it("grants Pro from a signed customer.subscription.created and is idempotent", async () => {
+describe("PayPal billing webhook", () => {
+  it("grants Pro from a signed BILLING.SUBSCRIPTION.ACTIVATED and is idempotent", async () => {
     const { env, now } = await seedUser("payer@example.com");
 
     const body = JSON.stringify({
-      id: "evt_01billingtest",
-      type: "customer.subscription.created",
-      created: now,
-      data: { object: subscriptionObject() },
+      id: "WH-01billingtest",
+      event_type: "BILLING.SUBSCRIPTION.ACTIVATED",
+      create_time: isoFromUnix(now),
+      resource: subscriptionResource(),
     });
 
     const first = await signedRequest(body);
@@ -118,37 +119,34 @@ describe("Stripe billing webhook", () => {
         price_id: string;
         current_period_end: number;
       }>();
-    expect(row?.provider).toBe("stripe");
+    expect(row?.provider).toBe("paypal");
     expect(row?.status).toBe("active");
-    expect(row?.provider_subscription_id).toBe("sub_01billingtest");
-    expect(row?.provider_customer_id).toBe("cus_01billingtest");
-    expect(row?.price_id).toBe("price_monthly");
+    expect(row?.provider_subscription_id).toBe("I-01billingtest");
+    expect(row?.provider_customer_id).toBe("PAYER01BILLING");
+    expect(row?.price_id).toBe("P-monthly");
     expect(row?.current_period_end).toBeGreaterThan(now);
 
     const events = await env.DB.prepare(
       `SELECT COUNT(*) as n FROM billing_events WHERE event_id = ?`,
     )
-      .bind("evt_01billingtest")
+      .bind("WH-01billingtest")
       .first<{ n: number }>();
     expect(Number(events?.n)).toBe(1);
   });
 
-  it("links the account from a checkout session that names it", async () => {
+  it("links the account from a sale that names it", async () => {
     const { env, now } = await seedUser("checkout@example.com");
 
     const res = await signedRequest(
       JSON.stringify({
-        id: "evt_checkout",
-        type: "checkout.session.completed",
-        created: now,
-        data: {
-          object: {
-            id: "cs_test_1",
-            client_reference_id: USER_ID,
-            customer: "cus_checkout",
-            subscription: "sub_checkout",
-            payment_status: "paid",
-          },
+        id: "WH-checkout",
+        event_type: "PAYMENT.SALE.COMPLETED",
+        create_time: isoFromUnix(now),
+        resource: {
+          id: "sale_test_1",
+          custom: USER_ID,
+          billing_agreement_id: "I-checkout",
+          payer: { payer_id: "PAYERCHECKOUT" },
         },
       }),
     );
@@ -158,43 +156,39 @@ describe("Stripe billing webhook", () => {
       `SELECT user_id, provider_customer_id FROM subscriptions
        WHERE provider_subscription_id = ?`,
     )
-      .bind("sub_checkout")
+      .bind("I-checkout")
       .first<{ user_id: string; provider_customer_id: string }>();
     expect(row?.user_id).toBe(USER_ID);
-    expect(row?.provider_customer_id).toBe("cus_checkout");
+    expect(row?.provider_customer_id).toBe("PAYERCHECKOUT");
   });
 
   /**
-   * Stripe stamps the checkout session a second or so after the subscription
-   * it created, and usually delivers it first. The session must not stamp the
-   * row as newer, or the subscription event carrying the price and period
-   * looks stale and is dropped.
+   * PayPal often delivers PAYMENT.SALE.COMPLETED before the subscription
+   * snapshot. The sale must not stamp the row as newer, or the ACTIVATED
+   * event carrying the plan and period looks stale and is dropped.
    */
-  it("still records price and period when the session is newer and lands first", async () => {
+  it("still records plan and period when the sale is newer and lands first", async () => {
     const { env, now } = await seedUser("race@example.com");
 
     await signedRequest(
       JSON.stringify({
-        id: "evt_race_session",
-        type: "checkout.session.completed",
-        created: now + 1,
-        data: {
-          object: {
-            id: "cs_race",
-            client_reference_id: USER_ID,
-            customer: "cus_race",
-            subscription: "sub_01billingtest",
-            payment_status: "paid",
-          },
+        id: "WH-race-sale",
+        event_type: "PAYMENT.SALE.COMPLETED",
+        create_time: isoFromUnix(now + 1),
+        resource: {
+          id: "sale_race",
+          custom: USER_ID,
+          billing_agreement_id: "I-01billingtest",
+          payer: { payer_id: "PAYERRACE" },
         },
       }),
     );
     await signedRequest(
       JSON.stringify({
-        id: "evt_race_subscription",
-        type: "customer.subscription.created",
-        created: now,
-        data: { object: subscriptionObject() },
+        id: "WH-race-subscription",
+        event_type: "BILLING.SUBSCRIPTION.ACTIVATED",
+        create_time: isoFromUnix(now),
+        resource: subscriptionResource(),
       }),
     );
 
@@ -202,43 +196,40 @@ describe("Stripe billing webhook", () => {
       `SELECT price_id, current_period_end, provider_customer_id, status
        FROM subscriptions WHERE provider_subscription_id = ?`,
     )
-      .bind("sub_01billingtest")
+      .bind("I-01billingtest")
       .first<{
         price_id: string | null;
         current_period_end: number | null;
         provider_customer_id: string;
         status: string;
       }>();
-    expect(row?.price_id).toBe("price_monthly");
+    expect(row?.price_id).toBe("P-monthly");
     expect(row?.current_period_end).toBeGreaterThan(now);
     expect(row?.status).toBe("active");
-    expect(row?.provider_customer_id).toBe("cus_01billingtest");
+    expect(row?.provider_customer_id).toBe("PAYER01BILLING");
   });
 
-  it("does not let a late checkout session revive a cancelled subscription", async () => {
+  it("does not let a late sale revive a cancelled subscription", async () => {
     const { env, now } = await seedUser("late@example.com");
 
     await signedRequest(
       JSON.stringify({
-        id: "evt_deleted",
-        type: "customer.subscription.deleted",
-        created: now,
-        data: { object: subscriptionObject({ id: "sub_late", status: "canceled" }) },
+        id: "WH-deleted",
+        event_type: "BILLING.SUBSCRIPTION.CANCELLED",
+        create_time: isoFromUnix(now),
+        resource: subscriptionResource({ id: "I-late", status: "CANCELLED" }),
       }),
     );
     await signedRequest(
       JSON.stringify({
-        id: "evt_late_checkout",
-        type: "checkout.session.completed",
-        created: now + 5,
-        data: {
-          object: {
-            id: "cs_test_late",
-            client_reference_id: USER_ID,
-            customer: "cus_late",
-            subscription: "sub_late",
-            payment_status: "paid",
-          },
+        id: "WH-late-sale",
+        event_type: "PAYMENT.SALE.COMPLETED",
+        create_time: isoFromUnix(now + 5),
+        resource: {
+          id: "sale_late",
+          custom: USER_ID,
+          billing_agreement_id: "I-late",
+          payer: { payer_id: "PAYERLATE" },
         },
       }),
     );
@@ -246,7 +237,7 @@ describe("Stripe billing webhook", () => {
     const row = await env.DB.prepare(
       `SELECT status FROM subscriptions WHERE provider_subscription_id = ?`,
     )
-      .bind("sub_late")
+      .bind("I-late")
       .first<{ status: string }>();
     expect(row?.status).toBe("canceled");
   });
@@ -258,10 +249,10 @@ describe("Stripe billing webhook", () => {
       (
         await signedRequest(
           JSON.stringify({
-            id: "evt_ooo_canceled",
-            type: "customer.subscription.deleted",
-            created: now - 10,
-            data: { object: subscriptionObject({ id: "sub_ooo", status: "canceled" }) },
+            id: "WH-ooo-canceled",
+            event_type: "BILLING.SUBSCRIPTION.CANCELLED",
+            create_time: isoFromUnix(now - 10),
+            resource: subscriptionResource({ id: "I-ooo", status: "CANCELLED" }),
           }),
         )
       ).status,
@@ -271,10 +262,10 @@ describe("Stripe billing webhook", () => {
       (
         await signedRequest(
           JSON.stringify({
-            id: "evt_ooo_updated",
-            type: "customer.subscription.updated",
-            created: now - 40,
-            data: { object: subscriptionObject({ id: "sub_ooo", status: "active" }) },
+            id: "WH-ooo-updated",
+            event_type: "BILLING.SUBSCRIPTION.UPDATED",
+            create_time: isoFromUnix(now - 40),
+            resource: subscriptionResource({ id: "I-ooo", status: "ACTIVE" }),
           }),
         )
       ).status,
@@ -283,29 +274,29 @@ describe("Stripe billing webhook", () => {
     const row = await env.DB.prepare(
       `SELECT status FROM subscriptions WHERE provider_subscription_id = ?`,
     )
-      .bind("sub_ooo")
+      .bind("I-ooo")
       .first<{ status: string }>();
     expect(row?.status).toBe("canceled");
   });
 
   it("rejects a bad signature", async () => {
-    const res = await worker.fetch("https://dropimg.io/api/billing/stripe/webhook", {
+    const res = await worker.fetch("https://dropimg.io/api/billing/paypal/webhook", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Stripe-Signature": `t=${Math.floor(Date.now() / 1000)},v1=deadbeef`,
+        "PayPal-Signature": `t=${Math.floor(Date.now() / 1000)},v1=deadbeef`,
       },
       body: JSON.stringify({
-        id: "evt_bad",
-        type: "customer.subscription.created",
-        data: { object: {} },
+        id: "WH-bad",
+        event_type: "BILLING.SUBSCRIPTION.ACTIVATED",
+        resource: {},
       }),
     });
     expect(res.status).toBe(400);
 
     const env = await worker.getEnv();
     const seen = await env.DB.prepare(
-      `SELECT COUNT(*) as n FROM billing_events WHERE event_id = 'evt_bad'`,
+      `SELECT COUNT(*) as n FROM billing_events WHERE event_id = 'WH-bad'`,
     ).first<{ n: number }>();
     expect(Number(seen?.n)).toBe(0);
   });
@@ -317,7 +308,9 @@ describe("Stripe billing webhook", () => {
     expect(html).toContain("DropIMG Pro");
     expect(html).toContain("€2.99");
     expect(html).toContain("€24.99");
+    expect(html).toContain("Sign in to get Pro");
     expect(html).not.toContain("paddle.js");
+    expect(html).not.toContain("Stripe");
 
     const checkout = await worker.fetch("https://dropimg.io/api/billing/checkout", {
       method: "POST",

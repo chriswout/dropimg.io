@@ -75,8 +75,9 @@
         "PRO_50MB_ENABLED": "true",
         "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>",
         "BILLING_ENABLED": "true",
-        "STRIPE_PRICE_MONTHLY": "price_1UAC0uAyXaIAfjNQgHrpar8s",
-        "STRIPE_PRICE_ANNUAL": "price_1UAC0vAyXaIAfjNQRRE1SSkA"
+        "PAYPAL_ENV": "sandbox",
+        "PAYPAL_PLAN_MONTHLY": "P-15G50054531033903NKPD7ZI",
+        "PAYPAL_PLAN_ANNUAL": "P-7F863114YW191224BNKPD7ZQ"
       },
       "send_email": [
         {
@@ -134,10 +135,10 @@
         "LONG_TTL_ENABLED": "true",
         "PRO_50MB_ENABLED": "false",
         "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>",
-        // Live price IDs land here once the Stripe account is activated and
-        // the catalog is recreated in live mode. Until then billing stays off
-        // and an absent price ID keeps the checkout route closed regardless.
-        "BILLING_ENABLED": "false"
+        "BILLING_ENABLED": "true",
+        "PAYPAL_ENV": "live",
+        "PAYPAL_PLAN_MONTHLY": "P-3RL00862KD8203139NKPLFSI",
+        "PAYPAL_PLAN_ANNUAL": "P-9RD66268708840634NKPLFSQ"
       },
       "send_email": [
         {

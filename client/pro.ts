@@ -32,9 +32,9 @@ function trackClient(
 }
 
 /**
- * Managed Payments only runs on Stripe's own hosted page, so checkout is a
- * full navigation rather than an overlay: the session is minted server-side
- * and the browser is handed the URL it returns.
+ * PayPal approval only runs on PayPal's own hosted page, so checkout is a
+ * full navigation rather than an overlay: the subscription is minted
+ * server-side and the browser is handed the approve URL it returns.
  */
 async function startCheckout(interval: "monthly" | "annual") {
   trackClient("pro_cta_click", { interval, plan: "free" });
@@ -68,11 +68,34 @@ async function startCheckout(interval: "monthly" | "annual") {
 }
 
 /**
- * Stripe returns the buyer before the webhook has necessarily landed, so the
- * success page waits for the entitlement rather than assuming it.
+ * PayPal returns the buyer before the webhook has necessarily landed. The
+ * Pro page already asked PayPal for the subscription on the way in; if that
+ * landed we skip the wait. Otherwise we sync once more, then poll quickly.
  */
 async function pollUntilPro() {
+  if (root()?.getAttribute("data-plan") === "pro") {
+    location.href = "/app";
+    return;
+  }
   setStatus(copy("activating", "Payment received. Activating Pro…"));
+  const subscriptionId = new URLSearchParams(location.search).get("subscription_id");
+  try {
+    const synced = await fetch("/api/billing/sync", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(subscriptionId ? { subscription_id: subscriptionId } : {}),
+    });
+    if (synced.ok) {
+      const body = (await synced.json()) as { plan?: string };
+      if (body.plan === "pro") {
+        location.href = "/app";
+        return;
+      }
+    }
+  } catch {
+    // fall through to /me polling
+  }
   for (let i = 0; i < 20; i++) {
     try {
       const res = await fetch("/api/account/me", { credentials: "same-origin" });
@@ -84,7 +107,7 @@ async function pollUntilPro() {
     } catch {
       // keep polling
     }
-    await new Promise((r) => setTimeout(r, 1500));
+    await new Promise((r) => setTimeout(r, 400));
   }
   setStatus(
     copy(

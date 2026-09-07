@@ -11,8 +11,8 @@ Progress:
 | 2 migrate | done — `0003`–`0007` applied, none pending |
 | 3 R2 | done — three prefix rules applied and read back |
 | 4 deploy dark | done — all gates off, V1 behaviour verified live |
-| 5 billing | rebuilt on Stripe; test mode works, blocked on account activation |
-| 6 first purchase | blocked on the same |
+| 5 billing | live PayPal REST Subscriptions; `BILLING_ENABLED=true` |
+| 6 first purchase | ready — first live charge still to confirm |
 | 7 lifecycle | done — `LONG_TTL_ENABLED=true`, brought forward past the billing block |
 | 8 `PRO_50MB_ENABLED` | waiting: it only affects Pro accounts, and there are none yet |
 | 9 final smoke | after billing |
@@ -30,58 +30,32 @@ and `IP_HASH_SECRET`, and no billing var or secret of any kind.
 ## Why billing was rebuilt mid-launch
 
 Paddle rejected the account, classifying DropIMG as a filesharing service.
-Everything Paddle-shaped was removed and rebuilt on **Stripe Managed
-Payments**, which keeps a merchant of record — so tax, fraud, disputes and
-transaction support stay off our plate — while running on Stripe's own
-infrastructure. See [stripe.md](stripe.md) for the integration.
+That stack was rebuilt on Stripe Managed Payments, which Stripe then
+declined for the same restricted category. Billing now runs on **PayPal REST
+Subscriptions**. DropIMG is the merchant of record; PayPal is the processor.
+See [paypal.md](paypal.md) for the integration.
 
-The category question did not disappear with the provider. Stripe also lists
-"cyberlocker and file-sharing services" as a restricted business needing
-written pre-approval, and has closed accounts over it. Managed Payments does
-explicitly support "electronically supplied business and web services", and
-DropIMG Pro is sold under a SaaS tax code, which is a much better fit than
-Paddle's read. **Get that confirmed in writing before taking live payments**,
-because being shut down after launch with a balance held is worse than being
-rejected before it. Pre-approval is not just prudence: the Services Agreement
-makes operating a restricted business without written approval a breach, and so
-a termination ground that skips the cure period. The request to send, and the
-two gaps to close first, are in [stripe-underwriting.md](stripe-underwriting.md).
+The category question did not disappear. Confirm with PayPal that temporary
+image hosting is allowed **before the first live charge**. Being shut down
+after launch with a balance held is worse than being rejected before it. The
+category brief we prepared for Stripe is in
+[stripe-underwriting.md](stripe-underwriting.md).
 
 The compliance work done for Paddle's domain review all still applies and all
 still stands: the homepage and `/pro` are public with prices visible to
 anonymous visitors, and `/terms`, `/privacy`, `/refunds` and `/contact` return
-200 without authentication. The merchant-of-record wording in those pages now
-names Stripe and Link.
+200 without authentication. Those pages now name DropIMG as merchant of
+record and PayPal as the processor.
 
-## The Stripe account
+## The PayPal catalog
 
-Netherlands, EUR, `acct_1UABoeAyXaIAfjNQ`. Test mode is working end to end;
-`charges_enabled`, `payouts_enabled` and `details_submitted` are all still
-false, so live mode does not exist yet.
+Use the REST-API-integratie app (not shopping-cart, Braintree, or NVP/SOAP).
+Sandbox first, then live. Product **DropIMG Pro**, monthly €2.99 and annual
+€24.99, tax inclusive. Webhook to `/api/billing/paypal/webhook`. Steps and
+env vars are in [paypal.md](paypal.md).
 
-| Thing | Test ID |
-|-------|---------|
-| Product `DropIMG Pro`, `txcd_10103000` | `prod_VAX5xiQSjTfSjN` |
-| Monthly, €2.99 EUR, tax inclusive | `price_1UAC0uAyXaIAfjNQgHrpar8s` |
-| Annual, €24.99 EUR, tax inclusive | `price_1UAC0vAyXaIAfjNQRRE1SSkA` |
-| Webhook endpoint → staging, `2025-03-31.basil` | `we_1UAC1EAyXaIAfjNQLiKLdOfR` |
-
-In the dashboard, in this order:
-
-1. Complete account activation: business details, bank account, identity.
-2. Accept the **Managed Payments** terms of service and activate it. A
-   Checkout Session with `managed_payments[enabled]=true` already succeeds in
-   test, so the entitlement is present, but live needs the terms accepted.
-3. Set the custom terms of service and privacy policy URLs under Checkout
-   settings to `https://dropimg.io/terms` and `https://dropimg.io/privacy`, so
-   they appear in the Checkout footer.
-4. Recreate the catalog in live mode with the same tax code and tax behaviour,
-   and put the live price IDs into `env.production.vars`.
-5. Register the live webhook endpoint and set `STRIPE_WEBHOOK_SECRET`.
-
-Apple Pay needs no domain association file here: Managed Payments checkouts are
-hosted on `checkout.stripe.com`, which Stripe verifies itself. The Paddle file
-under `/.well-known/` is now inert and can be deleted whenever convenient.
+The live catalog does not exist yet. Production keeps `BILLING_ENABLED=false`
+until it does.
 
 ## Step 1 — snapshot
 
@@ -138,30 +112,31 @@ Verify before going further:
 
 ## Step 5 — enable billing
 
-Once the live catalog exists, put both live price IDs into
-`env.production.vars` and set the two secrets:
+Once the live REST app and catalog exist, put `PAYPAL_ENV=live` and both
+live plan IDs into `env.production.vars` and set the secrets:
 
 ```bash
-npx wrangler secret put STRIPE_SECRET_KEY --env production      # sk_live_…
-npx wrangler secret put STRIPE_WEBHOOK_SECRET --env production  # whsec_…
+npx wrangler secret put PAYPAL_CLIENT_ID --env production
+npx wrangler secret put PAYPAL_CLIENT_SECRET --env production
+npx wrangler secret put PAYPAL_WEBHOOK_ID --env production
 ```
 
 Set `BILLING_ENABLED=true` and deploy. Verify `/api/billing/config` reports
-`live` with the two live price IDs, that the CTA redirects to
-`checkout.stripe.com`, and that a webhook with a bad signature is rejected.
+`live` with the two live plan IDs, that the CTA redirects to PayPal, and
+that a webhook with a bad signature is rejected.
 
-There is no separate environment variable to set: the mode is read off the
-secret key prefix, so a test key in production disables billing rather than
-silently charging against the wrong account.
+Mode is `PAYPAL_ENV` (`sandbox` or `live`), which also picks the API host, so
+a sandbox env in production disables billing rather than charging the wrong
+account.
 
 ## Step 6 — one real purchase
 
-Buy annual with a real card on `https://dropimg.io/pro`. Confirm Pro is granted
-only after the verified webhook, that `pro_activated` is recorded, that My drops
-and `/app/billing` show the subscription, and that the customer portal opens.
-Check the charge descriptor reads `LINK.COM*`, matching what `/refunds` and
-`/terms` tell buyers to expect. Then decide explicitly whether to keep or
-refund the transaction.
+Buy annual with a real PayPal account on `https://dropimg.io/pro`. Confirm Pro
+is granted only after the verified webhook, that `pro_activated` is recorded,
+that My drops and `/app/billing` show the subscription, and that Manage
+billing opens the PayPal wallet. Check the statement descriptor matches what
+`/refunds` and `/terms` tell buyers to expect. Then decide explicitly whether
+to keep or refund the transaction.
 
 ## Step 7 — enable the lifecycle
 

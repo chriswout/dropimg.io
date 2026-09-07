@@ -1,5 +1,13 @@
 # Stripe underwriting — the category question
 
+**Outcome:** Stripe declined the same filesharing / cyberlocker category
+Paddle did. Billing now runs on [PayPal REST Subscriptions](paypal.md).
+Confirm with PayPal that temporary image hosting is allowed before the first
+live charge — they can decline this category too.
+
+The notes below are the request we prepared for Stripe. They stay as the
+category brief for the next provider.
+
 Stripe lists **"Cyberlocker and file-sharing services"** as a *restricted*
 business, not a prohibited one. Restricted means approval is possible and
 requires a human decision. It also means silence is not neutral: the Services

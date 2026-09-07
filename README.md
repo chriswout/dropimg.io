@@ -68,7 +68,7 @@ npx wrangler r2 bucket lifecycle add dropimg-images --name expire-o-prefix --pre
 - [Auth](docs/auth.md)
 - [Accounts](docs/account.md)
 - [Pro](docs/pro.md)
-- [Stripe](docs/stripe.md)
+- [PayPal](docs/paypal.md)
 - [Integrations](docs/integrations.md)
 - [Browser extension](docs/extension.md)
 - [ShareX](docs/sharex.md)

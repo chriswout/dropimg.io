@@ -124,7 +124,7 @@ describe("Account pages share site chrome", () => {
     expect(shop.status).toBe(200);
     expect(shop.headers.get("Cache-Control")).toBe("private, no-store");
     const html = await shop.text();
-    expect(html).toContain("Get Pro");
+    expect(html).toContain("Pay with PayPal");
     // One product, one CTA, with the interval as a selector rather than a
     // second plan card.
     expect(html).toContain('class="pro-offer"');
@@ -144,7 +144,7 @@ describe("Account pages share site chrome", () => {
     const memberHtml = await member.text();
     expect(memberHtml).toContain("You're on DropIMG Pro");
     expect(memberHtml).toContain("Manage billing");
-    expect(memberHtml).not.toContain("Get Pro");
+    expect(memberHtml).not.toContain("Pay with PayPal");
   });
 
   it("my drops uses the same shell", () => {

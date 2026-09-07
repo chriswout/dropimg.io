@@ -27,16 +27,16 @@ permanent storage, storage quota, or team plan.
 
 ## Who can buy
 
-Checkout is a signed-in redirect to Stripe's hosted page. Anonymous visitors are sent to `/login`. Active Pro subscribers see **You're on DropIMG Pro** and **Manage billing** — no purchase CTAs.
+Checkout is a signed-in redirect to PayPal's hosted approval page. Anonymous visitors are sent to `/login`. Active Pro subscribers see **You're on DropIMG Pro** and **Manage billing** — no purchase CTAs.
 
-Pro is granted only from a verified Stripe webhook. The browser never grants Pro from checkout UI state.
+Pro is granted only from a verified PayPal webhook. The browser never grants Pro from checkout UI state.
 
 ## Flags
 
 | Environment | `BILLING_ENABLED` | `LONG_TTL_ENABLED` | `PRO_50MB_ENABLED` |
 |-------------|-------------------|--------------------|--------------------|
 | Staging     | true              | true               | true               |
-| Production  | false             | false              | false              |
+| Production  | true              | true               | false              |
 
 `LONG_TTL_ENABLED` is one switch for the whole choose-your-own-lifetime feature,
 Free and Pro together, because both depend on the same `o/7d` and `o/pro` bucket
@@ -44,4 +44,4 @@ lifecycle rules existing. With it off, every plan gets the single legacy 24-hour
 lifetime and the uploader hides the selector rather than showing a one-option
 radiogroup.
 
-See [stripe.md](stripe.md) for catalog IDs, webhooks, and test checkout.
+See [paypal.md](paypal.md) for catalog IDs, webhooks, and test checkout.

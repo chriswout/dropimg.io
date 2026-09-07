@@ -57,7 +57,28 @@
     location.href = data.url;
   }
   async function pollUntilPro() {
+    if (root()?.getAttribute("data-plan") === "pro") {
+      location.href = "/app";
+      return;
+    }
     setStatus(copy("activating", "Payment received. Activating Pro\u2026"));
+    const subscriptionId = new URLSearchParams(location.search).get("subscription_id");
+    try {
+      const synced = await fetch("/api/billing/sync", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(subscriptionId ? { subscription_id: subscriptionId } : {})
+      });
+      if (synced.ok) {
+        const body = await synced.json();
+        if (body.plan === "pro") {
+          location.href = "/app";
+          return;
+        }
+      }
+    } catch {
+    }
     for (let i = 0; i < 20; i++) {
       try {
         const res = await fetch("/api/account/me", { credentials: "same-origin" });
@@ -68,7 +89,7 @@
         }
       } catch {
       }
-      await new Promise((r) => setTimeout(r, 1500));
+      await new Promise((r) => setTimeout(r, 400));
     }
     setStatus(
       copy(

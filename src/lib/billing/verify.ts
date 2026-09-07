@@ -1,5 +1,5 @@
-/** Stripe's own recommended tolerance for replayed webhook deliveries. */
-export const STRIPE_SIGNATURE_MAX_SKEW_SECONDS = 300;
+/** Same 300s window Stripe used; PayPal deliveries can be retried. */
+export const WEBHOOK_SIGNATURE_MAX_SKEW_SECONDS = 300;
 
 export type VerifyResult =
   | { ok: true; ts: number }
@@ -28,7 +28,7 @@ function parseSignatureHeader(header: string): { ts: number; v1: string[] } | nu
 function hexToBytes(hex: string): Uint8Array | null {
   if (!/^[0-9a-fA-F]+$/.test(hex) || hex.length % 2 !== 0) return null;
   const out = new Uint8Array(hex.length / 2);
-  for (let i = 0; i < out.length; i++) {
+  for (let i = 0; i < hex.length / 2; i++) {
     out[i] = Number.parseInt(hex.slice(i * 2, i * 2 + 2), 16);
   }
   return out;
@@ -59,7 +59,11 @@ export async function hmacSha256Hex(secret: string, payload: string): Promise<st
     .join("");
 }
 
-export async function verifyStripeSignature(opts: {
+/**
+ * Local/integration HMAC used when `PAYPAL_WEBHOOK_ID` is unset so tests do
+ * not call PayPal. Production never takes this path.
+ */
+export async function verifyHmacSignature(opts: {
   rawBody: string;
   header: string | null | undefined;
   secret: string;
@@ -72,7 +76,7 @@ export async function verifyStripeSignature(opts: {
   if (!parsed) return { ok: false, error: "malformed" };
 
   const now = opts.nowSeconds ?? Math.floor(Date.now() / 1000);
-  const skew = opts.maxSkewSeconds ?? STRIPE_SIGNATURE_MAX_SKEW_SECONDS;
+  const skew = opts.maxSkewSeconds ?? WEBHOOK_SIGNATURE_MAX_SKEW_SECONDS;
   if (Math.abs(now - parsed.ts) > skew) return { ok: false, error: "expired" };
 
   const expected = hexToBytes(

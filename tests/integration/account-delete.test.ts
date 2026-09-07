@@ -20,10 +20,10 @@ const server = createTestHarness({
         ADMIN_TOKEN: "integration-test-admin",
         /**
          * Blanked on purpose. The harness would otherwise inherit the real key
-         * from .dev.vars and delete-account would reach out to Stripe, which
+         * from .dev.vars and delete-account would reach out to PayPal, which
          * makes the suite need the network and depend on a live account.
          */
-        STRIPE_SECRET_KEY: "",
+        PAYPAL_CLIENT_SECRET: "",
       },
       vars: {
         ENVIRONMENT: "development",
@@ -159,7 +159,7 @@ describe("Account deletion", () => {
     expect(tokens.results?.[0]?.revoked_at).toBeTruthy();
   });
 
-  it("stops deletion when a live Stripe subscription cannot be canceled", async () => {
+  it("stops deletion when a live PayPal subscription cannot be canceled", async () => {
     const { cookie, userId } = await signIn("delete-pro@example.com");
     const slug = await claimOne(cookie);
     const env = await worker.getEnv();
@@ -168,7 +168,7 @@ describe("Account deletion", () => {
       `INSERT INTO subscriptions
         (id, user_id, provider, provider_subscription_id, status,
          current_period_end, cancel_at_period_end, created_at, updated_at)
-       VALUES (?, ?, 'stripe', ?, 'active', ?, 0, ?, ?)`,
+       VALUES (?, ?, 'paypal', ?, 'active', ?, 0, ?, ?)`,
     )
       .bind(`sub-${userId}`, userId, "sub_live_cannot_cancel", now + 86400, now, now)
       .run();

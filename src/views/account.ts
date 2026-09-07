@@ -78,7 +78,7 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     email: "Email",
     emailHint: "Sign-in uses a one-time link. There is no password.",
     plan: "Plan",
-    manageHint: "Update your card, download invoices, or cancel.",
+    manageHint: "Cancel or change payment in your PayPal wallet.",
     freePlanHint: "10 MB uploads, 24-hour links, last 10 drops.",
     planFree: "Free",
     planPro: "Pro",
@@ -144,7 +144,7 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     email: "Correo",
     emailHint: "Entras con un enlace de un solo uso. No hay contraseña.",
     plan: "Plan",
-    manageHint: "Cambia la tarjeta, descarga facturas o cancela.",
+    manageHint: "Cancela o cambia el pago en tu cuenta de PayPal.",
     freePlanHint: "Subidas de 10 MB, enlaces de 24 h, últimos 10 envíos.",
     planFree: "Gratis",
     planPro: "Pro",
@@ -210,7 +210,7 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     email: "E-mail",
     emailHint: "Você entra com um link de uso único. Não tem senha.",
     plan: "Plano",
-    manageHint: "Troque o cartão, baixe faturas ou cancele.",
+    manageHint: "Cancele ou altere o pagamento na sua conta PayPal.",
     freePlanHint: "Envios de 10 MB, links de 24 h, últimos 10 envios.",
     planFree: "Grátis",
     planPro: "Pro",
@@ -276,7 +276,7 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     email: "E-Mail",
     emailHint: "Anmeldung per Einmal-Link. Kein Passwort.",
     plan: "Plan",
-    manageHint: "Karte ändern, Rechnungen laden oder kündigen.",
+    manageHint: "Zahlung in deinem PayPal-Konto ändern oder kündigen.",
     freePlanHint: "10 MB pro Upload, 24-Stunden-Links, letzte 10 Drops.",
     planFree: "Kostenlos",
     planPro: "Pro",
@@ -344,7 +344,7 @@ type SettingsProps = {
   cancelAtPeriodEnd: boolean;
 };
 
-/** Plan state and the Stripe portal hand-off. */
+/** Plan state and the PayPal wallet hand-off. */
 export function renderBillingPage(opts: SettingsProps): string {
   const t = ACCOUNT_COPY[opts.locale];
   const period =
@@ -726,7 +726,7 @@ export function renderAccountPage(opts: SettingsProps): string {
   });
 }
 
-/** Opens the Stripe-hosted portal. Shared by Billing and the delete fallback. */
+/** Opens the PayPal wallet. Shared by Billing and the delete fallback. */
 const PORTAL_SCRIPT = `
     (() => {
       async function openPortal() {

@@ -50,10 +50,10 @@ describe("localized /pro SEO", () => {
     expect(html).toContain("You're on DropIMG Pro");
     expect(html).toContain("Manage billing");
     expect(html).not.toContain("data-interval");
-    expect(html).not.toContain("Get Pro");
+    expect(html).not.toContain("Pay with PayPal");
   });
 
-  it("shows Get Pro for Free and anonymous visitors", async () => {
+  it("shows Pay with PayPal for Free and anonymous visitors", async () => {
     const html = await renderProPage({
       locale: "en",
       env: { ENVIRONMENT: "staging" },
@@ -61,7 +61,7 @@ describe("localized /pro SEO", () => {
       plan: "free",
       billingOn: true,
     }).text();
-    expect(html).toContain("Get Pro");
+    expect(html).toContain("Pay with PayPal");
     expect(html).toContain("€24.99");
     expect(html).toContain("€2.99");
     expect(html).toContain("€2.08/mo");

@@ -35,7 +35,7 @@ After sign-in the client claims `dropimg:recent`.
 
 `GET /account` (noindex, session required) is organized as Account, Plan, Integrations, Security, and Danger zone. Customer-facing billing copy uses “Renews …” / “Ends …” — not provider IDs.
 
-`POST /api/account/delete` cancels live Pro billing first, then removes images, revokes integration tokens and sessions, and soft-deletes the user. If the Stripe cancel fails, the account is **not** deleted.
+`POST /api/account/delete` cancels live Pro billing first, then removes images, revokes integration tokens and sessions, and soft-deletes the user. If the PayPal cancel fails, the account is **not** deleted.
 
 ## Integrations
 

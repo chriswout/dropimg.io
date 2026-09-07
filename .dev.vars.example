@@ -9,13 +9,15 @@ PRO_50MB_ENABLED=true
 # INDEXNOW_KEY=
 # Magic-link mail uses the EMAIL binding (signin@dropimg.io). Local wrangler
 # simulates send unless the binding has remote: true.
-# Stripe. Never commit real keys. Test and live are told apart by the secret
-# key prefix, so there is no separate environment setting to keep in sync.
+# PayPal REST. Never commit real secrets. sandbox and live are told apart by
+# PAYPAL_ENV, which also picks the API host.
 # BILLING_ENABLED=false
-# STRIPE_SECRET_KEY=sk_test_...
-# STRIPE_PRICE_MONTHLY=price_...
-# STRIPE_PRICE_ANNUAL=price_...
-# Webhooks are signed per endpoint. For local work use the secret that
-# `stripe listen --forward-to localhost:5173/api/billing/stripe/webhook`
-# prints, not the one registered against the deployed endpoint.
-# STRIPE_WEBHOOK_SECRET=whsec_...
+# PAYPAL_ENV=sandbox
+# PAYPAL_CLIENT_ID=
+# PAYPAL_CLIENT_SECRET=
+# PAYPAL_PLAN_MONTHLY=P-...
+# PAYPAL_PLAN_ANNUAL=P-...
+# Production webhooks use PAYPAL_WEBHOOK_ID + verify-webhook-signature.
+# PAYPAL_WEBHOOK_ID=
+# Local/integration tests may set PAYPAL_WEBHOOK_SECRET instead (HMAC).
+# PAYPAL_WEBHOOK_SECRET=
