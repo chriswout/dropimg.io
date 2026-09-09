@@ -15,7 +15,7 @@ Anonymous uploads stay available. An integration token is optional and is not re
 - REST: [`/developers`](https://dropimg.io/developers) and [`/openapi/v1.yaml`](https://dropimg.io/openapi/v1.yaml)
 - MCP: [`/mcp`](https://dropimg.io/mcp)
 
-The browser extension connects with one-click pairing (`POST /api/integrations/browser/start` + `/connect/browser/:id`). That still mints a `dropimg_it_*` token. Browser disconnect removes the local copy only. Account-side Revoke invalidates the token.
+The browser extension connects with one-click pairing (`POST /api/integrations/browser/start` + `/connect/browser/:id`). That still mints a `dropimg_it_*` token. A pending pairing lasts 120 seconds; after approve the extension has 60 seconds to retrieve the credential. An unused approved pairing then expires and the minted token is revoked. Browser disconnect removes the local copy only. Account-side Revoke invalidates the token.
 
 ## Endpoints
 

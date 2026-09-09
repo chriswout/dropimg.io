@@ -7,7 +7,10 @@ import {
   revokeIntegrationToken,
 } from "./integration-token";
 
-export const PAIRING_TTL_SECONDS = 5 * 60;
+export const PAIRING_PENDING_TTL_SECONDS = 120;
+export const PAIRING_HANDOFF_TTL_SECONDS = 60;
+/** @deprecated Use PAIRING_PENDING_TTL_SECONDS. */
+export const PAIRING_TTL_SECONDS = PAIRING_PENDING_TTL_SECONDS;
 export const PAIRING_CLIENTS = ["chrome-extension", "edge-extension"] as const;
 export type PairingClient = (typeof PAIRING_CLIENTS)[number];
 
@@ -45,8 +48,8 @@ export function pairingPublicStatus(
 ): PairingStatus {
   if (row.cancelled_at) return "cancelled";
   if (row.consumed_at) return "consumed";
-  if (row.approved_at) return "approved";
   if (row.expires_at <= now) return "expired";
+  if (row.approved_at) return "approved";
   return "pending";
 }
 
@@ -89,13 +92,13 @@ export async function startBrowserPairing(
         (id, device_secret_hash, client, created_at, expires_at)
        VALUES (?, ?, ?, ?, ?)`,
     )
-    .bind(pairingId, new Uint8Array(hash), input.client, now, now + PAIRING_TTL_SECONDS)
+    .bind(pairingId, new Uint8Array(hash), input.client, now, now + PAIRING_PENDING_TTL_SECONDS)
     .run();
   return {
     pairingId,
     deviceSecret,
     verificationUrl: `${input.origin.replace(/\/$/, "")}/connect/browser/${pairingId}`,
-    expiresIn: PAIRING_TTL_SECONDS,
+    expiresIn: PAIRING_PENDING_TTL_SECONDS,
   };
 }
 
@@ -140,6 +143,34 @@ export async function loadPairingBySecret(
   return row;
 }
 
+export async function sweepExpiredPairing(
+  db: D1Database,
+  row: BrowserPairingRow,
+  now: number,
+): Promise<void> {
+  if (pairingPublicStatus(row, now) !== "expired") return;
+  if (!row.issued_token && !row.token_id) return;
+
+  await db
+    .prepare(
+      `UPDATE browser_pairings
+          SET issued_token = NULL
+        WHERE id = ?
+          AND consumed_at IS NULL
+          AND expires_at <= ?`,
+    )
+    .bind(row.id, now)
+    .run();
+
+  if (row.token_id && row.user_id) {
+    await revokeIntegrationToken(db, {
+      userId: row.user_id,
+      tokenId: row.token_id,
+      now,
+    });
+  }
+}
+
 export async function approveBrowserPairing(
   db: D1Database,
   input: {
@@ -156,6 +187,10 @@ export async function approveBrowserPairing(
   const row = await loadPairingById(db, input.pairingId);
   if (!row) return { ok: false, status: "missing" };
   const status = pairingPublicStatus(row, now);
+  if (status === "expired") {
+    await sweepExpiredPairing(db, row, now);
+    return { ok: false, status };
+  }
   if (status === "approved" && row.user_id === input.userId) {
     return { ok: true, status: "approved" };
   }
@@ -174,15 +209,17 @@ export async function approveBrowserPairing(
     .prepare(
       `UPDATE browser_pairings
        SET user_id = ?, token_id = ?, issued_token = ?, approved_at = ?, expires_at = ?
-       WHERE id = ? AND approved_at IS NULL AND cancelled_at IS NULL AND consumed_at IS NULL`,
+       WHERE id = ? AND approved_at IS NULL AND cancelled_at IS NULL
+         AND consumed_at IS NULL AND expires_at > ?`,
     )
     .bind(
       input.userId,
       created.id,
       created.token,
       now,
-      now + PAIRING_TTL_SECONDS,
+      now + PAIRING_HANDOFF_TTL_SECONDS,
       input.pairingId,
+      now,
     )
     .run();
   if ((claimed.meta?.changes ?? 0) === 0) {
@@ -193,6 +230,9 @@ export async function approveBrowserPairing(
     });
     const latest = await loadPairingById(db, input.pairingId);
     if (!latest) return { ok: false, status: "missing" };
+    if (pairingPublicStatus(latest, now) === "expired") {
+      await sweepExpiredPairing(db, latest, now);
+    }
     const latestStatus = pairingPublicStatus(latest, now);
     if (latestStatus === "approved" && latest.user_id === input.userId) {
       return { ok: true, status: "approved" };
@@ -211,6 +251,10 @@ export async function cancelBrowserPairing(
   const row = await loadPairingById(db, pairingId);
   if (!row) return "missing";
   const status = pairingPublicStatus(row, now);
+  if (status === "expired") {
+    await sweepExpiredPairing(db, row, now);
+    return "expired";
+  }
   if (status === "pending") {
     await db
       .prepare(
@@ -253,26 +297,38 @@ export async function consumeApprovedPairing(
     return { ok: false, status: exists ? "unauthorized" : "missing" };
   }
   const status = pairingPublicStatus(row, now);
+  if (status === "expired") {
+    await sweepExpiredPairing(env.DB, row, now);
+    return { ok: true, status: "expired" };
+  }
   if (status === "pending") return { ok: true, status: "pending" };
   if (status !== "approved") {
     return { ok: true, status };
   }
 
   /**
-   * One winner: consumed_at is set only if it was still null. RETURNING keeps
-   * the token value because we do not null it in this statement (SQLite
-   * RETURNING is post-update).
+   * One winner: consumed_at is set only if it was still null and the handoff
+   * window is still open. RETURNING keeps the token value because we do not
+   * null it in this statement (SQLite RETURNING is post-update).
    */
   const claimed = await env.DB.prepare(
     `UPDATE browser_pairings
      SET consumed_at = ?
-     WHERE id = ? AND consumed_at IS NULL AND cancelled_at IS NULL AND issued_token IS NOT NULL
+     WHERE id = ? AND consumed_at IS NULL AND cancelled_at IS NULL
+       AND issued_token IS NOT NULL AND expires_at > ?
      RETURNING issued_token, user_id`,
   )
-    .bind(now, pairingId)
+    .bind(now, pairingId, now)
     .first<{ issued_token: string; user_id: string }>();
   if (!claimed?.issued_token || !claimed.user_id) {
-    return { ok: true, status: "consumed" };
+    const latest = await loadPairingById(env.DB, pairingId);
+    if (!latest) return { ok: true, status: "consumed" };
+    const latestStatus = pairingPublicStatus(latest, now);
+    if (latestStatus === "expired") {
+      await sweepExpiredPairing(env.DB, latest, now);
+      return { ok: true, status: "expired" };
+    }
+    return { ok: true, status: latestStatus === "approved" ? "consumed" : latestStatus };
   }
   await env.DB.prepare(
     `UPDATE browser_pairings SET issued_token = NULL WHERE id = ? AND consumed_at IS NOT NULL`,

@@ -144,7 +144,9 @@ export async function startBrowserPairing(
     if (!body.pairingId || !body.deviceSecret || !body.verificationUrl) {
       return { ok: false, error: mapError("server_error"), code: "server_error" };
     }
-    const expiresIn = Number(body.expiresIn) || 300;
+    const pendingTtl = Number(body.expiresIn) || 120;
+    // Keep the local session through a late approve + 60s credential handoff.
+    const expiresIn = pendingTtl + 60;
     return {
       ok: true,
       pairing: {

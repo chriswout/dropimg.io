@@ -14,6 +14,7 @@ import {
   loadPairingBySecret,
   pairingPublicStatus,
   startBrowserPairing,
+  sweepExpiredPairing,
   type PairingClient,
 } from "../lib/browser-pairing";
 import { connectBrowserHtmlResponse, type ConnectBrowserState } from "../views/connect-browser";
@@ -102,6 +103,7 @@ browserPairingRoutes.get("/connect/browser/:pairingId", async (c) => {
   }
   const row = await loadPairingById(c.env.DB, pairingId);
   const now = Math.floor(Date.now() / 1000);
+  if (row) await sweepExpiredPairing(c.env.DB, row, now);
   const state = connectPageState(row ? pairingPublicStatus(row, now) : "expired", row?.user_id, session.id);
   const status = state === "expired" || state === "cancelled" || state === "taken" ? 410 : 200;
   return connectBrowserHtmlResponse({ locale, env: c.env, pairingId, state }, status);

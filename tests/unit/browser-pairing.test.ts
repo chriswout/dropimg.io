@@ -1,11 +1,18 @@
 import { describe, expect, it } from "vitest";
 import { safeNextPath } from "../../src/lib/auth/next-path";
 import {
+  PAIRING_HANDOFF_TTL_SECONDS,
+  PAIRING_PENDING_TTL_SECONDS,
   extensionPairingLabel,
   pairingPublicStatus,
 } from "../../src/lib/browser-pairing";
 
 describe("browser pairing helpers", () => {
+  it("uses a 2-minute pending window and a 60-second credential handoff", () => {
+    expect(PAIRING_PENDING_TTL_SECONDS).toBe(120);
+    expect(PAIRING_HANDOFF_TTL_SECONDS).toBe(60);
+  });
+
   it("allows only the pairing approval path as a login next", () => {
     const id = "11111111-2222-4333-8444-555555555555";
     expect(safeNextPath(`/connect/browser/${id}`)).toBe(`/connect/browser/${id}`);
@@ -45,6 +52,12 @@ describe("browser pairing helpers", () => {
     expect(pairingPublicStatus({ ...base, expires_at: now - 1 }, now)).toBe("expired");
     expect(
       pairingPublicStatus({ ...base, approved_at: now - 10, expires_at: now - 1 }, now),
-    ).toBe("approved");
+    ).toBe("expired");
+    expect(
+      pairingPublicStatus(
+        { ...base, approved_at: now - 10, consumed_at: now - 5, expires_at: now - 1 },
+        now,
+      ),
+    ).toBe("consumed");
   });
 });

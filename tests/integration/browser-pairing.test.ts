@@ -84,7 +84,7 @@ describe("browser extension pairing", () => {
     const started = await startPairing();
     expect(started.verificationUrl).toContain(`/connect/browser/${started.pairingId}`);
     expect(started.verificationUrl).not.toContain(started.deviceSecret);
-    expect(started.expiresIn).toBe(300);
+    expect(started.expiresIn).toBe(120);
 
     const pending = await status(started.pairingId, started.deviceSecret);
     expect(pending.status).toBe(200);
@@ -202,6 +202,57 @@ describe("browser extension pairing", () => {
       .run();
     const expired = await status(other.pairingId, other.deviceSecret);
     expect(await expired.json()).toEqual({ status: "expired" });
+  });
+
+  it("expires an approved pairing after the handoff window and revokes the token", async () => {
+    const started = await startPairing();
+    const cookie = await signIn("handoff@example.com");
+    const approve = await worker.fetch(
+      `https://dropimg.io/connect/browser/${started.pairingId}/approve`,
+      {
+        method: "POST",
+        headers: { Cookie: cookie, Origin: "https://dropimg.io" },
+        redirect: "manual",
+      },
+    );
+    expect(approve.status).toBe(303);
+
+    const env = await worker.getEnv();
+    const minted = await env.DB.prepare(
+      `SELECT token_id, issued_token, approved_at FROM browser_pairings WHERE id = ?`,
+    )
+      .bind(started.pairingId)
+      .first<{ token_id: string; issued_token: string; approved_at: number }>();
+    expect(minted?.token_id).toBeTruthy();
+    expect(minted?.issued_token).toMatch(/^dropimg_it_/);
+
+    await env.DB.prepare(`UPDATE browser_pairings SET expires_at = 1 WHERE id = ?`)
+      .bind(started.pairingId)
+      .run();
+
+    const expired = await status(started.pairingId, started.deviceSecret);
+    expect(expired.status).toBe(200);
+    expect(await expired.json()).toEqual({ status: "expired" });
+
+    const pairing = await env.DB.prepare(
+      `SELECT issued_token FROM browser_pairings WHERE id = ?`,
+    )
+      .bind(started.pairingId)
+      .first<{ issued_token: string | null }>();
+    expect(pairing?.issued_token).toBeNull();
+
+    const token = await env.DB.prepare(
+      `SELECT revoked_at FROM integration_tokens WHERE id = ?`,
+    )
+      .bind(minted!.token_id)
+      .first<{ revoked_at: number | null }>();
+    expect(token?.revoked_at).toBeTruthy();
+
+    const listed = await worker.fetch("https://dropimg.io/api/account/integrations", {
+      headers: { Cookie: cookie },
+    });
+    const body = (await listed.json()) as { tokens: Array<{ kind: string }> };
+    expect(body.tokens.filter((row) => row.kind === "extension")).toHaveLength(0);
   });
 
   it("keeps manual integration tokens working after pairing exists", async () => {

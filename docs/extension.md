@@ -21,7 +21,10 @@ Anonymous capture is unchanged and remains the default.
    `/connect/browser/:pairingId`
 3. Sign in if needed (`?next=` is allowlisted for that path), then approve
 4. The extension polls `POST /api/integrations/browser/status` with the device
-   secret (never in the URL) and stores the one-time `dropimg_it_*` token
+   secret (never in the URL) and stores the one-time `dropimg_it_*` token.
+   Pending pairings last 120 seconds. After approve, the credential can be
+   retrieved for 60 seconds; an unused approved pairing then expires, the
+   secret is wiped, and the minted extension token is revoked.
 
 The token is stored in `chrome.storage.local` only (never `sync`, never analytics, never console). Disconnect removes the local token; it does **not** revoke it. Revoke from the account page to invalidate uploads immediately.
 
