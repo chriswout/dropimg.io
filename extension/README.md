@@ -50,9 +50,11 @@ upload.
 
 Image passwords are not in the popup for this release.
 
-Full-page capture scrolls the document, captures viewport tiles at Chrome's
-`captureVisibleTab` rate (650ms gap), hides fixed/sticky overlays after the first
-tile so they are not repeated, then restores scroll position and styles. Pages
+Full-page capture scrolls the document vertically at the current viewport width,
+captures tiles at Chrome's `captureVisibleTab` rate (650ms gap), and stitches at
+the actual `scrollY`. Fixed overlays are hidden after the first tile; sticky
+headings are hidden only after they already appeared, so they are not blanked
+out of later sections. Scroll position and styles are restored afterward. Pages
 that would exceed a 16384px canvas edge, 20 000 CSS pixels of height, or 24 tiles
 return `full_page_too_large` instead of a partial image.
 

@@ -1,7 +1,11 @@
 import { randomToken, sha256Bytes, timingSafeEqualBytes } from "./auth/crypto";
 import { toArrayBuffer } from "./d1-blob";
 import { entitlementsFor } from "./entitlements";
-import { createIntegrationToken, maskEmail } from "./integration-token";
+import {
+  createIntegrationToken,
+  maskEmail,
+  revokeIntegrationToken,
+} from "./integration-token";
 
 export const PAIRING_TTL_SECONDS = 5 * 60;
 export const PAIRING_CLIENTS = ["chrome-extension", "edge-extension"] as const;
@@ -166,11 +170,11 @@ export async function approveBrowserPairing(
     kind: "extension",
     now,
   });
-  await db
+  const claimed = await db
     .prepare(
       `UPDATE browser_pairings
        SET user_id = ?, token_id = ?, issued_token = ?, approved_at = ?, expires_at = ?
-       WHERE id = ? AND approved_at IS NULL AND cancelled_at IS NULL`,
+       WHERE id = ? AND approved_at IS NULL AND cancelled_at IS NULL AND consumed_at IS NULL`,
     )
     .bind(
       input.userId,
@@ -181,6 +185,21 @@ export async function approveBrowserPairing(
       input.pairingId,
     )
     .run();
+  if ((claimed.meta?.changes ?? 0) === 0) {
+    await revokeIntegrationToken(db, {
+      userId: input.userId,
+      tokenId: created.id,
+      now,
+    });
+    const latest = await loadPairingById(db, input.pairingId);
+    if (!latest) return { ok: false, status: "missing" };
+    const latestStatus = pairingPublicStatus(latest, now);
+    if (latestStatus === "approved" && latest.user_id === input.userId) {
+      return { ok: true, status: "approved" };
+    }
+    if (latestStatus === "approved") return { ok: false, status: "taken" };
+    return { ok: false, status: latestStatus };
+  }
   return { ok: true, status: "approved" };
 }
 
@@ -235,30 +254,44 @@ export async function consumeApprovedPairing(
   }
   const status = pairingPublicStatus(row, now);
   if (status === "pending") return { ok: true, status: "pending" };
-  if (status !== "approved" || !row.issued_token || !row.user_id) {
-    return { ok: true, status: status === "approved" ? "consumed" : status };
+  if (status !== "approved") {
+    return { ok: true, status };
   }
+
+  /**
+   * One winner: consumed_at is set only if it was still null. RETURNING keeps
+   * the token value because we do not null it in this statement (SQLite
+   * RETURNING is post-update).
+   */
+  const claimed = await env.DB.prepare(
+    `UPDATE browser_pairings
+     SET consumed_at = ?
+     WHERE id = ? AND consumed_at IS NULL AND cancelled_at IS NULL AND issued_token IS NOT NULL
+     RETURNING issued_token, user_id`,
+  )
+    .bind(now, pairingId)
+    .first<{ issued_token: string; user_id: string }>();
+  if (!claimed?.issued_token || !claimed.user_id) {
+    return { ok: true, status: "consumed" };
+  }
+  await env.DB.prepare(
+    `UPDATE browser_pairings SET issued_token = NULL WHERE id = ? AND consumed_at IS NOT NULL`,
+  )
+    .bind(pairingId)
+    .run();
 
   const user = await env.DB.prepare(
     `SELECT email FROM users WHERE id = ? AND deleted_at IS NULL LIMIT 1`,
   )
-    .bind(row.user_id)
+    .bind(claimed.user_id)
     .first<{ email: string }>();
   if (!user) return { ok: true, status: "cancelled" };
 
-  const entitlements = await entitlementsFor(env, row.user_id);
-  await env.DB.prepare(
-    `UPDATE browser_pairings
-     SET consumed_at = ?, issued_token = NULL
-     WHERE id = ? AND consumed_at IS NULL`,
-  )
-    .bind(now, pairingId)
-    .run();
-
+  const entitlements = await entitlementsFor(env, claimed.user_id);
   return {
     ok: true,
     status: "approved",
-    token: row.issued_token,
+    token: claimed.issued_token,
     user: { emailMasked: maskEmail(user.email) },
     entitlements: {
       plan: entitlements.plan,

@@ -37,10 +37,13 @@ enforces it.
 
 Image passwords are not in the extension popup for this release.
 
-Full-page capture stitches `captureVisibleTab` tiles. After the first tile it
-temporarily hides computed `position: fixed` / `sticky` elements so headers and
-FABs are not repeated. Scroll position and styles are restored in `finally`.
-Oversized pages fail with `full_page_too_large` instead of a partial shot.
+Full-page capture stitches `captureVisibleTab` tiles at the current viewport
+width (not horizontal `scrollWidth`). After the first tile it hides `position:
+fixed` overlays. Sticky elements are hidden only after they were visible in an
+earlier tile, so section headings still appear once. Tiles are painted at the
+browser's actual `scrollY`. Scroll position and styles are restored in
+`finally`. Oversized pages fail with `full_page_too_large` instead of a partial
+shot.
 
 ## Build
 

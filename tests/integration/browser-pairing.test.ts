@@ -128,6 +128,55 @@ describe("browser extension pairing", () => {
     expect(await consumed.json()).toEqual({ status: "consumed" });
   });
 
+  it("returns the pairing token to only one of two concurrent status calls", async () => {
+    const started = await startPairing();
+    const cookie = await signIn("race@example.com");
+    const approve = await worker.fetch(
+      `https://dropimg.io/connect/browser/${started.pairingId}/approve`,
+      {
+        method: "POST",
+        headers: { Cookie: cookie, Origin: "https://dropimg.io" },
+        redirect: "manual",
+      },
+    );
+    expect(approve.status).toBe(303);
+
+    const [a, b] = await Promise.all([
+      status(started.pairingId, started.deviceSecret),
+      status(started.pairingId, started.deviceSecret),
+    ]);
+    const bodies = (await Promise.all([a.json(), b.json()])) as Array<{
+      status: string;
+      token?: string;
+    }>;
+    const winners = bodies.filter((body) => body.status === "approved" && body.token);
+    const losers = bodies.filter((body) => body.status === "consumed");
+    expect(winners).toHaveLength(1);
+    expect(losers).toHaveLength(1);
+    expect(winners[0]!.token).toMatch(/^dropimg_it_/);
+  });
+
+  it("does not leave a second live token if approve is submitted twice", async () => {
+    const started = await startPairing();
+    const cookie = await signIn("twice@example.com");
+    for (let i = 0; i < 2; i++) {
+      const approve = await worker.fetch(
+        `https://dropimg.io/connect/browser/${started.pairingId}/approve`,
+        {
+          method: "POST",
+          headers: { Cookie: cookie, Origin: "https://dropimg.io" },
+          redirect: "manual",
+        },
+      );
+      expect(approve.status).toBe(303);
+    }
+    const listed = await worker.fetch("https://dropimg.io/api/account/integrations", {
+      headers: { Cookie: cookie },
+    });
+    const body = (await listed.json()) as { tokens: Array<{ kind: string }> };
+    expect(body.tokens.filter((row) => row.kind === "extension")).toHaveLength(1);
+  });
+
   it("rejects a wrong secret and cancelled or expired pairings", async () => {
     const started = await startPairing();
     const wrong = await status(started.pairingId, "not-the-secret");

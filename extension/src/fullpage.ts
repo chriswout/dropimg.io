@@ -4,6 +4,8 @@ export const FULLPAGE_SETTLE_MS = 180;
 export const MAX_FULLPAGE_TILES = 24;
 export const MAX_FULLPAGE_CANVAS_EDGE = 16384;
 export const MAX_FULLPAGE_CSS_HEIGHT = 20_000;
+/** Abort stitch if the page did not land near the requested scroll offset. */
+export const FULLPAGE_SCROLL_SLACK_MIN_CSS = 48;
 
 export type FullpageMeasure = {
   viewportWidth: number;
@@ -39,6 +41,11 @@ export function planFullpageCapture(
 ): { ok: true; plan: FullpagePlan } | { ok: false; code: "full_page_too_large" } {
   const dpr = Number.isFinite(measure.dpr) && measure.dpr > 0 ? measure.dpr : 1;
   const viewportHeightCss = Math.max(1, Math.floor(measure.viewportHeight));
+  /**
+   * Vertical full page at the current viewport width. `scrollWidth` is ignored
+   * on purpose — horizontal stitching is a different problem and would blow
+   * the canvas on wide dashboards.
+   */
   const widthCss = Math.max(1, Math.floor(measure.viewportWidth));
   const heightCss = Math.max(viewportHeightCss, Math.floor(measure.scrollHeight));
 
@@ -95,11 +102,31 @@ export function tileDrawRect(
   return { sx: 0, sy: 0, sw, sh, dx: 0, dy, dw: sw, dh: sh };
 }
 
-export function shouldHideOverlay(style: {
-  position: string;
-  visibility: string;
-  display: string;
-}): boolean {
+export function shouldHideOverlay(
+  style: {
+    position: string;
+    visibility: string;
+    display: string;
+  },
+  opts: { seenInPreviousTile?: boolean } = {},
+): boolean {
   if (style.display === "none" || style.visibility === "hidden") return false;
-  return style.position === "fixed" || style.position === "sticky";
+  if (style.position === "fixed") return true;
+  if (style.position === "sticky") return opts.seenInPreviousTile === true;
+  return false;
+}
+
+/** Prefer the browser's actual scrollY; null means the page jumped too far. */
+export function resolveTileScrollY(
+  requested: number,
+  actual: number,
+  viewportHeightCss: number,
+): number | null {
+  if (!Number.isFinite(actual) || actual < 0) return null;
+  const slack = Math.max(
+    FULLPAGE_SCROLL_SLACK_MIN_CSS,
+    Math.floor(viewportHeightCss * 0.25),
+  );
+  if (Math.abs(actual - requested) > slack) return null;
+  return actual;
 }

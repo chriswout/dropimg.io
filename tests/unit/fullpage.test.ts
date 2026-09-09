@@ -3,6 +3,7 @@ import {
   MAX_FULLPAGE_CANVAS_EDGE,
   MAX_FULLPAGE_CSS_HEIGHT,
   planFullpageCapture,
+  resolveTileScrollY,
   shouldHideOverlay,
   tileDrawRect,
 } from "../../extension/src/fullpage";
@@ -64,19 +65,32 @@ describe("full-page capture plan", () => {
     expect(planned.ok).toBe(false);
   });
 
-  it("hides only visible fixed and sticky overlays", () => {
+  it("stitches the vertical page at viewport width, not document scrollWidth", () => {
+    const planned = planFullpageCapture({ ...base, viewportWidth: 800, scrollWidth: 2400 });
+    expect(planned.ok).toBe(true);
+    if (!planned.ok) return;
+    expect(planned.plan.widthCss).toBe(800);
+  });
+
+  it("hides fixed overlays, but sticky only after they appeared in an earlier tile", () => {
+    const sticky = { position: "sticky", visibility: "visible", display: "block" };
     expect(shouldHideOverlay({ position: "fixed", visibility: "visible", display: "block" })).toBe(
       true,
     );
-    expect(shouldHideOverlay({ position: "sticky", visibility: "visible", display: "block" })).toBe(
-      true,
-    );
+    expect(shouldHideOverlay(sticky)).toBe(false);
+    expect(shouldHideOverlay(sticky, { seenInPreviousTile: true })).toBe(true);
     expect(shouldHideOverlay({ position: "relative", visibility: "visible", display: "block" })).toBe(
       false,
     );
     expect(shouldHideOverlay({ position: "fixed", visibility: "hidden", display: "block" })).toBe(
       false,
     );
+  });
+
+  it("stitches at the actual scrollY when it is close, and aborts when it jumped", () => {
+    expect(resolveTileScrollY(1200, 1204, 600)).toBe(1204);
+    expect(resolveTileScrollY(1200, 0, 600)).toBeNull();
+    expect(resolveTileScrollY(1200, Number.NaN, 600)).toBeNull();
   });
 
   it("crops a last tile that hangs past the document height", () => {

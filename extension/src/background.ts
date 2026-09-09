@@ -9,6 +9,7 @@ import {
 import {
   FULLPAGE_SETTLE_MS,
   planFullpageCapture,
+  resolveTileScrollY,
   tileDrawRect,
   type FullpageMeasure,
   type FullpagePlan,
@@ -255,7 +256,9 @@ type FullpageApi = {
   measure: () => FullpageMeasure;
   prepare: () => void;
   hideOverlays: () => void;
+  rememberVisibleSticky: () => void;
   scrollToY: (y: number) => { scrollY: number; scrollHeight: number };
+  currentScrollY: () => number;
   restore: () => void;
 };
 
@@ -296,19 +299,42 @@ async function captureFullpage(tab: chrome.tabs.Tab): Promise<string> {
       const y = plan.yOffsets[i]!;
       await chrome.scripting.executeScript({
         target: { tabId },
-        func: (offset: number, hide: boolean) => {
+        func: (offset: number, afterFirst: boolean) => {
           const api = (
             window as unknown as { __dropimg_fullpage__?: FullpageApi }
           ).__dropimg_fullpage__;
           if (!api) throw new Error("restricted_page");
-          if (hide) api.hideOverlays();
           api.scrollToY(offset);
+          if (afterFirst) api.hideOverlays();
         },
         args: [y, i > 0],
       });
       await sleep(FULLPAGE_SETTLE_MS);
       await assertSameTab(tabId);
-      tiles.push({ dataUrl: await captureVisible(windowId), yCss: y });
+      const actualY = await chrome.scripting
+        .executeScript({
+          target: { tabId },
+          func: () => {
+            const api = (
+              window as unknown as { __dropimg_fullpage__?: FullpageApi }
+            ).__dropimg_fullpage__;
+            if (!api) throw new Error("restricted_page");
+            return api.currentScrollY();
+          },
+        })
+        .then(([res]) => Number(res?.result));
+      const yCss = resolveTileScrollY(y, actualY, plan.viewportHeightCss);
+      if (yCss == null) throw new Error("tab_changed");
+      tiles.push({ dataUrl: await captureVisible(windowId), yCss });
+      await chrome.scripting.executeScript({
+        target: { tabId },
+        func: () => {
+          const api = (
+            window as unknown as { __dropimg_fullpage__?: FullpageApi }
+          ).__dropimg_fullpage__;
+          api?.rememberVisibleSticky();
+        },
+      });
       notifyFullpageProgress(i + 1, plan.yOffsets.length);
     }
     return await stitchFullpage(tiles, plan);

@@ -47,7 +47,7 @@ ACCOUNT CONNECTION
 
 LINKS THAT EXPIRE
 Every link has a lifetime and then it's gone. Nothing you share sticks around
-forever by accident, and nothing you upload is ever public, listed, indexed or
+forever by accident, and uploads are not publicly listed, indexed or
 searchable — a link only works for someone you gave it to.
 
 Without an account your captures use the site's default lifetime. Connect a
@@ -236,8 +236,8 @@ Unpacked source is not needed — the uploaded zip is the review build.
 Do not test on chrome://, the Web Store, or PDFs — those pages cannot host the
 region overlay or toast; a notification is the fallback there.
 
-Nothing is paid. Billing is off. Anonymous capture is the default and is enough
-to review the single purpose.
+No purchase is required to review the extension. Anonymous capture and free
+account connection are sufficient to test its full single-purpose functionality.
 ```
 
 ---
