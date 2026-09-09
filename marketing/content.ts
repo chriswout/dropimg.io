@@ -23,6 +23,8 @@ export const CHROME: Record<Locale, SharedChrome> = {
       share: "Share image with a link",
       extension: "Chrome / Edge extension",
       sharex: "ShareX",
+      api: "API",
+      mcp: "MCP",
     },
     homeLink: "Home",
     productHighlights: "Product highlights",
@@ -66,6 +68,8 @@ export const CHROME: Record<Locale, SharedChrome> = {
       share: "Compartir imagen con enlace",
       extension: "Extensión Chrome / Edge",
       sharex: "ShareX",
+      api: "API",
+      mcp: "MCP",
     },
     homeLink: "Inicio",
     productHighlights: "En resumen",
@@ -109,6 +113,8 @@ export const CHROME: Record<Locale, SharedChrome> = {
       share: "Compartilhar imagem com link",
       extension: "Extensão Chrome / Edge",
       sharex: "ShareX",
+      api: "API",
+      mcp: "MCP",
     },
     homeLink: "Início",
     productHighlights: "Em resumo",
@@ -152,6 +158,8 @@ export const CHROME: Record<Locale, SharedChrome> = {
       share: "Bild per Link teilen",
       extension: "Chrome- / Edge-Erweiterung",
       sharex: "ShareX",
+      api: "API",
+      mcp: "MCP",
     },
     homeLink: "Startseite",
     productHighlights: "Auf einen Blick",
@@ -181,7 +189,7 @@ export const HOME: Record<Locale, HomeCopy> = {
   en: {
     title: "Temporary Image Hosting & Screenshot Sharing | dropimg.io",
     description:
-      "Paste or drop a screenshot and get a shareable link in seconds. No account required. Choose 1 hour, 24 hours, or 7 days. PNG, JPEG, WebP, GIF up to 10 MB.",
+      "Paste or drop a screenshot and get a shareable link in seconds. No account required. Choose 1 hour, 24 hours, 7 days, or 30 days. PNG, JPEG, WebP, GIF up to 10 MB.",
     ogTitle: "Temporary Image Hosting & Screenshot Sharing | dropimg.io",
     ogDescription:
       "Paste or drop a screenshot and get a shareable link in seconds. No account required. You choose when it expires.",
@@ -202,14 +210,14 @@ export const HOME: Record<Locale, HomeCopy> = {
     feature: {
       kicker: "Temporary by default",
       title: "Share it. Forget it.",
-      body: "Every link deletes itself. Pick 1 hour, 24 hours, or 7 days before you upload — no cleanup, no archive, nothing left sitting on a server.",
-      note: "1 hour to 7 days, free",
+      body: "Every link deletes itself. Pick 1 hour, 24 hours, 7 days, or 30 days before you upload — no cleanup, no archive, nothing left sitting on a server.",
+      note: "1 hour to 30 days, free",
     },
     faqHeading: "FAQ",
     faqs: [
       {
         q: "How long do images stay online?",
-        a: "As long as you choose: 1 hour, 24 hours, or 7 days, with 7 days selected by default. Pro links can last up to 90 days.",
+        a: "As long as you choose: 1 hour, 24 hours, 7 days, or 30 days, with 7 days selected by default. Pro links can last up to 180 days.",
       },
       {
         q: "Do I need an account?",
@@ -221,7 +229,7 @@ export const HOME: Record<Locale, HomeCopy> = {
       },
     ],
     schemaAppDescription:
-      "A temporary image sharing tool that lets users paste or upload an image and generate a shareable link that expires after 1 hour, 24 hours, or 7 days.",
+      "A temporary image sharing tool that lets users paste or upload an image and generate a shareable link that expires after 1 hour, 24 hours, 7 days, or 30 days.",
     schemaSiteDescription:
       "dropimg.io is a temporary image-sharing service that lets users paste, drag, or upload an image and instantly create a shareable link that expires on a schedule they choose.",
     schemaHowtoName: "How to share a temporary image link with dropimg.io",
@@ -231,7 +239,7 @@ export const HOME: Record<Locale, HomeCopy> = {
   es: {
     title: "Comparte capturas con un enlace temporal | dropimg.io",
     description:
-      "Pega o arrastra una captura y genera un enlace en segundos. Sin crear cuenta. Elige 1 hora, 24 horas o 7 días. PNG, JPEG, WebP o GIF hasta 10 MB.",
+      "Pega o arrastra una captura y genera un enlace en segundos. Sin crear cuenta. Elige 1 hora, 24 horas, 7 días o 30 días. PNG, JPEG, WebP o GIF hasta 10 MB.",
     ogTitle: "Comparte capturas con un enlace temporal | dropimg.io",
     ogDescription:
       "Pega o arrastra una captura y genera un enlace en segundos. Sin crear cuenta. Tú eliges cuándo caduca.",
@@ -252,14 +260,14 @@ export const HOME: Record<Locale, HomeCopy> = {
     feature: {
       kicker: "Temporal por diseño",
       title: "Compártelo y olvídate.",
-      body: "Cada enlace se borra solo. Elige 1 hora, 24 horas o 7 días antes de subir: sin limpiar nada, sin archivo, sin restos en ningún servidor.",
-      note: "De 1 hora a 7 días, gratis",
+      body: "Cada enlace se borra solo. Elige 1 hora, 24 horas, 7 días o 30 días antes de subir: sin limpiar nada, sin archivo, sin restos en ningún servidor.",
+      note: "De 1 hora a 30 días, gratis",
     },
     faqHeading: "Preguntas frecuentes",
     faqs: [
       {
         q: "¿Cuánto tiempo está disponible la imagen?",
-        a: "El tiempo que elijas: 1 hora, 24 horas o 7 días, con 7 días por defecto. Con Pro el enlace puede durar hasta 90 días.",
+        a: "El tiempo que elijas: 1 hora, 24 horas, 7 días o 30 días, con 7 días por defecto. Con Pro el enlace puede durar hasta 180 días.",
       },
       {
         q: "¿Hace falta crear una cuenta?",
@@ -271,7 +279,7 @@ export const HOME: Record<Locale, HomeCopy> = {
       },
     ],
     schemaAppDescription:
-      "Herramienta para compartir imágenes de forma temporal: pegas o subes una imagen y obtienes un enlace que caduca a la hora, a las 24 horas o a los 7 días.",
+      "Herramienta para compartir imágenes de forma temporal: pegas o subes una imagen y obtienes un enlace que caduca a la hora, a las 24 horas, a los 7 días o a los 30 días.",
     schemaSiteDescription:
       "dropimg.io te deja pegar, arrastrar o subir una imagen y crear al momento un enlace temporal que caduca cuando tú decides.",
     schemaHowtoName: "Cómo compartir una imagen temporal con dropimg.io",
@@ -281,7 +289,7 @@ export const HOME: Record<Locale, HomeCopy> = {
   "pt-BR": {
     title: "Compartilhe prints com um link temporário | dropimg.io",
     description:
-      "Cole ou arraste um print e ganhe um link em segundos. Sem criar conta. Escolha 1 hora, 24 horas ou 7 dias. PNG, JPEG, WebP ou GIF até 10 MB.",
+      "Cole ou arraste um print e ganhe um link em segundos. Sem criar conta. Escolha 1 hora, 24 horas, 7 dias ou 30 dias. PNG, JPEG, WebP ou GIF até 10 MB.",
     ogTitle: "Compartilhe prints com um link temporário | dropimg.io",
     ogDescription:
       "Cole ou arraste um print e ganhe um link em segundos. Sem criar conta. Você escolhe quando expira.",
@@ -302,14 +310,14 @@ export const HOME: Record<Locale, HomeCopy> = {
     feature: {
       kicker: "Temporário por padrão",
       title: "Compartilhe e esqueça.",
-      body: "Todo link se apaga sozinho. Escolha 1 hora, 24 horas ou 7 dias antes de enviar: sem faxina, sem arquivo, sem nada parado num servidor.",
-      note: "De 1 hora a 7 dias, grátis",
+      body: "Todo link se apaga sozinho. Escolha 1 hora, 24 horas, 7 dias ou 30 dias antes de enviar: sem faxina, sem arquivo, sem nada parado num servidor.",
+      note: "De 1 hora a 30 dias, grátis",
     },
     faqHeading: "Perguntas frequentes",
     faqs: [
       {
         q: "Por quanto tempo a imagem fica no ar?",
-        a: "Pelo tempo que você escolher: 1 hora, 24 horas ou 7 dias, sendo 7 dias o padrão. Com o Pro, o link pode durar até 90 dias.",
+        a: "Pelo tempo que você escolher: 1 hora, 24 horas, 7 dias ou 30 dias, sendo 7 dias o padrão. Com o Pro, o link pode durar até 180 dias.",
       },
       {
         q: "Preciso criar conta?",
@@ -321,7 +329,7 @@ export const HOME: Record<Locale, HomeCopy> = {
       },
     ],
     schemaAppDescription:
-      "Ferramenta pra compartilhar imagens por tempo limitado: cole ou envie uma imagem e receba um link que expira em 1 hora, 24 horas ou 7 dias.",
+      "Ferramenta pra compartilhar imagens por tempo limitado: cole ou envie uma imagem e receba um link que expira em 1 hora, 24 horas, 7 dias ou 30 dias.",
     schemaSiteDescription:
       "Com o dropimg.io você cola, arrasta ou envia uma imagem e cria na hora um link temporário que expira quando você decidir.",
     schemaHowtoName: "Como compartilhar uma imagem temporária com o dropimg.io",
@@ -331,7 +339,7 @@ export const HOME: Record<Locale, HomeCopy> = {
   de: {
     title: "Temporäre Bildlinks & Screenshot-Sharing | dropimg.io",
     description:
-      "Screenshot einfügen oder ablegen — in Sekunden einen Link. Ohne Konto. Wähle 1 Stunde, 24 Stunden oder 7 Tage. PNG, JPEG, WebP, GIF bis 10 MB.",
+      "Screenshot einfügen oder ablegen — in Sekunden einen Link. Ohne Konto. Wähle 1 Stunde, 24 Stunden, 7 Tage oder 30 Tage. PNG, JPEG, WebP, GIF bis 10 MB.",
     ogTitle: "Temporäre Bildlinks & Screenshot-Sharing | dropimg.io",
     ogDescription:
       "Screenshot einfügen oder ablegen — in Sekunden einen Link. Ohne Konto. Du bestimmst, wann er abläuft.",
@@ -352,14 +360,14 @@ export const HOME: Record<Locale, HomeCopy> = {
     feature: {
       kicker: "Von Haus aus temporär",
       title: "Teilen und vergessen.",
-      body: "Jeder Link löscht sich selbst. Wähle vor dem Upload 1 Stunde, 24 Stunden oder 7 Tage — kein Aufräumen, kein Archiv, nichts, das auf einem Server liegen bleibt.",
-      note: "1 Stunde bis 7 Tage, gratis",
+      body: "Jeder Link löscht sich selbst. Wähle vor dem Upload 1 Stunde, 24 Stunden, 7 Tage oder 30 Tage — kein Aufräumen, kein Archiv, nichts, das auf einem Server liegen bleibt.",
+      note: "1 Stunde bis 30 Tage, gratis",
     },
     faqHeading: "Häufige Fragen",
     faqs: [
       {
         q: "Wie lange bleibt das Bild online?",
-        a: "So lange du willst: 1 Stunde, 24 Stunden oder 7 Tage, voreingestellt sind 7 Tage. Mit Pro sind bis zu 90 Tage möglich.",
+        a: "So lange du willst: 1 Stunde, 24 Stunden, 7 Tage oder 30 Tage, voreingestellt sind 7 Tage. Mit Pro sind bis zu 180 Tage möglich.",
       },
       {
         q: "Brauche ich ein Konto?",
@@ -371,7 +379,7 @@ export const HOME: Record<Locale, HomeCopy> = {
       },
     ],
     schemaAppDescription:
-      "Tool zum kurzen Teilen von Bildern: einfügen oder hochladen und einen Link bekommen, der nach 1 Stunde, 24 Stunden oder 7 Tagen verschwindet.",
+      "Tool zum kurzen Teilen von Bildern: einfügen oder hochladen und einen Link bekommen, der nach 1 Stunde, 24 Stunden, 7 Tagen oder 30 Tagen verschwindet.",
     schemaSiteDescription:
       "Mit dropimg.io fügst du ein Bild ein, lädst es hoch oder legst es ab — und hast sofort einen temporären Link, dessen Laufzeit du selbst bestimmst.",
     schemaHowtoName: "So teilst du einen temporären Bildlink mit dropimg.io",
@@ -389,7 +397,7 @@ export const LANDINGS: Record<
     en: {
       title: "Temporary Image Hosting — No Account Needed | dropimg.io",
       description:
-        "Temporary image hosting without an account. Upload a PNG, JPEG, WebP, or GIF and get a shareable link that expires in 1 hour, 24 hours, or 7 days. Metadata stripped when supported.",
+        "Temporary image hosting without an account. Upload a PNG, JPEG, WebP, or GIF and get a shareable link that expires in 1 hour, 24 hours, 7 days, or 30 days. Metadata stripped when supported.",
       ogTitle: "Temporary Image Hosting | dropimg.io",
       ogDescription:
         "Host an image for an hour, a day, or a week. No account. Get a link and move on.",
@@ -414,11 +422,11 @@ export const LANDINGS: Record<
         { type: "h2", text: "How long it lasts is up to you" },
         {
           type: "p",
-          text: "Most shared images are useful for minutes or hours, not months. Pick 1 hour, 24 hours, or 7 days before you upload — 7 days is the default — and storage stays short-lived instead of quietly filling up with old files.",
+          text: "Most shared images are useful for minutes or hours, not months. Pick 1 hour, 24 hours, 7 days, or 30 days before you upload — 7 days is the default — and storage stays short-lived instead of quietly filling up with old files.",
         },
         {
           type: "p",
-          text: "Need longer? A Pro account can choose 30 or 90 days, add a password, and upload up to 50 MB. Need it gone sooner? After upload you get a private delete control.",
+          text: "Need longer? A Pro account can choose 90 or 180 days, add a password, and upload up to 50 MB. Need it gone sooner? After upload you get a private delete control.",
         },
         { type: "h2", text: "What you can upload" },
         {
@@ -439,7 +447,7 @@ export const LANDINGS: Record<
     es: {
       title: "Alojamiento temporal de imágenes sin cuenta | dropimg.io",
       description:
-        "Sube una imagen, genera un enlace y olvídate. Sin crear cuenta. Caduca en 1 hora, 24 horas o 7 días. PNG, JPEG, WebP o GIF. Metadatos quitados al guardar.",
+        "Sube una imagen, genera un enlace y olvídate. Sin crear cuenta. Caduca en 1 hora, 24 horas, 7 días o 30 días. PNG, JPEG, WebP o GIF. Metadatos quitados al guardar.",
       ogTitle: "Alojamiento temporal de imágenes | dropimg.io",
       ogDescription:
         "Un enlace para tu imagen durante una hora, un día o una semana. Sin crear cuenta.",
@@ -464,11 +472,11 @@ export const LANDINGS: Record<
         { type: "h2", text: "Tú decides cuánto dura" },
         {
           type: "p",
-          text: "Casi todas las imágenes que compartes sirven minutos u horas, no meses. Elige 1 hora, 24 horas o 7 días antes de subirla — 7 días viene por defecto — y así no se acumulan archivos viejos que ya nadie pide.",
+          text: "Casi todas las imágenes que compartes sirven minutos u horas, no meses. Elige 1 hora, 24 horas, 7 días o 30 días antes de subirla — 7 días viene por defecto — y así no se acumulan archivos viejos que ya nadie pide.",
         },
         {
           type: "p",
-          text: "¿Necesitas más tiempo? Con Pro puedes elegir 30 o 90 días, poner contraseña y subir hasta 50 MB. ¿Hay que quitarla ya? Al subirla tienes un enlace privado para borrarla al momento.",
+          text: "¿Necesitas más tiempo? Con Pro puedes elegir 90 o 180 días, poner contraseña y subir hasta 50 MB. ¿Hay que quitarla ya? Al subirla tienes un enlace privado para borrarla al momento.",
         },
         { type: "h2", text: "Qué puedes subir" },
         {
@@ -493,7 +501,7 @@ export const LANDINGS: Record<
     "pt-BR": {
       title: "Hospedagem temporária de imagens sem conta | dropimg.io",
       description:
-        "Manda a imagem, ganha o link e segue. Sem criar conta. Expira em 1 hora, 24 horas ou 7 dias. PNG, JPEG, WebP ou GIF. Metadados removidos na hora de salvar.",
+        "Manda a imagem, ganha o link e segue. Sem criar conta. Expira em 1 hora, 24 horas, 7 dias ou 30 dias. PNG, JPEG, WebP ou GIF. Metadados removidos na hora de salvar.",
       ogTitle: "Hospedagem temporária de imagens | dropimg.io",
       ogDescription:
         "Um link pra sua imagem por uma hora, um dia ou uma semana. Sem criar conta.",
@@ -518,11 +526,11 @@ export const LANDINGS: Record<
         { type: "h2", text: "Você decide quanto tempo dura" },
         {
           type: "p",
-          text: "Quase todo print que a gente manda vale por minutos ou horas, não por meses. Escolha 1 hora, 24 horas ou 7 dias antes de enviar — 7 dias já vem selecionado — e nada fica parado por aí sem ninguém pedir.",
+          text: "Quase todo print que a gente manda vale por minutos ou horas, não por meses. Escolha 1 hora, 24 horas, 7 dias ou 30 dias antes de enviar — 7 dias já vem selecionado — e nada fica parado por aí sem ninguém pedir.",
         },
         {
           type: "p",
-          text: "Precisa de mais tempo? Com o Pro dá pra escolher 30 ou 90 dias, colocar senha e enviar até 50 MB. Precisa sumir agora? Depois do envio você ganha um link privado pra excluir na hora.",
+          text: "Precisa de mais tempo? Com o Pro dá pra escolher 90 ou 180 dias, colocar senha e enviar até 50 MB. Precisa sumir agora? Depois do envio você ganha um link privado pra excluir na hora.",
         },
         { type: "h2", text: "O que dá pra enviar" },
         {
@@ -547,7 +555,7 @@ export const LANDINGS: Record<
     de: {
       title: "Temporäres Bildhosting ohne Konto | dropimg.io",
       description:
-        "Bild hochladen, Link holen, weiterarbeiten. Ohne Konto. Wähle 1 Stunde, 24 Stunden oder 7 Tage. PNG, JPEG, WebP oder GIF. Metadaten werden beim Speichern entfernt.",
+        "Bild hochladen, Link holen, weiterarbeiten. Ohne Konto. Wähle 1 Stunde, 24 Stunden, 7 Tage oder 30 Tage. PNG, JPEG, WebP oder GIF. Metadaten werden beim Speichern entfernt.",
       ogTitle: "Temporäres Bildhosting | dropimg.io",
       ogDescription:
         "Ein Link für dein Bild — eine Stunde, einen Tag oder eine Woche, ohne Anmeldung.",
@@ -572,11 +580,11 @@ export const LANDINGS: Record<
         { type: "h2", text: "Du bestimmst die Laufzeit" },
         {
           type: "p",
-          text: "Die meisten geteilten Bilder sind Minuten oder Stunden nützlich — nicht Monate. Wähle vor dem Upload 1 Stunde, 24 Stunden oder 7 Tage — voreingestellt sind 7 Tage — dann bleibt nichts ewig liegen.",
+          text: "Die meisten geteilten Bilder sind Minuten oder Stunden nützlich — nicht Monate. Wähle vor dem Upload 1 Stunde, 24 Stunden, 7 Tage oder 30 Tage — voreingestellt sind 7 Tage — dann bleibt nichts ewig liegen.",
         },
         {
           type: "p",
-          text: "Länger nötig? Mit Pro sind 30 oder 90 Tage, ein Passwort und bis zu 50 MB drin. Früher weg? Nach dem Upload gibt’s einen privaten Link zum Sofortlöschen.",
+          text: "Länger nötig? Mit Pro sind 90 oder 180 Tage, ein Passwort und bis zu 50 MB drin. Früher weg? Nach dem Upload gibt’s einen privaten Link zum Sofortlöschen.",
         },
         { type: "h2", text: "Was du hochladen kannst" },
         {
@@ -645,7 +653,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "dropimg.io returns a temporary URL that lasts 1 hour, 24 hours, or 7 days — your choice. Send it wherever the conversation is happening. You have a screenshot in your clipboard and need a URL — paste it here.",
+          text: "dropimg.io returns a temporary URL that lasts 1 hour, 24 hours, 7 days, or 30 days — your choice. Send it wherever the conversation is happening. You have a screenshot in your clipboard and need a URL — paste it here.",
         },
         {
           type: "h2",
@@ -707,7 +715,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "dropimg.io te devuelve un enlace temporal que dura 1 hora, 24 horas o 7 días, lo que elijas. Lo mandas donde estés hablando. ¿Tienes la captura en el portapapeles y te hace falta una URL? Pégala aquí.",
+          text: "dropimg.io te devuelve un enlace temporal que dura 1 hora, 24 horas, 7 días o 30 días, lo que elijas. Lo mandas donde estés hablando. ¿Tienes la captura en el portapapeles y te hace falta una URL? Pégala aquí.",
         },
         { type: "h2", text: "Formatos" },
         {
@@ -761,7 +769,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "O dropimg.io devolve um link temporário que dura 1 hora, 24 horas ou 7 dias, como você preferir. Você manda onde a conversa tá acontecendo. Tem o print na área de transferência e precisa de uma URL? Cola aqui.",
+          text: "O dropimg.io devolve um link temporário que dura 1 hora, 24 horas, 7 dias ou 30 dias, como você preferir. Você manda onde a conversa tá acontecendo. Tem o print na área de transferência e precisa de uma URL? Cola aqui.",
         },
         { type: "h2", text: "Formatos" },
         {
@@ -815,7 +823,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "dropimg.io gibt dir eine temporäre URL — 1 Stunde, 24 Stunden oder 7 Tage, du entscheidest. Die schickst du dorthin, wo das Gespräch läuft. Screenshot in der Zwischenablage, URL gebraucht? Hier einfügen.",
+          text: "dropimg.io gibt dir eine temporäre URL — 1 Stunde, 24 Stunden, 7 Tage oder 30 Tage, du entscheidest. Die schickst du dorthin, wo das Gespräch läuft. Screenshot in der Zwischenablage, URL gebraucht? Hier einfügen.",
         },
         { type: "h2", text: "Formate" },
         {
@@ -829,7 +837,7 @@ export const LANDINGS: Record<
     en: {
       title: "Share an Image with a Link — Temporary URL | dropimg.io",
       description:
-        "Turn an image into a shareable link in seconds. Temporary URLs for chat, support, and developer workflows. No account required. Choose 1 hour, 24 hours, or 7 days.",
+        "Turn an image into a shareable link in seconds. Temporary URLs for chat, support, and developer workflows. No account required. Choose 1 hour, 24 hours, 7 days, or 30 days.",
       ogTitle: "Share an Image with a Link | dropimg.io",
       ogDescription:
         "Drop an image, copy the URL, send it. Built for chat and support workflows — not permanent hosting.",
@@ -861,7 +869,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "Links expire on the schedule you pick — 1 hour, 24 hours, or 7 days, and up to 90 days with Pro. Temporary by design: not a CMS, not a CDN for your brand assets.",
+          text: "Links expire on the schedule you pick — 1 hour, 24 hours, 7 days, or 30 days, and up to 180 days with Pro. Temporary by design: not a CMS, not a CDN for your brand assets.",
         },
         { type: "h2", text: "What recipients see" },
         {
@@ -878,7 +886,7 @@ export const LANDINGS: Record<
     es: {
       title: "Comparte una imagen con un enlace | dropimg.io",
       description:
-        "Convierte una imagen en URL en segundos. Ideal para WhatsApp, Slack, tickets y GitHub. Sin crear cuenta. Elige 1 hora, 24 horas o 7 días.",
+        "Convierte una imagen en URL en segundos. Ideal para WhatsApp, Slack, tickets y GitHub. Sin crear cuenta. Elige 1 hora, 24 horas, 7 días o 30 días.",
       ogTitle: "Comparte una imagen con un enlace | dropimg.io",
       ogDescription:
         "Sube la imagen, copia la URL y mándala. Pensado para chats y soporte — no para hosting eterno.",
@@ -910,7 +918,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "Los enlaces caducan cuando tú digas: 1 hora, 24 horas o 7 días, y hasta 90 días con Pro. Son temporales a propósito: no es un CMS ni un sitio para los assets de tu marca.",
+          text: "Los enlaces caducan cuando tú digas: 1 hora, 24 horas, 7 días o 30 días, y hasta 180 días con Pro. Son temporales a propósito: no es un CMS ni un sitio para los assets de tu marca.",
         },
         { type: "h2", text: "Qué ve quien recibe el enlace" },
         {
@@ -927,7 +935,7 @@ export const LANDINGS: Record<
     "pt-BR": {
       title: "Compartilhe uma imagem com um link | dropimg.io",
       description:
-        "Transforme a imagem em URL em segundos. Ideal pra WhatsApp, Slack, tickets e GitHub. Sem criar conta. Escolha 1 hora, 24 horas ou 7 dias.",
+        "Transforme a imagem em URL em segundos. Ideal pra WhatsApp, Slack, tickets e GitHub. Sem criar conta. Escolha 1 hora, 24 horas, 7 dias ou 30 dias.",
       ogTitle: "Compartilhe uma imagem com um link | dropimg.io",
       ogDescription:
         "Manda a imagem, copia a URL e envia. Feito pra chat e suporte — não pra hospedagem eterna.",
@@ -959,7 +967,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "Os links expiram quando você quiser: 1 hora, 24 horas ou 7 dias, e até 90 dias com o Pro. São temporários de propósito: não é CMS nem CDN pra asset de marca.",
+          text: "Os links expiram quando você quiser: 1 hora, 24 horas, 7 dias ou 30 dias, e até 180 dias com o Pro. São temporários de propósito: não é CMS nem CDN pra asset de marca.",
         },
         { type: "h2", text: "O que quem recebe vê" },
         {
@@ -976,7 +984,7 @@ export const LANDINGS: Record<
     de: {
       title: "Bild per Link teilen | dropimg.io",
       description:
-        "Aus dem Bild in Sekunden eine URL machen. Für Chat, Support und GitHub. Ohne Konto. Wähle 1 Stunde, 24 Stunden oder 7 Tage.",
+        "Aus dem Bild in Sekunden eine URL machen. Für Chat, Support und GitHub. Ohne Konto. Wähle 1 Stunde, 24 Stunden, 7 Tage oder 30 Tage.",
       ogTitle: "Bild per Link teilen | dropimg.io",
       ogDescription:
         "Bild rein, URL kopieren, senden. Für Chat und Support — nicht fürs ewige Hosting.",
@@ -1008,7 +1016,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "Links laufen ab, wann du willst: 1 Stunde, 24 Stunden oder 7 Tage, mit Pro bis zu 90 Tage. Absichtlich temporär — kein CMS und kein CDN für Marken-Assets.",
+          text: "Links laufen ab, wann du willst: 1 Stunde, 24 Stunden, 7 Tage oder 30 Tage, mit Pro bis zu 180 Tage. Absichtlich temporär — kein CMS und kein CDN für Marken-Assets.",
         },
         { type: "h2", text: "Was Empfänger sehen" },
         {

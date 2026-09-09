@@ -141,6 +141,8 @@ export function footerHtml(locale: Locale, chrome: SharedChrome): string {
               <a href="${esc(proPath(locale))}">${esc(chrome.pro)}</a>
               <a href="/browser-extension">${esc(chrome.footerSeo.extension)}</a>
               <a href="/sharex">${esc(chrome.footerSeo.sharex)}</a>
+              <a href="/developers">${esc(chrome.footerSeo.api)}</a>
+              <a href="/mcp">${esc(chrome.footerSeo.mcp)}</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="${esc(chrome.footerLegal)}">
               <h2 class="foot-col-title">${esc(chrome.footerLegal)}</h2>

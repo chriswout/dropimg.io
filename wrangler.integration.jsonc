@@ -3,7 +3,7 @@
   "name": "dropimg",
   "main": "./src/index.ts",
   "compatibility_date": "2026-08-21",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
     "binding": "ASSETS",
     "directory": "./tests/fixtures/assets",
@@ -31,11 +31,29 @@
       "dataset": "dropimg_events"
     }
   ],
+  "kv_namespaces": [
+    {
+      "binding": "OAUTH_KV",
+      "id": "local-oauth-kv-placeholder"
+    }
+  ],
+  "ratelimits": [
+    {
+      "name": "MCP_LIMIT",
+      "namespace_id": "1005",
+      "simple": {
+        "limit": 30,
+        "period": 60
+      }
+    }
+  ],
   "triggers": {
     "crons": ["*/5 * * * *"]
   },
   "vars": {
     "ENVIRONMENT": "development",
-    "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>"
+    "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>",
+    "MODERATION_ENABLED": "false",
+    "MODERATION_ENFORCE": "false"
   }
 }

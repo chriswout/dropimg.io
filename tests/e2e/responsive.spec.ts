@@ -53,7 +53,7 @@ test("a long signed-in email never widens the header", async ({ page }) => {
         entitlements: {
           plan: "pro",
           maxUploadBytes: 52_428_800,
-          allowedExpirySeconds: [3600, 86_400, 604_800, 2_592_000, 7_776_000],
+          allowedExpirySeconds: [3600, 86_400, 604_800, 2_592_000, 7_776_000, 15_552_000],
           defaultExpirySeconds: 604_800,
           passwordProtection: true,
         },

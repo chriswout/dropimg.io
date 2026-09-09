@@ -6,6 +6,7 @@ import { expiryCountdown } from "../src/lib/expiry-format";
 import { shouldOfferLangSuggest } from "../src/lib/lang-suggest";
 import { normalizePageIntent } from "../src/lib/page-intent";
 import type { RecentDrop, UploadErrorResponse, UploadResponse } from "../src/types";
+import { byteFractionToBar, checkingBarAt } from "./upload-progress";
 import {
   accountEntitlements,
   accountReady,
@@ -199,6 +200,7 @@ function setupUploader() {
   const progressBar = el<HTMLElement>("progress-bar");
   const progressLabel = el<HTMLElement>("progress-label");
   const progressWrap = el<HTMLElement>("progress-wrap");
+  const phaseTitle = el<HTMLElement>("upload-phase-title");
   const shareUrl = el<HTMLInputElement>("share-url");
   const successTitle = el<HTMLElement>("success-title");
   const expiresLabel = el<HTMLElement>("expires-label");
@@ -272,6 +274,8 @@ async function handleFile(file: File) {
   progressBar.style.width = "0%";
   progressLabel.textContent = "0%";
   progressWrap.setAttribute("aria-valuenow", "0");
+  progressWrap.classList.remove("is-checking");
+  phaseTitle.textContent = ui.uploading;
   setState("uploading");
   announce(ui.uploading);
   trackEvent("upload_start", {
@@ -279,10 +283,15 @@ async function handleFile(file: File) {
   });
 
   try {
-    const result = await uploadWithProgress(file, (pct) => {
-      progressBar.style.width = `${pct}%`;
-      progressLabel.textContent = `${pct}%`;
-      progressWrap.setAttribute("aria-valuenow", String(pct));
+    const result = await uploadWithProgress(file, {
+      onBytes(pct) {
+        setBar(pct);
+      },
+      onChecking() {
+        progressWrap.classList.add("is-checking");
+        phaseTitle.textContent = ui.checkingImage;
+        announce(ui.checkingImage);
+      },
     });
     current = result;
     saveRecent(result);
@@ -310,9 +319,18 @@ async function createAccountUploadUrl(): Promise<string> {
   return data.uploadUrl;
 }
 
+function setBar(pct: number) {
+  progressBar.style.width = `${pct}%`;
+  progressLabel.textContent = `${pct}%`;
+  progressWrap.setAttribute("aria-valuenow", String(pct));
+}
+
 function uploadWithProgress(
   file: File,
-  onProgress: (pct: number) => void,
+  hooks: {
+    onBytes: (pct: number) => void;
+    onChecking: () => void;
+  },
 ): Promise<UploadResponse> {
   return (async () => {
     const url = accountUser
@@ -336,12 +354,30 @@ function uploadWithProgress(
       xhr.responseType = "json";
       xhr.withCredentials = true;
 
+      let checkingTimer: ReturnType<typeof setInterval> | undefined;
+      const startedChecking = { at: 0 };
+      const stopChecking = () => {
+        if (checkingTimer) clearInterval(checkingTimer);
+        checkingTimer = undefined;
+        progressWrap.classList.remove("is-checking");
+      };
+
       xhr.upload.onprogress = (e) => {
         if (!e.lengthComputable) return;
-        onProgress(Math.round((e.loaded / e.total) * 100));
+        hooks.onBytes(byteFractionToBar(e.loaded, e.total));
+      };
+
+      xhr.upload.onload = () => {
+        hooks.onChecking();
+        startedChecking.at = Date.now();
+        setBar(checkingBarAt(0));
+        checkingTimer = setInterval(() => {
+          setBar(checkingBarAt(Date.now() - startedChecking.at));
+        }, 200);
       };
 
       xhr.onload = () => {
+        stopChecking();
         if (xhr.status >= 200 && xhr.status < 300) {
           resolve(xhr.response as UploadResponse);
           return;
@@ -350,8 +386,14 @@ function uploadWithProgress(
         reject(new Error(mapUploadError(body, xhr.status)));
       };
 
-      xhr.onerror = () => reject(new Error(ui.networkError));
-      xhr.onabort = () => reject(new Error(ui.uploadAborted));
+      xhr.onerror = () => {
+        stopChecking();
+        reject(new Error(ui.networkError));
+      };
+      xhr.onabort = () => {
+        stopChecking();
+        reject(new Error(ui.uploadAborted));
+      };
 
       file.arrayBuffer().then((buf) => xhr.send(buf), reject);
     });

@@ -10,22 +10,29 @@ export const EXPIRY_24H = 24 * 60 * 60;
 export const EXPIRY_7D = 7 * 24 * 60 * 60;
 export const EXPIRY_30D = 30 * 24 * 60 * 60;
 export const EXPIRY_90D = 90 * 24 * 60 * 60;
+export const EXPIRY_180D = 180 * 24 * 60 * 60;
 
 /**
  * Hard ceiling on a single image's life, measured from its ORIGINAL upload.
  * Repeated extends can approach this but never pass it.
  */
-export const MAX_LIFETIME_SECONDS = EXPIRY_90D;
+export const MAX_LIFETIME_SECONDS = EXPIRY_180D;
 
 /** Pre-V2 behaviour: one fixed lifetime for everyone. */
 export const LEGACY_EXPIRY_CHOICES = [EXPIRY_24H];
-export const FREE_EXPIRY_CHOICES = [EXPIRY_1H, EXPIRY_24H, EXPIRY_7D];
+export const FREE_EXPIRY_CHOICES = [
+  EXPIRY_1H,
+  EXPIRY_24H,
+  EXPIRY_7D,
+  EXPIRY_30D,
+];
 export const PRO_EXPIRY_CHOICES = [
   EXPIRY_1H,
   EXPIRY_24H,
   EXPIRY_7D,
   EXPIRY_30D,
   EXPIRY_90D,
+  EXPIRY_180D,
 ];
 
 export const FREE_HISTORY_LIMIT = 10;
@@ -55,11 +62,10 @@ export type SubscriptionSnapshot = {
 export type EntitlementFlags = {
   /**
    * The whole choose-your-own-lifetime feature, for every plan, behind one
-   * switch. Off, every plan gets the single legacy 24h lifetime, which is what
-   * production still runs and what the current R2 lifecycle rules cover. On,
-   * Free gets 1h/24h/7d and Pro additionally gets 30d/90d — the two sets are
-   * released together because they depend on the same `o/7d` and `o/pro`
-   * lifecycle rules being in place on the bucket.
+   * switch. Off, every plan gets the single legacy 24h lifetime. On, Free gets
+   * 1h/24h/7d/30d and Pro additionally gets 90d/180d — the two sets are
+   * released together because they depend on the same `o/7d`, `o/30d`, and
+   * `o/pro` lifecycle rules being in place on the bucket.
    */
   longTtl: boolean;
   /** 50 MB only after strip + staging OOM gate. */
@@ -167,6 +173,7 @@ export function resolveEntitlements(input: {
  */
 export function r2ClassFor(plan: Plan, expirySeconds: number): R2KeyClass {
   if (plan === "pro") return "pro";
+  if (expirySeconds > EXPIRY_7D) return "30d";
   return expirySeconds > EXPIRY_24H ? "7d" : "24h";
 }
 

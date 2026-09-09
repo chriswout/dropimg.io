@@ -14,6 +14,8 @@ export const PAGE_INTENTS = [
   "anonymous-image-hosting",
   "expiring-image-link",
   "pro",
+  "developers",
+  "mcp",
 ] as const;
 
 export type PageIntent = (typeof PAGE_INTENTS)[number];

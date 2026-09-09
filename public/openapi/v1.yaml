@@ -1,0 +1,215 @@
+openapi: 3.1.0
+info:
+  title: DropIMG API
+  version: "1.0.0"
+  description: >
+    Temporary image hosting API. Image in, URL out. Bearer API keys required.
+    Anonymous REST is not available. API and MCP share one programmatic daily
+    bucket: Free 20 uploads / 50 MB, Pro 100 / 500 MB. A site-wide 100 / 500 MB
+    ceiling still applies across every client. Default Free API expiry is 24h.
+  contact:
+    name: DropIMG
+    url: https://dropimg.io/contact
+servers:
+  - url: https://dropimg.io
+security:
+  - bearerAuth: []
+tags:
+  - name: Images
+paths:
+  /api/v1/images:
+    post:
+      tags: [Images]
+      summary: Upload an image
+      operationId: createImage
+      security:
+        - bearerAuth: [images:write]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                expiry:
+                  type: string
+                  description: 1h, 24h, 7d, 30d, 90d, or 180d. Plan allowlist still applies.
+                  example: 7d
+      responses:
+        "201":
+          description: Image stored
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Image"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "400":
+          $ref: "#/components/responses/Error"
+        "429":
+          $ref: "#/components/responses/QuotaExceeded"
+    get:
+      tags: [Images]
+      summary: List your images
+      operationId: listImages
+      security:
+        - bearerAuth: [images:read]
+      parameters:
+        - name: cursor
+          in: query
+          schema:
+            type: string
+          description: created_at cursor from the previous page
+      responses:
+        "200":
+          description: Page of live images
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ImageList"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+  /api/v1/images/{id}:
+    get:
+      tags: [Images]
+      summary: Get one image
+      operationId: getImage
+      security:
+        - bearerAuth: [images:read]
+      parameters:
+        - $ref: "#/components/parameters/ImageId"
+      responses:
+        "200":
+          description: Live image you own
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Image"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+    delete:
+      tags: [Images]
+      summary: Delete one image
+      operationId: deleteImage
+      security:
+        - bearerAuth: [images:delete]
+      parameters:
+        - $ref: "#/components/parameters/ImageId"
+      responses:
+        "200":
+          description: Deleted or already deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok]
+                properties:
+                  ok:
+                    type: boolean
+                  already_deleted:
+                    type: boolean
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: dropimg_api_
+  parameters:
+    ImageId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+        minLength: 8
+        maxLength: 8
+      description: 8-character slug
+  schemas:
+    Image:
+      type: object
+      required: [id, url, image_url, created_at, expires_at]
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+          format: uri
+        image_url:
+          type: string
+          format: uri
+        created_at:
+          type: string
+          format: date-time
+        expires_at:
+          type: string
+          format: date-time
+    ImageList:
+      type: object
+      required: [data, next_cursor]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: "#/components/schemas/Image"
+        next_cursor:
+          type: string
+          nullable: true
+    Error:
+      type: object
+      required: [error, code]
+      properties:
+        error:
+          type: string
+        code:
+          type: string
+  responses:
+    Error:
+      description: Request rejected
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Unauthorized:
+      description: Missing or invalid Bearer token
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    Forbidden:
+      description: Token is missing the required scope
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    NotFound:
+      description: Unknown, expired, tombstoned, or another user's image
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"
+    QuotaExceeded:
+      description: >
+        Daily quota reached. Programmatic API+MCP uses code quota_exceeded
+        (Free 20/day, Pro 100/day).
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Error"

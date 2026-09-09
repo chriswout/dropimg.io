@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en" data-locale="en" data-page-intent="mcp">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>DropIMG MCP — Temporary image URLs from Cursor | dropimg.io</title>
+    <meta name="description" content="Ask Cursor to upload a screenshot and get a temporary URL for GitHub issues, PRs, Slack, and tickets. Add to Cursor. OAuth. Links expire." />
+    <link rel="canonical" href="https://dropimg.io/mcp" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+<script>
+(function(){
+  try {
+    var t = localStorage.getItem("dropimg:theme");
+    if (t !== "light" && t !== "dark") {
+      t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    }
+    document.documentElement.dataset.theme = t;
+  } catch (e) {}
+})();
+</script>
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:url" content="https://dropimg.io/mcp" />
+    <meta property="og:title" content="DropIMG MCP | Screenshot to URL for agents" />
+    <meta property="og:description" content="Upload a workspace image from Cursor and get a temporary public URL. Add to Cursor, or any MCP client." />
+    <meta property="og:site_name" content="dropimg.io" />
+    <meta property="og:image" content="https://dropimg.io/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Ask your agent for a temporary image URL" />
+    <meta name="twitter:description" content="DropIMG MCP for GitHub issues, PRs, and Slack. Add to Cursor. Links expire." />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <script src="/consent.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#mcp-setup">Skip to setup</a>
+    <div class="page page-seo page-ext">
+      <header class="top">
+       <div class="top-inner">
+        <a class="brand" href="/" aria-label="dropimg.io home">
+          <img
+            class="brand-logo brand-logo-light"
+            src="/brand/logo-32.png"
+            srcset="/brand/logo-32.png 1x, /brand/logo-64.png 2x"
+            width="134"
+            height="32"
+            alt="dropimg.io"
+            decoding="async"
+          />
+          <img
+            class="brand-logo brand-logo-dark"
+            src="/brand/logo-dark-32.png"
+            srcset="/brand/logo-dark-32.png 1x, /brand/logo-dark-64.png 2x"
+            width="134"
+            height="32"
+            alt=""
+            decoding="async"
+            aria-hidden="true"
+          />
+        </a>
+        <div class="header-actions">
+          <nav id="account-nav" class="account-nav" aria-label="Account">
+            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/pro">Pro · €2.99</a>
+            <a id="account-signin" class="account-chip" href="/login">Sign in</a>
+            <div id="account-session" class="account-session" hidden>
+              <a id="account-app" class="account-nav-link" href="/app">My drops</a>
+              <a id="account-plan" class="account-plan" href="/pro" hidden
+                data-label-pro="Pro"
+                data-label-upgrade="Upgrade"></a>
+              <details class="account-menu">
+                <summary class="account-chip account-summary">
+                  <span id="account-plan-badge" class="account-plan-badge" hidden>Pro</span>
+                  <span id="account-email" class="account-email"></span>
+                </summary>
+                <div class="account-menu-panel">
+                  <p id="account-email-full" class="account-email-full"></p>
+                  <a id="account-app-menu" class="account-menu-item account-menu-mobile" href="/app">My drops</a>
+                  <a id="account-plan-menu" class="account-menu-item account-menu-mobile" href="/pro" hidden>Upgrade</a>
+                  <a id="account-edit" class="account-menu-item" href="/app/account">Edit account</a>
+                  <button id="account-signout" type="button" class="account-menu-item">Sign out</button>
+                </div>
+              </details>
+            </div>
+          </nav>
+        <button type="button" id="theme-toggle" class="theme-toggle"
+          aria-label="Color theme"
+          data-label-light="Switch to light"
+          data-label-dark="Switch to dark">
+          <span class="theme-icon theme-icon-moon" aria-hidden="true"></span>
+          <span class="theme-icon theme-icon-sun" aria-hidden="true"></span>
+        </button>
+        <nav class="lang" aria-label="Language">
+          <details class="lang-details">
+            <summary class="lang-summary">
+              <svg class="lang-globe icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8M3.6 15h16.8"/><path d="M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18z"/></svg>
+              <span class="lang-label">English</span>
+            </summary>
+            <ul class="lang-menu">
+            <li><a href="/" hreflang="en" lang="en" aria-current="page">English</a></li>
+            <li><a href="/es" hreflang="es" lang="es">Español</a></li>
+            <li><a href="/pt-br" hreflang="pt-BR" lang="pt-BR">Português (Brasil)</a></li>
+            <li><a href="/de" hreflang="de" lang="de">Deutsch</a></li>
+            </ul>
+          </details>
+        </nav>
+        </div>
+       </div>
+      </header>
+
+      <main>
+        <section class="ext-hero ext-hero-solo">
+          <div class="ext-hero-copy">
+            <p class="ext-kicker">Model Context Protocol</p>
+            <h1 class="ext-title">Ask your agent for a temporary image URL</h1>
+            <p class="ext-tagline">Screenshot → URL, from Cursor</p>
+            <p class="sub ext-lede">Point Cursor at dropimg.io. The agent reads a PNG from your workspace, uploads it, and returns a real link — for a GitHub issue, a PR, Slack, or a ticket. Same write path as the site.</p>
+            <ul class="ext-facts">
+              <li>Add to Cursor — OAuth, no API key</li>
+              <li>GitHub issues, PRs, Slack, tickets</li>
+              <li>Links expire — 7d default, up to 180d</li>
+            </ul>
+            <div class="ext-actions">
+              <a class="btn primary" href="https://cursor.com/en/install-mcp?name=dropimg&amp;config=eyJ1cmwiOiJodHRwczovL2Ryb3BpbWcuaW8vbWNwIn0=" rel="noopener" target="_blank">Add to Cursor</a>
+              <a class="btn secondary" href="/app/integrations">Create an API key</a>
+            </div>
+          </div>
+        </section>
+
+        <article class="seo-article" id="mcp-setup" tabindex="-1" aria-label="Setup">
+          <h2>Cursor</h2>
+
+          <p>Use Add to Cursor above. That opens Cursor with https://dropimg.io/mcp already filled in. Sign in and approve Connect DropIMG. The plugin adds a rule and a /share-image skill so the agent knows to read the file and upload — not invent a slug.</p>
+
+          <h2>Claude / other clients</h2>
+
+          <p>Add a remote Streamable HTTP server at https://dropimg.io/mcp. OAuth works for clients that support MCP authorization. Otherwise create an API key on Integrations and send Authorization: Bearer dropimg_api_….</p>
+
+          <h2>Tools</h2>
+
+          <ul>
+            <li>upload_image — read a PNG/JPEG/WebP/GIF from the workspace, send base64, get a public URL. Optional expiry 1h–180d.</li>
+            <li>get_image — when does abc123xy expire? Your live images only.</li>
+            <li>list_images — one text line per live drop (id, URL, expiry). Not the REST JSON envelope.</li>
+            <li>delete_image — take a screenshot down before it expires. Owner delete only.</li>
+          </ul>
+
+          <h2>OAuth</h2>
+
+          <p>Clients that speak MCP 2026-07-28 authorization can register and Connect DropIMG. Scopes match the API key: images:write, images:read, images:delete. The magic-link session is only the identity behind that flow.</p>
+          <h2>Claude Desktop snippet</h2>
+          <pre class="mcp-snippet"><code>{
+  &quot;mcpServers&quot;: {
+    &quot;dropimg&quot;: {
+      &quot;url&quot;: &quot;https://dropimg.io/mcp&quot;,
+      &quot;headers&quot;: {
+        &quot;Authorization&quot;: &quot;Bearer dropimg_api_…&quot;
+      }
+    }
+  }
+}</code></pre>
+        </article>
+
+          <section class="faq-compact" id="faq" aria-labelledby="intent-faq" data-enter>
+            <h2 id="intent-faq">MCP questions</h2>
+            <div class="faq-list">
+              <details>
+                <summary>How do I connect?</summary>
+                <p>Click Add to Cursor. Sign in and approve Connect DropIMG. Other clients can send Authorization: Bearer dropimg_api_… from Integrations, or use the same OAuth flow.</p>
+              </details>
+              <details>
+                <summary>What should I ask the agent?</summary>
+                <p>“Upload this screenshot and give me a link for the GitHub issue.” “Put screenshot.png on the PR.” “Upload this PNG for 24 hours.” The agent must read the file and call upload_image — it must not invent a URL.</p>
+              </details>
+              <details>
+                <summary>Which tools exist?</summary>
+                <p>upload_image (base64 or data URL, optional expiry), get_image, list_images, and delete_image. List is one text line per live drop, not the REST JSON envelope.</p>
+              </details>
+              <details>
+                <summary>Do uploads show in My drops?</summary>
+                <p>Yes. source=mcp, owned by your account, same history caps as the rest of DropIMG.</p>
+              </details>
+              <details>
+                <summary>Is MCP rate-limited?</summary>
+                <p>Yes. 30 MCP requests per minute per account. API and MCP also share a programmatic daily bucket: Free 20 uploads / 50 MB, Pro 100 / 500 MB. Uploads still hit the site-wide burst and 100/500 MB safety ceiling.</p>
+              </details>
+            </div>
+          </section>
+
+        <nav class="seo-more" aria-label="Related">
+          <a href="/developers">API</a>
+          <span aria-hidden="true">·</span>
+          <a href="/sharex">ShareX</a>
+          <span aria-hidden="true">·</span>
+          <a href="/">Home</a>
+        </nav>
+      </main>
+
+      <footer class="foot">
+        <div class="foot-inner">
+          <p class="foot-tagline">Temporary image sharing, without the clutter.</p>
+          <div class="foot-cols">
+            <nav class="foot-col" aria-label="Product">
+              <h2 class="foot-col-title">Product</h2>
+              <a href="/pro">Pro</a>
+              <a href="/browser-extension">Chrome / Edge extension</a>
+              <a href="/sharex">ShareX</a>
+              <a href="/developers">API</a>
+              <a href="/mcp">MCP</a>
+            </nav>
+            <nav class="foot-col foot-legal" aria-label="Legal">
+              <h2 class="foot-col-title">Legal</h2>
+              <a href="/privacy">Privacy</a>
+              <a href="/terms">Terms</a>
+              <a href="/refunds">Refunds</a>
+              <a href="/contact">Contact</a>
+              <a href="/abuse">Abuse</a>
+            </nav>
+            <nav class="foot-col foot-seo" aria-label="Learn more">
+              <h2 class="foot-col-title">Learn more</h2>
+              <a href="/temporary-image-hosting">Temporary image hosting</a>
+              <a href="/paste-screenshot-online">Paste screenshot online</a>
+              <a href="/share-image-with-link">Share image with a link</a>
+            </nav>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <script type="module" src="/client/main.ts"></script>
+  </body>
+</html>

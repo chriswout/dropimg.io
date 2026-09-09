@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Temporary Image Hosting — No Account Needed | dropimg.io</title>
-    <meta name="description" content="Temporary image hosting without an account. Upload a PNG, JPEG, WebP, or GIF and get a shareable link that expires in 1 hour, 24 hours, or 7 days. Metadata stripped when supported." />
+    <meta name="description" content="Temporary image hosting without an account. Upload a PNG, JPEG, WebP, or GIF and get a shareable link that expires in 1 hour, 24 hours, 7 days, or 30 days. Metadata stripped when supported." />
     <link rel="canonical" href="https://dropimg.io/temporary-image-hosting" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/temporary-image-hosting" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es/alojamiento-temporal-imagenes" />
@@ -167,7 +167,7 @@
 
             <div id="state-uploading" class="state hidden">
               <img id="preview" class="preview" alt="" />
-              <p class="dz-title" data-i18n="uploading">Uploading…</p>
+              <p id="upload-phase-title" class="dz-title" data-i18n="uploading">Uploading…</p>
               <div
                 class="progress"
                 role="progressbar"
@@ -214,7 +214,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>Need it longer?</strong>
-                Keep links up to 90 days with Pro — €2.99/month.
+                Keep links up to 180 days with Pro — €2.99/month.
               </p>
             </div>
 
@@ -232,8 +232,9 @@
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 hour</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 hours</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 days</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000">30 days</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="15552000" data-pro-only hidden>180 days</button>
               </div>
             </div>
             <div class="drop-field" id="pro-password-wrap" hidden>
@@ -282,9 +283,9 @@
 
           <h2>How long it lasts is up to you</h2>
 
-          <p>Most shared images are useful for minutes or hours, not months. Pick 1 hour, 24 hours, or 7 days before you upload — 7 days is the default — and storage stays short-lived instead of quietly filling up with old files.</p>
+          <p>Most shared images are useful for minutes or hours, not months. Pick 1 hour, 24 hours, 7 days, or 30 days before you upload — 7 days is the default — and storage stays short-lived instead of quietly filling up with old files.</p>
 
-          <p>Need longer? A Pro account can choose 30 or 90 days, add a password, and upload up to 50 MB. Need it gone sooner? After upload you get a private delete control.</p>
+          <p>Need longer? A Pro account can choose 90 or 180 days, add a password, and upload up to 50 MB. Need it gone sooner? After upload you get a private delete control.</p>
 
           <h2>What you can upload</h2>
 
@@ -318,6 +319,8 @@
               <a href="/pro">Pro</a>
               <a href="/browser-extension">Chrome / Edge extension</a>
               <a href="/sharex">ShareX</a>
+              <a href="/developers">API</a>
+              <a href="/mcp">MCP</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="Legal">
               <h2 class="foot-col-title">Legal</h2>

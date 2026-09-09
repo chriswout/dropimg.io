@@ -58,7 +58,7 @@ const proProfile = {
   emailMasked: "c***@example.com",
   plan: "pro",
   maxUploadBytes: 50 * 1024 * 1024,
-  allowedExpirySeconds: [3600, DAY, 7 * DAY, 30 * DAY, 90 * DAY],
+  allowedExpirySeconds: [3600, DAY, 7 * DAY, 30 * DAY, 90 * DAY, 180 * DAY],
   defaultExpirySeconds: 7 * DAY,
 };
 

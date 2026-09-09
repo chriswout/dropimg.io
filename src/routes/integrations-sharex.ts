@@ -2,7 +2,11 @@ import { Hono } from "hono";
 import type { Context } from "hono";
 import { track } from "../lib/analytics";
 import { EXPIRY_HEADER } from "../lib/entitlements";
-import { readBearerToken, resolveIntegrationToken } from "../lib/integration-token";
+import {
+  readBearerToken,
+  resolveIntegrationToken,
+  tokenHasScope,
+} from "../lib/integration-token";
 import {
   executeOwnedDirectUpload,
   parseSharexExpiry,
@@ -33,6 +37,9 @@ async function authenticatedSharex(c: Context<Env>): Promise<Response> {
     waitUntil: (p) => c.executionCtx.waitUntil(p),
   });
   if (!auth) return c.json({ error: "Unauthorized" }, 401);
+  if (!tokenHasScope(auth, "images:write")) {
+    return c.json({ error: "This key is missing the required scope.", code: "forbidden" }, 403);
+  }
 
   const parsed = await readSharexBody(c);
   if (!parsed.ok) return parsed.response;

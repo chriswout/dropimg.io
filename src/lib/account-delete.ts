@@ -1,3 +1,4 @@
+import { deleteIdentitiesForUser } from "./auth/social";
 import { revokeAllSessions } from "./auth/session";
 import { revokeAllIntegrationTokens } from "./integration-token";
 import {
@@ -75,6 +76,7 @@ export async function deleteUserAccount(
   }
 
   await revokeAllIntegrationTokens(env.DB, userId, now);
+  await deleteIdentitiesForUser(env.DB, userId);
   await revokeAllSessions(env.DB, userId, now);
   const tombstoneEmail = `deleted.${userId}@deleted.dropimg.invalid`;
   await env.DB.prepare(

@@ -3,14 +3,15 @@
 D1 `images.expires_at` is authoritative and the every-5-minutes cron does the
 real deleting. These bucket rules only sweep up objects the cron never reached.
 
-Do not put a 2-day expire on the whole `o/` prefix. That would delete 7-day and
-Pro objects.
+Do not put a 2-day expire on the whole `o/` prefix. That would delete 7-day,
+30-day, and Pro objects.
 
 | Prefix | Days | Seconds | Who |
 |--------|------|---------|-----|
 | `o/24h/` | 2 | 172800 | Anonymous + Free choosing 1 hour or 24 hours |
 | `o/7d/` | 10 | 864000 | Anonymous + Free choosing 7 days |
-| `o/pro/` | 100 | 8640000 | All Pro uploads, and anything extended |
+| `o/30d/` | 35 | 3024000 | Anonymous + Free choosing 30 days |
+| `o/pro/` | 190 | 16416000 | All Pro uploads, and anything extended |
 
 Each rule is comfortably longer than the longest lifetime its prefix can hold,
 so a delayed cron run never races the bucket.
@@ -35,11 +36,7 @@ about to delete.
 
 PUT `/accounts/{account_id}/r2/buckets/{bucket}/lifecycle` replaces the full rule
 set. Keep the default multipart-abort rule and never leave a 2-day delete on `o/`.
+The current rule set lives in `scripts/r2-lifecycle.json`.
 
-Staging carries all three prefix rules and has `LONG_TTL_ENABLED=true`.
-
-## Production, not yet done
-
-Production still has the old `o/` 2-day rule and `LONG_TTL_ENABLED=false`. Before
-production can enable long TTL, its bucket needs the same three prefix rules
-applied and read back. That is step 3 of the [launch runbook](launch.md).
+Staging and production both carry the four prefix rules and have
+`LONG_TTL_ENABLED=true` (Free 1h/24h/7d/30d, Pro adds 90d/180d).

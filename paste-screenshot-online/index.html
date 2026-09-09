@@ -167,7 +167,7 @@
 
             <div id="state-uploading" class="state hidden">
               <img id="preview" class="preview" alt="" />
-              <p class="dz-title" data-i18n="uploading">Uploading…</p>
+              <p id="upload-phase-title" class="dz-title" data-i18n="uploading">Uploading…</p>
               <div
                 class="progress"
                 role="progressbar"
@@ -214,7 +214,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>Need it longer?</strong>
-                Keep links up to 90 days with Pro — €2.99/month.
+                Keep links up to 180 days with Pro — €2.99/month.
               </p>
             </div>
 
@@ -232,8 +232,9 @@
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 hour</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 hours</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 days</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000">30 days</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="15552000" data-pro-only hidden>180 days</button>
               </div>
             </div>
             <div class="drop-field" id="pro-password-wrap" hidden>
@@ -296,7 +297,7 @@
 
           <p>Support chats, Discord, Slack, and bug reports are full of “one quick screenshot.” Saving to Downloads, finding the file, and attaching it is friction. Pasting from the clipboard keeps the loop in one browser tab.</p>
 
-          <p>dropimg.io returns a temporary URL that lasts 1 hour, 24 hours, or 7 days — your choice. Send it wherever the conversation is happening. You have a screenshot in your clipboard and need a URL — paste it here.</p>
+          <p>dropimg.io returns a temporary URL that lasts 1 hour, 24 hours, 7 days, or 30 days — your choice. Send it wherever the conversation is happening. You have a screenshot in your clipboard and need a URL — paste it here.</p>
 
           <h2>Prefer one-click from the browser?</h2>
 
@@ -326,6 +327,8 @@
               <a href="/pro">Pro</a>
               <a href="/browser-extension">Chrome / Edge extension</a>
               <a href="/sharex">ShareX</a>
+              <a href="/developers">API</a>
+              <a href="/mcp">MCP</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="Legal">
               <h2 class="foot-col-title">Legal</h2>

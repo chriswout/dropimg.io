@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Temporäres Bildhosting ohne Konto | dropimg.io</title>
-    <meta name="description" content="Bild hochladen, Link holen, weiterarbeiten. Ohne Konto. Wähle 1 Stunde, 24 Stunden oder 7 Tage. PNG, JPEG, WebP oder GIF. Metadaten werden beim Speichern entfernt." />
+    <meta name="description" content="Bild hochladen, Link holen, weiterarbeiten. Ohne Konto. Wähle 1 Stunde, 24 Stunden, 7 Tage oder 30 Tage. PNG, JPEG, WebP oder GIF. Metadaten werden beim Speichern entfernt." />
     <link rel="canonical" href="https://dropimg.io/de/temporaeres-bildhosting" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/temporary-image-hosting" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es/alojamiento-temporal-imagenes" />
@@ -167,7 +167,7 @@
 
             <div id="state-uploading" class="state hidden">
               <img id="preview" class="preview" alt="" />
-              <p class="dz-title" data-i18n="uploading">Wird hochgeladen…</p>
+              <p id="upload-phase-title" class="dz-title" data-i18n="uploading">Wird hochgeladen…</p>
               <div
                 class="progress"
                 role="progressbar"
@@ -214,7 +214,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>Länger behalten?</strong>
-                Links bis 90 Tage mit Pro — €2.99/Monat.
+                Links bis 180 Tage mit Pro — €2.99/Monat.
               </p>
             </div>
 
@@ -232,8 +232,9 @@
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 Stunde</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 Stunden</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 Tage</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 Tage</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000">30 Tage</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 Tage</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="15552000" data-pro-only hidden>180 Tage</button>
               </div>
             </div>
             <div class="drop-field" id="pro-password-wrap" hidden>
@@ -282,9 +283,9 @@
 
           <h2>Du bestimmst die Laufzeit</h2>
 
-          <p>Die meisten geteilten Bilder sind Minuten oder Stunden nützlich — nicht Monate. Wähle vor dem Upload 1 Stunde, 24 Stunden oder 7 Tage — voreingestellt sind 7 Tage — dann bleibt nichts ewig liegen.</p>
+          <p>Die meisten geteilten Bilder sind Minuten oder Stunden nützlich — nicht Monate. Wähle vor dem Upload 1 Stunde, 24 Stunden, 7 Tage oder 30 Tage — voreingestellt sind 7 Tage — dann bleibt nichts ewig liegen.</p>
 
-          <p>Länger nötig? Mit Pro sind 30 oder 90 Tage, ein Passwort und bis zu 50 MB drin. Früher weg? Nach dem Upload gibt’s einen privaten Link zum Sofortlöschen.</p>
+          <p>Länger nötig? Mit Pro sind 90 oder 180 Tage, ein Passwort und bis zu 50 MB drin. Früher weg? Nach dem Upload gibt’s einen privaten Link zum Sofortlöschen.</p>
 
           <h2>Was du hochladen kannst</h2>
 
@@ -320,6 +321,8 @@
               <a href="/de/pro">Pro</a>
               <a href="/browser-extension">Chrome- / Edge-Erweiterung</a>
               <a href="/sharex">ShareX</a>
+              <a href="/developers">API</a>
+              <a href="/mcp">MCP</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="Rechtliches">
               <h2 class="foot-col-title">Rechtliches</h2>

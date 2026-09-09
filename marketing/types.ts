@@ -66,6 +66,8 @@ export type SharedChrome = {
     share: string;
     extension: string;
     sharex: string;
+    api: string;
+    mcp: string;
   };
   homeLink: string;
   productHighlights: string;

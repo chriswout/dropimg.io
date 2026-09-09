@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Comparte capturas con un enlace temporal | dropimg.io</title>
-    <meta name="description" content="Pega o arrastra una captura y genera un enlace en segundos. Sin crear cuenta. Elige 1 hora, 24 horas o 7 días. PNG, JPEG, WebP o GIF hasta 10 MB." />
+    <meta name="description" content="Pega o arrastra una captura y genera un enlace en segundos. Sin crear cuenta. Elige 1 hora, 24 horas, 7 días o 30 días. PNG, JPEG, WebP o GIF hasta 10 MB." />
     <link rel="canonical" href="https://dropimg.io/es" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es" />
@@ -56,7 +56,7 @@
             "applicationCategory": "UtilitiesApplication",
             "operatingSystem": "Any",
             "browserRequirements": "Requires JavaScript for upload UI",
-            "description": "Herramienta para compartir imágenes de forma temporal: pegas o subes una imagen y obtienes un enlace que caduca a la hora, a las 24 horas o a los 7 días.",
+            "description": "Herramienta para compartir imágenes de forma temporal: pegas o subes una imagen y obtienes un enlace que caduca a la hora, a las 24 horas, a los 7 días o a los 30 días.",
             "image": "https://dropimg.io/og.png",
             "offers": {
               "@type": "Offer",
@@ -120,7 +120,7 @@
                 "name": "¿Cuánto tiempo está disponible la imagen?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "El tiempo que elijas: 1 hora, 24 horas o 7 días, con 7 días por defecto. Con Pro el enlace puede durar hasta 90 días."
+                  "text": "El tiempo que elijas: 1 hora, 24 horas, 7 días o 30 días, con 7 días por defecto. Con Pro el enlace puede durar hasta 180 días."
                 }
               },
               {
@@ -272,7 +272,7 @@
 
             <div id="state-uploading" class="state hidden">
               <img id="preview" class="preview" alt="" />
-              <p class="dz-title" data-i18n="uploading">Subiendo…</p>
+              <p id="upload-phase-title" class="dz-title" data-i18n="uploading">Subiendo…</p>
               <div
                 class="progress"
                 role="progressbar"
@@ -319,7 +319,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>¿Lo necesitas más tiempo?</strong>
-                Conserva enlaces hasta 90 días con Pro — €2.99/mes.
+                Conserva enlaces hasta 180 días con Pro — €2.99/mes.
               </p>
             </div>
 
@@ -337,8 +337,9 @@
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 hora</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 horas</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 días</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 días</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000">30 días</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 días</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="15552000" data-pro-only hidden>180 días</button>
               </div>
             </div>
             <div class="drop-field" id="pro-password-wrap" hidden>
@@ -377,12 +378,15 @@
             <ul id="recent-list"></ul>
           </section>
 
-          <p class="ext-promo">
-            <a href="https://dropimg.io/browser-extension">También disponible como extensión de Chrome y Edge</a>
-            <span aria-hidden="true"> · </span>
-            <a href="https://dropimg.io/sharex">También desde ShareX</a>
-            <span class="visually-hidden"> — Extensión Chrome / Edge, ShareX</span>
-          </p>
+          <div class="ext-promo">
+            <a class="btn primary" href="https://chromewebstore.google.com/detail/dropimgio-screenshot-to-link/lhgmnekggpifejiphipjebjlcphabhib" rel="noopener" target="_blank">Disponible en Chrome Web Store</a>
+            <p class="ext-promo-more">
+              <a href="https://dropimg.io/browser-extension">Cómo funciona</a>
+              <span aria-hidden="true"> · </span>
+              <a href="https://dropimg.io/sharex">También desde ShareX</a>
+              <span class="visually-hidden"> — Extensión Chrome / Edge, ShareX</span>
+            </p>
+          </div>
         </section>
 
         <section class="below" aria-label="Sobre dropimg.io">
@@ -442,7 +446,7 @@
             <div class="feature-copy">
               <p class="feature-kicker">Temporal por diseño</p>
               <h2 id="feature-heading" class="feature-title">Compártelo y olvídate.</h2>
-              <p class="feature-body">Cada enlace se borra solo. Elige 1 hora, 24 horas o 7 días antes de subir: sin limpiar nada, sin archivo, sin restos en ningún servidor.</p>
+              <p class="feature-body">Cada enlace se borra solo. Elige 1 hora, 24 horas, 7 días o 30 días antes de subir: sin limpiar nada, sin archivo, sin restos en ningún servidor.</p>
             </div>
             <div class="feature-visual">
               <div class="fv-stage">
@@ -461,7 +465,7 @@
                   </svg>
                 </div>
               </div>
-              <p class="feature-note">De 1 hora a 7 días, gratis</p>
+              <p class="feature-note">De 1 hora a 30 días, gratis</p>
             </div>
           </section>
 
@@ -471,7 +475,7 @@
               <details>
                 <summary>¿Cuánto tiempo está disponible la imagen?</summary>
                 <p>
-                  El tiempo que elijas: 1 hora, 24 horas o 7 días, con 7 días por defecto. Con Pro el enlace puede durar hasta 90 días.
+                  El tiempo que elijas: 1 hora, 24 horas, 7 días o 30 días, con 7 días por defecto. Con Pro el enlace puede durar hasta 180 días.
                 </p>
               </details>
               <details>
@@ -498,6 +502,8 @@
               <a href="/es/pro">Pro</a>
               <a href="/browser-extension">Extensión Chrome / Edge</a>
               <a href="/sharex">ShareX</a>
+              <a href="/developers">API</a>
+              <a href="/mcp">MCP</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="Legal">
               <h2 class="foot-col-title">Legal</h2>

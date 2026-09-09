@@ -167,7 +167,7 @@
 
             <div id="state-uploading" class="state hidden">
               <img id="preview" class="preview" alt="" />
-              <p class="dz-title" data-i18n="uploading">Wird hochgeladen…</p>
+              <p id="upload-phase-title" class="dz-title" data-i18n="uploading">Wird hochgeladen…</p>
               <div
                 class="progress"
                 role="progressbar"
@@ -214,7 +214,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>Länger behalten?</strong>
-                Links bis 90 Tage mit Pro — €2.99/Monat.
+                Links bis 180 Tage mit Pro — €2.99/Monat.
               </p>
             </div>
 
@@ -232,8 +232,9 @@
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 Stunde</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 Stunden</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 Tage</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 Tage</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000">30 Tage</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 Tage</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="15552000" data-pro-only hidden>180 Tage</button>
               </div>
             </div>
             <div class="drop-field" id="pro-password-wrap" hidden>
@@ -296,7 +297,7 @@
 
           <p>In Support-Chats, Discord, Slack oder Tickets heißt es meist „schnell einen Screenshot“. Speichern, finden, anhängen — umständlich. Einfügen aus der Zwischenablage bleibt in einem Tab.</p>
 
-          <p>dropimg.io gibt dir eine temporäre URL — 1 Stunde, 24 Stunden oder 7 Tage, du entscheidest. Die schickst du dorthin, wo das Gespräch läuft. Screenshot in der Zwischenablage, URL gebraucht? Hier einfügen.</p>
+          <p>dropimg.io gibt dir eine temporäre URL — 1 Stunde, 24 Stunden, 7 Tage oder 30 Tage, du entscheidest. Die schickst du dorthin, wo das Gespräch läuft. Screenshot in der Zwischenablage, URL gebraucht? Hier einfügen.</p>
 
           <h2>Formate</h2>
 
@@ -322,6 +323,8 @@
               <a href="/de/pro">Pro</a>
               <a href="/browser-extension">Chrome- / Edge-Erweiterung</a>
               <a href="/sharex">ShareX</a>
+              <a href="/developers">API</a>
+              <a href="/mcp">MCP</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="Rechtliches">
               <h2 class="foot-col-title">Rechtliches</h2>

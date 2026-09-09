@@ -84,6 +84,18 @@ describe("normalizePageIntent", () => {
     expect(PAGE_INTENTS).toContain("sharex");
     expect(normalizePageIntent("sharex")).toBe("sharex");
   });
+
+  it("includes developers and mcp intents", () => {
+    expect(PAGE_INTENTS).toContain("developers");
+    expect(PAGE_INTENTS).toContain("mcp");
+  });
+
+  it("allowlists api and mcp upload clients", () => {
+    expect(normalizeUploadClient("api")).toBe("api");
+    expect(normalizeUploadClient("mcp")).toBe("mcp");
+    expect(isKnownUploadClient("api")).toBe(true);
+    expect(isKnownUploadClient("mcp")).toBe(true);
+  });
 });
 
 describe("analytics allowlist", () => {
@@ -104,12 +116,13 @@ describe("analytics allowlist", () => {
   });
 
   it("buckets every supported lifetime and nothing else", () => {
-    expect(ANALYTICS_EXPIRIES).toEqual(["1h", "24h", "7d", "30d", "90d"]);
+    expect(ANALYTICS_EXPIRIES).toEqual(["1h", "24h", "7d", "30d", "90d", "180d"]);
     expect(allowExpiry(3600)).toBe("1h");
     expect(allowExpiry(86400)).toBe("24h");
     expect(allowExpiry(604800)).toBe("7d");
     expect(allowExpiry(2592000)).toBe("30d");
     expect(allowExpiry(7776000)).toBe("90d");
+    expect(allowExpiry(15552000)).toBe("180d");
     for (const bad of [0, 1, 7200, 12345, -3600, null, undefined]) {
       expect(allowExpiry(bad)).toBe("");
     }

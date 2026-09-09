@@ -28,7 +28,7 @@ export const SHAREX_GITHUB_URL = "https://github.com/chriswout/dropimg-sharex";
 export const SHAREX_PAGE: SharexCopy = {
   title: "ShareX Custom Uploader — Free Temporary Image Host | dropimg.io",
   description:
-    "Free ShareX image uploader. Import the custom uploader .sxcu, capture a screenshot, get a temporary URL. No account. Links expire in 7 days.",
+    "Free ShareX image uploader. Import the custom uploader .sxcu, capture a screenshot, get a temporary URL. No account. Links expire in 7 days by default, or up to 30 days.",
   ogTitle: "ShareX custom uploader | dropimg.io",
   ogDescription:
     "Upload a ShareX screenshot to a URL that expires. Anonymous config or attach uploads to your account.",
@@ -68,11 +68,11 @@ export const SHAREX_PAGE: SharexCopy = {
     },
     {
       q: "Do I need an account to upload a ShareX screenshot to a URL?",
-      a: "No. The public .sxcu is anonymous. Sign in only if you want uploads in My drops, or longer Pro expiries (30 or 90 days).",
+      a: "No. The public .sxcu is anonymous. Sign in only if you want uploads in My drops, or longer Pro expiries (90 or 180 days).",
     },
     {
       q: "How long do temporary ShareX links last?",
-      a: "The public config sends expiry=7d. Change the field to 1h or 24h for a shorter link. Account configs can use 30d and 90d on Pro. Images are not kept forever.",
+      a: "The public config sends expiry=7d. Change the field to 1h, 24h, or 30d. Account configs can use 90d and 180d on Pro. Images are not kept forever.",
     },
   ],
   blocks: [
@@ -94,7 +94,7 @@ export const SHAREX_PAGE: SharexCopy = {
     },
     {
       type: "p",
-      text: "Anonymous: the public .sxcu. No token, no sign-in, 10 MB, 7-day default. Uploads are not listed in an account. This is the free ShareX image host most people want.",
+      text: "Anonymous: the public .sxcu. No token, no sign-in, 10 MB, 7-day default (or 1h, 24h, 30d). Uploads are not listed in an account. This is the free ShareX image host most people want.",
     },
     {
       type: "p",
@@ -106,7 +106,7 @@ export const SHAREX_PAGE: SharexCopy = {
     },
     {
       type: "p",
-      text: "dropimg.io is a temporary ShareX uploader, not a permanent archive. Links default to 7 days and then go away. The public config can send expiry=1h, 24h, or 7d. Pro account configs also accept 30d and 90d. Image passwords are not in the ShareX config. See the privacy policy for what is stored.",
+      text: "dropimg.io is a temporary ShareX uploader, not a permanent archive. Links default to 7 days and then go away. The public config can send expiry=1h, 24h, 7d, or 30d. Pro account configs also accept 90d and 180d. Image passwords are not in the ShareX config. See the privacy policy for what is stored.",
     },
     {
       type: "h2",

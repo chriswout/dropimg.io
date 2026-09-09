@@ -21,9 +21,25 @@ Sign out clears the admin cookie.
 
 User delete and moderation remove share [`src/lib/remove-image.ts`](../src/lib/remove-image.ts). Cron expiry uses the same tombstone helper with `delete_reason = expired`.
 
-## Automated scanning
+## Automated scanning (Workers AI)
 
-[`src/lib/moderation-hook.ts`](../src/lib/moderation-hook.ts) is a no-op post-strip extension point. Wire a provider later without redesigning upload.
+[`src/lib/moderation-hook.ts`](../src/lib/moderation-hook.ts) classifies images with Moondream after metadata strip, still on the upload request (20s timeout, **Checking image…** after bytes). Production is **inactive** until both flags are set.
+
+**V1 policy**
+
+- Hard block: `explicit_sexual_content`, `graphic_violence`, `hate_symbols`, `self_harm`
+- Telemetry only: `weapons`, `adult_nudity`, `drugs`, `confidence`
+- Enforce: hard flag → 422, scanner down → 503, nothing stored
+
+**Rollout**
+
+1. **Shipped** — code + production `AI` binding. `MODERATION_ENABLED=true`, `MODERATION_ENFORCE=false` (shadow).
+2. **Watch for a few days:** total scans, would-block rate, would-blocks by flag, `moderation_unavailable` rate, p50/p95 scan latency. Analytics Engine events only (no slugs, no flagged-image gallery).
+3. **Enforce** — `MODERATION_ENFORCE=true` only if would-blocks are tiny and plausible, scanner failures are rare, and latency matches staging.
+
+Stop further synthetic bake-offs. Real DropIMG traffic is the next dataset.
+
+Do not casually open severe flagged images in an admin grid. Ads stay off (`UGC_SHARE_ADS_ENABLED=false`) until a later approved-only gate.
 
 ## Next safety phase (required before paid traffic or share-page ads)
 

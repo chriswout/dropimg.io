@@ -212,6 +212,8 @@ describe("r2Key", () => {
     expect(r2Key("abc", day, "24h")).toBe("o/24h/20260829/abc");
     expect(r2Key("abc", day, "pro")).toBe("o/pro/20260829/abc");
     expect(r2KeyClassOf("o/24h/20260829/abc")).toBe("24h");
+    expect(r2KeyClassOf("o/7d/20260829/abc")).toBe("7d");
+    expect(r2KeyClassOf("o/30d/20260829/abc")).toBe("30d");
     expect(r2KeyClassOf("o/pro/20260829/abc")).toBe("pro");
     expect(r2KeyClassOf("o/20260829/legacy")).toBe("24h");
   });

@@ -4,6 +4,8 @@ const KNOWN_CLIENTS = new Set([
   "edge-extension",
   "firefox-extension",
   "sharex",
+  "api",
+  "mcp",
 ]);
 
 /** Attribute uploads: allowlisted client or `other`. */

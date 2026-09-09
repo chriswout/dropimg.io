@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Anonymous Image Hosting (Temporary) | dropimg.io</title>
-    <meta name="description" content="Anonymous temporary image hosting with no account required. Paste or upload, choose 1 hour, 24 hours, or 7 days, share a link, and it deletes itself." />
+    <meta name="description" content="Anonymous temporary image hosting with no account required. Paste or upload, choose 1 hour, 24 hours, 7 days, or 30 days, share a link, and it deletes itself." />
     <link rel="canonical" href="https://dropimg.io/anonymous-image-hosting" />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
@@ -60,7 +60,7 @@
                 "@type": "HowToStep",
                 "position": 2,
                 "name": "Set the lifetime",
-                "text": "1 hour, 24 hours, or 7 days, chosen before the upload runs."
+                "text": "1 hour, 24 hours, 7 days, or 30 days, chosen before the upload runs."
               },
               {
                 "@type": "HowToStep",
@@ -88,7 +88,7 @@
                 "name": "How long does an anonymous link last?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "You choose 1 hour, 24 hours, or 7 days before uploading, and 7 days is the default. After that the image is deleted and the link stops serving."
+                  "text": "You choose 1 hour, 24 hours, 7 days, or 30 days before uploading, and 7 days is the default. After that the image is deleted and the link stops serving."
                 }
               },
               {
@@ -96,7 +96,7 @@
                 "name": "Can I host an image anonymously forever?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "No. Every link expires — there is no permanent storage tier. The longest lifetime on the service is 90 days, with Pro."
+                  "text": "No. Every link expires — there is no permanent storage tier. The longest lifetime on the service is 180 days, with Pro."
                 }
               },
               {
@@ -236,7 +236,7 @@
 
             <div id="state-uploading" class="state hidden">
               <img id="preview" class="preview" alt="" />
-              <p class="dz-title" data-i18n="uploading">Uploading…</p>
+              <p id="upload-phase-title" class="dz-title" data-i18n="uploading">Uploading…</p>
               <div
                 class="progress"
                 role="progressbar"
@@ -283,7 +283,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>Need it longer?</strong>
-                Keep links up to 90 days with Pro — €2.99/month.
+                Keep links up to 180 days with Pro — €2.99/month.
               </p>
             </div>
 
@@ -301,8 +301,9 @@
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 hour</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 hours</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 days</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000">30 days</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="15552000" data-pro-only hidden>180 days</button>
               </div>
             </div>
             <div class="drop-field" id="pro-password-wrap" hidden>
@@ -375,7 +376,7 @@
                   </svg>
                 </span>
                 <strong>Set the lifetime</strong>
-                <span class="flow-detail">1 hour, 24 hours, or 7 days, chosen before the upload runs.</span>
+                <span class="flow-detail">1 hour, 24 hours, 7 days, or 30 days, chosen before the upload runs.</span>
               </li>
               <li>
                 <span class="flow-step" aria-hidden="true">03</span>
@@ -416,10 +417,10 @@
           <h2>Temporary by design</h2>
 
           <ul>
-            <li>Free uploads last 1 hour, 24 hours, or 7 days — 7 days by default.</li>
+            <li>Free uploads last 1 hour, 24 hours, 7 days, or 30 days — 7 days by default.</li>
             <li>You can delete sooner with the delete control from your upload session.</li>
             <li>There is no permanent storage option, anonymous or otherwise.</li>
-            <li>Password-protected links and lifetimes up to 90 days require a Pro account.</li>
+            <li>Password-protected links and lifetimes up to 180 days require a Pro account.</li>
           </ul>
           </article>
 
@@ -432,11 +433,11 @@
               </details>
               <details>
                 <summary>How long does an anonymous link last?</summary>
-                <p>You choose 1 hour, 24 hours, or 7 days before uploading, and 7 days is the default. After that the image is deleted and the link stops serving.</p>
+                <p>You choose 1 hour, 24 hours, 7 days, or 30 days before uploading, and 7 days is the default. After that the image is deleted and the link stops serving.</p>
               </details>
               <details>
                 <summary>Can I host an image anonymously forever?</summary>
-                <p>No. Every link expires — there is no permanent storage tier. The longest lifetime on the service is 90 days, with Pro.</p>
+                <p>No. Every link expires — there is no permanent storage tier. The longest lifetime on the service is 180 days, with Pro.</p>
               </details>
               <details>
                 <summary>Are uploads really anonymous?</summary>
@@ -465,6 +466,8 @@
               <a href="/pro">Pro</a>
               <a href="/browser-extension">Chrome / Edge extension</a>
               <a href="/sharex">ShareX</a>
+              <a href="/developers">API</a>
+              <a href="/mcp">MCP</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="Legal">
               <h2 class="foot-col-title">Legal</h2>

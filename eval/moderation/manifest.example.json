@@ -1,0 +1,26 @@
+[
+  {
+    "id": "screenshot-ui",
+    "path": "safe/ui.png",
+    "expect": "allow",
+    "category": "screenshot"
+  },
+  {
+    "id": "beach-swimwear",
+    "path": "safe/beach.jpg",
+    "expect": "allow",
+    "category": "beach"
+  },
+  {
+    "id": "adult",
+    "path": "block/adult.jpg",
+    "expect": "block",
+    "category": "adult"
+  },
+  {
+    "id": "violence",
+    "path": "block/violence.jpg",
+    "expect": "block",
+    "category": "violence"
+  }
+]

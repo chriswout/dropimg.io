@@ -29,12 +29,20 @@
     "visual:approve": "VISUAL_UPDATE_REFERENCE=1 playwright test -c playwright.visual.config.ts --grep-invert @sweep",
     "visual:sweep": "playwright test -c playwright.visual.config.ts --grep @sweep --project desktop",
     "waf:apply": "node scripts/apply-waf.mjs",
+    "eval:moderation": "tsx scripts/eval-workers-ai-moderation.ts",
+    "eval:moderation:download": "tsx scripts/download-moderation-eval.ts",
+    "eval:moderation:violence:download": "tsx scripts/download-violence-eval.ts",
+    "eval:moderation:violence": "tsx scripts/eval-workers-ai-moderation.ts --dir eval/moderation/violence-slice --fresh",
     "db:migrate:local": "wrangler d1 migrations apply dropimg --local",
     "db:migrate:staging": "wrangler d1 migrations apply dropimg-staging --remote --env staging",
     "db:migrate:production": "wrangler d1 migrations apply dropimg --remote --env production"
   },
   "dependencies": {
-    "hono": "^4.9.0"
+    "@cloudflare/workers-oauth-provider": "^0.10.3",
+    "@modelcontextprotocol/server": "^2.0.0",
+    "agents": "^0.22.0",
+    "hono": "^4.9.0",
+    "zod": "^4.5.4"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.13.0",

@@ -1,16 +1,10 @@
 import type { Context } from "hono";
-import { track } from "./analytics";
+import { createDrop, dropFailResponse, parseExpiryInput } from "./create-drop";
 import { toArrayBuffer } from "./d1-blob";
 import {
   entitlementsFor,
-  EXPIRY_1H,
-  EXPIRY_24H,
-  EXPIRY_30D,
   EXPIRY_7D,
-  EXPIRY_90D,
-  r2ClassFor,
   uploadIntentAllowed,
-  type Entitlements,
 } from "./entitlements";
 import {
   hashImagePassword,
@@ -24,11 +18,6 @@ import { normalizePageIntent } from "./page-intent";
 import { resolveIpHashSecret } from "./secrets";
 import { uuid } from "./tokens";
 import { normalizeUploadClient } from "./upload-client";
-import {
-  overDailyQuota,
-  storeUploadedImage,
-  uploadFailResponse,
-} from "./upload-store";
 
 export const INTENT_TTL_SECONDS = 10 * 60;
 
@@ -202,8 +191,8 @@ export async function executeOwnedUploadFromRequest(
     return c.json({ error: "File exceeds the size limit", code: "too_large" }, 413);
   }
 
-  const prepared = await prepareOwnedUploadLimits(c, userId, client, pageIntent);
-  if (!prepared.ok) return prepared.response;
+  const ipPrepared = await hashOwnedUploadIp(c);
+  if (!ipPrepared.ok) return ipPrepared.response;
 
   let bytes: ArrayBuffer;
   try {
@@ -221,37 +210,22 @@ export async function executeOwnedUploadFromRequest(
     );
   }
 
-  return storeOwnedBytes(c, {
+  const stored = await createDrop(c.env, c.executionCtx, {
     userId,
-    entitlements,
+    source: client,
     bytes,
-    maxBytes,
-    expirySeconds: intent.expiry_seconds,
-    client,
+    expiry: intent.expiry_seconds,
+    origin: new URL(c.req.url).origin,
+    ipHash: ipPrepared.ipHash,
     pageIntent,
-    ipHash: prepared.ipHash,
     password: passwordFromIntent(intent),
+    maxBytesCap: maxBytes,
   });
+  if (!stored.ok) return dropFailResponse(stored);
+  return c.json(stored.body, 201);
 }
 
 export const SHAREX_MULTIPART_MAX_BYTES = 10 * 1024 * 1024;
-
-const SHAREX_EXPIRY_LABELS: Record<string, number> = {
-  "1h": EXPIRY_1H,
-  "1hour": EXPIRY_1H,
-  "1hours": EXPIRY_1H,
-  "24h": EXPIRY_24H,
-  "1d": EXPIRY_24H,
-  "7d": EXPIRY_7D,
-  "7day": EXPIRY_7D,
-  "7days": EXPIRY_7D,
-  "30d": EXPIRY_30D,
-  "30day": EXPIRY_30D,
-  "30days": EXPIRY_30D,
-  "90d": EXPIRY_90D,
-  "90day": EXPIRY_90D,
-  "90days": EXPIRY_90D,
-};
 
 /**
  * ShareX sends expiry as a free-text form field, so accept the friendly labels
@@ -262,14 +236,7 @@ export function parseSharexExpiry(
   raw: unknown,
   fallback: number = EXPIRY_7D,
 ): number | null {
-  if (raw == null || raw === "") return fallback;
-  if (typeof raw !== "string") return null;
-  const value = raw.trim().toLowerCase();
-  const labelled = SHAREX_EXPIRY_LABELS[value];
-  if (labelled) return labelled;
-  const asNumber = Number(value);
-  if (Number.isInteger(asNumber) && asNumber > 0) return asNumber;
-  return null;
+  return parseExpiryInput(raw, fallback);
 }
 
 export async function executeOwnedDirectUpload(
@@ -284,42 +251,25 @@ export async function executeOwnedDirectUpload(
     pageIntent?: string;
   },
 ): Promise<Response> {
-  const entitlements = await entitlementsFor(c.env, input.userId);
-  const expirySeconds = input.expirySeconds ?? entitlements.defaultExpirySeconds;
-  if (!entitlements.allowedExpirySeconds.includes(expirySeconds)) {
-    return c.json({ error: "That expiry is not available." }, 400);
-  }
-  const maxBytes = Math.min(
-    entitlements.maxUploadBytes,
-    input.maxBytesCap,
-    entitlements.maxUploadBytes,
-  );
-  const prepared = await prepareOwnedUploadLimits(
-    c,
-    input.userId,
-    input.client,
-    input.pageIntent ?? "",
-  );
-  if (!prepared.ok) return prepared.response;
+  const ipPrepared = await hashOwnedUploadIp(c);
+  if (!ipPrepared.ok) return ipPrepared.response;
 
-  return storeOwnedBytes(c, {
+  const stored = await createDrop(c.env, c.executionCtx, {
     userId: input.userId,
-    entitlements,
+    source: input.client,
     bytes: input.bytes,
-    maxBytes,
-    expirySeconds,
-    client: input.client,
+    expiry: input.expirySeconds,
+    origin: new URL(c.req.url).origin,
+    ipHash: ipPrepared.ipHash,
     pageIntent: input.pageIntent ?? "",
-    ipHash: prepared.ipHash,
-    password: null,
+    maxBytesCap: input.maxBytesCap,
   });
+  if (!stored.ok) return dropFailResponse(stored);
+  return c.json(stored.body, 201);
 }
 
-async function prepareOwnedUploadLimits(
+async function hashOwnedUploadIp(
   c: Context<Env>,
-  userId: string,
-  client: string,
-  pageIntent: string,
 ): Promise<{ ok: true; ipHash: string } | { ok: false; response: Response }> {
   const secretResolved = resolveIpHashSecret(c.env);
   if (!secretResolved.ok) {
@@ -333,71 +283,7 @@ async function prepareOwnedUploadLimits(
   }
   const ip = clientIp(c.req.raw);
   const ipHash = await hashIp(ip, secretResolved.secret);
-
-  const limiter = c.env.UPLOAD_LIMIT;
-  if (limiter) {
-    const { success } = await limiter.limit({ key: `upload:${ipHash}` });
-    if (!success) {
-      track(c.env.ANALYTICS, "rate_limited", { reason: "burst", client, pageIntent });
-      return {
-        ok: false,
-        response: c.json(
-          { error: "Too many uploads. Try again shortly.", code: "rate_limited" },
-          429,
-        ),
-      };
-    }
-  }
-
-  if (await overDailyQuota(c.env.DB, { ipHash, userId })) {
-    track(c.env.ANALYTICS, "rate_limited", { reason: "daily_quota", client, pageIntent });
-    return {
-      ok: false,
-      response: c.json(
-        { error: "Daily upload limit reached. Try again tomorrow.", code: "quota_exceeded" },
-        429,
-      ),
-    };
-  }
-
   return { ok: true, ipHash };
-}
-
-async function storeOwnedBytes(
-  c: Context<Env>,
-  input: {
-    userId: string;
-    entitlements: Entitlements;
-    bytes: ArrayBuffer;
-    maxBytes: number;
-    expirySeconds: number;
-    client: string;
-    pageIntent: string;
-    ipHash: string;
-    password: ImagePasswordRecord | null;
-  },
-): Promise<Response> {
-  const stored = await storeUploadedImage(c.env, c.executionCtx, {
-    bytes: input.bytes,
-    client: input.client,
-    pageIntent: input.pageIntent,
-    ipHash: input.ipHash,
-    userId: input.userId,
-    expirySeconds: input.expirySeconds,
-    maxBytes: input.maxBytes,
-    origin: new URL(c.req.url).origin,
-    r2Class: r2ClassFor(input.entitlements.plan, input.expirySeconds),
-    password: input.password,
-  });
-  if (!stored.ok) return uploadFailResponse(stored);
-  if (input.password) {
-    track(c.env.ANALYTICS, "password_protection_used", {
-      client: input.client,
-      plan: input.entitlements.plan,
-      pageIntent: input.pageIntent,
-    });
-  }
-  return c.json(stored.body, 201);
 }
 
 function passwordFromIntent(intent: {

@@ -34,8 +34,8 @@ sent anywhere but dropimg.io. Disconnect removes it locally; it does **not** rev
 it. Revoke from the account page to stop uploads immediately.
 
 Connected captures go through `POST /api/integrations/upload-intent` then
-`POST /api/integrations/upload/:intent`. Free picks 1h / 24h / 7d; Pro adds 30d and
-90d. Anonymous captures send no lifetime and take the server's default. The chosen
+`POST /api/integrations/upload/:intent`. Free picks 1h / 24h / 7d / 30d; Pro adds
+90d and 180d. Anonymous captures send no lifetime and take the server's default. The chosen
 lifetime is remembered on-device, and the server re-checks it against the account's
 entitlements on every intent, so a lapsed subscription falls back instead of failing.
 

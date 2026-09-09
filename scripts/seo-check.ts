@@ -228,7 +228,20 @@ else {
     if (!html.includes('data-page-intent="browser-extension"')) {
       fail("browser-extension: missing data-page-intent");
     }
+    if (!html.includes("chromewebstore.google.com/detail/lhgmnekggpifejiphipjebjlcphabhib")
+      && !html.includes("dropimgio-screenshot-to-link/lhgmnekggpifejiphipjebjlcphabhib")) {
+      fail("browser-extension: missing Chrome Web Store listing URL");
+    }
     ok("browser-extension page present");
+  }
+}
+
+{
+  const home = readFileSync(join(root, "index.html"), "utf8");
+  if (!home.includes("lhgmnekggpifejiphipjebjlcphabhib")) {
+    fail("homepage: missing Chrome Web Store listing URL");
+  } else {
+    ok("homepage links to the Chrome Web Store listing");
   }
 }
 

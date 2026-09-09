@@ -13,8 +13,9 @@ until the [launch runbook](launch.md) turns each gate on in order.
 
 ## What Pro includes
 
-- Choose **1 hour, 24 hours, 7 days, 30 days, or 90 days** (Free and anonymous
-  choose **1 hour, 24 hours, or 7 days**; every plan defaults to 7 days)
+- Choose **1 hour, 24 hours, 7 days, 30 days, 90 days, or 180 days** (Free and
+  anonymous choose **1 hour, 24 hours, 7 days, or 30 days**; every plan defaults
+  to 7 days)
 - Uploads up to **50 MB** when `PRO_50MB_ENABLED` is on
 - Full active upload history on [My drops](account.md)
 - Password-protected links
@@ -22,7 +23,7 @@ until the [launch runbook](launch.md) turns each gate on in order.
 - Always ad-free
 
 DropIMG stays temporary. An image can never outlive its original `created_at`
-by more than 90 days, no matter how many times its owner extends it. There is no
+by more than 180 days, no matter how many times its owner extends it. There is no
 permanent storage, storage quota, or team plan.
 
 ## Who can buy
@@ -39,7 +40,7 @@ Pro is granted only from a verified PayPal webhook. The browser never grants Pro
 | Production  | true              | true               | false              |
 
 `LONG_TTL_ENABLED` is one switch for the whole choose-your-own-lifetime feature,
-Free and Pro together, because both depend on the same `o/7d` and `o/pro` bucket
+Free and Pro together, because both depend on the same `o/7d`, `o/30d`, and `o/pro` bucket
 lifecycle rules existing. With it off, every plan gets the single legacy 24-hour
 lifetime and the uploader hides the selector rather than showing a one-option
 radiogroup.

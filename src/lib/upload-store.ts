@@ -36,7 +36,7 @@ export type StoreUploadInput = {
 
 export type StoreUploadFail = {
   ok: false;
-  status: 400 | 413 | 415 | 422 | 500;
+  status: 400 | 413 | 415 | 422 | 500 | 503;
   code: UploadErrorResponse["code"];
   error: string;
   reason?: string;
@@ -167,12 +167,13 @@ export async function storeUploadedImage(
     return fail(env, 422, "invalid_image", msg, "strip_failed", client, pageIntent);
   }
 
-  const scan = await runPostStripSafetyScan({
+  const scan = await runPostStripSafetyScan(env, {
     bytes: storeBytes,
     mime: inspected.mime,
   });
   if (!scan.ok) {
-    return fail(env, 422, "invalid_image", "Image rejected", scan.reason, client, pageIntent);
+    const mapped = mapModerationFail(scan.reason);
+    return fail(env, mapped.status, mapped.code, mapped.error, scan.reason, client, pageIntent);
   }
 
   const storeSize = storeBytes.byteLength;
@@ -192,8 +193,8 @@ export async function storeUploadedImage(
         `INSERT INTO images
           (id, slug, r2_key, mime, size, width, height, delete_token_hash, ip_hash, created_at, expires_at, user_id,
            password_hash, password_salt, password_kdf, password_iterations,
-           password_cost, password_block_size, password_parallelization)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+           password_cost, password_block_size, password_parallelization, source)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       )
         .bind(
           id,
@@ -215,6 +216,7 @@ export async function storeUploadedImage(
           input.password ? input.password.cost : null,
           input.password ? input.password.blockSize : null,
           input.password ? input.password.parallelization : null,
+          client,
         )
         .run();
       inserted = true;
@@ -269,6 +271,25 @@ export async function storeUploadedImage(
   };
 }
 
+export function mapModerationFail(reason: string): {
+  status: 422 | 503;
+  code: Extract<UploadErrorResponse["code"], "moderation_block" | "moderation_unavailable">;
+  error: string;
+} {
+  if (reason === "moderation_unavailable") {
+    return {
+      status: 503,
+      code: "moderation_unavailable",
+      error: "Could not check this image. Try again.",
+    };
+  }
+  return {
+    status: 422,
+    code: "moderation_block",
+    error: "Image rejected",
+  };
+}
+
 function fail(
   env: Cloudflare.Env,
   status: StoreUploadFail["status"],
@@ -287,7 +308,7 @@ function fail(
 }
 
 /**
- * Promote a short-lifecycle object (`o/24h` or `o/7d`) into `o/pro`.
+ * Promote a short-lifecycle object (`o/24h`, `o/7d`, or `o/30d`) into `o/pro`.
  *
  * Copy, verify, repoint D1, then delete. Callers must run this to completion
  * before writing a longer `expires_at`, otherwise the bucket rule would delete

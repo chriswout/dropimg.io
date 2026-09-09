@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Captura de pantalla a enlace — Comparte una captura al instante | dropimg.io</title>
-    <meta name="description" content="Convierte una captura de pantalla en un enlace en segundos. Pega la imagen, elige 1 hora, 24 horas o 7 días y copia el enlace. Sin crear cuenta." />
+    <meta name="description" content="Convierte una captura de pantalla en un enlace en segundos. Pega la imagen, elige 1 hora, 24 horas, 7 días o 30 días y copia el enlace. Sin crear cuenta." />
     <link rel="canonical" href="https://dropimg.io/es/captura-de-pantalla-a-enlace" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/screenshot-to-link" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es/captura-de-pantalla-a-enlace" />
@@ -64,7 +64,7 @@
                 "@type": "HowToStep",
                 "position": 2,
                 "name": "Elige cuánto dura",
-                "text": "1 hora para una respuesta rápida, 24 horas para la jornada o 7 días, que es la opción por defecto."
+                "text": "1 hora para una respuesta rápida, 24 horas para la jornada, 7 días (por defecto) o 30 días."
               },
               {
                 "@type": "HowToStep",
@@ -92,7 +92,7 @@
                 "name": "¿Cuánto tiempo funciona el enlace?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "El que hayas elegido antes de subir: 1 hora, 24 horas o 7 días. Siete días es la opción por defecto. Cuando se acaba el plazo, la imagen se borra y el enlace deja de funcionar."
+                  "text": "El que hayas elegido antes de subir: 1 hora, 24 horas, 7 días o 30 días. Siete días es la opción por defecto. Cuando se acaba el plazo, la imagen se borra y el enlace deja de funcionar."
                 }
               },
               {
@@ -100,7 +100,7 @@
                 "name": "¿Puedo proteger una captura con contraseña?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Sí, con Pro. Los enlaces Pro pueden pedir una contraseña antes de mostrar la imagen y durar hasta 90 días."
+                  "text": "Sí, con Pro. Los enlaces Pro pueden pedir una contraseña antes de mostrar la imagen y durar hasta 180 días."
                 }
               },
               {
@@ -240,7 +240,7 @@
 
             <div id="state-uploading" class="state hidden">
               <img id="preview" class="preview" alt="" />
-              <p class="dz-title" data-i18n="uploading">Subiendo…</p>
+              <p id="upload-phase-title" class="dz-title" data-i18n="uploading">Subiendo…</p>
               <div
                 class="progress"
                 role="progressbar"
@@ -287,7 +287,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>¿Lo necesitas más tiempo?</strong>
-                Conserva enlaces hasta 90 días con Pro — €2.99/mes.
+                Conserva enlaces hasta 180 días con Pro — €2.99/mes.
               </p>
             </div>
 
@@ -305,8 +305,9 @@
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 hora</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 horas</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 días</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 días</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000">30 días</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 días</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="15552000" data-pro-only hidden>180 días</button>
               </div>
             </div>
             <div class="drop-field" id="pro-password-wrap" hidden>
@@ -379,7 +380,7 @@
                   </svg>
                 </span>
                 <strong>Elige cuánto dura</strong>
-                <span class="flow-detail">1 hora para una respuesta rápida, 24 horas para la jornada o 7 días, que es la opción por defecto.</span>
+                <span class="flow-detail">1 hora para una respuesta rápida, 24 horas para la jornada, 7 días (por defecto) o 30 días.</span>
               </li>
               <li>
                 <span class="flow-step" aria-hidden="true">03</span>
@@ -436,11 +437,11 @@
               </details>
               <details>
                 <summary>¿Cuánto tiempo funciona el enlace?</summary>
-                <p>El que hayas elegido antes de subir: 1 hora, 24 horas o 7 días. Siete días es la opción por defecto. Cuando se acaba el plazo, la imagen se borra y el enlace deja de funcionar.</p>
+                <p>El que hayas elegido antes de subir: 1 hora, 24 horas, 7 días o 30 días. Siete días es la opción por defecto. Cuando se acaba el plazo, la imagen se borra y el enlace deja de funcionar.</p>
               </details>
               <details>
                 <summary>¿Puedo proteger una captura con contraseña?</summary>
-                <p>Sí, con Pro. Los enlaces Pro pueden pedir una contraseña antes de mostrar la imagen y durar hasta 90 días.</p>
+                <p>Sí, con Pro. Los enlaces Pro pueden pedir una contraseña antes de mostrar la imagen y durar hasta 180 días.</p>
               </details>
               <details>
                 <summary>¿Puedo borrar la captura antes de que caduque?</summary>
@@ -469,6 +470,8 @@
               <a href="/es/pro">Pro</a>
               <a href="/browser-extension">Extensión Chrome / Edge</a>
               <a href="/sharex">ShareX</a>
+              <a href="/developers">API</a>
+              <a href="/mcp">MCP</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="Legal">
               <h2 class="foot-col-title">Legal</h2>

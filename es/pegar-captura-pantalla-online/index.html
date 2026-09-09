@@ -167,7 +167,7 @@
 
             <div id="state-uploading" class="state hidden">
               <img id="preview" class="preview" alt="" />
-              <p class="dz-title" data-i18n="uploading">Subiendo…</p>
+              <p id="upload-phase-title" class="dz-title" data-i18n="uploading">Subiendo…</p>
               <div
                 class="progress"
                 role="progressbar"
@@ -214,7 +214,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>¿Lo necesitas más tiempo?</strong>
-                Conserva enlaces hasta 90 días con Pro — €2.99/mes.
+                Conserva enlaces hasta 180 días con Pro — €2.99/mes.
               </p>
             </div>
 
@@ -232,8 +232,9 @@
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 hora</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 horas</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 días</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 días</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000">30 días</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 días</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="15552000" data-pro-only hidden>180 días</button>
               </div>
             </div>
             <div class="drop-field" id="pro-password-wrap" hidden>
@@ -296,7 +297,7 @@
 
           <p>En soporte, Discord, Slack o un ticket casi siempre es “una captura rápida”. Guardar en Descargas, buscar el archivo y adjuntarlo es un rollo. Pegar desde el portapapeles deja todo en la misma pestaña.</p>
 
-          <p>dropimg.io te devuelve un enlace temporal que dura 1 hora, 24 horas o 7 días, lo que elijas. Lo mandas donde estés hablando. ¿Tienes la captura en el portapapeles y te hace falta una URL? Pégala aquí.</p>
+          <p>dropimg.io te devuelve un enlace temporal que dura 1 hora, 24 horas, 7 días o 30 días, lo que elijas. Lo mandas donde estés hablando. ¿Tienes la captura en el portapapeles y te hace falta una URL? Pégala aquí.</p>
 
           <h2>Formatos</h2>
 
@@ -322,6 +323,8 @@
               <a href="/es/pro">Pro</a>
               <a href="/browser-extension">Extensión Chrome / Edge</a>
               <a href="/sharex">ShareX</a>
+              <a href="/developers">API</a>
+              <a href="/mcp">MCP</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="Legal">
               <h2 class="foot-col-title">Legal</h2>

@@ -23,6 +23,7 @@ import {
   EXPIRY_30D,
   EXPIRY_7D,
   EXPIRY_90D,
+  EXPIRY_180D,
   accountUrl,
   chooseExpirySeconds,
   integrationTokenLooksValid,
@@ -117,6 +118,7 @@ function fillExpirySelect(allowed: number[], selected: number) {
     { value: EXPIRY_7D, label: msg("expiry7d") },
     { value: EXPIRY_30D, label: msg("expiry30d") },
     { value: EXPIRY_90D, label: msg("expiry90d") },
+    { value: EXPIRY_180D, label: msg("expiry180d") },
   ];
   select.innerHTML = "";
   for (const opt of options) {
@@ -204,10 +206,10 @@ function setModeUI(mode: CaptureMode) {
 function loadingCopy(mode: CaptureMode) {
   if (mode === "region") {
     loadingTitle.textContent = msg("preparingRegion");
-    loadingHint.textContent = msg("uploading");
+    loadingHint.textContent = msg("checkingImage");
   } else {
     loadingTitle.textContent = msg("capturing");
-    loadingHint.textContent = msg("uploading");
+    loadingHint.textContent = msg("checkingImage");
   }
 }
 

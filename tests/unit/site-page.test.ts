@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import {
   renderAccountPage,
@@ -27,6 +28,7 @@ describe("Account pages share site chrome", () => {
     expect(html).toContain("/chrome.js");
     expect(html).toContain("Sign in to DropIMG");
     expect(html).toContain("No password required");
+    expect(html).not.toContain("Continue with GitHub");
     expect(html).toContain('id="account-plan"');
     expect(html).toContain('class="account-menu"');
     expect(html).toContain('href="/pro"');
@@ -79,6 +81,22 @@ describe("Account pages share site chrome", () => {
     });
     expect(failed).toContain('class="form-error" role="alert"');
     expect(failed).toContain("Enter a valid email.");
+
+    const social = renderLoginPage({
+      ...base,
+      state: "form",
+      social: { google: true, github: true },
+    });
+    expect(social).toContain("Continue with GitHub");
+    expect(social).toContain("Continue with Google");
+    expect(social).toContain('href="/auth/github"');
+    expect(social).toContain('src="/signin-with-google-light-2x.png"');
+    expect(social).toContain('src="/signin-with-google-dark-2x.png"');
+    expect(social).toContain('class="auth-google-btn"');
+    expect(social).toContain("auth-google-btn-light");
+    expect(social).toContain("auth-google-btn-dark");
+    expect(social).toContain("Or email me a sign-in link");
+    expect(social).toContain('<form method="post" action="/login"');
   });
 
   it("splits settings into account, billing, and integrations sections", () => {
@@ -95,6 +113,16 @@ describe("Account pages share site chrome", () => {
     expect(account).toContain("user@example.com");
     expect(account).toContain("Delete account");
     expect(account).toContain("/api/account/delete");
+    expect(account).not.toContain("Sign-in methods");
+
+    const linked = renderAccountPage({
+      ...props,
+      identities: ["github"],
+      socialEnabled: { google: true, github: true },
+    });
+    expect(linked).toContain("Sign-in methods");
+    expect(linked).toContain("/api/account/identities/github/disconnect");
+    expect(linked).toContain("/api/account/identities/google/connect");
 
     const billing = renderBillingPage(props);
     expect(billing).toContain("Manage billing");
@@ -102,8 +130,15 @@ describe("Account pages share site chrome", () => {
 
     const integrations = renderIntegrationsPage(props);
     expect(integrations).toContain("Connect extension");
+    expect(integrations).toContain("Available on the Chrome Web Store");
+    expect(integrations).toContain(
+      "https://chromewebstore.google.com/detail/dropimgio-screenshot-to-link/lhgmnekggpifejiphipjebjlcphabhib",
+    );
     expect(integrations).toContain("Create ShareX config");
+    expect(integrations).toContain("Create API key");
     expect(integrations).toContain('href="/sharex"');
+    expect(integrations).toContain('href="/developers"');
+    expect(integrations).toContain('id="scope-write"');
     expect(integrations).toContain('id="revoke-modal"');
 
     // Every section renders the same shell nav.
@@ -291,5 +326,14 @@ describe("Account pages share site chrome", () => {
     });
     expect(html).toContain("/client/main.ts");
     expect(html).not.toContain("/site.css");
+  });
+
+  it("hides the unused Google button with selectors that beat img display", () => {
+    const css = readFileSync("client/styles.css", "utf8");
+    expect(css).toMatch(/\.auth-google-btn \.auth-google-btn-dark \{\s*display:\s*none;/);
+    expect(css).toMatch(
+      /html\[data-theme="dark"\] \.auth-google-btn \.auth-google-btn-light \{\s*display:\s*none;/,
+    );
+    expect(css).not.toMatch(/\.auth-google-btn img\s*\{[^}]*display:\s*block/);
   });
 });

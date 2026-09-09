@@ -4,6 +4,7 @@ import { entitlementsFor } from "../lib/entitlements";
 import {
   maskEmail,
   resolveIntegrationToken,
+  tokenHasScope,
 } from "../lib/integration-token";
 import {
   createOwnedUploadIntent,
@@ -49,6 +50,9 @@ integrationRoutes.post("/api/integrations/upload-intent", async (c) => {
     waitUntil: (p) => c.executionCtx.waitUntil(p),
   });
   if (!auth) return c.json({ error: "Unauthorized" }, 401);
+  if (!tokenHasScope(auth, "images:write")) {
+    return c.json({ error: "This key is missing the required scope.", code: "forbidden" }, 403);
+  }
 
   let expiry: number | undefined;
   let password: string | undefined;
@@ -82,6 +86,9 @@ integrationRoutes.post("/api/integrations/upload/:intent", async (c) => {
     waitUntil: (p) => c.executionCtx.waitUntil(p),
   });
   if (!auth) return c.json({ error: "Unauthorized" }, 401);
+  if (!tokenHasScope(auth, "images:write")) {
+    return c.json({ error: "This key is missing the required scope.", code: "forbidden" }, 403);
+  }
 
   const res = await executeOwnedUploadFromRequest(c, auth.userId, c.req.param("intent"));
   if (res.status === 201) {

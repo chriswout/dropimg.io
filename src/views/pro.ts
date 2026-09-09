@@ -37,7 +37,9 @@ type Copy = {
   note: string;
   renews: (date: string) => string;
   ends: (date: string) => string;
-  features: [string, string, string, string, string, string, string];
+  features: [string, string, string, string, string, string];
+  /** Only rendered while PRO_50MB_ENABLED is on. */
+  feature50mb: string;
 };
 
 export const PRO_COPY: Record<Locale, Copy> = {
@@ -72,18 +74,18 @@ export const PRO_COPY: Record<Locale, Copy> = {
     checkoutCouldNotOpen: "Checkout could not open. Try again shortly.",
     billingOff: "Billing isn’t available right now.",
     skip: "Skip to plans",
-    note: "DropIMG stays temporary. Even Pro links expire after a maximum of 90 days.",
+    note: "DropIMG stays temporary. Even Pro links expire after a maximum of 180 days.",
     renews: (date) => `Renews ${date}`,
     ends: (date) => `Ends ${date}`,
     features: [
-      "Choose 1 hour to 90 days",
-      "Upload images up to 50 MB",
+      "Choose 1 hour to 180 days",
       "Full active upload history",
       "Sync across devices",
       "Password-protected links",
       "Extension + ShareX account uploads",
       "Always ad-free",
     ],
+    feature50mb: "Upload images up to 50 MB",
   },
   es: {
     title: PRO_SEO.es.title,
@@ -116,18 +118,18 @@ export const PRO_COPY: Record<Locale, Copy> = {
     checkoutCouldNotOpen: "No se pudo abrir el pago. Prueba en un momento.",
     billingOff: "La facturación no está disponible ahora.",
     skip: "Ir a los planes",
-    note: "DropIMG sigue siendo temporal. Incluso los enlaces Pro caducan a los 90 días como máximo.",
+    note: "DropIMG sigue siendo temporal. Incluso los enlaces Pro caducan a los 180 días como máximo.",
     renews: (date) => `Se renueva el ${date}`,
     ends: (date) => `Termina el ${date}`,
     features: [
-      "Elige de 1 hora a 90 días",
-      "Imágenes de hasta 50 MB",
+      "Elige de 1 hora a 180 días",
       "Historial activo completo",
       "Sincroniza entre dispositivos",
       "Enlaces con contraseña",
       "Subidas con extensión y ShareX",
       "Siempre sin anuncios",
     ],
+    feature50mb: "Imágenes de hasta 50 MB",
   },
   "pt-BR": {
     title: PRO_SEO["pt-BR"].title,
@@ -160,18 +162,18 @@ export const PRO_COPY: Record<Locale, Copy> = {
     checkoutCouldNotOpen: "Não deu pra abrir o pagamento. Tente de novo.",
     billingOff: "A cobrança não está disponível agora.",
     skip: "Ir para os planos",
-    note: "O DropIMG continua temporário. Até links Pro expiram no máximo em 90 dias.",
+    note: "O DropIMG continua temporário. Até links Pro expiram no máximo em 180 dias.",
     renews: (date) => `Renova em ${date}`,
     ends: (date) => `Termina em ${date}`,
     features: [
-      "Escolha de 1 hora a 90 dias",
-      "Imagens de até 50 MB",
+      "Escolha de 1 hora a 180 dias",
       "Histórico ativo completo",
       "Sincroniza entre dispositivos",
       "Links com senha",
       "Envios pela extensão e ShareX",
       "Sempre sem anúncios",
     ],
+    feature50mb: "Imagens de até 50 MB",
   },
   de: {
     title: PRO_SEO.de.title,
@@ -204,18 +206,18 @@ export const PRO_COPY: Record<Locale, Copy> = {
     checkoutCouldNotOpen: "Checkout ließ sich nicht öffnen. Bitte gleich nochmal.",
     billingOff: "Abrechnung ist gerade nicht verfügbar.",
     skip: "Zu den Plänen",
-    note: "DropIMG bleibt temporär. Auch Pro-Links laufen nach höchstens 90 Tagen ab.",
+    note: "DropIMG bleibt temporär. Auch Pro-Links laufen nach höchstens 180 Tagen ab.",
     renews: (date) => `Verlängert sich am ${date}`,
     ends: (date) => `Endet am ${date}`,
     features: [
-      "1 Stunde bis 90 Tage wählen",
-      "Bilder bis 50 MB hochladen",
+      "1 Stunde bis 180 Tage wählen",
       "Vollständige aktive Historie",
       "Auf allen Geräten synchron",
       "Passwortgeschützte Links",
       "Uploads per Erweiterung und ShareX",
       "Immer werbefrei",
     ],
+    feature50mb: "Bilder bis 50 MB hochladen",
   },
 };
 
@@ -227,11 +229,15 @@ export function renderProPage(opts: {
   billingOn: boolean;
   periodEnd?: number | null;
   cancelAtPeriodEnd?: boolean;
+  show50mb?: boolean;
 }): Response {
   const t = PRO_COPY[opts.locale];
   const check =
     '<svg class="pro-check icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m4.5 12.5 5 5 10-11"/></svg>';
-  const perks = `<ul class="pro-perks">${t.features
+  const perkItems = opts.show50mb
+    ? [t.features[0], t.feature50mb, ...t.features.slice(1)]
+    : t.features;
+  const perks = `<ul class="pro-perks">${perkItems
     .map((f) => `<li>${check}<span>${esc(f)}</span></li>`)
     .join("")}</ul>`;
   const isPro = opts.plan === "pro";

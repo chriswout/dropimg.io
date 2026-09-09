@@ -12,6 +12,7 @@ import { PRO_COPY } from "../../src/views/pro";
 import { GONE_COPY, SHARE_COPY } from "../../src/views/share";
 
 const REQUIRED_UI = [
+  "checkingImage",
   "uploadedCopied",
   "manageInDrops",
   "needLongerTitle",
@@ -23,6 +24,8 @@ const REQUIRED_UI = [
   "expiry24h",
   "expiry7d",
   "expiry30d",
+  "expiry90d",
+  "expiry180d",
   "passwordLabel",
 ] as const;
 
@@ -88,7 +91,14 @@ describe("V2 locale completeness", () => {
       "monthly",
       "annual",
     ] as const;
-    const uiKeys = ["expiry1h", "expiry24h", "expiry7d", "expiry30d", "expiry90d"] as const;
+    const uiKeys = [
+      "expiry1h",
+      "expiry24h",
+      "expiry7d",
+      "expiry30d",
+      "expiry90d",
+      "expiry180d",
+    ] as const;
 
     for (const locale of LOCALES) {
       if (locale === "en") continue;
@@ -105,6 +115,9 @@ describe("V2 locale completeness", () => {
           PRO_COPY.en.features[i],
         );
       }
+      expect(PRO_COPY[locale].feature50mb, `PRO_COPY.${locale}.feature50mb`).not.toBe(
+        PRO_COPY.en.feature50mb,
+      );
     }
   });
 

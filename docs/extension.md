@@ -21,7 +21,7 @@ Anonymous capture is unchanged and remains the default.
 
 The token is stored in `chrome.storage.local` only (never `sync`, never analytics, never console). Disconnect removes the local token; it does **not** revoke it. Revoke from the account page to invalidate uploads immediately.
 
-Connected captures use `POST /api/integrations/upload-intent` then `POST /api/integrations/upload/:intent`. Free can pick 1h / 24h / 7d at 10 MB; Pro adds 30d and 90d. Anonymous captures send no expiry and take the server's 7-day default. Last expiry is remembered locally, and the server re-checks it against the account's entitlements on every intent.
+Connected captures use `POST /api/integrations/upload-intent` then `POST /api/integrations/upload/:intent`. Free can pick 1h / 24h / 7d / 30d at 10 MB; Pro adds 90d and 180d. Anonymous captures send no expiry and take the server's 7-day default. Last expiry is remembered locally, and the server re-checks it against the account's entitlements on every intent.
 
 If the token is revoked or invalid, the extension shows a connection error and does **not** fall back to an anonymous upload.
 
@@ -60,7 +60,8 @@ Listing copy, single-purpose statement, permission justifications and the data-u
 declarations live in [`extension/store/LISTING.md`](../extension/store/LISTING.md).
 Screenshots are generated — see that file.
 
-When the Chrome Web Store / Edge Add-ons URLs are live, update:
+Chrome Web Store (public):
+`https://chromewebstore.google.com/detail/dropimgio-screenshot-to-link/lhgmnekggpifejiphipjebjlcphabhib`
 
-- [`marketing/extension.ts`](../marketing/extension.ts) install copy
-- Homepage extension promo link (already points at `/browser-extension`)
+That URL is the homepage / Integrations / `/browser-extension` install CTA.
+Uploads already send `X-Dropimg-Client: chrome-extension` or `edge-extension`.

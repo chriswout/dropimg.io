@@ -6,11 +6,14 @@ Anonymous uploads stay available. An integration token is optional and is not re
 
 ## Tokens
 
-- Format: `dropimg_it_<random>`
+- ShareX / extension: `dropimg_it_<random>`, scope `upload` (maps to `images:write`)
+- API / MCP: `dropimg_api_<random>`, scopes `images:write`, `images:read`, `images:delete` (all three by default)
 - Stored as a SHA-256 hash only. The raw token is shown once at creation.
-- Scope is `upload`. Tokens are sent as `Authorization: Bearer <token>`.
+- Tokens are sent as `Authorization: Bearer <token>`.
 - Never put a token in a query string, cookie, or analytics event.
 - Revoke from Account → Connected integrations. Existing share links stay live.
+- REST: [`/developers`](https://dropimg.io/developers) and [`/openapi/v1.yaml`](https://dropimg.io/openapi/v1.yaml)
+- MCP: [`/mcp`](https://dropimg.io/mcp)
 
 Browser disconnect (extension) removes the local copy only. Account-side Revoke invalidates the token.
 
@@ -23,8 +26,8 @@ Browser disconnect (extension) removes the local copy only. Account-side Revoke 
 - `POST /api/integrations/upload-intent` then `POST /api/integrations/upload/:intent` — Bearer
 - `POST /api/integrations/sharex` — anonymous multipart, or Bearer for an owned upload
 
-Free integrations: ownership, My drops, 1h/24h/7d, 10 MB, no passwords.  
-Pro integrations: those plus 30d and 90d, 50 MB on the intent path, and passwords where the client supports them.
+Free integrations: ownership, My drops, 1h/24h/7d/30d, 10 MB, no passwords.
+Pro integrations: those plus 90d and 180d, 50 MB on the intent path, and passwords where the client supports them.
 
 ShareX authenticated uploads stay on a conservative 10 MB multipart cap.
 

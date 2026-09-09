@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Expiring Image Link — Choose 1 Hour to 7 Days | dropimg.io</title>
-    <meta name="description" content="Create an expiring image link in seconds. Paste a screenshot or drop a file, pick 1 hour, 24 hours, or 7 days, and it auto-deletes. No account." />
+    <meta name="description" content="Create an expiring image link in seconds. Paste a screenshot or drop a file, pick 1 hour, 24 hours, 7 days, or 30 days, and it auto-deletes. No account." />
     <link rel="canonical" href="https://dropimg.io/expiring-image-link" />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
@@ -25,7 +25,7 @@
     <meta property="og:locale" content="en_US" />
     <meta property="og:url" content="https://dropimg.io/expiring-image-link" />
     <meta property="og:title" content="Expiring image link | dropimg.io" />
-    <meta property="og:description" content="Image URLs that delete themselves. Pick 1 hour, 24 hours, or 7 days." />
+    <meta property="og:description" content="Image URLs that delete themselves. Pick 1 hour, 24 hours, 7 days, or 30 days." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
@@ -60,7 +60,7 @@
                 "@type": "HowToStep",
                 "position": 2,
                 "name": "Pick the expiry",
-                "text": "1 hour, 24 hours, or 7 days — the choice sits right under the uploader."
+                "text": "1 hour, 24 hours, 7 days, or 30 days — the choice sits right under the uploader."
               },
               {
                 "@type": "HowToStep",
@@ -80,7 +80,7 @@
                 "name": "How do I set when an image link expires?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Pick 1 hour, 24 hours, or 7 days under the uploader before you upload. Seven days is selected by default, and the link shows its expiry once it is ready."
+                  "text": "Pick 1 hour, 24 hours, 7 days, or 30 days under the uploader before you upload. Seven days is selected by default, and the link shows its expiry once it is ready."
                 }
               },
               {
@@ -88,7 +88,7 @@
                 "name": "What is the longest an image link can last?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Seven days on the free tier. Pro can choose 30 or 90 days, and 90 days from the original upload is the hard maximum — links cannot be extended past it."
+                  "text": "Thirty days on the free tier. Pro can choose 90 or 180 days, and 180 days from the original upload is the hard maximum — links cannot be extended past it."
                 }
               },
               {
@@ -191,7 +191,7 @@
       <main>
         <section class="seo-hero">
           <h1 class="tagline">Expiring image link</h1>
-          <p class="sub seo-lede">Get a shareable image URL that deletes itself on your schedule. Pick 1 hour, 24 hours, or 7 days, then paste or drop to start.</p>
+          <p class="sub seo-lede">Get a shareable image URL that deletes itself on your schedule. Pick 1 hour, 24 hours, 7 days, or 30 days, then paste or drop to start.</p>
 
           <section
             id="dropzone"
@@ -236,7 +236,7 @@
 
             <div id="state-uploading" class="state hidden">
               <img id="preview" class="preview" alt="" />
-              <p class="dz-title" data-i18n="uploading">Uploading…</p>
+              <p id="upload-phase-title" class="dz-title" data-i18n="uploading">Uploading…</p>
               <div
                 class="progress"
                 role="progressbar"
@@ -283,7 +283,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>Need it longer?</strong>
-                Keep links up to 90 days with Pro — €2.99/month.
+                Keep links up to 180 days with Pro — €2.99/month.
               </p>
             </div>
 
@@ -301,8 +301,9 @@
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 hour</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 hours</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 days</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000">30 days</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="15552000" data-pro-only hidden>180 days</button>
               </div>
             </div>
             <div class="drop-field" id="pro-password-wrap" hidden>
@@ -375,7 +376,7 @@
                   </svg>
                 </span>
                 <strong>Pick the expiry</strong>
-                <span class="flow-detail">1 hour, 24 hours, or 7 days — the choice sits right under the uploader.</span>
+                <span class="flow-detail">1 hour, 24 hours, 7 days, or 30 days — the choice sits right under the uploader.</span>
               </li>
               <li>
                 <span class="flow-step" aria-hidden="true">03</span>
@@ -406,7 +407,7 @@
             <li>1 hour for a password reset screenshot or a one-question answer.</li>
             <li>24 hours for something you are actively working through today.</li>
             <li>7 days for a thread, a review, or a ticket that stays open — this is the default.</li>
-            <li>Up to 30 or 90 days with Pro, when a link has to outlive the week.</li>
+            <li>Up to 90 or 180 days with Pro, when a link has to outlive the month.</li>
           </ul>
 
           <h2>Good for</h2>
@@ -419,7 +420,7 @@
 
           <h2>Delete early, or lock it down</h2>
 
-          <p>After upload, use the delete control to remove the image before it expires — recipients simply see that the link is gone. Pro accounts can also require a password before the image is shown, and can extend an existing link up to 90 days from its original upload.</p>
+          <p>After upload, use the delete control to remove the image before it expires — recipients simply see that the link is gone. Pro accounts can also require a password before the image is shown, and can extend an existing link up to 180 days from its original upload.</p>
           </article>
 
           <section class="faq-compact" id="faq" aria-labelledby="intent-faq" data-enter>
@@ -427,11 +428,11 @@
             <div class="faq-list">
               <details>
                 <summary>How do I set when an image link expires?</summary>
-                <p>Pick 1 hour, 24 hours, or 7 days under the uploader before you upload. Seven days is selected by default, and the link shows its expiry once it is ready.</p>
+                <p>Pick 1 hour, 24 hours, 7 days, or 30 days under the uploader before you upload. Seven days is selected by default, and the link shows its expiry once it is ready.</p>
               </details>
               <details>
                 <summary>What is the longest an image link can last?</summary>
-                <p>Seven days on the free tier. Pro can choose 30 or 90 days, and 90 days from the original upload is the hard maximum — links cannot be extended past it.</p>
+                <p>Thirty days on the free tier. Pro can choose 90 or 180 days, and 180 days from the original upload is the hard maximum — links cannot be extended past it.</p>
               </details>
               <details>
                 <summary>What happens when the link expires?</summary>
@@ -464,6 +465,8 @@
               <a href="/pro">Pro</a>
               <a href="/browser-extension">Chrome / Edge extension</a>
               <a href="/sharex">ShareX</a>
+              <a href="/developers">API</a>
+              <a href="/mcp">MCP</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="Legal">
               <h2 class="foot-col-title">Legal</h2>

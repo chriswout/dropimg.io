@@ -59,3 +59,22 @@ test("an upload with no entitlements asks for no expiry", async ({ page }) => {
   await expect(page.locator("#state-success")).toBeVisible({ timeout: 30_000 });
   expect(asked).toBeNull();
 });
+
+test("shows Checking image after the file bytes are sent", async ({ page }) => {
+  const fixtureDir = join(process.cwd(), "tests/e2e/.fixtures");
+  mkdirSync(fixtureDir, { recursive: true });
+  const fixture = join(fixtureDir, "pixel.png");
+  writeFileSync(fixture, PNG_1x1);
+
+  await page.route("**/api/upload", async (route) => {
+    await new Promise((r) => setTimeout(r, 900));
+    await route.continue();
+  });
+
+  await page.goto("/");
+  await page.locator("#file-input").setInputFiles(fixture);
+  await expect(page.locator("#upload-phase-title")).toHaveText(/Checking image/i, {
+    timeout: 10_000,
+  });
+  await expect(page.locator("#state-success")).toBeVisible({ timeout: 30_000 });
+});

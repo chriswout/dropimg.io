@@ -46,8 +46,8 @@ forever by accident, and nothing you upload is ever public, listed, indexed or
 searchable — a link only works for someone you gave it to.
 
 Without an account your captures use the site's default lifetime. Connect a
-free DropIMG account and you can choose 1 hour, 24 hours or 7 days per capture.
-DropIMG Pro adds 30 and 90 days, larger uploads, and full upload history at
+free DropIMG account and you can choose 1 hour, 24 hours, 7 days or 30 days per
+capture. DropIMG Pro adds 90 and 180 days, larger uploads, and full upload history at
 dropimg.io.
 
 RECENT DROPS
@@ -251,5 +251,5 @@ else = No, as in the table.
 - [ ] Check the version in `manifest.json` is higher than the published one
 - [ ] Submit the same zip to Edge Add-ons
 
-After the listing is live, update `marketing/extension.ts`, which currently reads
-"Store links: coming soon".
+Public listing:
+`https://chromewebstore.google.com/detail/dropimgio-screenshot-to-link/lhgmnekggpifejiphipjebjlcphabhib`

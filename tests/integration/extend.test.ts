@@ -16,6 +16,7 @@ const EXPIRY_24H = 24 * 60 * 60;
 const EXPIRY_7D = 7 * 24 * 60 * 60;
 const EXPIRY_30D = 30 * 24 * 60 * 60;
 const EXPIRY_90D = 90 * 24 * 60 * 60;
+const EXPIRY_180D = 180 * 24 * 60 * 60;
 
 const server = createTestHarness({
   workers: [
@@ -164,12 +165,16 @@ describe("anonymous expiry header", () => {
 
     const week = await imageRow((await anonUpload("203.0.113.13", EXPIRY_7D)).slug);
     expect(week.r2_key.startsWith("o/7d/")).toBe(true);
+
+    const month = await imageRow((await anonUpload("203.0.113.17", EXPIRY_30D)).slug);
+    expect(month.expires_at - month.created_at).toBe(EXPIRY_30D);
+    expect(month.r2_key.startsWith("o/30d/")).toBe(true);
   });
 
   it("rejects lifetimes the anonymous plan cannot reach", async () => {
     for (const [ip, expiry] of [
-      ["203.0.113.14", EXPIRY_30D],
-      ["203.0.113.15", EXPIRY_90D],
+      ["203.0.113.14", EXPIRY_90D],
+      ["203.0.113.15", EXPIRY_180D],
       ["203.0.113.16", 7200],
     ] as const) {
       const res = await worker.fetch("https://dropimg.io/api/upload", {
@@ -243,7 +248,7 @@ describe("Pro expiry + extend", () => {
     expect(await env.BUCKET.head(after.r2_key)).toBeTruthy();
   });
 
-  it("moves a claimed 7-day object off o/7d and stops at the 90-day ceiling", async () => {
+  it("moves a claimed 7-day object off o/7d and stops at the 180-day ceiling", async () => {
     const { cookie, userId } = await signIn("pro-cap@example.com");
     await makePro(userId);
 
@@ -252,18 +257,18 @@ describe("Pro expiry + extend", () => {
     const before = await imageRow(anon.slug);
     expect(before.r2_key.startsWith("o/7d/")).toBe(true);
 
-    const toNinety = await extendTo(cookie, anon.slug, EXPIRY_90D);
-    expect(toNinety.status).toBe(200);
-    expect(((await toNinety.json()) as { expiresAt: number }).expiresAt).toBe(
-      before.created_at + EXPIRY_90D,
+    const toMax = await extendTo(cookie, anon.slug, EXPIRY_180D);
+    expect(toMax.status).toBe(200);
+    expect(((await toMax.json()) as { expiresAt: number }).expiresAt).toBe(
+      before.created_at + EXPIRY_180D,
     );
 
     const after = await imageRow(anon.slug);
     expect(after.r2_key.startsWith("o/pro/")).toBe(true);
-    expect(after.expires_at - after.created_at).toBe(EXPIRY_90D);
+    expect(after.expires_at - after.created_at).toBe(EXPIRY_180D);
 
     // Nothing left to give: the ceiling is measured from the original upload.
-    const again = await extendTo(cookie, anon.slug, EXPIRY_90D);
+    const again = await extendTo(cookie, anon.slug, EXPIRY_180D);
     expect(again.status).toBe(400);
     expect(await imageRow(anon.slug)).toMatchObject({
       expires_at: after.expires_at,

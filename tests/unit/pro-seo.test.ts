@@ -68,6 +68,28 @@ describe("localized /pro SEO", () => {
     expect(html).toContain("Save 30%");
     expect(html).toContain("Best value");
     expect(html).not.toContain("Most popular");
+    expect(html).not.toContain("50 MB");
+  });
+
+  it("shows 50 MB only when the flag is on", async () => {
+    const hidden = await renderProPage({
+      locale: "en",
+      env: { ENVIRONMENT: "staging" },
+      signedIn: false,
+      plan: "free",
+      billingOn: true,
+    }).text();
+    expect(hidden).not.toContain("50 MB");
+
+    const shown = await renderProPage({
+      locale: "en",
+      env: { ENVIRONMENT: "staging" },
+      signedIn: false,
+      plan: "free",
+      billingOn: true,
+      show50mb: true,
+    }).text();
+    expect(shown).toContain("Upload images up to 50 MB");
   });
 });
 

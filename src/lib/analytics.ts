@@ -34,18 +34,30 @@ export type AnalyticsEvent =
   | "pro_canceled"
   | "dashboard_open"
   | "dashboard_copy"
-  | "dashboard_delete";
+  | "dashboard_delete"
+  | "moderation_decision"
+  | "moderation_flag";
 
 export const ANALYTICS_PLANS = ["anonymous", "free", "pro"] as const;
 export const ANALYTICS_INTERVALS = ["monthly", "annual"] as const;
 /** Bucketed lifetimes, so the dimension stays low-cardinality and readable. */
-export const ANALYTICS_EXPIRIES = ["1h", "24h", "7d", "30d", "90d"] as const;
+export const ANALYTICS_EXPIRIES = [
+  "1h",
+  "24h",
+  "7d",
+  "30d",
+  "90d",
+  "180d",
+] as const;
 export const ANALYTICS_CLIENTS = [
   "web",
   "extension",
   "chrome-extension",
   "edge-extension",
+  "firefox-extension",
   "sharex",
+  "api",
+  "mcp",
   "other",
 ] as const;
 
@@ -62,6 +74,7 @@ const EXPIRY_LABELS: Record<number, AnalyticsExpiry> = {
   604800: "7d",
   2592000: "30d",
   7776000: "90d",
+  15552000: "180d",
 };
 
 export const SENSITIVE_ANALYTICS_KEYS = [
@@ -109,7 +122,7 @@ export function track(
     pageIntent?: string;
     plan?: string;
     interval?: string;
-    /** Chosen lifetime in seconds; bucketed to 1h/24h/7d/30d/90d. */
+    /** Chosen lifetime in seconds; bucketed to 1h/24h/7d/30d/90d/180d. */
     expirySeconds?: number | null;
   } = {},
 ): void {

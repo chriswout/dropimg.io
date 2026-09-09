@@ -3,7 +3,7 @@
   "name": "dropimg",
   "main": "./src/index.ts",
   "compatibility_date": "2026-08-21",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
   "assets": {
     "binding": "ASSETS",
     "not_found_handling": "404-page",
@@ -24,6 +24,14 @@
       "namespace_id": "1003",
       "simple": {
         "limit": 5,
+        "period": 60
+      }
+    },
+    {
+      "name": "MCP_LIMIT",
+      "namespace_id": "1005",
+      "simple": {
+        "limit": 30,
         "period": 60
       }
     }
@@ -49,17 +57,29 @@
       "dataset": "dropimg_events"
     }
   ],
+  "kv_namespaces": [
+    {
+      "binding": "OAUTH_KV",
+      "id": "local-oauth-kv-placeholder"
+    }
+  ],
   "triggers": {
     "crons": ["*/5 * * * *"]
   },
   "observability": {
     "enabled": true
   },
+  "ai": {
+    "binding": "AI"
+  },
   "vars": {
     "ENVIRONMENT": "development",
     "UGC_SHARE_ADS_ENABLED": "false",
     "LONG_TTL_ENABLED": "false",
     "PRO_50MB_ENABLED": "false",
+    "MODERATION_ENABLED": "false",
+    "MODERATION_ENFORCE": "false",
+    "MODERATION_MODEL": "@cf/moondream/moondream3.1-9B-A2B",
     "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>",
     "BILLING_ENABLED": "false"
   },
@@ -73,6 +93,9 @@
         "UGC_SHARE_ADS_ENABLED": "false",
         "LONG_TTL_ENABLED": "true",
         "PRO_50MB_ENABLED": "true",
+        "MODERATION_ENABLED": "false",
+        "MODERATION_ENFORCE": "false",
+        "MODERATION_MODEL": "@cf/moondream/moondream3.1-9B-A2B",
         "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>",
         "BILLING_ENABLED": "true",
         "PAYPAL_ENV": "sandbox",
@@ -101,6 +124,14 @@
             "limit": 5,
             "period": 60
           }
+        },
+        {
+          "name": "MCP_LIMIT",
+          "namespace_id": "1005",
+          "simple": {
+            "limit": 30,
+            "period": 60
+          }
         }
       ],
       "triggers": {
@@ -125,7 +156,16 @@
           "binding": "ANALYTICS",
           "dataset": "dropimg_events_staging"
         }
-      ]
+      ],
+      "kv_namespaces": [
+        {
+          "binding": "OAUTH_KV",
+          "id": "6b780f76a84641ae81b8e7d0f3082767"
+        }
+      ],
+      "ai": {
+        "binding": "AI"
+      }
     },
     "production": {
       "name": "dropimg",
@@ -134,6 +174,9 @@
         "UGC_SHARE_ADS_ENABLED": "false",
         "LONG_TTL_ENABLED": "true",
         "PRO_50MB_ENABLED": "false",
+        "MODERATION_ENABLED": "true",
+        "MODERATION_ENFORCE": "false",
+        "MODERATION_MODEL": "@cf/moondream/moondream3.1-9B-A2B",
         "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>",
         "BILLING_ENABLED": "true",
         "PAYPAL_ENV": "live",
@@ -160,6 +203,14 @@
           "namespace_id": "1004",
           "simple": {
             "limit": 5,
+            "period": 60
+          }
+        },
+        {
+          "name": "MCP_LIMIT",
+          "namespace_id": "1006",
+          "simple": {
+            "limit": 30,
             "period": 60
           }
         }
@@ -196,7 +247,16 @@
           "binding": "ANALYTICS",
           "dataset": "dropimg_events"
         }
-      ]
+      ],
+      "kv_namespaces": [
+        {
+          "binding": "OAUTH_KV",
+          "id": "77ec791466984672a0db8b21dc41ec93"
+        }
+      ],
+      "ai": {
+        "binding": "AI"
+      }
     }
   }
 }

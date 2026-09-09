@@ -17,7 +17,7 @@ import {
   verifyPaypalWebhook,
 } from "../lib/billing/paypal";
 import type { BillingEnv, CheckoutInterval, PaypalWebhookEvent } from "../lib/billing/types";
-import { entitlementsFor, loadSubscription } from "../lib/entitlements";
+import { entitlementsFor, flagsFromEnv, loadSubscription } from "../lib/entitlements";
 import { sha256Hex } from "../lib/auth/crypto";
 import { localeFromProPath, proPath } from "../../marketing/pro";
 import { renderProPage } from "../views/pro";
@@ -102,6 +102,7 @@ async function servePro(c: { req: { raw: Request; header: (n: string) => string 
     billingOn: billingEnabled(asBillingEnv(c.env)),
     periodEnd: subscription?.current_period_end ?? null,
     cancelAtPeriodEnd: Boolean(subscription?.cancel_at_period_end),
+    show50mb: flagsFromEnv(c.env).pro50mb,
   });
   if (url.searchParams.get("checkout") === "success") {
     page.headers.append("Set-Cookie", clearCheckoutCookie(c.env));

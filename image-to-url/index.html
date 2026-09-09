@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Image to URL — Upload an Image and Get a Link | dropimg.io</title>
-    <meta name="description" content="Convert an image to a URL instantly. Drop or paste a file, choose 1 hour, 24 hours, or 7 days, and copy the link. No account required." />
+    <meta name="description" content="Convert an image to a URL instantly. Drop or paste a file, choose 1 hour, 24 hours, 7 days, or 30 days, and copy the link. No account required." />
     <link rel="canonical" href="https://dropimg.io/image-to-url" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/image-to-url" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es/imagen-a-url" />
@@ -64,7 +64,7 @@
                 "@type": "HowToStep",
                 "position": 2,
                 "name": "Choose how long it lives",
-                "text": "1 hour, 24 hours, or 7 days. Seven days is selected for you unless you change it."
+                "text": "1 hour, 24 hours, 7 days, or 30 days. Seven days is selected for you unless you change it."
               },
               {
                 "@type": "HowToStep",
@@ -92,7 +92,7 @@
                 "name": "How long will the image URL work?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "As long as you chose before uploading: 1 hour, 24 hours, or 7 days. Seven days is the default. Pro can keep a link online for up to 90 days from the original upload."
+                  "text": "As long as you chose before uploading: 1 hour, 24 hours, 7 days, or 30 days. Seven days is the default. Pro can keep a link online for up to 180 days from the original upload."
                 }
               },
               {
@@ -240,7 +240,7 @@
 
             <div id="state-uploading" class="state hidden">
               <img id="preview" class="preview" alt="" />
-              <p class="dz-title" data-i18n="uploading">Uploading…</p>
+              <p id="upload-phase-title" class="dz-title" data-i18n="uploading">Uploading…</p>
               <div
                 class="progress"
                 role="progressbar"
@@ -287,7 +287,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>Need it longer?</strong>
-                Keep links up to 90 days with Pro — €2.99/month.
+                Keep links up to 180 days with Pro — €2.99/month.
               </p>
             </div>
 
@@ -305,8 +305,9 @@
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 hour</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 hours</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 days</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000">30 days</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 days</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="15552000" data-pro-only hidden>180 days</button>
               </div>
             </div>
             <div class="drop-field" id="pro-password-wrap" hidden>
@@ -379,7 +380,7 @@
                   </svg>
                 </span>
                 <strong>Choose how long it lives</strong>
-                <span class="flow-detail">1 hour, 24 hours, or 7 days. Seven days is selected for you unless you change it.</span>
+                <span class="flow-detail">1 hour, 24 hours, 7 days, or 30 days. Seven days is selected for you unless you change it.</span>
               </li>
               <li>
                 <span class="flow-step" aria-hidden="true">03</span>
@@ -415,7 +416,7 @@
 
           <h2>Upload an image, get a URL — without an account</h2>
 
-          <p>Anonymous uploading is the default, not a trial. Signing in is optional: a free account keeps your last 10 active links in one place, and Pro adds links up to 90 days, 50 MB uploads, password protection, and browser extension and ShareX uploads.</p>
+          <p>Anonymous uploading is the default, not a trial. Signing in is optional: a free account keeps your last 10 active links in one place, and Pro adds links up to 180 days, 50 MB uploads, password protection, and browser extension and ShareX uploads.</p>
 
           <h2>Not a CDN or a gallery</h2>
 
@@ -431,7 +432,7 @@
               </details>
               <details>
                 <summary>How long will the image URL work?</summary>
-                <p>As long as you chose before uploading: 1 hour, 24 hours, or 7 days. Seven days is the default. Pro can keep a link online for up to 90 days from the original upload.</p>
+                <p>As long as you chose before uploading: 1 hour, 24 hours, 7 days, or 30 days. Seven days is the default. Pro can keep a link online for up to 180 days from the original upload.</p>
               </details>
               <details>
                 <summary>Is this permanent image hosting?</summary>
@@ -464,6 +465,8 @@
               <a href="/pro">Pro</a>
               <a href="/browser-extension">Chrome / Edge extension</a>
               <a href="/sharex">ShareX</a>
+              <a href="/developers">API</a>
+              <a href="/mcp">MCP</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="Legal">
               <h2 class="foot-col-title">Legal</h2>

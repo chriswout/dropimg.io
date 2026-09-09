@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Comparte una imagen con un enlace | dropimg.io</title>
-    <meta name="description" content="Convierte una imagen en URL en segundos. Ideal para WhatsApp, Slack, tickets y GitHub. Sin crear cuenta. Elige 1 hora, 24 horas o 7 días." />
+    <meta name="description" content="Convierte una imagen en URL en segundos. Ideal para WhatsApp, Slack, tickets y GitHub. Sin crear cuenta. Elige 1 hora, 24 horas, 7 días o 30 días." />
     <link rel="canonical" href="https://dropimg.io/es/compartir-imagen-con-enlace" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/share-image-with-link" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es/compartir-imagen-con-enlace" />
@@ -167,7 +167,7 @@
 
             <div id="state-uploading" class="state hidden">
               <img id="preview" class="preview" alt="" />
-              <p class="dz-title" data-i18n="uploading">Subiendo…</p>
+              <p id="upload-phase-title" class="dz-title" data-i18n="uploading">Subiendo…</p>
               <div
                 class="progress"
                 role="progressbar"
@@ -214,7 +214,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>¿Lo necesitas más tiempo?</strong>
-                Conserva enlaces hasta 90 días con Pro — €2.99/mes.
+                Conserva enlaces hasta 180 días con Pro — €2.99/mes.
               </p>
             </div>
 
@@ -232,8 +232,9 @@
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 hora</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 horas</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 días</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 días</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000">30 días</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 días</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="15552000" data-pro-only hidden>180 días</button>
               </div>
             </div>
             <div class="drop-field" id="pro-password-wrap" hidden>
@@ -293,7 +294,7 @@
             <li>Email: cuando el cliente del otro lado destroza las imágenes incrustadas</li>
           </ul>
 
-          <p>Los enlaces caducan cuando tú digas: 1 hora, 24 horas o 7 días, y hasta 90 días con Pro. Son temporales a propósito: no es un CMS ni un sitio para los assets de tu marca.</p>
+          <p>Los enlaces caducan cuando tú digas: 1 hora, 24 horas, 7 días o 30 días, y hasta 180 días con Pro. Son temporales a propósito: no es un CMS ni un sitio para los assets de tu marca.</p>
 
           <h2>Qué ve quien recibe el enlace</h2>
 
@@ -323,6 +324,8 @@
               <a href="/es/pro">Pro</a>
               <a href="/browser-extension">Extensión Chrome / Edge</a>
               <a href="/sharex">ShareX</a>
+              <a href="/developers">API</a>
+              <a href="/mcp">MCP</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="Legal">
               <h2 class="foot-col-title">Legal</h2>

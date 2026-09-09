@@ -7,6 +7,10 @@ const workerConfig = {
   secrets: {
     IP_HASH_SECRET: "integration-test-ip-hash-secret",
     ADMIN_TOKEN: "integration-test-admin",
+    GOOGLE_CLIENT_ID: "google-test-id",
+    GOOGLE_CLIENT_SECRET: "google-test-secret",
+    GITHUB_CLIENT_ID: "github-test-id",
+    GITHUB_CLIENT_SECRET: "github-test-secret",
   },
   vars: {
     ENVIRONMENT: "development",
@@ -64,6 +68,10 @@ describe("Auth magic link", () => {
     const html = await login.text();
     expect(html).toContain("Sign in to DropIMG");
     expect(html).toContain("No password required");
+    expect(html).toContain("Continue with GitHub");
+    expect(html).toContain("Continue with Google");
+    expect(html).toContain('href="/auth/github"');
+    expect(html).toContain('href="/auth/google"');
     expect(html).toContain('class="page"');
     expect(html).toContain("brand-logo");
     expect(html).toContain('id="account-nav"');
@@ -258,5 +266,100 @@ describe("Auth magic link", () => {
     });
     const body = (await me.json()) as { user: null };
     expect(body.user).toBeNull();
+  });
+
+  it("starts Google and GitHub OAuth and rejects a bare callback", async () => {
+    const github = await worker.fetch("https://dropimg.io/auth/github", {
+      redirect: "manual",
+    });
+    expect(github.status).toBe(302);
+    expect(github.headers.get("Location")).toContain("github.com/login/oauth/authorize");
+    expect(github.headers.get("Set-Cookie")).toMatch(/dropimg_oauth=/);
+
+    const google = await worker.fetch("https://dropimg.io/auth/google", {
+      redirect: "manual",
+    });
+    expect(google.status).toBe(302);
+    expect(google.headers.get("Location")).toContain("accounts.google.com");
+
+    const bare = await worker.fetch(
+      "https://dropimg.io/auth/google/callback?code=x&state=y",
+    );
+    expect(bare.status).toBe(400);
+    expect(await bare.text()).toContain("Could not sign in with that account");
+
+    const probe = await worker.fetch(
+      "https://dropimg.io/auth/google/callback?code=x&state=y",
+      {
+        headers: {
+          Origin: "https://accounts.google.com",
+          "Sec-Fetch-Mode": "cors",
+          "Sec-Fetch-Dest": "empty",
+        },
+      },
+    );
+    expect(probe.status).toBe(204);
+  });
+
+  it("connects and disconnects a GitHub identity on a signed-in account", async () => {
+    const started = await startLogin("social@example.com");
+    const cb = await worker.fetch(started.devMagicUrl!, { redirect: "manual" });
+    const cookie = cookieFrom(cb);
+
+    const connect = await worker.fetch(
+      "https://dropimg.io/api/account/identities/github/connect",
+      {
+        method: "POST",
+        redirect: "manual",
+        headers: {
+          Cookie: cookie,
+          Origin: "https://dropimg.io",
+        },
+      },
+    );
+    expect(connect.status).toBe(302);
+    expect(connect.headers.get("Location")).toContain("github.com/login/oauth/authorize");
+
+    const env = await worker.getEnv();
+    const me = await worker.fetch("https://dropimg.io/api/account/me", {
+      headers: { Cookie: cookie },
+    });
+    const user = (await me.json()) as { user: { id: string } };
+    const now = Math.floor(Date.now() / 1000);
+    await env.DB.prepare(
+      `INSERT INTO auth_identities
+        (id, user_id, provider, provider_user_id, email_norm, created_at)
+       VALUES (?, ?, 'github', '42', 'social@example.com', ?)`,
+    )
+      .bind("id-gh", user.user.id, now)
+      .run();
+
+    const page = await worker.fetch("https://dropimg.io/app/account", {
+      headers: { Cookie: cookie },
+    });
+    const html = await page.text();
+    expect(html).toContain("Sign-in methods");
+    expect(html).toContain("GitHub");
+    expect(html).toContain("Connected");
+
+    const gone = await worker.fetch(
+      "https://dropimg.io/api/account/identities/github/disconnect",
+      {
+        method: "POST",
+        redirect: "manual",
+        headers: {
+          Cookie: cookie,
+          Origin: "https://dropimg.io",
+        },
+      },
+    );
+    expect(gone.status).toBe(302);
+    expect(gone.headers.get("Location")).toBe("/app/account");
+    const leftover = await env.DB.prepare(
+      `SELECT COUNT(*) as cnt FROM auth_identities WHERE user_id = ?`,
+    )
+      .bind(user.user.id)
+      .first<{ cnt: number }>();
+    expect(leftover?.cnt).toBe(0);
   });
 });

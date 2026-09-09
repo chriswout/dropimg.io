@@ -5,6 +5,7 @@ import {
   EXPIRY_30D,
   EXPIRY_7D,
   EXPIRY_90D,
+  EXPIRY_180D,
   FREE_MAX_UPLOAD_BYTES,
   MAX_LIFETIME_SECONDS,
   PRO_MAX_UPLOAD_BYTES,
@@ -62,7 +63,7 @@ describe("resolveEntitlements", () => {
     expect(e.adFree).toBe(true);
   });
 
-  it("Pro with flags gets 50 MB and the full 1h-90d ladder", () => {
+  it("Pro with flags gets 50 MB and the full 1h-180d ladder", () => {
     const e = resolveEntitlements({
       userId: "u1",
       now,
@@ -76,11 +77,12 @@ describe("resolveEntitlements", () => {
       EXPIRY_7D,
       EXPIRY_30D,
       EXPIRY_90D,
+      EXPIRY_180D,
     ]);
     expect(e.defaultExpirySeconds).toBe(EXPIRY_7D);
   });
 
-  it("anonymous and Free share 1h/24h/7d with a 7-day default", () => {
+  it("anonymous and Free share 1h/24h/7d/30d with a 7-day default", () => {
     for (const userId of [null, "u1"]) {
       const e = resolveEntitlements({
         userId,
@@ -92,14 +94,15 @@ describe("resolveEntitlements", () => {
         EXPIRY_1H,
         EXPIRY_24H,
         EXPIRY_7D,
+        EXPIRY_30D,
       ]);
       expect(e.defaultExpirySeconds).toBe(EXPIRY_7D);
-      expect(e.allowedExpirySeconds).not.toContain(EXPIRY_30D);
       expect(e.allowedExpirySeconds).not.toContain(EXPIRY_90D);
+      expect(e.allowedExpirySeconds).not.toContain(EXPIRY_180D);
     }
   });
 
-  it("the 90-day ceiling is the longest lifetime any plan can pick", () => {
+  it("the 180-day ceiling is the longest lifetime any plan can pick", () => {
     const pro = resolveEntitlements({
       userId: "u1",
       now,
@@ -178,7 +181,7 @@ describe("uploadIntentAllowed", () => {
     ).toBe(true);
   });
 
-  it("still rejects Pro-only lifetimes once Free can reach 7 days", () => {
+  it("still rejects Pro-only lifetimes once Free can reach 30 days", () => {
     const free = resolveEntitlements({
       userId: "u1",
       subscription: null,
@@ -191,21 +194,30 @@ describe("uploadIntentAllowed", () => {
       hasPassword: false,
     });
     expect(uploadIntentAllowed(intent(EXPIRY_7D), free)).toBe(true);
-    expect(uploadIntentAllowed(intent(EXPIRY_30D), free)).toBe(false);
+    expect(uploadIntentAllowed(intent(EXPIRY_30D), free)).toBe(true);
     expect(uploadIntentAllowed(intent(EXPIRY_90D), free)).toBe(false);
+    expect(uploadIntentAllowed(intent(EXPIRY_180D), free)).toBe(false);
   });
 });
 
 describe("r2ClassFor", () => {
-  it("keeps short Free lifetimes on o/24h and 7-day ones on o/7d", () => {
+  it("keeps short Free lifetimes on o/24h, 7-day ones on o/7d, and 30-day ones on o/30d", () => {
     expect(r2ClassFor("anonymous", EXPIRY_1H)).toBe("24h");
     expect(r2ClassFor("anonymous", EXPIRY_24H)).toBe("24h");
     expect(r2ClassFor("anonymous", EXPIRY_7D)).toBe("7d");
     expect(r2ClassFor("free", EXPIRY_7D)).toBe("7d");
+    expect(r2ClassFor("anonymous", EXPIRY_30D)).toBe("30d");
+    expect(r2ClassFor("free", EXPIRY_30D)).toBe("30d");
   });
 
   it("parks every Pro upload on o/pro so a later extend needs no copy", () => {
-    for (const seconds of [EXPIRY_1H, EXPIRY_24H, EXPIRY_7D, EXPIRY_90D]) {
+    for (const seconds of [
+      EXPIRY_1H,
+      EXPIRY_24H,
+      EXPIRY_7D,
+      EXPIRY_90D,
+      EXPIRY_180D,
+    ]) {
       expect(r2ClassFor("pro", seconds)).toBe("pro");
     }
   });
@@ -234,7 +246,7 @@ describe("parseExpiryHeader", () => {
       ok: true,
       expirySeconds: EXPIRY_24H,
     });
-    for (const bad of ["1", "7200", "abc", "3600.5", "-3600", String(EXPIRY_90D)]) {
+    for (const bad of ["1", "7200", "abc", "3600.5", "-3600", String(EXPIRY_180D)]) {
       expect(parseExpiryHeader(bad, anon)).toEqual({ ok: false });
     }
   });

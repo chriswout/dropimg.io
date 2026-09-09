@@ -68,6 +68,7 @@ export const EXPIRY_24H = 24 * 60 * 60;
 export const EXPIRY_7D = 7 * 24 * 60 * 60;
 export const EXPIRY_30D = 30 * 24 * 60 * 60;
 export const EXPIRY_90D = 90 * 24 * 60 * 60;
+export const EXPIRY_180D = 180 * 24 * 60 * 60;
 
 export type AccountProfile = {
   emailMasked: string;

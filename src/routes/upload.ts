@@ -1,22 +1,12 @@
 import { Hono } from "hono";
 import type { Context } from "hono";
 import { track } from "../lib/analytics";
-import {
-  EXPIRY_HEADER,
-  flagsFromEnv,
-  parseExpiryHeader,
-  r2ClassFor,
-  resolveEntitlements,
-} from "../lib/entitlements";
+import { createDrop, dropFailResponse } from "../lib/create-drop";
+import { EXPIRY_HEADER } from "../lib/entitlements";
 import { clientIp, hashIp } from "../lib/ip";
 import { normalizePageIntent } from "../lib/page-intent";
 import { resolveIpHashSecret } from "../lib/secrets";
 import { normalizeUploadClient } from "../lib/upload-client";
-import {
-  overDailyQuota,
-  storeUploadedImage,
-  uploadFailResponse,
-} from "../lib/upload-store";
 import { MAX_UPLOAD_BYTES, type UploadErrorResponse } from "../types";
 
 type Env = {
@@ -41,23 +31,6 @@ uploadRoutes.post("/api/upload", async (c) => {
     return routeFail(c, 413, "too_large", "File exceeds 10 MB limit", undefined, client, pageIntent);
   }
 
-  const entitlements = resolveEntitlements({
-    userId: null,
-    flags: flagsFromEnv(c.env),
-  });
-  const expiry = parseExpiryHeader(c.req.header(EXPIRY_HEADER), entitlements);
-  if (!expiry.ok) {
-    return routeFail(
-      c,
-      400,
-      "invalid_expiry",
-      "That expiry is not available.",
-      "bad_expiry",
-      client,
-      pageIntent,
-    );
-  }
-
   const secretResolved = resolveIpHashSecret(c.env);
   if (!secretResolved.ok) {
     return routeFail(
@@ -73,28 +46,6 @@ uploadRoutes.post("/api/upload", async (c) => {
   const ip = clientIp(c.req.raw);
   const ipHash = await hashIp(ip, secretResolved.secret);
 
-  const limiter = c.env.UPLOAD_LIMIT;
-  if (limiter) {
-    const { success } = await limiter.limit({ key: `upload:${ipHash}` });
-    if (!success) {
-      track(c.env.ANALYTICS, "rate_limited", { reason: "burst", client, pageIntent });
-      return routeFail(c, 429, "rate_limited", "Too many uploads. Try again shortly.", undefined, client, pageIntent);
-    }
-  }
-
-  if (await overDailyQuota(c.env.DB, { ipHash })) {
-    track(c.env.ANALYTICS, "rate_limited", { reason: "daily_quota", client, pageIntent });
-    return routeFail(
-      c,
-      429,
-      "quota_exceeded",
-      "Daily upload limit reached. Try again tomorrow.",
-      undefined,
-      client,
-      pageIntent,
-    );
-  }
-
   let bytes: ArrayBuffer;
   try {
     bytes = await c.req.arrayBuffer();
@@ -102,18 +53,17 @@ uploadRoutes.post("/api/upload", async (c) => {
     return routeFail(c, 400, "invalid_image", "Could not read upload body", undefined, client, pageIntent);
   }
 
-  const stored = await storeUploadedImage(c.env, c.executionCtx, {
-    bytes,
-    client,
-    pageIntent,
-    ipHash,
+  const stored = await createDrop(c.env, c.executionCtx, {
     userId: null,
-    expirySeconds: expiry.expirySeconds,
-    maxBytes: MAX_UPLOAD_BYTES,
+    source: client,
+    bytes,
+    expiry: c.req.header(EXPIRY_HEADER),
     origin: new URL(c.req.url).origin,
-    r2Class: r2ClassFor(entitlements.plan, expiry.expirySeconds),
+    ipHash,
+    pageIntent,
+    maxBytesCap: MAX_UPLOAD_BYTES,
   });
-  if (!stored.ok) return uploadFailResponse(stored);
+  if (!stored.ok) return dropFailResponse(stored);
   return c.json(stored.body, 201);
 });
 

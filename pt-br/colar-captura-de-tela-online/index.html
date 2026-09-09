@@ -167,7 +167,7 @@
 
             <div id="state-uploading" class="state hidden">
               <img id="preview" class="preview" alt="" />
-              <p class="dz-title" data-i18n="uploading">Enviando…</p>
+              <p id="upload-phase-title" class="dz-title" data-i18n="uploading">Enviando…</p>
               <div
                 class="progress"
                 role="progressbar"
@@ -214,7 +214,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>Precisa por mais tempo?</strong>
-                Mantenha links por até 90 dias com Pro — €2.99/mês.
+                Mantenha links por até 180 dias com Pro — €2.99/mês.
               </p>
             </div>
 
@@ -232,8 +232,9 @@
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 hora</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 horas</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 dias</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 dias</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000">30 dias</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 dias</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="15552000" data-pro-only hidden>180 dias</button>
               </div>
             </div>
             <div class="drop-field" id="pro-password-wrap" hidden>
@@ -296,7 +297,7 @@
 
           <p>Em suporte, Discord, Slack ou chamado quase sempre é “um print rápido”. Salvar em Downloads, achar o arquivo e anexar é perda de tempo. Colar da área de transferência deixa tudo numa aba só.</p>
 
-          <p>O dropimg.io devolve um link temporário que dura 1 hora, 24 horas ou 7 dias, como você preferir. Você manda onde a conversa tá acontecendo. Tem o print na área de transferência e precisa de uma URL? Cola aqui.</p>
+          <p>O dropimg.io devolve um link temporário que dura 1 hora, 24 horas, 7 dias ou 30 dias, como você preferir. Você manda onde a conversa tá acontecendo. Tem o print na área de transferência e precisa de uma URL? Cola aqui.</p>
 
           <h2>Formatos</h2>
 
@@ -322,6 +323,8 @@
               <a href="/pt-br/pro">Pro</a>
               <a href="/browser-extension">Extensão Chrome / Edge</a>
               <a href="/sharex">ShareX</a>
+              <a href="/developers">API</a>
+              <a href="/mcp">MCP</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="Jurídico">
               <h2 class="foot-col-title">Jurídico</h2>

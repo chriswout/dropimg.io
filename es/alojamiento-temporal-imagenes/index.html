@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>Alojamiento temporal de imágenes sin cuenta | dropimg.io</title>
-    <meta name="description" content="Sube una imagen, genera un enlace y olvídate. Sin crear cuenta. Caduca en 1 hora, 24 horas o 7 días. PNG, JPEG, WebP o GIF. Metadatos quitados al guardar." />
+    <meta name="description" content="Sube una imagen, genera un enlace y olvídate. Sin crear cuenta. Caduca en 1 hora, 24 horas, 7 días o 30 días. PNG, JPEG, WebP o GIF. Metadatos quitados al guardar." />
     <link rel="canonical" href="https://dropimg.io/es/alojamiento-temporal-imagenes" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/temporary-image-hosting" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es/alojamiento-temporal-imagenes" />
@@ -167,7 +167,7 @@
 
             <div id="state-uploading" class="state hidden">
               <img id="preview" class="preview" alt="" />
-              <p class="dz-title" data-i18n="uploading">Subiendo…</p>
+              <p id="upload-phase-title" class="dz-title" data-i18n="uploading">Subiendo…</p>
               <div
                 class="progress"
                 role="progressbar"
@@ -214,7 +214,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>¿Lo necesitas más tiempo?</strong>
-                Conserva enlaces hasta 90 días con Pro — €2.99/mes.
+                Conserva enlaces hasta 180 días con Pro — €2.99/mes.
               </p>
             </div>
 
@@ -232,8 +232,9 @@
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="3600">1 hora</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="86400">24 horas</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="true" tabindex="0" data-expiry="604800">7 días</button>
-                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000" data-pro-only hidden>30 días</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="2592000">30 días</button>
                 <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="7776000" data-pro-only hidden>90 días</button>
+                <button type="button" class="expiry-pill" role="radio" aria-checked="false" tabindex="-1" data-expiry="15552000" data-pro-only hidden>180 días</button>
               </div>
             </div>
             <div class="drop-field" id="pro-password-wrap" hidden>
@@ -282,9 +283,9 @@
 
           <h2>Tú decides cuánto dura</h2>
 
-          <p>Casi todas las imágenes que compartes sirven minutos u horas, no meses. Elige 1 hora, 24 horas o 7 días antes de subirla — 7 días viene por defecto — y así no se acumulan archivos viejos que ya nadie pide.</p>
+          <p>Casi todas las imágenes que compartes sirven minutos u horas, no meses. Elige 1 hora, 24 horas, 7 días o 30 días antes de subirla — 7 días viene por defecto — y así no se acumulan archivos viejos que ya nadie pide.</p>
 
-          <p>¿Necesitas más tiempo? Con Pro puedes elegir 30 o 90 días, poner contraseña y subir hasta 50 MB. ¿Hay que quitarla ya? Al subirla tienes un enlace privado para borrarla al momento.</p>
+          <p>¿Necesitas más tiempo? Con Pro puedes elegir 90 o 180 días, poner contraseña y subir hasta 50 MB. ¿Hay que quitarla ya? Al subirla tienes un enlace privado para borrarla al momento.</p>
 
           <h2>Qué puedes subir</h2>
 
@@ -320,6 +321,8 @@
               <a href="/es/pro">Pro</a>
               <a href="/browser-extension">Extensión Chrome / Edge</a>
               <a href="/sharex">ShareX</a>
+              <a href="/developers">API</a>
+              <a href="/mcp">MCP</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="Legal">
               <h2 class="foot-col-title">Legal</h2>

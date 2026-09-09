@@ -1768,6 +1768,7 @@ main {
 
 .page-home .ext-promo {
   text-align: center;
+  align-items: center;
 }
 
 /*
@@ -2067,6 +2068,20 @@ html[data-theme="dark"] kbd {
   transition: width 180ms var(--ease);
 }
 
+.progress.is-checking .progress-bar {
+  background-size: 200% 100%;
+  animation: progress-checking 1.1s linear infinite;
+}
+
+@keyframes progress-checking {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
 .success-badge {
   display: grid;
   place-items: center;
@@ -2275,12 +2290,28 @@ html[data-theme="dark"] kbd {
 
 .ext-promo {
   margin: 1.5rem 0 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
   font-size: 0.875rem;
   line-height: 1.5;
   color: var(--text-muted);
 }
 
-.ext-promo a {
+.page-home .ext-promo {
+  align-items: center;
+}
+
+.ext-promo .btn {
+  text-decoration: none;
+}
+
+.ext-promo-more {
+  margin: 0;
+}
+
+.ext-promo-more a {
   color: var(--text-soft);
   text-decoration: underline;
   text-decoration-color: var(--border-strong);
@@ -2288,7 +2319,7 @@ html[data-theme="dark"] kbd {
   transition: color var(--motion-micro) var(--ease);
 }
 
-.ext-promo a:hover {
+.ext-promo-more a:hover {
   color: var(--brand-text);
 }
 
@@ -3016,6 +3047,71 @@ html[data-theme="dark"] kbd {
   stroke-width: 1.8;
 }
 
+.auth-social {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1.35rem;
+}
+
+.auth-social-btn {
+  width: 180px;
+  min-height: 40px;
+  margin-inline: auto;
+}
+
+.auth-google-btn {
+  display: block;
+  width: 180px;
+  height: 40px;
+  margin-inline: auto;
+  border-radius: 20px;
+  line-height: 0;
+  overflow: hidden;
+}
+
+.auth-google-btn img {
+  width: 180px;
+  height: 40px;
+}
+
+/* More specific than `.auth-google-btn img` so hide/show actually wins. */
+.auth-google-btn .auth-google-btn-light {
+  display: block;
+}
+
+.auth-google-btn .auth-google-btn-dark {
+  display: none;
+}
+
+html[data-theme="dark"] .auth-google-btn .auth-google-btn-light {
+  display: none;
+}
+
+html[data-theme="dark"] .auth-google-btn .auth-google-btn-dark {
+  display: block;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) .auth-google-btn .auth-google-btn-light {
+    display: none;
+  }
+
+  html:not([data-theme="light"]) .auth-google-btn .auth-google-btn-dark {
+    display: block;
+  }
+}
+
+.auth-google-btn:focus-visible {
+  outline: 3px solid var(--brand);
+  outline-offset: 3px;
+}
+
+.auth-or {
+  margin: 1.15rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.8438rem;
+}
+
 .auth-form {
   margin-top: 1.35rem;
   text-align: left;
@@ -3580,11 +3676,33 @@ html[data-theme="dark"] kbd {
   margin-top: 0.85rem;
 }
 
+.signin-method {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1rem;
+  text-align: left;
+}
+
+.signin-method-form {
+  margin: 0;
+}
+
+.signin-method-form .btn,
+.settings-card .signin-method-form .btn {
+  margin-top: 0;
+}
+
 .settings-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 0.85rem;
+}
+
+.settings-actions .btn {
+  margin-top: 0;
 }
 
 .settings-danger .btn {

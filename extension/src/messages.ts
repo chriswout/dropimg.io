@@ -17,6 +17,7 @@ const en: MessageMap = {
 
   capturing: "Capturing…",
   uploading: "Uploading screenshot",
+  checkingImage: "Checking image…",
   preparingRegion: "Select a region on the page…",
 
   uploaded: "Screenshot uploaded",
@@ -65,6 +66,8 @@ const en: MessageMap = {
   err_too_large_max: "Screenshot is too large (max $1$).",
   err_unsupported_type: "Unsupported image type.",
   err_invalid_image: "Could not process this screenshot.",
+  err_moderation_block: "This screenshot was rejected.",
+  err_moderation_unavailable: "Could not check this screenshot. Try again.",
   err_rate_limited: "Too many uploads. Try again shortly.",
   err_quota_exceeded: "Daily upload limit reached. Try again tomorrow.",
   err_server_error: "Upload temporarily unavailable.",
@@ -100,6 +103,7 @@ const en: MessageMap = {
   expiry7d: "7 days",
   expiry30d: "30 days",
   expiry90d: "90 days",
+  expiry180d: "180 days",
   err_account_expired: "DropIMG account connection expired. Open the extension to reconnect.",
   connectInvalid: "That token could not be verified.",
   disclosureTitle: "Before you capture",
@@ -122,6 +126,7 @@ const es: MessageMap = {
 
   capturing: "Capturando…",
   uploading: "Subiendo captura",
+  checkingImage: "Comprobando la imagen…",
   preparingRegion: "Selecciona una región en la página…",
 
   uploaded: "Captura subida",
@@ -170,6 +175,8 @@ const es: MessageMap = {
   err_too_large_max: "La captura supera el máximo de $1$.",
   err_unsupported_type: "Tipo de imagen no admitido.",
   err_invalid_image: "No se pudo procesar esta captura.",
+  err_moderation_block: "Esta captura fue rechazada.",
+  err_moderation_unavailable: "No se pudo comprobar la captura. Inténtalo de nuevo.",
   err_rate_limited: "Demasiadas subidas. Prueba en un momento.",
   err_quota_exceeded: "Llegaste al límite de hoy. Mañana otra vez.",
   err_server_error: "Ahora mismo no se puede subir.",
@@ -205,6 +212,7 @@ const es: MessageMap = {
   expiry7d: "7 días",
   expiry30d: "30 días",
   expiry90d: "90 días",
+  expiry180d: "180 días",
   err_account_expired: "La conexión de la cuenta caducó. Abre la extensión para reconectar.",
   connectInvalid: "No se pudo verificar ese token.",
   disclosureTitle: "Antes de capturar",
@@ -227,6 +235,7 @@ const pt_BR: MessageMap = {
 
   capturing: "Capturando…",
   uploading: "Enviando print",
+  checkingImage: "Verificando a imagem…",
   preparingRegion: "Selecione uma região na página…",
 
   uploaded: "Print enviado",
@@ -275,6 +284,8 @@ const pt_BR: MessageMap = {
   err_too_large_max: "O print passa do limite de $1$.",
   err_unsupported_type: "Tipo de imagem não aceito.",
   err_invalid_image: "Não deu pra processar este print.",
+  err_moderation_block: "Este print foi recusado.",
+  err_moderation_unavailable: "Não deu pra verificar o print. Tenta de novo.",
   err_rate_limited: "Muitos envios. Tenta de novo daqui a pouco.",
   err_quota_exceeded: "Limite de hoje esgotado. Volta amanhã.",
   err_server_error: "Envio indisponível agora.",
@@ -310,6 +321,7 @@ const pt_BR: MessageMap = {
   expiry7d: "7 dias",
   expiry30d: "30 dias",
   expiry90d: "90 dias",
+  expiry180d: "180 dias",
   err_account_expired: "A conexão da conta expirou. Abra a extensão para reconectar.",
   connectInvalid: "Não deu pra verificar esse token.",
   disclosureTitle: "Antes de capturar",
@@ -332,6 +344,7 @@ const de: MessageMap = {
 
   capturing: "Wird erfasst…",
   uploading: "Screenshot wird hochgeladen",
+  checkingImage: "Bild wird geprüft…",
   preparingRegion: "Bereich auf der Seite wählen…",
 
   uploaded: "Screenshot hochgeladen",
@@ -380,6 +393,8 @@ const de: MessageMap = {
   err_too_large_max: "Screenshot ist größer als $1$.",
   err_unsupported_type: "Nicht unterstützter Bildtyp.",
   err_invalid_image: "Screenshot ließ sich nicht verarbeiten.",
+  err_moderation_block: "Dieser Screenshot wurde abgelehnt.",
+  err_moderation_unavailable: "Bildprüfung fehlgeschlagen. Bitte nochmal versuchen.",
   err_rate_limited: "Zu viele Uploads. Kurz warten und nochmal.",
   err_quota_exceeded: "Tageslimit erreicht. Morgen wieder.",
   err_server_error: "Upload gerade nicht möglich.",
@@ -415,6 +430,7 @@ const de: MessageMap = {
   expiry7d: "7 Tage",
   expiry30d: "30 Tage",
   expiry90d: "90 Tage",
+  expiry180d: "180 Tage",
   err_account_expired: "Kontoverbindung abgelaufen. Erweiterung öffnen und neu verbinden.",
   connectInvalid: "Dieser Token ließ sich nicht prüfen.",
   disclosureTitle: "Bevor du aufnimmst",

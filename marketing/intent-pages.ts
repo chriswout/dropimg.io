@@ -50,7 +50,7 @@ export const INTENT_PAGES: Record<
     en: {
       title: "Screenshot to Link — Share a Screenshot in Seconds | dropimg.io",
       description:
-        "Turn a screenshot into a shareable link in seconds. Paste or drop the image, choose 1 hour, 24 hours, or 7 days, copy the link. No account needed.",
+        "Turn a screenshot into a shareable link in seconds. Paste or drop the image, choose 1 hour, 24 hours, 7 days, or 30 days, copy the link. No account needed.",
       ogTitle: "Screenshot to link | dropimg.io",
       ogDescription:
         "Paste a screenshot, get a link. No account. You choose when it expires.",
@@ -69,7 +69,7 @@ export const INTENT_PAGES: Record<
         {
           name: "Choose how long it lasts",
           detail:
-            "1 hour for a quick answer, 24 hours for a work day, or 7 days — the default.",
+            "1 hour for a quick answer, 24 hours for a work day, 7 days (the default), or 30 days.",
         },
         {
           name: "Send the link",
@@ -117,11 +117,11 @@ export const INTENT_PAGES: Record<
         },
         {
           q: "How long does the screenshot link work?",
-          a: "For as long as you picked before uploading: 1 hour, 24 hours, or 7 days. Seven days is the default. When the time is up the image is deleted and the link stops working.",
+          a: "For as long as you picked before uploading: 1 hour, 24 hours, 7 days, or 30 days. Seven days is the default. When the time is up the image is deleted and the link stops working.",
         },
         {
           q: "Can I password-protect a screenshot?",
-          a: "Yes, with Pro. Pro links can require a password before the image is shown, and can stay online for up to 90 days.",
+          a: "Yes, with Pro. Pro links can require a password before the image is shown, and can stay online for up to 180 days.",
         },
         {
           q: "Can I delete a screenshot before it expires?",
@@ -136,7 +136,7 @@ export const INTENT_PAGES: Record<
       title:
         "Captura de pantalla a enlace — Comparte una captura al instante | dropimg.io",
       description:
-        "Convierte una captura de pantalla en un enlace en segundos. Pega la imagen, elige 1 hora, 24 horas o 7 días y copia el enlace. Sin crear cuenta.",
+        "Convierte una captura de pantalla en un enlace en segundos. Pega la imagen, elige 1 hora, 24 horas, 7 días o 30 días y copia el enlace. Sin crear cuenta.",
       ogTitle: "Captura de pantalla a enlace | dropimg.io",
       ogDescription:
         "Pega una captura y obtén un enlace. Sin cuenta. Tú eliges cuándo caduca.",
@@ -155,7 +155,7 @@ export const INTENT_PAGES: Record<
         {
           name: "Elige cuánto dura",
           detail:
-            "1 hora para una respuesta rápida, 24 horas para la jornada o 7 días, que es la opción por defecto.",
+            "1 hora para una respuesta rápida, 24 horas para la jornada, 7 días (por defecto) o 30 días.",
         },
         {
           name: "Envía el enlace",
@@ -203,11 +203,11 @@ export const INTENT_PAGES: Record<
         },
         {
           q: "¿Cuánto tiempo funciona el enlace?",
-          a: "El que hayas elegido antes de subir: 1 hora, 24 horas o 7 días. Siete días es la opción por defecto. Cuando se acaba el plazo, la imagen se borra y el enlace deja de funcionar.",
+          a: "El que hayas elegido antes de subir: 1 hora, 24 horas, 7 días o 30 días. Siete días es la opción por defecto. Cuando se acaba el plazo, la imagen se borra y el enlace deja de funcionar.",
         },
         {
           q: "¿Puedo proteger una captura con contraseña?",
-          a: "Sí, con Pro. Los enlaces Pro pueden pedir una contraseña antes de mostrar la imagen y durar hasta 90 días.",
+          a: "Sí, con Pro. Los enlaces Pro pueden pedir una contraseña antes de mostrar la imagen y durar hasta 180 días.",
         },
         {
           q: "¿Puedo borrar la captura antes de que caduque?",
@@ -221,7 +221,7 @@ export const INTENT_PAGES: Record<
     "pt-BR": {
       title: "Colar Print Online — Compartilhe um print na hora | dropimg.io",
       description:
-        "Cole um print online e receba um link em segundos. Escolha 1 hora, 24 horas ou 7 dias e copie o link. Sem criar conta.",
+        "Cole um print online e receba um link em segundos. Escolha 1 hora, 24 horas, 7 dias ou 30 dias e copie o link. Sem criar conta.",
       ogTitle: "Colar print online | dropimg.io",
       ogDescription:
         "Cole um print e receba um link. Sem conta. Você escolhe quando expira.",
@@ -240,7 +240,7 @@ export const INTENT_PAGES: Record<
         {
           name: "Escolha a duração",
           detail:
-            "1 hora para tirar uma dúvida, 24 horas para o dia de trabalho ou 7 dias, que já vem selecionado.",
+            "1 hora para tirar uma dúvida, 24 horas para o dia de trabalho, 7 dias (já vem selecionado) ou 30 dias.",
         },
         {
           name: "Mande o link",
@@ -288,11 +288,11 @@ export const INTENT_PAGES: Record<
         },
         {
           q: "Por quanto tempo o link funciona?",
-          a: "Pelo tempo que você escolheu antes de enviar: 1 hora, 24 horas ou 7 dias. Sete dias é o padrão. Quando o prazo acaba, a imagem é apagada e o link para de funcionar.",
+          a: "Pelo tempo que você escolheu antes de enviar: 1 hora, 24 horas, 7 dias ou 30 dias. Sete dias é o padrão. Quando o prazo acaba, a imagem é apagada e o link para de funcionar.",
         },
         {
           q: "Dá para proteger um print com senha?",
-          a: "Sim, com o Pro. Os links Pro podem pedir uma senha antes de mostrar a imagem e durar até 90 dias.",
+          a: "Sim, com o Pro. Os links Pro podem pedir uma senha antes de mostrar a imagem e durar até 180 dias.",
         },
         {
           q: "Consigo apagar o print antes de expirar?",
@@ -309,7 +309,7 @@ export const INTENT_PAGES: Record<
     en: {
       title: "Image to URL — Upload an Image and Get a Link | dropimg.io",
       description:
-        "Convert an image to a URL instantly. Drop or paste a file, choose 1 hour, 24 hours, or 7 days, and copy the link. No account required.",
+        "Convert an image to a URL instantly. Drop or paste a file, choose 1 hour, 24 hours, 7 days, or 30 days, and copy the link. No account required.",
       ogTitle: "Image to URL | dropimg.io",
       ogDescription:
         "Drop an image, get a URL. No account required, and you choose when it expires.",
@@ -328,7 +328,7 @@ export const INTENT_PAGES: Record<
         {
           name: "Choose how long it lives",
           detail:
-            "1 hour, 24 hours, or 7 days. Seven days is selected for you unless you change it.",
+            "1 hour, 24 hours, 7 days, or 30 days. Seven days is selected for you unless you change it.",
         },
         {
           name: "Copy the URL",
@@ -355,7 +355,7 @@ export const INTENT_PAGES: Record<
         { type: "h2", text: "Upload an image, get a URL — without an account" },
         {
           type: "p",
-          text: "Anonymous uploading is the default, not a trial. Signing in is optional: a free account keeps your last 10 active links in one place, and Pro adds links up to 90 days, 50 MB uploads, password protection, and browser extension and ShareX uploads.",
+          text: "Anonymous uploading is the default, not a trial. Signing in is optional: a free account keeps your last 10 active links in one place, and Pro adds links up to 180 days, 50 MB uploads, password protection, and browser extension and ShareX uploads.",
         },
         { type: "h2", text: "Not a CDN or a gallery" },
         {
@@ -371,7 +371,7 @@ export const INTENT_PAGES: Record<
         },
         {
           q: "How long will the image URL work?",
-          a: "As long as you chose before uploading: 1 hour, 24 hours, or 7 days. Seven days is the default. Pro can keep a link online for up to 90 days from the original upload.",
+          a: "As long as you chose before uploading: 1 hour, 24 hours, 7 days, or 30 days. Seven days is the default. Pro can keep a link online for up to 180 days from the original upload.",
         },
         {
           q: "Is this permanent image hosting?",
@@ -389,7 +389,7 @@ export const INTENT_PAGES: Record<
     es: {
       title: "Imagen a URL — Sube una imagen y obtén un enlace | dropimg.io",
       description:
-        "Convierte una imagen en URL al instante. Arrastra o pega el archivo, elige 1 hora, 24 horas o 7 días y copia el enlace. Sin crear cuenta.",
+        "Convierte una imagen en URL al instante. Arrastra o pega el archivo, elige 1 hora, 24 horas, 7 días o 30 días y copia el enlace. Sin crear cuenta.",
       ogTitle: "Imagen a URL | dropimg.io",
       ogDescription:
         "Sube una imagen y obtén un enlace. Sin cuenta, y tú eliges cuándo caduca.",
@@ -408,7 +408,7 @@ export const INTENT_PAGES: Record<
         {
           name: "Elige cuánto dura",
           detail:
-            "1 hora, 24 horas o 7 días. Se selecciona 7 días salvo que lo cambies.",
+            "1 hora, 24 horas, 7 días o 30 días. Se selecciona 7 días salvo que lo cambies.",
         },
         {
           name: "Copia el enlace",
@@ -435,7 +435,7 @@ export const INTENT_PAGES: Record<
         { type: "h2", text: "Subir imagen y obtener enlace, sin cuenta" },
         {
           type: "p",
-          text: "Subir de forma anónima es lo normal aquí, no una prueba. Iniciar sesión es opcional: la cuenta gratuita reúne tus 10 últimos enlaces activos, y Pro añade enlaces de hasta 90 días, subidas de 50 MB, protección con contraseña y subidas desde la extensión y ShareX.",
+          text: "Subir de forma anónima es lo normal aquí, no una prueba. Iniciar sesión es opcional: la cuenta gratuita reúne tus 10 últimos enlaces activos, y Pro añade enlaces de hasta 180 días, subidas de 50 MB, protección con contraseña y subidas desde la extensión y ShareX.",
         },
         { type: "h2", text: "No es una CDN ni una galería" },
         {
@@ -451,7 +451,7 @@ export const INTENT_PAGES: Record<
         },
         {
           q: "¿Cuánto tiempo funcionará la URL de la imagen?",
-          a: "El que elijas antes de subirla: 1 hora, 24 horas o 7 días. Siete días es la opción por defecto. Con Pro un enlace puede durar hasta 90 días desde la subida original.",
+          a: "El que elijas antes de subirla: 1 hora, 24 horas, 7 días o 30 días. Siete días es la opción por defecto. Con Pro un enlace puede durar hasta 180 días desde la subida original.",
         },
         {
           q: "¿Esto es alojamiento permanente de imágenes?",
@@ -469,7 +469,7 @@ export const INTENT_PAGES: Record<
     "pt-BR": {
       title: "Imagem para URL — Envie uma imagem e receba um link | dropimg.io",
       description:
-        "Transforme imagem em URL na hora. Arraste ou cole o arquivo, escolha 1 hora, 24 horas ou 7 dias e copie o link. Sem criar conta.",
+        "Transforme imagem em URL na hora. Arraste ou cole o arquivo, escolha 1 hora, 24 horas, 7 dias ou 30 dias e copie o link. Sem criar conta.",
       ogTitle: "Imagem para URL | dropimg.io",
       ogDescription:
         "Envie uma imagem e receba um link. Sem conta, e você escolhe quando expira.",
@@ -488,7 +488,7 @@ export const INTENT_PAGES: Record<
         {
           name: "Escolha a duração",
           detail:
-            "1 hora, 24 horas ou 7 dias. Sete dias já vem selecionado, se você não mudar.",
+            "1 hora, 24 horas, 7 dias ou 30 dias. Sete dias já vem selecionado, se você não mudar.",
         },
         {
           name: "Copie o link",
@@ -515,7 +515,7 @@ export const INTENT_PAGES: Record<
         { type: "h2", text: "Gerar link para imagem sem criar conta" },
         {
           type: "p",
-          text: "Enviar sem conta é o padrão aqui, não um teste. Entrar é opcional: a conta gratuita reúne os seus 10 últimos links ativos, e o Pro acrescenta links de até 90 dias, envios de 50 MB, proteção por senha e envio pela extensão e pelo ShareX.",
+          text: "Enviar sem conta é o padrão aqui, não um teste. Entrar é opcional: a conta gratuita reúne os seus 10 últimos links ativos, e o Pro acrescenta links de até 180 dias, envios de 50 MB, proteção por senha e envio pela extensão e pelo ShareX.",
         },
         { type: "h2", text: "Não é CDN nem galeria" },
         {
@@ -531,7 +531,7 @@ export const INTENT_PAGES: Record<
         },
         {
           q: "Por quanto tempo a URL da imagem funciona?",
-          a: "Pelo prazo que você escolher antes de enviar: 1 hora, 24 horas ou 7 dias. Sete dias é o padrão. Com o Pro, um link pode durar até 90 dias contados do envio original.",
+          a: "Pelo prazo que você escolher antes de enviar: 1 hora, 24 horas, 7 dias ou 30 dias. Sete dias é o padrão. Com o Pro, um link pode durar até 180 dias contados do envio original.",
         },
         {
           q: "Isso é hospedagem permanente de imagens?",
@@ -552,7 +552,7 @@ export const INTENT_PAGES: Record<
     en: {
       title: "Anonymous Image Hosting (Temporary) | dropimg.io",
       description:
-        "Anonymous temporary image hosting with no account required. Paste or upload, choose 1 hour, 24 hours, or 7 days, share a link, and it deletes itself.",
+        "Anonymous temporary image hosting with no account required. Paste or upload, choose 1 hour, 24 hours, 7 days, or 30 days, share a link, and it deletes itself.",
       ogTitle: "Anonymous temporary image hosting | dropimg.io",
       ogDescription:
         "No account required. Temporary links that delete themselves when you say so.",
@@ -570,7 +570,7 @@ export const INTENT_PAGES: Record<
         },
         {
           name: "Set the lifetime",
-          detail: "1 hour, 24 hours, or 7 days, chosen before the upload runs.",
+          detail: "1 hour, 24 hours, 7 days, or 30 days, chosen before the upload runs.",
         },
         {
           name: "Share and forget it",
@@ -603,10 +603,10 @@ export const INTENT_PAGES: Record<
         {
           type: "ul",
           items: [
-            "Free uploads last 1 hour, 24 hours, or 7 days — 7 days by default.",
+            "Free uploads last 1 hour, 24 hours, 7 days, or 30 days — 7 days by default.",
             "You can delete sooner with the delete control from your upload session.",
             "There is no permanent storage option, anonymous or otherwise.",
-            "Password-protected links and lifetimes up to 90 days require a Pro account.",
+            "Password-protected links and lifetimes up to 180 days require a Pro account.",
           ],
         },
       ],
@@ -618,11 +618,11 @@ export const INTENT_PAGES: Record<
         },
         {
           q: "How long does an anonymous link last?",
-          a: "You choose 1 hour, 24 hours, or 7 days before uploading, and 7 days is the default. After that the image is deleted and the link stops serving.",
+          a: "You choose 1 hour, 24 hours, 7 days, or 30 days before uploading, and 7 days is the default. After that the image is deleted and the link stops serving.",
         },
         {
           q: "Can I host an image anonymously forever?",
-          a: "No. Every link expires — there is no permanent storage tier. The longest lifetime on the service is 90 days, with Pro.",
+          a: "No. Every link expires — there is no permanent storage tier. The longest lifetime on the service is 180 days, with Pro.",
         },
         {
           q: "Are uploads really anonymous?",
@@ -639,15 +639,15 @@ export const INTENT_PAGES: Record<
     en: {
       title: "Expiring Image Link — Choose 1 Hour to 7 Days | dropimg.io",
       description:
-        "Create an expiring image link in seconds. Paste a screenshot or drop a file, pick 1 hour, 24 hours, or 7 days, and it auto-deletes. No account.",
+        "Create an expiring image link in seconds. Paste a screenshot or drop a file, pick 1 hour, 24 hours, 7 days, or 30 days, and it auto-deletes. No account.",
       ogTitle: "Expiring image link | dropimg.io",
       ogDescription:
-        "Image URLs that delete themselves. Pick 1 hour, 24 hours, or 7 days.",
+        "Image URLs that delete themselves. Pick 1 hour, 24 hours, 7 days, or 30 days.",
       twitterTitle: "Expiring image link",
       twitterDescription:
         "Share an image with a link that disappears when you say so.",
       h1: "Expiring image link",
-      lede: "Get a shareable image URL that deletes itself on your schedule. Pick 1 hour, 24 hours, or 7 days, then paste or drop to start.",
+      lede: "Get a shareable image URL that deletes itself on your schedule. Pick 1 hour, 24 hours, 7 days, or 30 days, then paste or drop to start.",
       stepsHeading: "Create an expiring link",
       steps: [
         {
@@ -657,7 +657,7 @@ export const INTENT_PAGES: Record<
         {
           name: "Pick the expiry",
           detail:
-            "1 hour, 24 hours, or 7 days — the choice sits right under the uploader.",
+            "1 hour, 24 hours, 7 days, or 30 days — the choice sits right under the uploader.",
         },
         {
           name: "Share it",
@@ -678,7 +678,7 @@ export const INTENT_PAGES: Record<
             "1 hour for a password reset screenshot or a one-question answer.",
             "24 hours for something you are actively working through today.",
             "7 days for a thread, a review, or a ticket that stays open — this is the default.",
-            "Up to 30 or 90 days with Pro, when a link has to outlive the week.",
+            "Up to 90 or 180 days with Pro, when a link has to outlive the month.",
           ],
         },
         { type: "h2", text: "Good for" },
@@ -693,18 +693,18 @@ export const INTENT_PAGES: Record<
         { type: "h2", text: "Delete early, or lock it down" },
         {
           type: "p",
-          text: "After upload, use the delete control to remove the image before it expires — recipients simply see that the link is gone. Pro accounts can also require a password before the image is shown, and can extend an existing link up to 90 days from its original upload.",
+          text: "After upload, use the delete control to remove the image before it expires — recipients simply see that the link is gone. Pro accounts can also require a password before the image is shown, and can extend an existing link up to 180 days from its original upload.",
         },
       ],
       faqHeading: "Expiring link questions",
       faqs: [
         {
           q: "How do I set when an image link expires?",
-          a: "Pick 1 hour, 24 hours, or 7 days under the uploader before you upload. Seven days is selected by default, and the link shows its expiry once it is ready.",
+          a: "Pick 1 hour, 24 hours, 7 days, or 30 days under the uploader before you upload. Seven days is selected by default, and the link shows its expiry once it is ready.",
         },
         {
           q: "What is the longest an image link can last?",
-          a: "Seven days on the free tier. Pro can choose 30 or 90 days, and 90 days from the original upload is the hard maximum — links cannot be extended past it.",
+          a: "Thirty days on the free tier. Pro can choose 90 or 180 days, and 180 days from the original upload is the hard maximum — links cannot be extended past it.",
         },
         {
           q: "What happens when the link expires?",

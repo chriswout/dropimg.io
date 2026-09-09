@@ -5,6 +5,9 @@ ADMIN_TOKEN=dev-admin-token-change-me
 # Production keeps them off in wrangler.jsonc until the launch phase.
 LONG_TTL_ENABLED=true
 PRO_50MB_ENABLED=true
+# Phase 1.5a: leave off until the Workers AI bake-off passes.
+# MODERATION_ENABLED=false
+# MODERATION_MODEL=@cf/moondream/moondream3.1-9B-A2B
 # Optional: IndexNow key for notifying Bing when marketing pages change
 # INDEXNOW_KEY=
 # Magic-link mail uses the EMAIL binding (signin@dropimg.io). Local wrangler
@@ -21,3 +24,9 @@ PRO_50MB_ENABLED=true
 # PAYPAL_WEBHOOK_ID=
 # Local/integration tests may set PAYPAL_WEBHOOK_SECRET instead (HMAC).
 # PAYPAL_WEBHOOK_SECRET=
+# Google / GitHub sign-in. Callbacks are /auth/google/callback and
+# /auth/github/callback on this origin. Leave unset to hide the buttons.
+# GOOGLE_CLIENT_ID=
+# GOOGLE_CLIENT_SECRET=
+# GITHUB_CLIENT_ID=
+# GITHUB_CLIENT_SECRET=

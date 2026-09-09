@@ -3,6 +3,13 @@ import type { Context } from "hono";
 import { track } from "../lib/analytics";
 import { deleteUserAccount } from "../lib/account-delete";
 import { csrfOriginOk } from "../lib/auth/csrf";
+import {
+  beginSocialOAuth,
+  detachIdentity,
+  enabledSocialProviders,
+  isSocialProvider,
+  listIdentities,
+} from "../lib/auth/social";
 import { toArrayBuffer } from "../lib/d1-blob";
 import { resolveRequestLocale } from "../lib/auth/locale-cookie";
 import {
@@ -11,7 +18,6 @@ import {
   type SessionUser,
 } from "../lib/auth/session";
 import {
-  EXPIRY_90D,
   entitlementsFor,
   flagsFromEnv,
   FREE_HISTORY_LIMIT,
@@ -30,6 +36,7 @@ import {
   createIntegrationToken,
   listIntegrationTokens,
   normalizeIntegrationKind,
+  parseImageScopes,
   revokeIntegrationToken,
   validateIntegrationLabel,
 } from "../lib/integration-token";
@@ -44,6 +51,7 @@ import { moveImageToProPrefix } from "../lib/upload-store";
 import type { ImageRow } from "../types";
 import {
   accountHtmlResponse,
+  accountLinkError,
   billingHtmlResponse,
   integrationsHtmlResponse,
 } from "../views/account";
@@ -96,6 +104,7 @@ async function settingsPage(
 
   const entitlements = await entitlementsFor(c.env, session.id);
   const subscription = await loadSubscription(c.env.DB, session.id);
+  const identities = await listIdentities(c.env.DB, session.id);
   return render({
     locale,
     env: c.env,
@@ -103,6 +112,9 @@ async function settingsPage(
     plan: entitlements.plan === "pro" ? "pro" : "free",
     periodEnd: subscription?.current_period_end ?? null,
     cancelAtPeriodEnd: Boolean(subscription?.cancel_at_period_end),
+    identities,
+    socialEnabled: enabledSocialProviders(c.env),
+    linkError: accountLinkError(locale, c.req.query("link")),
   });
 }
 
@@ -163,7 +175,7 @@ accountRoutes.get("/app", async (c) => {
     plan: entitlements.plan,
     extendChoices:
       entitlements.plan === "pro" &&
-      entitlements.allowedExpirySeconds.includes(EXPIRY_90D)
+      entitlements.allowedExpirySeconds.includes(MAX_LIFETIME_SECONDS)
         ? entitlements.allowedExpirySeconds
         : [],
     canPassword: entitlements.passwordProtection,
@@ -280,7 +292,9 @@ accountRoutes.get("/api/account/integrations", async (c) => {
     tokens: tokens.map((row) => ({
       id: row.id,
       label: row.label,
+      kind: row.kind,
       scope: row.scope,
+      scopes: row.scopes,
       createdAt: row.created_at,
       lastUsedAt: row.last_used_at,
       revokedAt: row.revoked_at,
@@ -295,10 +309,16 @@ accountRoutes.post("/api/account/integrations", async (c) => {
 
   let labelRaw: unknown;
   let kindRaw: unknown;
+  let scopesRaw: unknown;
   try {
-    const body = (await c.req.json()) as { label?: unknown; kind?: unknown };
+    const body = (await c.req.json()) as {
+      label?: unknown;
+      kind?: unknown;
+      scopes?: unknown;
+    };
     labelRaw = body.label;
     kindRaw = body.kind;
+    scopesRaw = body.scopes;
   } catch {
     return c.json({ error: "Label is required." }, 400);
   }
@@ -307,9 +327,15 @@ accountRoutes.post("/api/account/integrations", async (c) => {
     return c.json({ error: "Enter a label between 1 and 50 characters." }, 400);
   }
   const kind = normalizeIntegrationKind(kindRaw);
+  const scopes = kind === "api" ? parseImageScopes(scopesRaw) : undefined;
+  if (kind === "api" && !scopes) {
+    return c.json({ error: "Choose at least one scope." }, 400);
+  }
   const created = await createIntegrationToken(c.env.DB, {
     userId: session.id,
     label,
+    kind,
+    scopes: scopes ?? undefined,
   });
   track(c.env.ANALYTICS, "integration_token_created", { reason: kind });
   if (kind === "extension") {
@@ -319,10 +345,46 @@ accountRoutes.post("/api/account/integrations", async (c) => {
   return c.json({
     id: created.id,
     label: created.label,
+    kind: created.kind,
+    scopes: created.scopes,
     token: created.token,
     createdAt: created.createdAt,
-    sharexConfig: buildSharexConfig(origin, created.token),
+    sharexConfig: kind === "api" ? null : buildSharexConfig(origin, created.token),
   });
+});
+
+accountRoutes.post("/api/account/identities/:provider/connect", async (c) => {
+  if (!csrfOriginOk(c.req.raw)) return c.json({ error: "Invalid origin" }, 403);
+  const session = await requireSession(c);
+  if (!session) return c.redirect("/login", 302);
+  const provider = c.req.param("provider");
+  if (!isSocialProvider(provider)) return c.json({ error: "Unknown provider" }, 404);
+  const started = await beginSocialOAuth({
+    env: c.env,
+    origin: new URL(c.req.url).origin,
+    provider,
+    intent: "connect",
+    userId: session.id,
+  });
+  if (!started.ok) return c.redirect("/app/account?link=failed", 302);
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: started.location,
+      "Set-Cookie": started.cookie,
+      "Cache-Control": "private, no-store",
+    },
+  });
+});
+
+accountRoutes.post("/api/account/identities/:provider/disconnect", async (c) => {
+  if (!csrfOriginOk(c.req.raw)) return c.json({ error: "Invalid origin" }, 403);
+  const session = await requireSession(c);
+  if (!session) return c.redirect("/login", 302);
+  const provider = c.req.param("provider");
+  if (!isSocialProvider(provider)) return c.json({ error: "Unknown provider" }, 404);
+  await detachIdentity(c.env.DB, session.id, provider);
+  return c.redirect("/app/account", 302);
 });
 
 accountRoutes.post("/api/account/integrations/:id/revoke", async (c) => {
@@ -371,7 +433,7 @@ accountRoutes.post("/api/account/images/:slug/extend", async (c) => {
   const entitlements = await entitlementsFor(c.env, session.id);
   if (
     entitlements.plan !== "pro" ||
-    !entitlements.allowedExpirySeconds.includes(EXPIRY_90D)
+    !entitlements.allowedExpirySeconds.includes(MAX_LIFETIME_SECONDS)
   ) {
     return c.json({ error: "Extend is not available." }, 400);
   }

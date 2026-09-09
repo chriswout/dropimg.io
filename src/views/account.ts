@@ -1,3 +1,4 @@
+import { CHROME_WEB_STORE_URL } from "../../marketing/extension";
 import { LOCALE_CONFIG, type Locale } from "../../marketing/locales";
 import { renderAppShellPage } from "./app-shell";
 import { siteHtmlResponse } from "./site-page";
@@ -11,6 +12,19 @@ type Copy = {
   sectionAccount: string;
   email: string;
   emailHint: string;
+  signInMethods: string;
+  signInMethodsHint: string;
+  methodGithub: string;
+  methodGoogle: string;
+  methodConnected: string;
+  methodNotConnected: string;
+  connect: string;
+  disconnect: string;
+  socialTaken: string;
+  socialAlreadyLinked: string;
+  socialNoEmail: string;
+  socialFailed: string;
+  accountGone: string;
   plan: string;
   manageHint: string;
   freePlanHint: string;
@@ -28,9 +42,18 @@ type Copy = {
   extensionTitle: string;
   extensionBody: string;
   connectExtension: string;
+  chromeStore: string;
   sharexTitle: string;
   sharexBody: string;
+  sharexHelp: string;
   createSharex: string;
+  apiTitle: string;
+  apiBody: string;
+  createApi: string;
+  apiDocs: string;
+  apiScopeWrite: string;
+  apiScopeRead: string;
+  apiScopeDelete: string;
   connectedDevices: string;
   neverUsed: string;
   created: string;
@@ -76,7 +99,22 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     lede: "Email, plan, and tools for this sign-in.",
     sectionAccount: "Account",
     email: "Email",
-    emailHint: "Sign-in uses a one-time link. There is no password.",
+    emailHint: "Sign in with Google, GitHub, or a one-time email link. There is no password.",
+    signInMethods: "Sign-in methods",
+    signInMethodsHint: "You can always use a one-time link at this email.",
+    methodGithub: "GitHub",
+    methodGoogle: "Google",
+    methodConnected: "Connected",
+    methodNotConnected: "Not connected",
+    connect: "Connect",
+    disconnect: "Disconnect",
+    socialTaken: "That Google or GitHub account is already connected to a different DropIMG user.",
+    socialAlreadyLinked:
+      "This account already has that sign-in method. Disconnect it first to use a different one.",
+    socialNoEmail:
+      "That account has no verified email we can use. Try a different account or keep the email link.",
+    socialFailed: "Could not connect that account. Try again.",
+    accountGone: "This account is no longer available.",
     plan: "Plan",
     manageHint: "Cancel or change payment in your PayPal wallet.",
     freePlanHint: "10 MB uploads, 24-hour links, last 10 drops.",
@@ -94,10 +132,18 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     extensionTitle: "Browser extension",
     extensionBody: "Capture screenshots and save them directly to My drops.",
     connectExtension: "Connect extension",
+    chromeStore: "Available on the Chrome Web Store",
     sharexTitle: "ShareX",
     sharexBody: "Send ShareX screenshots directly to your DropIMG account.",
     sharexHelp: "Anonymous config (no account)",
     createSharex: "Create ShareX config",
+    apiTitle: "API key",
+    apiBody: "Upload, list, and delete images from scripts and agents.",
+    createApi: "Create API key",
+    apiDocs: "Docs",
+    apiScopeWrite: "Upload",
+    apiScopeRead: "Read and list",
+    apiScopeDelete: "Delete",
     connectedDevices: "Connected integrations",
     neverUsed: "Never used",
     created: "Created",
@@ -142,7 +188,22 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     lede: "Correo, plan y herramientas de este acceso.",
     sectionAccount: "Cuenta",
     email: "Correo",
-    emailHint: "Entras con un enlace de un solo uso. No hay contraseña.",
+    emailHint: "Entras con Google, GitHub o un enlace por correo. No hay contraseña.",
+    signInMethods: "Métodos de acceso",
+    signInMethodsHint: "Siempre puedes usar un enlace de un solo uso en este correo.",
+    methodGithub: "GitHub",
+    methodGoogle: "Google",
+    methodConnected: "Conectado",
+    methodNotConnected: "Sin conectar",
+    connect: "Conectar",
+    disconnect: "Desconectar",
+    socialTaken: "Esa cuenta de Google o GitHub ya está conectada a otro usuario de DropIMG.",
+    socialAlreadyLinked:
+      "Esta cuenta ya tiene ese método de acceso. Desconéctalo primero para usar otro.",
+    socialNoEmail:
+      "Esa cuenta no tiene un correo verificado que podamos usar. Prueba otra o sigue con el enlace.",
+    socialFailed: "No se pudo conectar esa cuenta. Inténtalo de nuevo.",
+    accountGone: "Esta cuenta ya no está disponible.",
     plan: "Plan",
     manageHint: "Cancela o cambia el pago en tu cuenta de PayPal.",
     freePlanHint: "Subidas de 10 MB, enlaces de 24 h, últimos 10 envíos.",
@@ -160,10 +221,18 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     extensionTitle: "Extensión del navegador",
     extensionBody: "Captura pantallas y guárdalas directo en Mis envíos.",
     connectExtension: "Conectar extensión",
+    chromeStore: "Disponible en Chrome Web Store",
     sharexTitle: "ShareX",
     sharexBody: "Envía capturas de ShareX directo a tu cuenta DropIMG.",
     sharexHelp: "Config anónima (sin cuenta)",
     createSharex: "Crear config de ShareX",
+    apiTitle: "Clave API",
+    apiBody: "Sube, lista y borra imágenes desde scripts y agentes.",
+    createApi: "Crear clave API",
+    apiDocs: "Docs",
+    apiScopeWrite: "Subir",
+    apiScopeRead: "Leer y listar",
+    apiScopeDelete: "Borrar",
     connectedDevices: "Integraciones conectadas",
     neverUsed: "Sin uso",
     created: "Creado",
@@ -208,7 +277,22 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     lede: "E-mail, plano e ferramentas deste login.",
     sectionAccount: "Conta",
     email: "E-mail",
-    emailHint: "Você entra com um link de uso único. Não tem senha.",
+    emailHint: "Você entra com Google, GitHub ou um link por e-mail. Não tem senha.",
+    signInMethods: "Formas de entrar",
+    signInMethodsHint: "Você sempre pode usar um link de uso único neste e-mail.",
+    methodGithub: "GitHub",
+    methodGoogle: "Google",
+    methodConnected: "Conectado",
+    methodNotConnected: "Não conectado",
+    connect: "Conectar",
+    disconnect: "Desconectar",
+    socialTaken: "Essa conta do Google ou GitHub já está ligada a outro usuário do DropIMG.",
+    socialAlreadyLinked:
+      "Esta conta já tem esse jeito de entrar. Desconecte primeiro para usar outro.",
+    socialNoEmail:
+      "Essa conta não tem um e-mail verificado que possamos usar. Tente outra ou continue com o link.",
+    socialFailed: "Não deu pra conectar essa conta. Tente de novo.",
+    accountGone: "Esta conta não está mais disponível.",
     plan: "Plano",
     manageHint: "Cancele ou altere o pagamento na sua conta PayPal.",
     freePlanHint: "Envios de 10 MB, links de 24 h, últimos 10 envios.",
@@ -226,10 +310,18 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     extensionTitle: "Extensão do navegador",
     extensionBody: "Capture prints e salve direto em Meus envios.",
     connectExtension: "Conectar extensão",
+    chromeStore: "Disponível na Chrome Web Store",
     sharexTitle: "ShareX",
     sharexBody: "Envie capturas do ShareX direto para sua conta DropIMG.",
     sharexHelp: "Config anônima (sem conta)",
     createSharex: "Criar config do ShareX",
+    apiTitle: "Chave de API",
+    apiBody: "Envie, liste e apague imagens a partir de scripts e agentes.",
+    createApi: "Criar chave de API",
+    apiDocs: "Docs",
+    apiScopeWrite: "Enviar",
+    apiScopeRead: "Ler e listar",
+    apiScopeDelete: "Apagar",
     connectedDevices: "Integrações conectadas",
     neverUsed: "Nunca usado",
     created: "Criado",
@@ -274,7 +366,22 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     lede: "E-Mail, Plan und Tools für diese Anmeldung.",
     sectionAccount: "Konto",
     email: "E-Mail",
-    emailHint: "Anmeldung per Einmal-Link. Kein Passwort.",
+    emailHint: "Anmeldung mit Google, GitHub oder Einmal-Link. Kein Passwort.",
+    signInMethods: "Anmeldungen",
+    signInMethodsHint: "Du kannst immer einen Einmal-Link an diese E-Mail nutzen.",
+    methodGithub: "GitHub",
+    methodGoogle: "Google",
+    methodConnected: "Verbunden",
+    methodNotConnected: "Nicht verbunden",
+    connect: "Verbinden",
+    disconnect: "Trennen",
+    socialTaken: "Dieses Google- oder GitHub-Konto ist schon mit einem anderen DropIMG-Nutzer verbunden.",
+    socialAlreadyLinked:
+      "Dieses Konto hat diese Anmeldung schon. Erst trennen, um eine andere zu verbinden.",
+    socialNoEmail:
+      "Dieses Konto hat keine bestätigte E-Mail, die wir nutzen können. Anderes Konto oder E-Mail-Link.",
+    socialFailed: "Konto konnte nicht verbunden werden. Bitte nochmal versuchen.",
+    accountGone: "Dieses Konto ist nicht mehr verfügbar.",
     plan: "Plan",
     manageHint: "Zahlung in deinem PayPal-Konto ändern oder kündigen.",
     freePlanHint: "10 MB pro Upload, 24-Stunden-Links, letzte 10 Drops.",
@@ -292,10 +399,18 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     extensionTitle: "Browser-Erweiterung",
     extensionBody: "Screenshots aufnehmen und direkt in Meine Drops speichern.",
     connectExtension: "Erweiterung verbinden",
+    chromeStore: "Im Chrome Web Store",
     sharexTitle: "ShareX",
     sharexBody: "ShareX-Aufnahmen direkt in dein DropIMG-Konto senden.",
     sharexHelp: "Anonyme Config (kein Konto)",
     createSharex: "ShareX-Config erstellen",
+    apiTitle: "API-Schlüssel",
+    apiBody: "Bilder aus Skripten und Agenten hochladen, listen und löschen.",
+    createApi: "API-Schlüssel erstellen",
+    apiDocs: "Docs",
+    apiScopeWrite: "Hochladen",
+    apiScopeRead: "Lesen und listen",
+    apiScopeDelete: "Löschen",
     connectedDevices: "Verbundene Integrationen",
     neverUsed: "Noch nicht genutzt",
     created: "Erstellt",
@@ -342,7 +457,23 @@ type SettingsProps = {
   plan: "free" | "pro";
   periodEnd: number | null;
   cancelAtPeriodEnd: boolean;
+  identities?: Array<"google" | "github">;
+  socialEnabled?: { google?: boolean; github?: boolean };
+  linkError?: string;
 };
+
+export function accountLinkError(
+  locale: Locale,
+  reason: string | null | undefined,
+): string | undefined {
+  if (!reason) return undefined;
+  const t = ACCOUNT_COPY[locale];
+  if (reason === "taken") return t.socialTaken;
+  if (reason === "already") return t.socialAlreadyLinked;
+  if (reason === "no_email") return t.socialNoEmail;
+  if (reason === "gone") return t.accountGone;
+  return t.socialFailed;
+}
 
 /** Plan state and the PayPal wallet hand-off. */
 export function renderBillingPage(opts: SettingsProps): string {
@@ -388,13 +519,28 @@ export function renderIntegrationsPage(opts: SettingsProps): string {
         <article class="integ-tool">
           <h2>${esc(t.extensionTitle)}</h2>
           <p>${esc(t.extensionBody)}</p>
-          <button type="button" class="btn primary" id="integ-extension">${esc(t.connectExtension)}</button>
+          <div class="settings-actions">
+            <a class="btn primary" href="${esc(CHROME_WEB_STORE_URL)}" rel="noopener" target="_blank">${esc(t.chromeStore)}</a>
+            <button type="button" class="btn secondary" id="integ-extension">${esc(t.connectExtension)}</button>
+          </div>
         </article>
         <article class="integ-tool">
           <h2>${esc(t.sharexTitle)}</h2>
           <p>${esc(t.sharexBody)}</p>
           <button type="button" class="btn primary" id="integ-sharex">${esc(t.createSharex)}</button>
           <p class="account-muted"><a href="/sharex">${esc(t.sharexHelp)}</a></p>
+        </article>
+        <article class="integ-tool">
+          <h2>${esc(t.apiTitle)}</h2>
+          <p>${esc(t.apiBody)}</p>
+          <fieldset class="integ-scopes">
+            <legend class="sr-only">${esc(t.apiTitle)}</legend>
+            <label><input type="checkbox" id="scope-write" checked /> ${esc(t.apiScopeWrite)}</label>
+            <label><input type="checkbox" id="scope-read" checked /> ${esc(t.apiScopeRead)}</label>
+            <label><input type="checkbox" id="scope-delete" checked /> ${esc(t.apiScopeDelete)}</label>
+          </fieldset>
+          <button type="button" class="btn primary" id="integ-api">${esc(t.createApi)}</button>
+          <p class="account-muted"><a href="/developers">${esc(t.apiDocs)}</a></p>
         </article>
       </div>
     </section>
@@ -611,12 +757,12 @@ function integrationsScript(t: Copy, locale: Locale): string {
         }
       }
 
-      async function createToken(label, kind) {
+      async function createToken(label, kind, scopes) {
         const res = await fetch("/api/account/integrations", {
           method: "POST",
           credentials: "same-origin",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ label, kind }),
+          body: JSON.stringify({ label, kind, scopes }),
         });
         if (!res.ok) return;
         const body = await res.json();
@@ -641,6 +787,14 @@ function integrationsScript(t: Copy, locale: Locale): string {
       });
       document.getElementById("integ-sharex")?.addEventListener("click", () => {
         void createToken("ShareX", "sharex");
+      });
+      document.getElementById("integ-api")?.addEventListener("click", () => {
+        const scopes = [];
+        if (document.getElementById("scope-write")?.checked) scopes.push("images:write");
+        if (document.getElementById("scope-read")?.checked) scopes.push("images:read");
+        if (document.getElementById("scope-delete")?.checked) scopes.push("images:delete");
+        if (!scopes.length) return;
+        void createToken("API key", "api", scopes);
       });
       tokenCopy?.addEventListener("click", async () => {
         const value = tokenInput?.value || "";
@@ -690,15 +844,52 @@ function integrationsScript(t: Copy, locale: Locale): string {
   `;
 }
 
+function socialMethodsMarkup(t: Copy, opts: SettingsProps): string {
+  const googleOn = Boolean(opts.socialEnabled?.google);
+  const githubOn = Boolean(opts.socialEnabled?.github);
+  if (!googleOn && !githubOn) return "";
+  const linked = new Set(opts.identities ?? []);
+  const linkErr = opts.linkError
+    ? `<p class="form-error" role="alert">${esc(opts.linkError)}</p>`
+    : "";
+
+  const row = (provider: "google" | "github", label: string) => {
+    const enabled = provider === "google" ? googleOn : githubOn;
+    if (!enabled) return "";
+    const isOn = linked.has(provider);
+    const action = isOn ? "disconnect" : "connect";
+    const btn = isOn ? t.disconnect : t.connect;
+    return `<div class="signin-method">
+        <div>
+          <p class="settings-value">${esc(label)}</p>
+          <p class="account-muted">${esc(isOn ? t.methodConnected : t.methodNotConnected)}</p>
+        </div>
+        <form method="post" action="/api/account/identities/${provider}/${action}" class="signin-method-form">
+          <button type="submit" class="btn secondary">${esc(btn)}</button>
+        </form>
+      </div>`;
+  };
+
+  return `<section class="settings-card">
+      <h2>${esc(t.signInMethods)}</h2>
+      <p class="account-muted">${esc(t.signInMethodsHint)}</p>
+      ${linkErr}
+      ${row("github", t.methodGithub)}
+      ${row("google", t.methodGoogle)}
+    </section>`;
+}
+
 /** Sign-in identity, session control, and account deletion. */
 export function renderAccountPage(opts: SettingsProps): string {
   const t = ACCOUNT_COPY[opts.locale];
 
+  const methods = socialMethodsMarkup(t, opts);
   const main = `<section class="settings-card">
       <p class="settings-eyebrow">${esc(t.email)}</p>
       <p class="settings-value settings-value-lg">${esc(opts.email)}</p>
       <p class="account-muted">${esc(t.emailHint)}</p>
     </section>
+    ${methods}
     <section class="settings-card">
       <h2>${esc(t.sectionSecurity)}</h2>
       <p class="account-muted">${esc(t.sessionsHint)}</p>

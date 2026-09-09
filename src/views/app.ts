@@ -6,6 +6,7 @@ import {
   EXPIRY_30D,
   EXPIRY_7D,
   EXPIRY_90D,
+  EXPIRY_180D,
 } from "../lib/entitlements";
 import { renderAppShellPage } from "./app-shell";
 import { siteHtmlResponse } from "./site-page";
@@ -518,12 +519,13 @@ const LIFETIME_LABEL_KEY = {
   [EXPIRY_7D]: "expiry7d",
   [EXPIRY_30D]: "expiry30d",
   [EXPIRY_90D]: "expiry90d",
+  [EXPIRY_180D]: "expiry180d",
 } as const;
 
 /**
  * Lifetimes are measured from the original upload, so an option only appears
  * when it would actually push `expires_at` further out. That is also what keeps
- * the 90-day ceiling honest: once a drop reaches it, nothing is left to offer.
+ * the 180-day ceiling honest: once a drop reaches it, nothing is left to offer.
  */
 function extendGroupHtml(
   drop: AppDrop,

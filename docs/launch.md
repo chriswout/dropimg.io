@@ -85,7 +85,8 @@ Replace the blanket rule with the three lifecycle classes, then read them back:
 |--------|--------------|
 | `o/24h/` | 2 days |
 | `o/7d/` | 10 days |
-| `o/pro/` | 100 days |
+| `o/30d/` | 35 days |
+| `o/pro/` | 190 days |
 
 Keep the default multipart-abort rule. Nothing is orphaned by dropping the `o/`
 rule: every key this codebase has ever written already begins with a class
@@ -141,9 +142,9 @@ to keep or refund the transaction.
 ## Step 7 — enable the lifecycle
 
 Only after step 3 is applied and read back. Set `LONG_TTL_ENABLED=true` and
-deploy. Verify: anonymous 1h / 24h / 7d with 7 days default, Pro 30d and 90d,
-each landing under the right prefix, extend refusing to pass
-`created_at + 90 days`, and a claimed Free object moving to `o/pro/` before its
+deploy. Verify: anonymous 1h / 24h / 7d / 30d with 7 days default, Pro 90d and
+180d, each landing under the right prefix, extend refusing to pass
+`created_at + 180 days`, and a claimed Free object moving to `o/pro/` before its
 lifetime grows.
 
 ## Step 8 — enable 50 MB

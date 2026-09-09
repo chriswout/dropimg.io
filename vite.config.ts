@@ -26,6 +26,8 @@ function marketingHtmlInputs(): Record<string, string> {
   }
   input["browser-extension"] = resolve(root, "browser-extension/index.html");
   input["sharex"] = resolve(root, "sharex/index.html");
+  input.developers = resolve(root, "developers/index.html");
+  input.mcp = resolve(root, "mcp/index.html");
   for (const id of INTENT_PAGE_IDS) {
     for (const locale of intentLocales(id)) {
       const dir = intentPagePath(id, locale).replace(/^\//, "");

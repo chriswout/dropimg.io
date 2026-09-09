@@ -94,7 +94,7 @@ export async function asPro(page: Page, email = "alex.rivera@example.com") {
         entitlements: {
           plan: "pro",
           maxUploadBytes: 50 * 1024 * 1024,
-          allowedExpirySeconds: [3600, 86400, 604800, 2592000, 7776000],
+          allowedExpirySeconds: [3600, 86400, 604800, 2592000, 7776000, 15552000],
           defaultExpirySeconds: 604800,
           passwordProtection: true,
         },
@@ -118,7 +118,7 @@ export async function asAnonymous(page: Page) {
         entitlements: {
           plan: "anonymous",
           maxUploadBytes: 10 * 1024 * 1024,
-          allowedExpirySeconds: [3600, 86400, 604800],
+          allowedExpirySeconds: [3600, 86400, 604800, 2592000],
           defaultExpirySeconds: 604800,
           passwordProtection: false,
         },

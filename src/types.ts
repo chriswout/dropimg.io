@@ -35,6 +35,8 @@ export type UploadErrorResponse = {
     | "too_large"
     | "unsupported_type"
     | "invalid_image"
+    | "moderation_block"
+    | "moderation_unavailable"
     | "invalid_expiry"
     | "rate_limited"
     | "quota_exceeded"

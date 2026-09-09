@@ -25,11 +25,19 @@
       }
     },
     {
+      "id": "expire-o-30d",
+      "enabled": true,
+      "conditions": { "prefix": "o/30d/" },
+      "deleteObjectsTransition": {
+        "condition": { "maxAge": 3024000, "type": "Age" }
+      }
+    },
+    {
       "id": "expire-o-pro",
       "enabled": true,
       "conditions": { "prefix": "o/pro/" },
       "deleteObjectsTransition": {
-        "condition": { "maxAge": 8640000, "type": "Age" }
+        "condition": { "maxAge": 16416000, "type": "Age" }
       }
     }
   ]

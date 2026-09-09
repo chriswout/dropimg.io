@@ -8,6 +8,7 @@ export type UiStrings = {
   dropHintFormats: string;
   dropItHere: string;
   uploading: string;
+  checkingImage: string;
   uploaded: string;
   uploadedCopied: string;
   copy: string;
@@ -37,6 +38,7 @@ export type UiStrings = {
   expiry7d: string;
   expiry30d: string;
   expiry90d: string;
+  expiry180d: string;
   passwordLabel: string;
   passwordPlaceholder: string;
   networkError: string;
@@ -62,6 +64,7 @@ const en: UiStrings = {
   dropHintFormats: "PNG, JPEG, WebP, GIF · max 10\u00a0MB",
   dropItHere: "Drop it here",
   uploading: "Uploading…",
+  checkingImage: "Checking image…",
   uploaded: "Uploaded.",
   uploadedCopied: "Uploaded. Link copied.",
   copy: "Copy",
@@ -83,7 +86,7 @@ const en: UiStrings = {
   passwordProtected: "Password protected",
   manageInDrops: "Manage in My drops",
   needLongerTitle: "Need it longer?",
-  needLongerBody: "Keep links up to 90 days with Pro — €2.99/month.",
+  needLongerBody: "Keep links up to 180 days with Pro — €2.99/month.",
   proControlsKicker: "PRO",
   expiresLabel: "Expires",
   expiry1h: "1 hour",
@@ -91,6 +94,7 @@ const en: UiStrings = {
   expiry7d: "7 days",
   expiry30d: "30 days",
   expiry90d: "90 days",
+  expiry180d: "180 days",
   passwordLabel: "Password",
   passwordPlaceholder: "Min. 8 characters",
   networkError: "Network error during upload",
@@ -107,6 +111,8 @@ const en: UiStrings = {
     rate_limited: "Too many uploads. Try again shortly.",
     quota_exceeded: "Daily upload limit reached. Try again tomorrow.",
     server_error: "Upload temporarily unavailable.",
+    moderation_block: "This image was rejected.",
+    moderation_unavailable: "Could not check this image. Try again.",
     strip_failed: "Could not strip image metadata.",
     too_many_pixels: "Image dimensions exceed the 50 megapixel limit.",
   },
@@ -126,6 +132,7 @@ const es: UiStrings = {
   dropHintFormats: "PNG, JPEG, WebP, GIF · máx. 10\u00a0MB",
   dropItHere: "Suéltala aquí",
   uploading: "Subiendo…",
+  checkingImage: "Comprobando la imagen…",
   uploaded: "Listo.",
   uploadedCopied: "Listo. Enlace copiado.",
   copy: "Copiar",
@@ -147,7 +154,7 @@ const es: UiStrings = {
   passwordProtected: "Protegido con contraseña",
   manageInDrops: "Gestionar en Mis envíos",
   needLongerTitle: "¿Lo necesitas más tiempo?",
-  needLongerBody: "Conserva enlaces hasta 90 días con Pro — €2.99/mes.",
+  needLongerBody: "Conserva enlaces hasta 180 días con Pro — €2.99/mes.",
   proControlsKicker: "PRO",
   expiresLabel: "Caduca",
   expiry1h: "1 hora",
@@ -155,6 +162,7 @@ const es: UiStrings = {
   expiry7d: "7 días",
   expiry30d: "30 días",
   expiry90d: "90 días",
+  expiry180d: "180 días",
   passwordLabel: "Contraseña",
   passwordPlaceholder: "Mín. 8 caracteres",
   networkError: "Error de red al subir",
@@ -171,6 +179,8 @@ const es: UiStrings = {
     rate_limited: "Demasiadas subidas. Prueba en un momento.",
     quota_exceeded: "Llegaste al límite de hoy. Mañana otra vez.",
     server_error: "Ahora mismo no se puede subir. Prueba más tarde.",
+    moderation_block: "Esta imagen fue rechazada.",
+    moderation_unavailable: "No se pudo comprobar la imagen. Inténtalo de nuevo.",
     strip_failed: "No se pudieron quitar los metadatos.",
     too_many_pixels: "La imagen es demasiado grande (máx. 50 megapíxeles).",
   },
@@ -190,6 +200,7 @@ const ptBR: UiStrings = {
   dropHintFormats: "PNG, JPEG, WebP, GIF · máx. 10\u00a0MB",
   dropItHere: "Solta aqui",
   uploading: "Enviando…",
+  checkingImage: "Verificando a imagem…",
   uploaded: "Pronto.",
   uploadedCopied: "Pronto. Link copiado.",
   copy: "Copiar",
@@ -211,7 +222,7 @@ const ptBR: UiStrings = {
   passwordProtected: "Protegido por senha",
   manageInDrops: "Gerenciar em Meus envios",
   needLongerTitle: "Precisa por mais tempo?",
-  needLongerBody: "Mantenha links por até 90 dias com Pro — €2.99/mês.",
+  needLongerBody: "Mantenha links por até 180 dias com Pro — €2.99/mês.",
   proControlsKicker: "PRO",
   expiresLabel: "Expira",
   expiry1h: "1 hora",
@@ -219,6 +230,7 @@ const ptBR: UiStrings = {
   expiry7d: "7 dias",
   expiry30d: "30 dias",
   expiry90d: "90 dias",
+  expiry180d: "180 dias",
   passwordLabel: "Senha",
   passwordPlaceholder: "Mín. 8 caracteres",
   networkError: "Erro de rede no envio",
@@ -235,6 +247,8 @@ const ptBR: UiStrings = {
     rate_limited: "Muitos envios. Tenta de novo daqui a pouco.",
     quota_exceeded: "Limite de hoje esgotado. Volta amanhã.",
     server_error: "Envio indisponível agora. Tenta mais tarde.",
+    moderation_block: "Esta imagem foi recusada.",
+    moderation_unavailable: "Não deu pra verificar a imagem. Tenta de novo.",
     strip_failed: "Não deu pra remover os metadados.",
     too_many_pixels: "A imagem é grande demais (máx. 50 megapixels).",
   },
@@ -254,6 +268,7 @@ const de: UiStrings = {
   dropHintFormats: "PNG, JPEG, WebP, GIF · max. 10\u00a0MB",
   dropItHere: "Hier ablegen",
   uploading: "Wird hochgeladen…",
+  checkingImage: "Bild wird geprüft…",
   uploaded: "Fertig.",
   uploadedCopied: "Fertig. Link kopiert.",
   copy: "Kopieren",
@@ -275,7 +290,7 @@ const de: UiStrings = {
   passwordProtected: "Passwortgeschützt",
   manageInDrops: "In Meine Drops verwalten",
   needLongerTitle: "Länger behalten?",
-  needLongerBody: "Links bis 90 Tage mit Pro — €2.99/Monat.",
+  needLongerBody: "Links bis 180 Tage mit Pro — €2.99/Monat.",
   proControlsKicker: "PRO",
   expiresLabel: "Läuft ab",
   expiry1h: "1 Stunde",
@@ -283,6 +298,7 @@ const de: UiStrings = {
   expiry7d: "7 Tage",
   expiry30d: "30 Tage",
   expiry90d: "90 Tage",
+  expiry180d: "180 Tage",
   passwordLabel: "Passwort",
   passwordPlaceholder: "Mind. 8 Zeichen",
   networkError: "Netzwerkfehler beim Upload",
@@ -299,6 +315,8 @@ const de: UiStrings = {
     rate_limited: "Zu viele Uploads. Kurz warten und nochmal.",
     quota_exceeded: "Tageslimit erreicht. Morgen wieder.",
     server_error: "Upload gerade nicht möglich. Später nochmal.",
+    moderation_block: "Dieses Bild wurde abgelehnt.",
+    moderation_unavailable: "Bildprüfung fehlgeschlagen. Bitte nochmal versuchen.",
     strip_failed: "Metadaten ließen sich nicht entfernen.",
     too_many_pixels: "Bild ist zu groß (max. 50 Megapixel).",
   },

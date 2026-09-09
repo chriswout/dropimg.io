@@ -5,8 +5,19 @@ import {
   topBarHtml,
 } from "./chrome";
 import { CHROME, HOME, LANDINGS } from "./content";
-import { EXTENSION_PAGE, EXTENSION_URL } from "./extension";
+import {
+  CHROME_WEB_STORE_CTA,
+  CHROME_WEB_STORE_URL,
+  EXTENSION_PAGE,
+  EXTENSION_URL,
+} from "./extension";
 import { SHAREX_PAGE, SHAREX_URL } from "./sharex";
+import {
+  DEVELOPERS_EXAMPLES,
+  DEVELOPERS_PAGE,
+  DEVELOPERS_URL,
+} from "./developers";
+import { MCP_PAGE, MCP_URL } from "./mcp";
 import type { FaqItem as SharexFaq } from "./types";
 import {
   INTENT_PAGE_PATHS,
@@ -103,7 +114,7 @@ function dropzoneHtml(locale: Locale, dropzoneAria: string): string {
 
             <div id="state-uploading" class="state hidden">
               <img id="preview" class="preview" alt="" />
-              <p class="dz-title" data-i18n="uploading">${esc(ui.uploading)}</p>
+              <p id="upload-phase-title" class="dz-title" data-i18n="uploading">${esc(ui.uploading)}</p>
               <div
                 class="progress"
                 role="progressbar"
@@ -185,8 +196,9 @@ function dropOptionsHtml(ui: UiStrings): string {
                 ${pill(3600, ui.expiry1h)}
                 ${pill(86400, ui.expiry24h)}
                 ${pill(604800, ui.expiry7d)}
-                ${pill(2592000, ui.expiry30d, true)}
+                ${pill(2592000, ui.expiry30d)}
                 ${pill(7776000, ui.expiry90d, true)}
+                ${pill(15552000, ui.expiry180d, true)}
               </div>
             </div>
             <div class="drop-field" id="pro-password-wrap" hidden>
@@ -514,17 +526,22 @@ function extensionMockHtml(): string {
 
 /** Subtle post-uploader extension promo — must not dominate the dropzone. */
 function extensionPromoHtml(locale: Locale, chrome: SharedChrome): string {
-  if (locale !== DEFAULT_LOCALE) {
-    // Keep one English store page; still link for other locales
-  }
-  const label =
+  const storeCta =
     locale === "es"
-      ? "También disponible como extensión de Chrome y Edge"
+      ? "Disponible en Chrome Web Store"
       : locale === "pt-BR"
-        ? "Também disponível como extensão Chrome e Edge"
+        ? "Disponível na Chrome Web Store"
         : locale === "de"
-          ? "Auch als Chrome- und Edge-Erweiterung"
-          : "Also available as a Chrome / Edge extension";
+          ? "Im Chrome Web Store"
+          : CHROME_WEB_STORE_CTA;
+  const howLabel =
+    locale === "es"
+      ? "Cómo funciona"
+      : locale === "pt-BR"
+        ? "Como funciona"
+        : locale === "de"
+          ? "So funktioniert’s"
+          : "How it works";
   const sharexLabel =
     locale === "es"
       ? "También desde ShareX"
@@ -533,12 +550,15 @@ function extensionPromoHtml(locale: Locale, chrome: SharedChrome): string {
         : locale === "de"
           ? "Auch über ShareX"
           : "or from ShareX";
-  return `          <p class="ext-promo">
-            <a href="${esc(EXTENSION_URL)}">${esc(label)}</a>
-            <span aria-hidden="true"> · </span>
-            <a href="${esc(SHAREX_URL)}">${esc(sharexLabel)}</a>
-            <span class="visually-hidden"> — ${esc(chrome.footerSeo.extension)}, ${esc(chrome.footerSeo.sharex)}</span>
-          </p>`;
+  return `          <div class="ext-promo">
+            <a class="btn primary" href="${esc(CHROME_WEB_STORE_URL)}" rel="noopener" target="_blank">${esc(storeCta)}</a>
+            <p class="ext-promo-more">
+              <a href="${esc(EXTENSION_URL)}">${esc(howLabel)}</a>
+              <span aria-hidden="true"> · </span>
+              <a href="${esc(SHAREX_URL)}">${esc(sharexLabel)}</a>
+              <span class="visually-hidden"> — ${esc(chrome.footerSeo.extension)}, ${esc(chrome.footerSeo.sharex)}</span>
+            </p>
+          </div>`;
 }
 
 export function renderHome(locale: Locale): string {
@@ -735,6 +755,10 @@ ${topBar("home", locale, chrome)}
             <ul class="ext-facts">
 ${copy.heroFacts.map((f) => `              <li>${esc(f)}</li>`).join("\n")}
             </ul>
+            <div class="ext-actions">
+              <a class="btn primary" href="${esc(copy.storeHref)}" rel="noopener" target="_blank">${esc(copy.storeCta)}</a>
+              <a class="btn secondary" href="#ext-details">${esc(copy.detailsCta)}</a>
+            </div>
           </div>
 ${extensionMockHtml()}
         </section>
@@ -1074,6 +1098,195 @@ ${renderAdSlot("landing-below-fold")}
           <a href="${esc(pagePath("paste-screenshot", locale))}">${esc(chrome.footerSeo.paste)}</a>
           <span aria-hidden="true">·</span>
           <a href="${esc(pagePath("temporary-hosting", locale))}">${esc(chrome.footerSeo.temporary)}</a>
+          <span aria-hidden="true">·</span>
+          <a href="${esc(pagePath("home", locale))}">${esc(chrome.homeLink)}</a>
+        </nav>
+      </main>
+
+${footerHtml(locale, chrome)}
+    </div>
+
+    <script type="module" src="/client/main.ts"></script>
+  </body>
+</html>
+`;
+}
+
+export function renderDevelopersPage(): string {
+  const locale = DEFAULT_LOCALE;
+  const copy = DEVELOPERS_PAGE;
+  const chrome = CHROME[locale];
+  const cfg = LOCALE_CONFIG[locale];
+  const url = DEVELOPERS_URL;
+  const examples = [
+    ["JavaScript", DEVELOPERS_EXAMPLES.js],
+    ["Python", DEVELOPERS_EXAMPLES.python],
+    ["Node", DEVELOPERS_EXAMPLES.node],
+    ["PHP", DEVELOPERS_EXAMPLES.php],
+  ] as const;
+
+  const head = `    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>${esc(copy.title)}</title>
+    <meta name="description" content="${esc(copy.description)}" />
+    <link rel="canonical" href="${esc(url)}" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+${themeBootScript()}
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="${esc(cfg.ogLocale)}" />
+    <meta property="og:url" content="${esc(url)}" />
+    <meta property="og:title" content="${esc(copy.ogTitle)}" />
+    <meta property="og:description" content="${esc(copy.ogDescription)}" />
+    <meta property="og:site_name" content="dropimg.io" />
+    <meta property="og:image" content="${SITE_ORIGIN}/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${esc(copy.twitterTitle)}" />
+    <meta name="twitter:description" content="${esc(copy.twitterDescription)}" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    ${consentScriptTag()}
+    <script type="application/ld+json">${JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "WebAPI",
+      name: "DropIMG Image Upload API",
+      url,
+      description: copy.description,
+      documentation: url,
+    })}</script>`;
+
+  return `<!DOCTYPE html>
+<html lang="${esc(cfg.htmlLang)}" data-locale="${esc(locale)}" data-page-intent="developers">
+  <head>
+${head}
+  </head>
+  <body>
+    <a class="skip-link" href="#api-request">${esc(copy.skip)}</a>
+    <div class="page page-seo page-ext">
+${topBar("home", locale, chrome)}
+
+      <main>
+        <section class="ext-hero ext-hero-solo">
+          <div class="ext-hero-copy">
+            <p class="ext-kicker">${esc(copy.heroKicker)}</p>
+            <h1 class="ext-title">${esc(copy.heroTitle)}</h1>
+            <p class="ext-tagline">${esc(copy.heroTagline)}</p>
+            <p class="sub ext-lede">${esc(copy.lede)}</p>
+            <ul class="ext-facts">
+${copy.heroFacts.map((f) => `              <li>${esc(f)}</li>`).join("\n")}
+            </ul>
+            <div class="ext-actions">
+              <a class="btn primary" href="${esc(copy.accountHref)}">${esc(copy.accountCta)}</a>
+              <a class="btn secondary" href="${esc(copy.specHref)}">${esc(copy.specCta)}</a>
+            </div>
+          </div>
+        </section>
+
+        <article class="seo-article" id="api-request" tabindex="-1" aria-label="${esc(copy.detailsHeading)}">
+          <h2>${esc(copy.curlLabel)}</h2>
+          <pre class="api-code"><code>${esc(copy.curl)}</code></pre>
+          <h2>${esc(copy.responseHeading)}</h2>
+          <pre class="api-code"><code>${esc(copy.responseJson)}</code></pre>
+${renderBlocks(copy.blocks)}
+          <h2>${esc(copy.examplesHeading)}</h2>
+${examples
+  .map(
+    ([label, src]) =>
+      `          <h3>${esc(label)}</h3>\n          <pre class="api-code"><code>${esc(src)}</code></pre>`,
+  )
+  .join("\n")}
+        </article>
+
+${faqHtml(copy.faqHeading, copy.faqs)}
+
+        <nav class="seo-more" aria-label="${esc(chrome.relatedAria)}">
+          <a href="/mcp">${esc(chrome.footerSeo.mcp)}</a>
+          <span aria-hidden="true">·</span>
+          <a href="/sharex">${esc(chrome.footerSeo.sharex)}</a>
+          <span aria-hidden="true">·</span>
+          <a href="${esc(pagePath("home", locale))}">${esc(chrome.homeLink)}</a>
+        </nav>
+      </main>
+
+${footerHtml(locale, chrome)}
+    </div>
+
+    <script type="module" src="/client/main.ts"></script>
+  </body>
+</html>
+`;
+}
+
+export function renderMcpPage(): string {
+  const locale = DEFAULT_LOCALE;
+  const copy = MCP_PAGE;
+  const chrome = CHROME[locale];
+  const cfg = LOCALE_CONFIG[locale];
+  const url = MCP_URL;
+
+  const head = `    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>${esc(copy.title)}</title>
+    <meta name="description" content="${esc(copy.description)}" />
+    <link rel="canonical" href="${esc(url)}" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="${esc("#F7F7FB")}" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="${esc("#0B0E17")}" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+${themeBootScript()}
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="${esc(cfg.ogLocale)}" />
+    <meta property="og:url" content="${esc(url)}" />
+    <meta property="og:title" content="${esc(copy.ogTitle)}" />
+    <meta property="og:description" content="${esc(copy.ogDescription)}" />
+    <meta property="og:site_name" content="dropimg.io" />
+    <meta property="og:image" content="${SITE_ORIGIN}/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${esc(copy.twitterTitle)}" />
+    <meta name="twitter:description" content="${esc(copy.twitterDescription)}" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    ${consentScriptTag()}`;
+
+  return `<!DOCTYPE html>
+<html lang="${esc(cfg.htmlLang)}" data-locale="${esc(locale)}" data-page-intent="mcp">
+  <head>
+${head}
+  </head>
+  <body>
+    <a class="skip-link" href="#mcp-setup">${esc(copy.skip)}</a>
+    <div class="page page-seo page-ext">
+${topBar("home", locale, chrome)}
+
+      <main>
+        <section class="ext-hero ext-hero-solo">
+          <div class="ext-hero-copy">
+            <p class="ext-kicker">${esc(copy.heroKicker)}</p>
+            <h1 class="ext-title">${esc(copy.heroTitle)}</h1>
+            <p class="ext-tagline">${esc(copy.heroTagline)}</p>
+            <p class="sub ext-lede">${esc(copy.lede)}</p>
+            <ul class="ext-facts">
+${copy.heroFacts.map((f) => `              <li>${esc(f)}</li>`).join("\n")}
+            </ul>
+            <div class="ext-actions">
+              <a class="btn primary" href="${esc(copy.accountHref)}" rel="noopener" target="_blank">${esc(copy.accountCta)}</a>
+              <a class="btn secondary" href="${esc(copy.docsHref)}">${esc(copy.docsCta)}</a>
+            </div>
+          </div>
+        </section>
+
+        <article class="seo-article" id="mcp-setup" tabindex="-1" aria-label="${esc(copy.detailsHeading)}">
+${renderBlocks(copy.blocks)}
+          <h2>${esc(copy.claudeHeading)}</h2>
+          <pre class="mcp-snippet"><code>${esc(copy.claudeSnippet)}</code></pre>
+        </article>
+
+${faqHtml(copy.faqHeading, copy.faqs)}
+
+        <nav class="seo-more" aria-label="${esc(chrome.relatedAria)}">
+          <a href="/developers">${esc(chrome.footerSeo.api)}</a>
+          <span aria-hidden="true">·</span>
+          <a href="/sharex">${esc(chrome.footerSeo.sharex)}</a>
           <span aria-hidden="true">·</span>
           <a href="${esc(pagePath("home", locale))}">${esc(chrome.homeLink)}</a>
         </nav>

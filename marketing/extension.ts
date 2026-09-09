@@ -1,5 +1,10 @@
 import type { LandingCopy } from "./types";
 
+/** Public Chrome Web Store listing. ID-stable; slug is the published item name. */
+export const CHROME_WEB_STORE_URL =
+  "https://chromewebstore.google.com/detail/dropimgio-screenshot-to-link/lhgmnekggpifejiphipjebjlcphabhib";
+export const CHROME_WEB_STORE_CTA = "Available on the Chrome Web Store";
+
 /**
  * The extension page leads with a product hero and keeps the reference
  * documentation below it, so `heroTitle` / `heroTagline` drive the visible
@@ -12,6 +17,9 @@ type ExtensionCopy = LandingCopy & {
   heroFacts: [string, string, string];
   detailsHeading: string;
   skip: string;
+  storeCta: string;
+  storeHref: string;
+  detailsCta: string;
 };
 
 /** English-only acquisition page for the Chrome/Edge extension. */
@@ -26,17 +34,20 @@ export const EXTENSION_PAGE: ExtensionCopy = {
   twitterDescription:
     "Screenshot → temporary link. Visible or region. No account required, and you pick the expiry.",
   h1: "Screenshot to link, from your toolbar",
-  lede: "Capture what you see or draw a region — then get a temporary shareable link. No account required, and you choose whether it lasts 1 hour, 24 hours, or 7 days. Available in English, Spanish, Portuguese (Brazil), and German.",
+  lede: "Capture what you see or draw a region — then get a temporary shareable link. No account required, and you choose whether it lasts 1 hour, 24 hours, 7 days, or 30 days. Available in English, Spanish, Portuguese (Brazil), and German.",
   heroKicker: "Browser extension",
   heroTitle: "DropIMG for your browser",
   heroTagline: "Capture. Upload. Link copied.",
   heroFacts: [
     "Chrome and Edge",
     "Alt+Shift+D for a silent capture",
-    "Links expire in 1 hour, 24 hours, or 7 days",
+    "Links expire in 1 hour, 24 hours, 7 days, or 30 days",
   ],
   detailsHeading: "Details",
   skip: "Skip to details",
+  storeCta: CHROME_WEB_STORE_CTA,
+  storeHref: CHROME_WEB_STORE_URL,
+  detailsCta: "How it works",
   blocks: [
     {
       type: "h2",
@@ -68,11 +79,7 @@ export const EXTENSION_PAGE: ExtensionCopy = {
     },
     {
       type: "p",
-      text: "Chrome Web Store and Microsoft Edge Add-ons listings will appear here once published. Until then, developers can load the unpacked build from the open-source repository (see the extension README).",
-    },
-    {
-      type: "p",
-      text: "Store links: coming soon — same Manifest V3 package for Chrome and Edge.",
+      text: "Install from the Chrome Web Store with the button at the top of this page. The same Manifest V3 package also works in Microsoft Edge via that listing.",
     },
     {
       type: "h2",
