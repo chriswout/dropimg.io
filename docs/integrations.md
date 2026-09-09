@@ -15,13 +15,17 @@ Anonymous uploads stay available. An integration token is optional and is not re
 - REST: [`/developers`](https://dropimg.io/developers) and [`/openapi/v1.yaml`](https://dropimg.io/openapi/v1.yaml)
 - MCP: [`/mcp`](https://dropimg.io/mcp)
 
-Browser disconnect (extension) removes the local copy only. Account-side Revoke invalidates the token.
+The browser extension connects with one-click pairing (`POST /api/integrations/browser/start` + `/connect/browser/:id`). That still mints a `dropimg_it_*` token. Browser disconnect removes the local copy only. Account-side Revoke invalidates the token.
 
 ## Endpoints
 
 - `GET /api/account/integrations` — session, metadata only
 - `POST /api/account/integrations` — session + CSRF, returns raw token once
 - `POST /api/account/integrations/:id/revoke` — session + CSRF, idempotent
+- `POST /api/integrations/browser/start` — extension, returns pairingId + deviceSecret
+- `POST /api/integrations/browser/status` — extension + deviceSecret, returns the token once
+- `POST /api/integrations/browser/cancel` — extension + deviceSecret
+- `GET /connect/browser/:id` — session page to approve
 - `GET /api/integrations/me` — Bearer
 - `POST /api/integrations/upload-intent` then `POST /api/integrations/upload/:intent` — Bearer
 - `POST /api/integrations/sharex` — anonymous multipart, or Bearer for an owned upload

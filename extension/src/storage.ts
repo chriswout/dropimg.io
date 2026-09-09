@@ -3,6 +3,7 @@ import {
   EXPIRY_7D,
   type AccountProfile,
   type ExtSettings,
+  type PendingPairing,
   type RecentItem,
 } from "./shared";
 
@@ -12,13 +13,17 @@ const TOKEN_KEY = "integrationToken";
 const ACCOUNT_KEY = "accountProfile";
 const EXPIRY_KEY = "lastExpirySeconds";
 const DISCLOSURE_KEY = "captureDisclosureAccepted";
+const PAIRING_KEY = "pendingPairing";
 const MAX_RECENT = 10;
 
 export async function loadSettings(): Promise<ExtSettings> {
   const data = await chrome.storage.sync.get(SETTINGS_KEY);
   const raw = (data[SETTINGS_KEY] || {}) as Partial<ExtSettings>;
   return {
-    lastMode: raw.lastMode === "region" ? "region" : "visible",
+    lastMode:
+      raw.lastMode === "region" || raw.lastMode === "fullpage"
+        ? raw.lastMode
+        : "visible",
   };
 }
 
@@ -90,7 +95,26 @@ export async function saveLastExpiry(seconds: number): Promise<void> {
 }
 
 export async function disconnectAccount(): Promise<void> {
-  await chrome.storage.local.remove([TOKEN_KEY, ACCOUNT_KEY, EXPIRY_KEY]);
+  await chrome.storage.local.remove([TOKEN_KEY, ACCOUNT_KEY, EXPIRY_KEY, PAIRING_KEY]);
+}
+
+export async function loadPendingPairing(): Promise<PendingPairing | null> {
+  const data = await chrome.storage.local.get(PAIRING_KEY);
+  const raw = data[PAIRING_KEY] as PendingPairing | undefined;
+  if (!raw?.pairingId || !raw.deviceSecret || !raw.verificationUrl) return null;
+  if (!raw.expiresAt || raw.expiresAt * 1000 <= Date.now()) {
+    await clearPendingPairing();
+    return null;
+  }
+  return raw;
+}
+
+export async function savePendingPairing(pairing: PendingPairing): Promise<void> {
+  await chrome.storage.local.set({ [PAIRING_KEY]: pairing });
+}
+
+export async function clearPendingPairing(): Promise<void> {
+  await chrome.storage.local.remove(PAIRING_KEY);
 }
 
 export async function loadDisclosureAccepted(): Promise<boolean> {
@@ -109,4 +133,5 @@ export {
   ACCOUNT_KEY,
   EXPIRY_KEY,
   DISCLOSURE_KEY,
+  PAIRING_KEY,
 };

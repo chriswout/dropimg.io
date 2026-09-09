@@ -41,7 +41,13 @@ type Copy = {
   integrationsHint: string;
   extensionTitle: string;
   extensionBody: string;
+  extensionPairHint: string;
   connectExtension: string;
+  kindExtension: string;
+  kindSharex: string;
+  kindApi: string;
+  kindOther: string;
+  connectedOn: string;
   chromeStore: string;
   sharexTitle: string;
   sharexBody: string;
@@ -131,7 +137,13 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     integrationsHint: "Connect DropIMG to tools you already use.",
     extensionTitle: "Browser extension",
     extensionBody: "Capture screenshots and save them directly to My drops.",
-    connectExtension: "Connect extension",
+    extensionPairHint: "Connect from the DropIMG extension — no token to copy.",
+    connectExtension: "Create a token manually",
+    kindExtension: "Browser Extension",
+    kindSharex: "ShareX",
+    kindApi: "API key",
+    kindOther: "Integration",
+    connectedOn: "Connected",
     chromeStore: "Available on the Chrome Web Store",
     sharexTitle: "ShareX",
     sharexBody: "Send ShareX screenshots directly to your DropIMG account.",
@@ -220,7 +232,13 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     integrationsHint: "Conecta DropIMG a las herramientas que ya usas.",
     extensionTitle: "Extensión del navegador",
     extensionBody: "Captura pantallas y guárdalas directo en Mis envíos.",
-    connectExtension: "Conectar extensión",
+    extensionPairHint: "Conéctala desde la extensión DropIMG — sin copiar tokens.",
+    connectExtension: "Crear un token a mano",
+    kindExtension: "Extensión del navegador",
+    kindSharex: "ShareX",
+    kindApi: "Clave API",
+    kindOther: "Integración",
+    connectedOn: "Conectada",
     chromeStore: "Disponible en Chrome Web Store",
     sharexTitle: "ShareX",
     sharexBody: "Envía capturas de ShareX directo a tu cuenta DropIMG.",
@@ -309,7 +327,13 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     integrationsHint: "Conecte o DropIMG às ferramentas que você já usa.",
     extensionTitle: "Extensão do navegador",
     extensionBody: "Capture prints e salve direto em Meus envios.",
-    connectExtension: "Conectar extensão",
+    extensionPairHint: "Conecte pela extensão DropIMG — sem copiar token.",
+    connectExtension: "Criar um token na mão",
+    kindExtension: "Extensão do navegador",
+    kindSharex: "ShareX",
+    kindApi: "Chave de API",
+    kindOther: "Integração",
+    connectedOn: "Conectada",
     chromeStore: "Disponível na Chrome Web Store",
     sharexTitle: "ShareX",
     sharexBody: "Envie capturas do ShareX direto para sua conta DropIMG.",
@@ -398,7 +422,13 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     integrationsHint: "Verbinde DropIMG mit Tools, die du schon nutzt.",
     extensionTitle: "Browser-Erweiterung",
     extensionBody: "Screenshots aufnehmen und direkt in Meine Drops speichern.",
-    connectExtension: "Erweiterung verbinden",
+    extensionPairHint: "Verbinden in der DropIMG-Erweiterung — kein Token zum Kopieren.",
+    connectExtension: "Token manuell erstellen",
+    kindExtension: "Browser-Erweiterung",
+    kindSharex: "ShareX",
+    kindApi: "API-Schlüssel",
+    kindOther: "Integration",
+    connectedOn: "Verbunden",
     chromeStore: "Im Chrome Web Store",
     sharexTitle: "ShareX",
     sharexBody: "ShareX-Aufnahmen direkt in dein DropIMG-Konto senden.",
@@ -519,6 +549,7 @@ export function renderIntegrationsPage(opts: SettingsProps): string {
         <article class="integ-tool">
           <h2>${esc(t.extensionTitle)}</h2>
           <p>${esc(t.extensionBody)}</p>
+          <p class="account-muted">${esc(t.extensionPairHint)}</p>
           <div class="settings-actions">
             <a class="btn primary" href="${esc(CHROME_WEB_STORE_URL)}" rel="noopener" target="_blank">${esc(t.chromeStore)}</a>
             <button type="button" class="btn secondary" id="integ-extension">${esc(t.connectExtension)}</button>
@@ -678,6 +709,11 @@ function integrationsScript(t: Copy, locale: Locale): string {
       const labels = {
         created: ${JSON.stringify(t.created)},
         lastUsed: ${JSON.stringify(t.lastUsed)},
+        connectedOn: ${JSON.stringify(t.connectedOn)},
+        kindExtension: ${JSON.stringify(t.kindExtension)},
+        kindSharex: ${JSON.stringify(t.kindSharex)},
+        kindApi: ${JSON.stringify(t.kindApi)},
+        kindOther: ${JSON.stringify(t.kindOther)},
         neverUsed: ${JSON.stringify(t.neverUsed)},
         revoke: ${JSON.stringify(t.revoke)},
         noDevices: ${JSON.stringify(t.noDevices)},
@@ -733,13 +769,25 @@ function integrationsScript(t: Copy, locale: Locale): string {
           const meta = document.createElement("div");
           const title = document.createElement("p");
           title.className = "settings-value";
-          title.textContent = row.label;
+          title.textContent = row.kind === "extension"
+            ? labels.kindExtension
+            : row.kind === "sharex"
+              ? labels.kindSharex
+              : row.kind === "api"
+                ? labels.kindApi
+                : labels.kindOther;
           const sub = document.createElement("p");
           sub.className = "account-muted";
-          sub.textContent = row.lastUsedAt
+          sub.textContent = row.label;
+          const created = document.createElement("p");
+          created.className = "account-muted";
+          created.textContent = labels.connectedOn + " " + formatWhen(row.createdAt, labels.neverUsed);
+          const used = document.createElement("p");
+          used.className = "account-muted";
+          used.textContent = row.lastUsedAt
             ? labels.lastUsed + " " + formatWhen(row.lastUsedAt, labels.neverUsed)
             : labels.neverUsed;
-          meta.append(title, sub);
+          meta.append(title, sub, created, used);
           const btn = document.createElement("button");
           btn.type = "button";
           btn.className = "btn secondary";

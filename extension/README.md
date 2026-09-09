@@ -1,4 +1,4 @@
-# dropimg.io browser extension (Chrome / Edge) — v1.6.1
+# dropimg.io browser extension (Chrome / Edge) — v1.7.0
 
 Screenshot → temporary share link on [dropimg.io](https://dropimg.io). Manifest V3.
 Locales: English, Spanish, Portuguese (Brazil), German.
@@ -7,31 +7,35 @@ Locales: English, Spanish, Portuguese (Brazil), German.
 
 - **Visible** tab capture
 - **Region** crop (draw on the page)
+- **Full page** capture (scroll and stitch the entire webpage)
 - **Alt+Shift+D** silent visible capture → clipboard + page toast (~7s)
 - Recent drops (last 10, on-device — copy / open / delete)
-- Optional DropIMG account connection, which adds a link-lifetime picker
+- One-click DropIMG account connection (no token copy/paste)
 - Light / dark UI matching the site
 
 ## Behavior
 
 | Action | Result |
 |--------|--------|
-| Toolbar click | Opens popup — choose Visible or Region, then **Capture**. Popup stays open with the link. |
+| Toolbar click | Opens popup — choose Visible, Region, or Full page, then **Capture**. |
 | Alt+Shift+D | Silent visible capture → toast + clipboard |
 | Region | Popup closes to draw → toast + clipboard; may reopen popup |
+| Full page | Scrolls the page, stitches tiles, then uploads |
 
 Anonymous capture is the default and needs no account.
 
 ## Account connection
 
-1. Popup → **DropIMG account** → Connect
-2. Open [dropimg.io/app/integrations](https://dropimg.io/app/integrations) and create a
-   Browser Extension token
-3. Paste it. The extension checks it against `GET /api/integrations/me` before saving.
+1. Popup → **DropIMG account** → Connect account
+2. A DropIMG tab opens. Sign in if needed, then click **Connect**
+3. The popup becomes connected automatically
 
-The token lives in `chrome.storage.local` only — never `sync`, never logged, never
-sent anywhere but dropimg.io. Disconnect removes it locally; it does **not** revoke
-it. Revoke from the account page to stop uploads immediately.
+The credential is a normal `dropimg_it_*` integration token, stored in
+`chrome.storage.local` only — never `sync`, never shown, never logged. Disconnect
+removes it locally; it does **not** revoke it. Revoke from Manage account
+(`/app/integrations`) to stop uploads immediately.
+
+Power users can still paste a token via **Use a token instead**.
 
 Connected captures go through `POST /api/integrations/upload-intent` then
 `POST /api/integrations/upload/:intent`. Free picks 1h / 24h / 7d / 30d; Pro adds
@@ -44,9 +48,13 @@ applies as soon as it is connected. If a token is revoked or invalid the extensi
 reports a connection error and does **not** silently fall back to an anonymous
 upload.
 
-Image passwords are not in the popup for this release. Full-page stitching was
-dropped, not deferred — Chrome's capture rate limit and sticky headers made it
-unreliable enough that it was not worth shipping.
+Image passwords are not in the popup for this release.
+
+Full-page capture scrolls the document, captures viewport tiles at Chrome's
+`captureVisibleTab` rate (650ms gap), hides fixed/sticky overlays after the first
+tile so they are not repeated, then restores scroll position and styles. Pages
+that would exceed a 16384px canvas edge, 20 000 CSS pixels of height, or 24 tiles
+return `full_page_too_large` instead of a partial image.
 
 ## Build
 
@@ -66,11 +74,11 @@ single source of truth — do not hand-edit anything under `dist/`.
 | Permission | Why |
 |------------|-----|
 | `activeTab` | Capture the tab you invoke the extension on |
-| `scripting` | Inject the region selector and the result toast |
-| `storage` | Recent drops, capture mode, connected account token |
+| `scripting` | Region overlay, full-page scroll/restore, result toast |
+| `storage` | Recent drops, capture mode, pairing session, connected account |
 | `offscreen` | Clipboard write for silent and region captures |
 | `notifications` | Fallback when the page toast cannot be injected |
-| `https://dropimg.io/*` | The upload API — the only host contacted |
+| `https://dropimg.io/*` | The only host the extension contacts |
 
 No `tabs` permission, no broad host access, no analytics, no remote code.
 

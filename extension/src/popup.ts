@@ -30,6 +30,7 @@ import {
   msg,
   type CaptureMode,
   type CaptureResult,
+  type PairingState,
   type RecentItem,
 } from "./shared";
 import { expiryCountdown } from "../../src/lib/expiry-format";
@@ -74,6 +75,7 @@ function show(state: "idle" | "loading" | "success" | "error" | "disclosure") {
 function applyI18n() {
   el("mode-visible").textContent = msg("modeVisible");
   el("mode-region").textContent = msg("modeRegion");
+  el("mode-fullpage").textContent = msg("modeFullPage");
   el("success-title").textContent = `✓ ${msg("uploaded")}`;
   el("error-title").textContent = msg("uploadFailed");
   btnCopy.textContent = msg("copy");
@@ -84,14 +86,22 @@ function applyI18n() {
   el("recent-heading").textContent = msg("recentDrops");
   el("account-heading").textContent = msg("accountHeading");
   el("account-anon-hint").textContent = msg("accountAnonHint");
-  el<HTMLButtonElement>("btn-connect").textContent = msg("connect");
-  el("connect-steps").textContent = msg("connectSteps");
+  el<HTMLButtonElement>("btn-connect").textContent = msg("connectAccount");
+  el<HTMLButtonElement>("btn-use-token").textContent = msg("useTokenInstead");
+  el("connect-title").textContent = msg("connectTitle");
+  el("connect-steps").textContent = msg("connectionOpened");
+  el("waiting-approval").textContent = `● ${msg("waitingApproval")}`;
+  el<HTMLButtonElement>("btn-connect-cancel").textContent = msg("connectCancel");
+  el("token-steps").textContent = msg("useTokenInstead");
   el<HTMLAnchorElement>("open-account").textContent = msg("openAccount");
   el<HTMLAnchorElement>("open-account").href = accountUrl();
   el("token-input-label").textContent = msg("tokenPlaceholder");
   el<HTMLInputElement>("token-input").placeholder = msg("tokenPlaceholder");
   el<HTMLButtonElement>("btn-connect-save").textContent = msg("connectSave");
-  el<HTMLButtonElement>("btn-connect-cancel").textContent = msg("connectCancel");
+  el<HTMLButtonElement>("btn-token-cancel").textContent = msg("connectCancel");
+  el("account-connected-label").textContent = `✓ ${msg("connected")}`;
+  el<HTMLAnchorElement>("btn-manage-account").textContent = msg("manageAccount");
+  el<HTMLAnchorElement>("btn-manage-account").href = accountUrl();
   el("expiry-label").textContent = msg("expiresLabel");
   el<HTMLButtonElement>("btn-disconnect").textContent = msg("disconnect");
   el("disconnect-hint").textContent = msg("disconnectHint");
@@ -104,8 +114,9 @@ function applyI18n() {
   document.documentElement.lang = chrome.i18n.getUILanguage() || "en";
 }
 
-function showAccount(view: "anon" | "connect" | "connected") {
+function showAccount(view: "anon" | "waiting" | "connect" | "connected") {
   el("account-anon").classList.toggle("hidden", view !== "anon");
+  el("account-waiting").classList.toggle("hidden", view !== "waiting");
   el("account-connect").classList.toggle("hidden", view !== "connect");
   el("account-connected").classList.toggle("hidden", view !== "connected");
 }
@@ -131,10 +142,57 @@ function fillExpirySelect(allowed: number[], selected: number) {
   }
 }
 
+async function applyPairingState(state: PairingState) {
+  const err = el("connect-error");
+  if (state.status === "connected") {
+    err.hidden = true;
+    await renderAccount();
+    return;
+  }
+  if (state.status === "waiting") {
+    err.hidden = true;
+    showAccount("waiting");
+    return;
+  }
+  if (state.status === "error") {
+    err.textContent = state.error || msg("err_connect_failed");
+    err.hidden = false;
+    showAccount("waiting");
+    return;
+  }
+  const token = await loadIntegrationToken();
+  if (!token) showAccount("anon");
+}
+
+async function startPairingFromPopup() {
+  el("connect-error").hidden = true;
+  showAccount("waiting");
+  try {
+    const state = (await chrome.runtime.sendMessage({
+      type: "START_BROWSER_PAIRING",
+    })) as PairingState | undefined;
+    if (state) await applyPairingState(state);
+  } catch {
+    el("connect-error").textContent = msg("err_connect_failed");
+    el("connect-error").hidden = false;
+  }
+}
+
 async function renderAccount() {
   const token = await loadIntegrationToken();
   const profile = await loadAccountProfile();
   if (!token || !profile) {
+    try {
+      const state = (await chrome.runtime.sendMessage({
+        type: "GET_PAIRING_STATE",
+      })) as PairingState | undefined;
+      if (state && state.status !== "idle") {
+        await applyPairingState(state);
+        return;
+      }
+    } catch {
+      // background may be starting
+    }
     showAccount("anon");
     return;
   }
@@ -200,16 +258,23 @@ function setModeUI(mode: CaptureMode) {
     );
   }
   modeHint.textContent =
-    mode === "region" ? msg("modeHintRegion") : msg("modeHintVisible");
+    mode === "region"
+      ? msg("modeHintRegion")
+      : mode === "fullpage"
+        ? msg("modeHintFullPage")
+        : msg("modeHintVisible");
 }
 
 function loadingCopy(mode: CaptureMode) {
   if (mode === "region") {
     loadingTitle.textContent = msg("preparingRegion");
-    loadingHint.textContent = msg("checkingImage");
+    loadingHint.textContent = msg("uploadingAndChecking");
+  } else if (mode === "fullpage") {
+    loadingTitle.textContent = msg("capturingFullPage");
+    loadingHint.textContent = msg("uploadingAndChecking");
   } else {
     loadingTitle.textContent = msg("capturing");
-    loadingHint.textContent = msg("checkingImage");
+    loadingHint.textContent = msg("uploadingAndChecking");
   }
 }
 
@@ -244,6 +309,9 @@ async function runCapture(mode: CaptureMode = currentMode) {
   // Region needs the popup out of the way so the user can draw on the page.
   if (mode === "region") {
     setTimeout(() => window.close(), 120);
+  }
+  if (mode === "fullpage") {
+    loadingHint.textContent = msg("capturingFullPage");
   }
 
   let result: CaptureResult;
@@ -407,15 +475,23 @@ async function init() {
   shareUrl.addEventListener("focus", () => shareUrl.select());
 
   el("btn-connect").addEventListener("click", () => {
+    void startPairingFromPopup();
+  });
+  el("btn-use-token").addEventListener("click", () => {
     el<HTMLInputElement>("token-input").value = "";
-    el("connect-error").hidden = true;
+    el("token-error").hidden = true;
     showAccount("connect");
     el<HTMLInputElement>("token-input").focus();
   });
-  el("btn-connect-cancel").addEventListener("click", () => showAccount("anon"));
+  el("btn-connect-cancel").addEventListener("click", () => {
+    void chrome.runtime.sendMessage({ type: "CANCEL_BROWSER_PAIRING" });
+    el("connect-error").hidden = true;
+    showAccount("anon");
+  });
+  el("btn-token-cancel").addEventListener("click", () => showAccount("anon"));
   el("btn-connect-save").addEventListener("click", async () => {
     const token = el<HTMLInputElement>("token-input").value.trim();
-    const err = el("connect-error");
+    const err = el("token-error");
     if (!integrationTokenLooksValid(token)) {
       err.textContent = msg("connectInvalid");
       err.hidden = false;
@@ -437,6 +513,19 @@ async function init() {
     });
     el<HTMLInputElement>("token-input").value = "";
     await renderAccount();
+  });
+  chrome.runtime.onMessage.addListener((message) => {
+    if (message?.type === "FULLPAGE_PROGRESS") {
+      loadingTitle.textContent = msg("capturingFullPage");
+      loadingHint.textContent = msg("fullPageProgress", [
+        String(message.current),
+        String(message.total),
+      ]);
+      return;
+    }
+    if (message?.type === "PAIRING_STATE") {
+      void applyPairingState(message.state);
+    }
   });
   el("btn-disconnect").addEventListener("click", async () => {
     await disconnectAccount();

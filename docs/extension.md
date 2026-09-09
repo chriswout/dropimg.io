@@ -2,22 +2,26 @@
 
 Manifest V3 extension for Chrome and Edge. Source: [`extension/`](../extension/).
 
-## Capabilities (V1.6)
+## Capabilities (V1.7)
 
 - **Visible** tab capture
 - **Region** capture (draw a rectangle)
+- **Full page** capture (scroll-and-stitch)
 - Silent shortcut **Alt+Shift+D** (visible → upload → clipboard + toast)
 - Recent drops (local, max 10) with copy / open / delete
-- Optional DropIMG account connection (personal integration token)
+- One-click DropIMG account pairing (final credential is still `dropimg_it_*`)
 - Locales: English, Spanish, Portuguese (Brazil), German
 
 Anonymous capture is unchanged and remains the default.
 
 ## Account connection
 
-1. Open the popup → DropIMG account → Connect
-2. Open [dropimg.io/app/integrations](https://dropimg.io/app/integrations) and create a Browser Extension token
-3. Paste the token. The extension validates it with `GET /api/integrations/me` before saving.
+1. Open the popup → DropIMG account → Connect account
+2. The extension starts `POST /api/integrations/browser/start` and opens
+   `/connect/browser/:pairingId`
+3. Sign in if needed (`?next=` is allowlisted for that path), then approve
+4. The extension polls `POST /api/integrations/browser/status` with the device
+   secret (never in the URL) and stores the one-time `dropimg_it_*` token
 
 The token is stored in `chrome.storage.local` only (never `sync`, never analytics, never console). Disconnect removes the local token; it does **not** revoke it. Revoke from the account page to invalidate uploads immediately.
 
@@ -33,9 +37,10 @@ enforces it.
 
 Image passwords are not in the extension popup for this release.
 
-Full-page capture was **dropped**, not deferred — Chrome's capture rate limit and
-sticky headers made it too unreliable to ship. The strings and source were removed
-in v1.6 rather than left dead in the store package.
+Full-page capture stitches `captureVisibleTab` tiles. After the first tile it
+temporarily hides computed `position: fixed` / `sticky` elements so headers and
+FABs are not repeated. Scroll position and styles are restored in `finally`.
+Oversized pages fail with `full_page_too_large` instead of a partial shot.
 
 ## Build
 
@@ -48,7 +53,7 @@ Load unpacked from `extension/dist` for local testing. Point uploads at producti
 
 ## Permissions
 
-See `/browser-extension` and Privacy Policy §2.7. Host access is limited to dropimg.io for uploads.
+See `/browser-extension` and Privacy Policy §2.7. Host access is limited to dropimg.io for uploads and pairing.
 
 ## Attribution
 

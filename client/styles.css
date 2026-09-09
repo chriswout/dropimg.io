@@ -3132,6 +3132,10 @@ html[data-theme="dark"] .auth-google-btn .auth-google-btn-dark {
 
 .auth-actions {
   margin: 1.25rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  align-items: center;
 }
 
 .auth-alt {

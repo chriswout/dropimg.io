@@ -6,6 +6,7 @@ import { UI } from "../../marketing/ui";
 import { ACCOUNT_COPY } from "../../src/views/account";
 import { APP_COPY } from "../../src/views/app";
 import { SHELL_COPY } from "../../src/views/app-shell";
+import { CONNECT_BROWSER_COPY } from "../../src/views/connect-browser";
 import { LOGIN_COPY } from "../../src/views/login";
 import { LOCKED_COPY } from "../../src/views/locked-share";
 import { PRO_COPY } from "../../src/views/pro";
@@ -58,6 +59,7 @@ describe("V2 locale completeness", () => {
     assertParity("PRO_SEO", PRO_SEO);
     assertParity("PRO_COPY", PRO_COPY);
     assertParity("LOGIN_COPY", LOGIN_COPY);
+    assertParity("CONNECT_BROWSER_COPY", CONNECT_BROWSER_COPY);
     assertParity("ACCOUNT_COPY", ACCOUNT_COPY);
     assertParity("APP_COPY", APP_COPY);
     assertParity("SHELL_COPY", SHELL_COPY);

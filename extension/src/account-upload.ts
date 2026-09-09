@@ -3,7 +3,9 @@ import {
   chooseExpirySeconds,
   EXPIRY_7D,
   mapError,
+  type AccountProfile,
   type CaptureResult,
+  type PendingPairing,
   type UploadErrorBody,
   type UploadResponse,
 } from "./shared";
@@ -116,6 +118,129 @@ export async function validateIntegrationToken(
     };
   } catch {
     return { ok: false, error: mapError("network") };
+  }
+}
+
+export async function startBrowserPairing(
+  client: "chrome-extension" | "edge-extension",
+  origin = API_ORIGIN,
+): Promise<
+  | { ok: true; pairing: PendingPairing }
+  | { ok: false; error: string; code?: string }
+> {
+  try {
+    const res = await fetch(`${origin}/api/integrations/browser/start`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ client }),
+    });
+    if (!res.ok) return failFrom(res);
+    const body = (await res.json()) as {
+      pairingId?: string;
+      deviceSecret?: string;
+      verificationUrl?: string;
+      expiresIn?: number;
+    };
+    if (!body.pairingId || !body.deviceSecret || !body.verificationUrl) {
+      return { ok: false, error: mapError("server_error"), code: "server_error" };
+    }
+    const expiresIn = Number(body.expiresIn) || 300;
+    return {
+      ok: true,
+      pairing: {
+        pairingId: body.pairingId,
+        deviceSecret: body.deviceSecret,
+        verificationUrl: body.verificationUrl,
+        expiresAt: Math.floor(Date.now() / 1000) + expiresIn,
+      },
+    };
+  } catch {
+    return { ok: false, error: mapError("network"), code: "network" };
+  }
+}
+
+export async function pollBrowserPairing(
+  pairing: PendingPairing,
+  origin = API_ORIGIN,
+): Promise<
+  | { ok: true; status: "pending" | "cancelled" | "expired" | "consumed" }
+  | { ok: true; status: "approved"; token: string; profile: AccountProfile }
+  | { ok: false; error: string; code?: string }
+> {
+  try {
+    const res = await fetch(`${origin}/api/integrations/browser/status`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        pairingId: pairing.pairingId,
+        deviceSecret: pairing.deviceSecret,
+      }),
+    });
+    if (res.status === 401) {
+      return { ok: false, error: mapError("connect_failed"), code: "unauthorized" };
+    }
+    if (!res.ok) return failFrom(res);
+    const body = (await res.json()) as {
+      status?: string;
+      token?: string;
+      user?: { emailMasked?: string };
+      entitlements?: {
+        plan?: "free" | "pro" | "anonymous";
+        maxUploadBytes?: number;
+        allowedExpirySeconds?: number[];
+        defaultExpirySeconds?: number;
+      };
+    };
+    if (body.status === "approved" && body.token) {
+      const allowedExpirySeconds = body.entitlements?.allowedExpirySeconds?.length
+        ? body.entitlements.allowedExpirySeconds
+        : [EXPIRY_7D];
+      return {
+        ok: true,
+        status: "approved",
+        token: body.token,
+        profile: {
+          emailMasked: body.user?.emailMasked || "",
+          plan: body.entitlements?.plan === "pro" ? "pro" : "free",
+          maxUploadBytes: body.entitlements?.maxUploadBytes || 10 * 1024 * 1024,
+          allowedExpirySeconds,
+          defaultExpirySeconds: chooseExpirySeconds(
+            allowedExpirySeconds,
+            undefined,
+            body.entitlements?.defaultExpirySeconds,
+          ),
+        },
+      };
+    }
+    if (
+      body.status === "pending" ||
+      body.status === "cancelled" ||
+      body.status === "expired" ||
+      body.status === "consumed"
+    ) {
+      return { ok: true, status: body.status };
+    }
+    return { ok: true, status: "pending" };
+  } catch {
+    return { ok: false, error: mapError("network"), code: "network" };
+  }
+}
+
+export async function cancelBrowserPairing(
+  pairing: PendingPairing,
+  origin = API_ORIGIN,
+): Promise<void> {
+  try {
+    await fetch(`${origin}/api/integrations/browser/cancel`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        pairingId: pairing.pairingId,
+        deviceSecret: pairing.deviceSecret,
+      }),
+    });
+  } catch {
+    // local cancel still wins
   }
 }
 

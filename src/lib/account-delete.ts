@@ -1,5 +1,6 @@
 import { deleteIdentitiesForUser } from "./auth/social";
 import { revokeAllSessions } from "./auth/session";
+import { cancelPairingsForUser } from "./browser-pairing";
 import { revokeAllIntegrationTokens } from "./integration-token";
 import {
   cancelPaypalSubscriptionImmediately,
@@ -76,6 +77,7 @@ export async function deleteUserAccount(
   }
 
   await revokeAllIntegrationTokens(env.DB, userId, now);
+  await cancelPairingsForUser(env.DB, userId, now);
   await deleteIdentitiesForUser(env.DB, userId);
   await revokeAllSessions(env.DB, userId, now);
   const tombstoneEmail = `deleted.${userId}@deleted.dropimg.invalid`;

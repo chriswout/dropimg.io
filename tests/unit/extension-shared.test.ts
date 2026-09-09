@@ -70,10 +70,12 @@ describe("extension shared helpers", () => {
     }
   });
 
-  it("ships no strings for the dropped full-page capture", () => {
-    const keys = Object.keys(MESSAGES.en);
-    expect(keys.filter((k) => /fullpage/i.test(k))).toEqual([]);
-    expect(keys).not.toContain("stitching");
+  it("ships full-page capture strings in every locale", () => {
+    for (const locale of ["en", "es", "pt_BR", "de"] as const) {
+      expect(MESSAGES[locale].modeFullPage.length).toBeGreaterThan(2);
+      expect(MESSAGES[locale].err_full_page_too_large.length).toBeGreaterThan(10);
+      expect(MESSAGES[locale].fullPageProgress).toContain("$1$");
+    }
   });
 
   it("decodes a tiny PNG data URL", () => {

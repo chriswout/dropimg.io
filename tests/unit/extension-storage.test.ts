@@ -27,12 +27,15 @@ const {
   ACCOUNT_KEY,
   EXPIRY_KEY,
   TOKEN_KEY,
+  PAIRING_KEY,
   disconnectAccount,
   loadDisclosureAccepted,
   loadIntegrationToken,
+  loadPendingPairing,
   saveDisclosureAccepted,
   saveIntegrationToken,
   saveLastExpiry,
+  savePendingPairing,
   saveSettings,
 } = await import("../../extension/src/storage");
 
@@ -56,6 +59,22 @@ describe("extension token storage", () => {
     expect(await loadIntegrationToken()).toBeNull();
     expect(local.has(TOKEN_KEY)).toBe(false);
     expect(sync.has("settings")).toBe(true);
+  });
+
+  it("resumes a pending pairing and forgets it on disconnect", async () => {
+    await savePendingPairing({
+      pairingId: "11111111-2222-4333-8444-555555555555",
+      deviceSecret: "secret",
+      verificationUrl: "https://dropimg.io/connect/browser/11111111-2222-4333-8444-555555555555",
+      expiresAt: Math.floor(Date.now() / 1000) + 120,
+    });
+    const pending = await loadPendingPairing();
+    expect(pending?.pairingId).toContain("11111111");
+    expect(sync.has(PAIRING_KEY)).toBe(false);
+    await saveIntegrationToken("dropimg_it_abcdefghijklmnopqr_stu");
+    await disconnectAccount();
+    expect(await loadIntegrationToken()).toBeNull();
+    expect(await loadPendingPairing()).toBeNull();
   });
 
   it("keeps the capture disclosure on the device only", async () => {

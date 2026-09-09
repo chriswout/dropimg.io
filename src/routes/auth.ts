@@ -21,6 +21,7 @@ import {
   sessionCookieHeader,
 } from "../lib/auth/session";
 import { cookieSecure } from "../lib/auth/crypto";
+import { safeNextPath } from "../lib/auth/next-path";
 import {
   beginSocialOAuth,
   enabledSocialProviders,
@@ -447,13 +448,6 @@ authRoutes.post("/api/auth/logout-all", async (c) => {
     },
   });
 });
-
-function safeNextPath(raw: string | null | undefined): string | null {
-  if (!raw) return null;
-  if (!raw.startsWith("/oauth/authorize")) return null;
-  if (raw.includes("\n") || raw.includes("\r")) return null;
-  return raw;
-}
 
 function nextCookie(next: string, env: Cloudflare.Env): string {
   return [

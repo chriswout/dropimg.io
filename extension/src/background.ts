@@ -1,14 +1,29 @@
 /// <reference types="chrome" />
 import {
+  cancelBrowserPairing,
+  pollBrowserPairing,
+  startBrowserPairing,
   uploadAnonymous,
   uploadWithIntegrationToken,
 } from "./account-upload";
+import {
+  FULLPAGE_SETTLE_MS,
+  planFullpageCapture,
+  tileDrawRect,
+  type FullpageMeasure,
+  type FullpagePlan,
+} from "./fullpage";
 import {
   pushRecent,
   loadDisclosureAccepted,
   loadIntegrationToken,
   loadAccountProfile,
   loadLastExpiry,
+  loadPendingPairing,
+  savePendingPairing,
+  clearPendingPairing,
+  saveIntegrationToken,
+  saveAccountProfile,
 } from "./storage";
 import {
   CAPTURE_GAP_MS,
@@ -22,13 +37,16 @@ import {
   sleep,
   type CaptureMode,
   type CaptureResult,
+  type PairingState,
   type RegionRect,
 } from "./shared";
 
 const OFFSCREEN_PATH = "offscreen.html";
 const REGION_FILE = "region-overlay.js";
 const TOAST_FILE = "toast-inject.js";
+const FULLPAGE_FILE = "fullpage-inject.js";
 const TOAST_MS = 7000;
+const PAIRING_POLL_MS = 1500;
 
 let regionWaiter:
   | {
@@ -39,6 +57,7 @@ let regionWaiter:
   | null = null;
 
 let lastCaptureAt = 0;
+let pairingTimer: ReturnType<typeof setTimeout> | null = null;
 
 function dropimgClient(): "chrome-extension" | "edge-extension" {
   return /Edg\//.test(navigator.userAgent)
@@ -71,9 +90,24 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       try {
         sendResponse(result);
       } catch {
-        // Popup may already be closed (region flow).
+        if (mode === "fullpage") {
+          await finishWithoutPopup(result, tab?.id);
+        }
       }
     })();
+    return true;
+  }
+
+  if (message?.type === "START_BROWSER_PAIRING") {
+    void startPairingFlow().then(sendResponse);
+    return true;
+  }
+  if (message?.type === "CANCEL_BROWSER_PAIRING") {
+    void cancelPairingFlow().then(() => sendResponse({ status: "idle" }));
+    return true;
+  }
+  if (message?.type === "GET_PAIRING_STATE") {
+    void currentPairingState().then(sendResponse);
     return true;
   }
 });
@@ -166,7 +200,9 @@ async function captureAndUpload(mode: CaptureMode): Promise<CaptureResult> {
     const dataUrl =
       mode === "region"
         ? await captureRegion(tab)
-        : await captureVisible(tab.windowId);
+        : mode === "fullpage"
+          ? await captureFullpage(tab)
+          : await captureVisible(tab.windowId);
     return await uploadDataUrl(dataUrl);
   } catch (err) {
     const code =
@@ -213,6 +249,130 @@ async function injectFile(tabId: number, file: string): Promise<void> {
     target: { tabId },
     files: [file],
   });
+}
+
+type FullpageApi = {
+  measure: () => FullpageMeasure;
+  prepare: () => void;
+  hideOverlays: () => void;
+  scrollToY: (y: number) => { scrollY: number; scrollHeight: number };
+  restore: () => void;
+};
+
+async function captureFullpage(tab: chrome.tabs.Tab): Promise<string> {
+  if (!tab.id || tab.windowId == null) throw new Error("no_tab");
+  const tabId = tab.id;
+  const windowId = tab.windowId;
+  try {
+    await injectFile(tabId, FULLPAGE_FILE);
+  } catch {
+    throw new Error("restricted_page");
+  }
+
+  await assertSameTab(tabId);
+  const measure = await chrome.scripting
+    .executeScript({
+      target: { tabId },
+      func: () => {
+        const api = (
+          window as unknown as { __dropimg_fullpage__?: FullpageApi }
+        ).__dropimg_fullpage__;
+        if (!api) throw new Error("restricted_page");
+        api.prepare();
+        return api.measure();
+      },
+    })
+    .then(([res]) => res?.result as FullpageMeasure | undefined);
+  if (!measure) throw new Error("restricted_page");
+
+  const planned = planFullpageCapture(measure);
+  if (!planned.ok) throw new Error(planned.code);
+  const plan = planned.plan;
+  const tiles: Array<{ dataUrl: string; yCss: number }> = [];
+
+  try {
+    for (let i = 0; i < plan.yOffsets.length; i++) {
+      await assertSameTab(tabId);
+      const y = plan.yOffsets[i]!;
+      await chrome.scripting.executeScript({
+        target: { tabId },
+        func: (offset: number, hide: boolean) => {
+          const api = (
+            window as unknown as { __dropimg_fullpage__?: FullpageApi }
+          ).__dropimg_fullpage__;
+          if (!api) throw new Error("restricted_page");
+          if (hide) api.hideOverlays();
+          api.scrollToY(offset);
+        },
+        args: [y, i > 0],
+      });
+      await sleep(FULLPAGE_SETTLE_MS);
+      await assertSameTab(tabId);
+      tiles.push({ dataUrl: await captureVisible(windowId), yCss: y });
+      notifyFullpageProgress(i + 1, plan.yOffsets.length);
+    }
+    return await stitchFullpage(tiles, plan);
+  } finally {
+    try {
+      await chrome.scripting.executeScript({
+        target: { tabId },
+        func: () => {
+          const api = (
+            window as unknown as { __dropimg_fullpage__?: FullpageApi }
+          ).__dropimg_fullpage__;
+          api?.restore();
+        },
+      });
+    } catch {
+      // tab may have gone away
+    }
+  }
+}
+
+function notifyFullpageProgress(current: number, total: number): void {
+  try {
+    void chrome.runtime.sendMessage({ type: "FULLPAGE_PROGRESS", current, total });
+  } catch {
+    // popup closed
+  }
+}
+
+async function stitchFullpage(
+  tiles: Array<{ dataUrl: string; yCss: number }>,
+  plan: FullpagePlan,
+): Promise<string> {
+  const width = Math.max(1, Math.round(plan.widthCss * plan.dpr));
+  const height = Math.max(1, Math.round(plan.heightCss * plan.dpr));
+  const canvas = new OffscreenCanvas(width, height);
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("invalid_image");
+
+  for (const tile of tiles) {
+    const bmp = await dataUrlToBitmap(tile.dataUrl);
+    try {
+      const rect = tileDrawRect(
+        { yCss: tile.yCss, bitmapWidth: bmp.width, bitmapHeight: bmp.height },
+        plan,
+      );
+      if (!rect) continue;
+      ctx.drawImage(
+        bmp,
+        rect.sx,
+        rect.sy,
+        rect.sw,
+        rect.sh,
+        rect.dx,
+        rect.dy,
+        rect.dw,
+        rect.dh,
+      );
+    } finally {
+      bmp.close();
+    }
+  }
+
+  const blob = await canvas.convertToBlob({ type: "image/png" });
+  return blobToDataUrl(blob);
 }
 
 async function captureRegion(tab: chrome.tabs.Tab): Promise<string> {
@@ -401,6 +561,110 @@ async function writeClipboard(text: string): Promise<boolean> {
     return false;
   }
 }
+
+function broadcastPairing(state: PairingState): void {
+  try {
+    void chrome.runtime.sendMessage({ type: "PAIRING_STATE", state });
+  } catch {
+    // popup closed
+  }
+}
+
+async function currentPairingState(): Promise<PairingState> {
+  if (await loadIntegrationToken()) return { status: "connected" };
+  const pending = await loadPendingPairing();
+  if (pending) {
+    schedulePairingPoll();
+    return { status: "waiting", pairing: pending };
+  }
+  return { status: "idle" };
+}
+
+async function startPairingFlow(): Promise<PairingState> {
+  if (await loadIntegrationToken()) return { status: "connected" };
+  const existing = await loadPendingPairing();
+  if (existing) {
+    await chrome.tabs.create({ url: existing.verificationUrl });
+    schedulePairingPoll();
+    const state: PairingState = { status: "waiting", pairing: existing };
+    broadcastPairing(state);
+    return state;
+  }
+  const started = await startBrowserPairing(dropimgClient());
+  if (!started.ok) {
+    const state: PairingState = {
+      status: "error",
+      error: started.error,
+      code: started.code,
+    };
+    broadcastPairing(state);
+    return state;
+  }
+  await savePendingPairing(started.pairing);
+  await chrome.tabs.create({ url: started.pairing.verificationUrl });
+  schedulePairingPoll();
+  const state: PairingState = { status: "waiting", pairing: started.pairing };
+  broadcastPairing(state);
+  return state;
+}
+
+async function cancelPairingFlow(): Promise<void> {
+  stopPairingPoll();
+  const pending = await loadPendingPairing();
+  if (pending) await cancelBrowserPairing(pending);
+  await clearPendingPairing();
+  broadcastPairing({ status: "idle" });
+}
+
+function stopPairingPoll(): void {
+  if (pairingTimer) {
+    clearTimeout(pairingTimer);
+    pairingTimer = null;
+  }
+}
+
+function schedulePairingPoll(): void {
+  stopPairingPoll();
+  pairingTimer = setTimeout(() => {
+    void pollPairingOnce();
+  }, PAIRING_POLL_MS);
+}
+
+async function pollPairingOnce(): Promise<void> {
+  const pending = await loadPendingPairing();
+  if (!pending) return;
+  const result = await pollBrowserPairing(pending);
+  if (!result.ok) {
+    broadcastPairing({ status: "error", error: result.error, code: result.code });
+    schedulePairingPoll();
+    return;
+  }
+  if (result.status === "approved") {
+    await saveIntegrationToken(result.token);
+    await saveAccountProfile(result.profile);
+    await clearPendingPairing();
+    stopPairingPoll();
+    broadcastPairing({ status: "connected" });
+    return;
+  }
+  if (result.status === "pending") {
+    schedulePairingPoll();
+    return;
+  }
+  await clearPendingPairing();
+  stopPairingPoll();
+  const error =
+    result.status === "expired"
+      ? msg("connectionExpired")
+      : result.status === "cancelled"
+        ? msg("connectionCancelled")
+        : msg("err_connect_failed");
+  broadcastPairing({ status: "error", error, code: result.status });
+}
+
+void (async () => {
+  if (await loadPendingPairing()) schedulePairingPoll();
+})();
 
 async function notify(title: string, message: string): Promise<void> {
   try {

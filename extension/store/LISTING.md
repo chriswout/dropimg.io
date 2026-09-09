@@ -3,7 +3,7 @@
 Everything the dashboard asks for, in the order it asks. Edge Add-ons reuses the
 same package and copy.
 
-Package: `npm run ext:pack` → `extension/dropimg-extension.zip` (v1.6.1).
+Package: `npm run ext:pack` → `extension/dropimg-extension.zip` (v1.7.0).
 
 ---
 
@@ -18,7 +18,7 @@ dropimg.io — Screenshot to link
 **Summary** (132 char limit; this is 108)
 
 ```
-Capture the visible tab or a region, get a temporary share link on your clipboard. No account needed.
+Connect your DropIMG account in one click and capture full webpages from top to bottom.
 ```
 
 **Category:** Productivity
@@ -37,8 +37,13 @@ account, no sign-up, no waiting on a dialog.
 CAPTURE
 • Visible tab — everything you can see, one click
 • Region — draw a rectangle over the part you actually mean
-• Alt+Shift+D — silent capture with no popup at all, link copied and a small
-  toast on the page to confirm
+• Full page — capture the entire webpage, not only what is currently visible
+• Alt+Shift+D — silent visible capture with no popup at all, link copied and a
+  small toast on the page to confirm
+
+ACCOUNT CONNECTION
+• Connect your DropIMG account with one click — no token copying or pasting
+• Choose how long each link lives, and save captures to My drops
 
 LINKS THAT EXPIRE
 Every link has a lifetime and then it's gone. Nothing you share sticks around
@@ -55,11 +60,11 @@ Your last 10 links stay in the popup so you can re-copy, open or delete one
 without leaving the page you're on. They live on your device, not on a server.
 
 PRIVACY
-• Only reaches dropimg.io — no other site, ever
+• The extension only connects directly to dropimg.io
 • No analytics, no tracking, no ads, no remote code
 • Camera and location metadata is stripped from every upload before it is stored
 • Captures happen only when you ask: a click or the keyboard shortcut
-• If you connect an account, the token stays on that device and is never synced
+• If you connect an account, the credential stays on that device and is never synced
 
 Works in Chrome and Edge. Free and open about what it does.
 
@@ -81,12 +86,13 @@ Questions: https://dropimg.io/contact
 **Single purpose**
 
 ```
-DropIMG captures a screenshot of the tab the user is currently on — either the
-whole visible area or a region they draw — uploads it to dropimg.io, and returns
-a temporary share link to their clipboard. Every feature in the extension exists
-to serve that one flow: the capture modes produce the image, the recent list
-re-copies links already created, and the optional account connection lets the
-user choose how long a link lives before it expires.
+DropIMG captures a screenshot of the tab the user is currently on — the visible
+area, a region they draw, or the full webpage — uploads it to dropimg.io, and
+returns a temporary share link to their clipboard. Every feature in the
+extension exists to serve that one flow: the capture modes produce the image,
+the recent list re-copies links already created, and the optional one-click
+account connection lets the user save captures to their DropIMG account and
+choose how long a link lives before it expires.
 ```
 
 **Permission justifications** — one per permission, as the dashboard requires.
@@ -104,24 +110,25 @@ avoid requesting standing access to any site.
 `scripting`
 
 ```
-Two uses, both on the tab the user just captured. First, region capture injects
-a one-time overlay so the user can drag a rectangle to select part of the page;
-it is removed as soon as they select or press Esc. Second, after a silent or
-region capture the extension injects a small toast showing the resulting link
-with copy and open buttons, because the popup is closed in those flows and there
-would otherwise be no way to surface the result. No script is injected until the
-user triggers a capture.
+Used only on the tab the user just captured. Region capture injects a one-time
+overlay so the user can drag a rectangle; it is removed as soon as they select
+or press Esc. Full-page capture injects a helper to measure the page, scroll
+between sections, temporarily hide fixed/sticky overlays so they are not
+repeated, then restore scroll position and styles. After a silent or region
+capture the extension injects a small toast showing the resulting link. No
+script is injected until the user triggers a capture.
 ```
 
 `storage`
 
 ```
 Stores, on the user's own device: the last 10 share links so they can be
-re-copied from the popup, the last capture mode used, and — only if the user
-chooses to connect a DropIMG account — their personal integration token and the
-link lifetime they picked. The token is kept in local storage specifically so it
-is never synced off the device. Nothing in storage is transmitted anywhere
-except the token, which authenticates the user's own uploads to dropimg.io.
+re-copied from the popup, the last capture mode used, a short-lived pairing
+session while connecting an account, and — only if the user completes connect —
+their DropIMG credential and the link lifetime they picked. The credential is
+kept in local storage specifically so it is never synced off the device. Nothing
+in storage is transmitted anywhere except that credential, which authenticates
+the user's own uploads to dropimg.io.
 ```
 
 `offscreen`
@@ -146,10 +153,11 @@ and only to report success with the link or an error.
 Host permission `https://dropimg.io/*`
 
 ```
-The upload API. Screenshots are POSTed to dropimg.io, and the extension calls
-the same origin to validate a connected account token and to delete an image the
-user removes from the recent list. This is the only host the extension contacts;
-there is no analytics endpoint and no third-party service of any kind.
+The DropIMG API. Screenshots are POSTed to dropimg.io. The same origin is used
+to start and finish one-click account connection, to authenticate connected
+uploads, and to delete an image the user removes from the recent list. The
+extension only connects directly to dropimg.io; there is no analytics endpoint
+and no third-party service of any kind.
 ```
 
 **Data use declarations**
@@ -159,7 +167,7 @@ there is no analytics endpoint and no third-party service of any kind.
 | Personally identifiable information | **No** | If an account is connected the server returns a masked email (`c***@example.com`) for display only. Nothing identifying is read from the browser or the pages visited. |
 | Health information | No | — |
 | Financial and payment information | No | Subscriptions are bought on the website, never in the extension. |
-| Authentication information | **Yes** | The optional integration token. Supplied by the user, stored on-device, sent only to dropimg.io to authenticate their own uploads. |
+| Authentication information | **Yes** | The optional account credential, issued after one-click connect (or a power-user token). Stored on-device, sent only to dropimg.io to authenticate the user's own uploads. |
 | Personal communications | No | — |
 | Location | No | Location metadata is actively stripped from uploads. |
 | Web history | No | No browsing history is read, stored or transmitted. |
@@ -214,13 +222,16 @@ Unpacked source is not needed — the uploaded zip is the review build.
    Expect: a share link on the clipboard and a success state in the popup.
 4. Switch mode to Region. Click Capture. Drag a rectangle on the page.
    Expect: overlay appears, then a toast with the new link after you release.
-5. Press Alt+Shift+D on a normal https page (no popup).
-   Expect: link copied and a small toast on the page. No dialog.
-6. Open the popup again. Confirm the last captures appear under Recent.
+5. Switch mode to Full page on a page taller than the viewport. Click Capture.
+   Expect: the page scrolls, then a single tall screenshot is uploaded.
+6. Press Alt+Shift+D on a normal https page (no popup).
+   Expect: visible-tab capture, link copied, and a small toast. No dialog.
+7. Open the popup again. Confirm the last captures appear under Recent.
    Re-copy one, open one, delete one.
-7. Optional account: on https://dropimg.io sign in, open /app/integrations,
-   create a Browser Extension token, paste it under Connect in the popup.
-   Expect: lifetime picker appears. Capture once more. Disconnect afterwards.
+8. Optional account: click Connect account. Sign in on the DropIMG tab if asked,
+   then click Connect. Return to the popup.
+   Expect: Connected with a masked email and a lifetime picker. No token shown.
+   Capture once more. Disconnect afterwards.
 
 Do not test on chrome://, the Web Store, or PDFs — those pages cannot host the
 region overlay or toast; a notification is the fallback there.

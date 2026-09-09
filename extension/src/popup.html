@@ -16,6 +16,7 @@
       <div class="modes" role="tablist" aria-label="Capture mode">
         <button type="button" class="mode" data-mode="visible" id="mode-visible"></button>
         <button type="button" class="mode" data-mode="region" id="mode-region"></button>
+        <button type="button" class="mode" data-mode="fullpage" id="mode-fullpage"></button>
       </div>
       <p id="mode-hint" class="hint mode-hint"></p>
 
@@ -64,23 +65,35 @@
         <div id="account-anon">
           <p id="account-anon-hint" class="hint"></p>
           <button id="btn-connect" type="button" class="btn secondary"></button>
+          <button id="btn-use-token" type="button" class="linkish"></button>
+        </div>
+        <div id="account-waiting" class="hidden">
+          <p id="connect-title" class="title"></p>
+          <p id="connect-steps" class="hint"></p>
+          <p id="waiting-approval" class="hint waiting"></p>
+          <button id="btn-connect-cancel" type="button" class="btn secondary"></button>
+          <p id="connect-error" class="hint err" hidden></p>
         </div>
         <div id="account-connect" class="hidden">
-          <p id="connect-steps" class="hint"></p>
+          <p id="token-steps" class="hint"></p>
           <a id="open-account" class="btn secondary" href="#" target="_blank" rel="noopener"></a>
           <label class="sr-only" for="token-input" id="token-input-label"></label>
           <input id="token-input" type="password" autocomplete="off" spellcheck="false" />
           <div class="account-actions">
             <button id="btn-connect-save" type="button" class="btn primary"></button>
-            <button id="btn-connect-cancel" type="button" class="btn secondary"></button>
+            <button id="btn-token-cancel" type="button" class="btn secondary"></button>
           </div>
-          <p id="connect-error" class="hint err" hidden></p>
+          <p id="token-error" class="hint err" hidden></p>
         </div>
         <div id="account-connected" class="hidden">
-          <p id="account-email" class="account-email"></p>
-          <p id="account-plan" class="account-plan"></p>
+          <p id="account-connected-label" class="account-connected-label"></p>
+          <div class="account-identity">
+            <p id="account-email" class="account-email"></p>
+            <p id="account-plan" class="account-plan"></p>
+          </div>
           <label class="expiry-label" for="expiry-select" id="expiry-label"></label>
           <select id="expiry-select"></select>
+          <a id="btn-manage-account" class="btn secondary" href="#" target="_blank" rel="noopener"></a>
           <button id="btn-disconnect" type="button" class="btn secondary"></button>
           <p id="disconnect-hint" class="hint subtle"></p>
         </div>

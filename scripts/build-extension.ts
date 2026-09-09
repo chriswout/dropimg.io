@@ -64,6 +64,7 @@ await esbuild.build({
   entryPoints: [
     join(src, "src/region-overlay.ts"),
     join(src, "src/toast-inject.ts"),
+    join(src, "src/fullpage-inject.ts"),
   ],
   outdir: dist,
   bundle: true,

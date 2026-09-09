@@ -17,7 +17,7 @@ export function formatBytes(bytes: number): string {
 /** Chrome limits captureVisibleTab to 2/sec — stay comfortably under. */
 export const CAPTURE_GAP_MS = 650;
 
-export type CaptureMode = "visible" | "region";
+export type CaptureMode = "visible" | "region" | "fullpage";
 
 export type CaptureOk = {
   ok: true;
@@ -104,11 +104,29 @@ export function integrationTokenLooksValid(token: string): boolean {
   return /^dropimg_it_[A-Za-z0-9_-]{22,128}$/.test(token.trim());
 }
 
+export type PendingPairing = {
+  pairingId: string;
+  deviceSecret: string;
+  verificationUrl: string;
+  expiresAt: number;
+};
+
+export type PairingState =
+  | { status: "idle" }
+  | { status: "waiting"; pairing: PendingPairing }
+  | { status: "connected" }
+  | { status: "error"; error: string; code?: string };
+
 export type ExtMessage =
   | { type: "CAPTURE_AND_UPLOAD"; mode: CaptureMode }
   | { type: "OFFSCREEN_WRITE_CLIPBOARD"; text: string }
   | { type: "REGION_RESULT"; ok: true; rect: RegionRect }
-  | { type: "REGION_RESULT"; ok: false; code: "region_cancelled" };
+  | { type: "REGION_RESULT"; ok: false; code: "region_cancelled" }
+  | { type: "FULLPAGE_PROGRESS"; current: number; total: number }
+  | { type: "START_BROWSER_PAIRING" }
+  | { type: "CANCEL_BROWSER_PAIRING" }
+  | { type: "GET_PAIRING_STATE" }
+  | { type: "PAIRING_STATE"; state: PairingState };
 
 export type RegionRect = {
   x: number;

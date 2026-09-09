@@ -236,7 +236,7 @@ describe("Auth magic link", () => {
       headers: { Cookie: cookie },
     });
     expect(compat.status).toBe(200);
-    expect(await compat.text()).toContain("Connect extension");
+    expect(await compat.text()).toContain("Create a token manually");
 
     const page = await worker.fetch("https://dropimg.io/app/account", {
       headers: { Cookie: cookie },

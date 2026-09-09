@@ -129,7 +129,8 @@ describe("Account pages share site chrome", () => {
     expect(billing).toContain("/api/billing/portal");
 
     const integrations = renderIntegrationsPage(props);
-    expect(integrations).toContain("Connect extension");
+    expect(integrations).toContain("Create a token manually");
+    expect(integrations).toContain("Connect from the DropIMG extension");
     expect(integrations).toContain("Available on the Chrome Web Store");
     expect(integrations).toContain(
       "https://chromewebstore.google.com/detail/dropimgio-screenshot-to-link/lhgmnekggpifejiphipjebjlcphabhib",
