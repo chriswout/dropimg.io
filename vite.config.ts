@@ -12,6 +12,16 @@ import { PAGE_IDS, pageDir } from "./marketing/pages";
 
 const root = dirname(fileURLToPath(import.meta.url));
 
+/**
+ * Workers AI has no local simulator. The Vite plugin therefore starts a remote
+ * proxy by default, which demands CLOUDFLARE_API_TOKEN in CI and can reach
+ * live Cloudflare from a developer laptop. Keep Vite on local bindings unless
+ * someone explicitly opts in (for example to experiment with moderation).
+ */
+function viteRemoteBindingsEnabled(): boolean {
+  return process.env.CLOUDFLARE_VITE_REMOTE_BINDINGS === "true";
+}
+
 function marketingHtmlInputs(): Record<string, string> {
   const input: Record<string, string> = {};
   for (const pageId of PAGE_IDS) {
@@ -38,7 +48,7 @@ function marketingHtmlInputs(): Record<string, string> {
 }
 
 export default defineConfig({
-  plugins: [cloudflare()],
+  plugins: [cloudflare({ remoteBindings: viteRemoteBindingsEnabled() })],
   // MPA inputs must be client-scoped — root build.rollupOptions breaks the Worker env.
   environments: {
     client: {

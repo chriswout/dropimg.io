@@ -1,4 +1,5 @@
 import { defineConfig, devices } from "@playwright/test";
+import { localViteWebServerEnv } from "./tests/support/local-vite-env";
 
 /**
  * Visual QA only. Captures full-page screenshots of the redesign at the two
@@ -44,9 +45,10 @@ export default defineConfig({
   webServer: process.env.E2E_BASE_URL
     ? undefined
     : {
-        command: `npm run generate:pages && npm run generate:site-assets && npx wrangler d1 migrations apply dropimg --local && npx vite --host 127.0.0.1 --port ${port}`,
+        command: `env -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_ACCOUNT_ID -u CLOUDFLARE_ENV CLOUDFLARE_VITE_REMOTE_BINDINGS=false bash -c 'npm run generate:pages && npm run generate:site-assets && npx wrangler d1 migrations apply dropimg --local && npx vite --host 127.0.0.1 --port ${port}'`,
         url: `${baseURL}/health`,
         reuseExistingServer: !process.env.CI,
         timeout: 180_000,
+        env: localViteWebServerEnv(),
       },
 });
