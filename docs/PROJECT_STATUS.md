@@ -1,6 +1,6 @@
 # DropIMG Project Status
 
-Canonical snapshot of the repository as of commit `60a5b0a` plus the documentation reset that follows it. Prefer this file over git history and over [`docs/plans/media-backend-for-ai-websites.md`](plans/media-backend-for-ai-websites.md).
+Canonical snapshot as of commit `a99df9e` plus the staging-qualification update that follows it. Prefer this file over git history and over [`docs/plans/media-backend-for-ai-websites.md`](plans/media-backend-for-ai-websites.md).
 
 ---
 
@@ -22,9 +22,11 @@ Public alias:
 
 `https://dropimg.io/m/{orgSlug}/{projectSlug}/{path}`
 
+**Public media aliases provide no confidentiality. Knowledge of the URL is sufficient for access. Alias entropy is not an authorization mechanism.**
+
 Replacing the file creates a new R2 object and version row. The alias URL does not change. Originals live at `p/{org}/{project}/{asset}/{version}/original`.
 
-This is an **engineering preview**, not a production product. There is no media dashboard, no media MCP tools, and production is flagged off.
+This is **staging-qualified Phase 1**, not a production product. There is no media dashboard, no media MCP tools, and production remains flagged off.
 
 ---
 
@@ -43,42 +45,41 @@ Auth for humans is passwordless (magic link, Google, GitHub). Billing is PayPal 
 
 ## Current Production State
 
-Verified from [`wrangler.jsonc`](../wrangler.jsonc) `env.production` and remote D1 **list** (not a deploy).
+Verified from live Worker settings and remote D1. **No production deploy was performed during Phase 1A.**
 
-Enabled in config:
+Last production Worker deployment: `2026-09-13T23:00:30Z` (before the media foundation commit). Runtime plaintext vars do **not** yet include `MEDIA_ENABLED`; `mediaEnabled()` is therefore false. Production D1 has **`0012_browser_pairings.sql` applied** and **`0013_media_foundation.sql` still pending**.
+
+Enabled in the last production deploy:
 
 - Billing (PayPal live)
-- Long TTL (Free 1h–30d, Pro +90d/180d)
+- Long TTL
 - Moderation classify **on**, enforce **off** (shadow)
-- Direct drop URLs exist in git; they are live on production **only if** a production deploy after `60a5b0a` happened. This reset did **not** deploy production. Last production Worker SHA was not verified from Cloudflare.
-
-Disabled in config:
-
-- `MEDIA_ENABLED=false` → `/api/v1/media/*` and `/m/*` 404
 - `PRO_50MB_ENABLED=false`
 - `UGC_SHARE_ADS_ENABLED=false`
 
-Remote production D1: **`0013_media_foundation.sql` is pending** (not applied). `0012_browser_pairings.sql` is already applied.
+Keep `MEDIA_ENABLED=false` in [`wrangler.jsonc`](../wrangler.jsonc) `env.production`. Do not deploy production until a durable GitHub Actions token exists and Phase 2 planning is ready.
 
 ---
 
 ## Current Staging State
 
-Intended by `wrangler.jsonc` `env.staging`: `MEDIA_ENABLED=true`, billing sandbox, long TTL, Pro 50MB, moderation off.
+Verified from Cloudflare Worker settings, remote D1, and live HTTP.
 
-**Actual remote status after push `60a5b0a`:** GitHub Actions run [34916800858](https://github.com/chriswout/dropimg.io/actions/runs/34916800858) **failed at Playwright e2e** (`vite` / Cloudflare plugin demanded `CLOUDFLARE_API_TOKEN` to start a remote proxy). Steps after e2e were skipped: **staging D1 migrate did not run, staging Worker did not deploy.**
+GitHub Actions run [34975865960](https://github.com/chriswout/dropimg.io/actions/runs/34975865960) succeeded on rerun after Playwright e2e was restored. Staging D1 migrate and Worker deploy both ran.
 
-Remote staging D1 pending: **`0012_browser_pairings.sql` and `0013_media_foundation.sql`**. Staging is behind production on pairing schema.
-
-Do not treat staging as a soak of Phase 1 media until a deploy that applies `0013` actually succeeds.
+- Staging Worker deployment: `2026-09-15T13:47:58Z` (version `b37d729d-f9ab-4553-9abc-f3e9e44f4d6f`)
+- Runtime flags: `MEDIA_ENABLED=true`, `BILLING_ENABLED=true`, `PAYPAL_ENV=sandbox`, `LONG_TTL_ENABLED=true`, `PRO_50MB_ENABLED=true`, `MODERATION_ENABLED=false`, `MODERATION_ENFORCE=false`, `ENVIRONMENT=staging`
+- Unauthenticated `GET /api/v1/media/orgs` returns **401** (flag on), not 404
+- Remote D1: **`0012_browser_pairings.sql` and `0013_media_foundation.sql` applied** at `2026-09-15 13:47:46`
+- Permanent originals observed at `p/{org}/{project}/{asset}/{version}/original`
 
 ---
 
 ## Feature Flags
 
-| Flag | Development | Staging config | Production config | Gates |
+| Flag | Development | Staging runtime | Production runtime | Gates |
 |---|---|---|---|---|
-| `MEDIA_ENABLED` | `false` | `true` | `false` | `/api/v1/media/*` and `GET /m/*` |
+| `MEDIA_ENABLED` | `false` | `true` | unset / effectively `false` | `/api/v1/media/*` and `GET /m/*` |
 | `BILLING_ENABLED` | `false` | `true` | `true` | PayPal checkout, sync, portal, Pro CTA |
 | `LONG_TTL_ENABLED` | `false` | `true` | `true` | Expiry allowlist beyond legacy 24h |
 | `PRO_50MB_ENABLED` | `false` | `true` | `false` | Pro 50MB upload cap |
@@ -102,32 +103,30 @@ Drops (production product):
 - REST `/api/v1/images`, MCP `upload_image` / `get_image` / `list_images` / `delete_image`
 - Cron expiry of `images`; R2 lifecycle on `o/24h|7d|30d|pro/` only
 
-Media Phase 1 **in git**, behind the flag:
+Media Phase 1 **in git and soaked on staging**, behind the production flag:
 
-- Migration [`migrations/0013_media_foundation.sql`](../migrations/0013_media_foundation.sql)
+- Migration [`migrations/0013_media_foundation.sql`](../migrations/0013_media_foundation.sql) applied on staging
 - Personal org bootstrap, projects, hashed `dropimg_pk_*` keys
 - Ingest: inspect → strip → scan → R2 `p/` → D1 (never `images`)
 - Stable aliases, immutable versions, `?v=` old version, optimistic alias promote
 - Idempotency-Key on create/replace (success only, no TTL)
-- Tenant 404 isolation tests; flag-off 404 tests; quota 5GB / 10MB
+- Tenant 404 isolation; flag-off 404 tests; quota 5GB / 10MB
 - Account delete 409 if the user is the sole owner of an org with live assets
 - Account delete revokes project credentials when delete is allowed
+- Playwright e2e boots a local Worker without a Cloudflare API token
 
 ---
 
-## Engineering Preview
+## Milestone
 
-Call this milestone:
+**DropIMG Media — Phase 1 Foundation / Staging Qualified**
 
-**DropIMG Media — Phase 1 Foundation / Engineering Preview**
-
-It is **COMPLETE WITH ISSUES** as a foundation, not as a shipped product:
+It is a soaked foundation, not a shipped product:
 
 - No `/app` media UI, no getting-started docs for agents, no OpenAPI media paths
 - No media MCP tools; existing MCP remains drop-only
-- No project-key revoke/list UI (mint exists; account delete now revokes)
+- No project-key revoke/list API or UI (mint exists; account delete revokes; `DELETE …/keys/:id` returns 405)
 - No asset delete/transfer API (`deleted_at` is schema-only) → owners with live assets cannot self-serve account deletion
-- Staging soak has **not** happened (CI never reached migrate/deploy for `60a5b0a`)
 - Concurrent replace records usage even if the alias pointer loses the race
 - Quota is check-then-write (TOCTOU); replace versions accumulate toward 5GB
 
@@ -135,17 +134,28 @@ It is **COMPLETE WITH ISSUES** as a foundation, not as a shipped product:
 
 ## Known Risks
 
+### Release engineering / deployment reliability
+
 | Rank | Issue |
 |---|---|
-| HIGH | CI e2e on `main` fails before migrate/deploy (Playwright webServer / Vite Cloudflare plugin remote proxy). Recent `main` pushes did not update staging. |
+| HIGH | GitHub Actions had **no** `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_ACCOUNT_ID` repository secrets. The successful staging deploy used a short-lived Wrangler OAuth token placed in Actions so migrate/deploy could run. That token expires quickly. Replace it with a dedicated Cloudflare API token (Workers Scripts Edit + D1 Edit, scoped to this account) via `gh secret set CLOUDFLARE_API_TOKEN`. Keep `CLOUDFLARE_ACCOUNT_ID`. |
+
+### Security
+
+| Rank | Issue |
+|---|---|
 | HIGH | No media asset delete/transfer. Sole owners with live assets are stuck at account-delete 409. |
-| MEDIUM | Staging D1 behind production (`0012`+`0013` pending on staging; only `0013` pending on production). |
-| MEDIUM | Idempotency has no expiry; parallel identical keys can race two creates. |
-| MEDIUM | Public aliases are unauthenticated by design; path is unguessable but not secret. |
+| MEDIUM | Public media aliases provide no confidentiality. Knowledge of the URL is sufficient for access. Alias entropy is not an authorization mechanism. |
+
+### Other
+
+| Rank | Issue |
+|---|---|
+| MEDIUM | Idempotency has no expiry; parallel identical keys can race two creates. Over-long `Idempotency-Key` values are ignored (request proceeds as non-idempotent). |
 | LOW | Production moderation is shadow-only. `docs/stripe-underwriting.md` still talks as if `/i/:slug` were the only public URL. |
 | INFORMATIONAL | `to_delete.md` existed locally, was **never committed**, and was deleted. No rotation required for that file. Local `*creds*.md` files remain gitignored. |
 
-Isolation (`images` / cron / `o/` vs media tables / `p/`) is **not** a blocker. Cron cannot delete `p/` objects. Media ingest does not insert `images` rows.
+Isolation (`images` / cron / `o/` vs media tables / `p/`) is **not** a blocker. Cron cannot delete `p/` objects. Media ingest does not insert `images` rows. Staging qualification deleted a temporary drop and the permanent alias continued to serve.
 
 ---
 
@@ -154,18 +164,24 @@ Isolation (`images` / cron / `o/` vs media tables / `p/`) is **not** a blocker. 
 [`.github/workflows/deploy.yml`](../.github/workflows/deploy.yml):
 
 1. Push to `main` → `TARGET=staging`
-2. `npm test` → local D1 migrate → `npm run test:e2e` → **remote D1 migrate for TARGET** → build → `wrangler deploy`
-3. Production is `workflow_dispatch` only
+2. **Unit and integration tests** (`npm test`) — no Cloudflare credentials
+3. Local D1 migrate
+4. **Playwright e2e** — local Vite/Worker, remote bindings off, no Cloudflare credentials
+5. **Remote D1 migrate for TARGET** — uses Actions secrets
+6. **Build** — no Cloudflare credentials
+7. **Deploy Worker** — uses Actions secrets
 
-If e2e fails, migrate and deploy are skipped. That is the current `60a5b0a` outcome.
+Production is `workflow_dispatch` only. Failed e2e still skips migrate/deploy.
+
+Latest successful staging CI: [34975865960](https://github.com/chriswout/dropimg.io/actions/runs/34975865960) (`a99df9e`).
 
 `0013` is:
 
 - Committed
-- Exercised in local/integration tests (`applyD1Migrations`)
-- **Not** applied to staging remote D1
+- Exercised in local/integration tests
+- **Applied to staging remote D1**
 - **Not** applied to production remote D1
-- Safe to apply on production while `MEDIA_ENABLED=false` (empty tables, routes 404). Do not enable the production flag until soak is real.
+- Safe to apply on production while `MEDIA_ENABLED=false`. Do not enable the production flag.
 
 R2 lifecycle JSON has **no** `p/` delete rule. Do not add one.
 
@@ -173,7 +189,7 @@ R2 lifecycle JSON has **no** `p/` delete rule. Do not add one.
 
 ## Current Milestone
 
-**DropIMG Media — Phase 1 Foundation / Engineering Preview**
+**DropIMG Media — Phase 1 Foundation / Staging Qualified**
 
 ---
 
@@ -181,7 +197,7 @@ R2 lifecycle JSON has **no** `p/` delete rule. Do not add one.
 
 **Phase 2 — Developer Experience + Media MCP**
 
-Do not start until staging has `0013` applied, media ingest works on staging, and production remains `MEDIA_ENABLED=false`.
+Do not start until a durable GitHub Actions Cloudflare token is in place. Production remains `MEDIA_ENABLED=false`.
 
 ### Phase 2 Proposed Scope
 
@@ -217,5 +233,6 @@ Custom domains, teams/seats, SSO, transforms, AVIF pipelines, resize presets, Qu
 - `removeImage` / account-delete image sweep: `images` only
 - Media ingest: `INSERT` into `assets` / `asset_versions` / `asset_aliases` only
 - Tests: creating a project does not change `images` count; cron leaves a `p/` object in R2
+- Staging: deleting a temporary drop left the permanent `/m/…` alias serving
 
-Local Vitest at this reset: **49 files, 345 tests, 0 failed**. There is no `lint` script. `npx tsc --noEmit` is not in CI and currently fails on pre-existing extension/DOM typing plus wrangler test Response types; it is not a ship gate. GitHub Actions `npm test` on `60a5b0a` passed; `npm run test:e2e` failed before migrate/deploy.
+Local gates for the e2e restore: **50 files, 348 tests, 0 failed**; Playwright e2e **21 passed**; default and `CLOUDFLARE_ENV=staging` builds passed. There is no `lint` script. `npx tsc --noEmit` is not in CI and still fails on pre-existing extension/DOM typing plus wrangler test Response types; it is not a ship gate.
