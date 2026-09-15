@@ -47,6 +47,15 @@ jobs:
       - name: Playwright e2e
         run: npm run test:e2e
 
+      # Requires a durable Cloudflare API token (Workers Scripts Edit + D1 Edit),
+      # not a short-lived `wrangler login` OAuth token.
+      - name: Verify Cloudflare credentials
+        if: env.TARGET == 'staging' || env.TARGET == 'production'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: npx wrangler whoami
+
       - name: Apply remote D1 migrations (staging)
         if: env.TARGET == 'staging'
         env:

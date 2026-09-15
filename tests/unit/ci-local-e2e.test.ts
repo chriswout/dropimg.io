@@ -9,6 +9,7 @@ describe("local e2e must not require live Cloudflare", () => {
   it("keeps Cloudflare credentials off the default CI job env", () => {
     expect(workflow).toContain("Unit and integration tests");
     expect(workflow).toContain("Playwright e2e");
+    expect(workflow).toContain("Verify Cloudflare credentials");
     expect(workflow).toContain("Apply remote D1 migrations (staging)");
     expect(workflow).toContain("Build");
     expect(workflow).toContain("Deploy Worker");
