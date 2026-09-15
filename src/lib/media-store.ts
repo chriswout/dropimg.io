@@ -1,7 +1,10 @@
 import { inspectImage } from "./inspect";
 import {
+  MEDIA_IDEMPOTENCY_MAX_KEY_LENGTH,
+  MEDIA_IDEMPOTENCY_TTL_SECONDS,
   PHASE1_PERM_MAX_UPLOAD_BYTES,
   PHASE1_PERM_STORAGE_BYTES,
+  type MediaIdempotencyOperation,
 } from "./media-config";
 import { mediaAliasUrl, mediaVersionUrl, parseAliasPath, permanentOriginalKey } from "./media-path";
 import { mapModerationFail } from "./upload-store";
@@ -20,6 +23,16 @@ export type MediaIngestFail = {
   code: string;
   error: string;
 };
+
+export type IdempotencyParse =
+  | { present: false }
+  | { present: true; ok: true; key: string }
+  | { present: true; ok: false; code: "invalid_idempotency_key" | "idempotency_key_too_long"; error: string };
+
+export type IdempotencyReplay =
+  | { kind: "miss" }
+  | { kind: "replay"; status: number; body: unknown }
+  | { kind: "conflict"; error: string };
 
 export type StoredOriginal = {
   bytes: ArrayBuffer;
@@ -131,56 +144,123 @@ export async function orgStorageBytes(db: D1Database, orgId: string): Promise<nu
   return Number(row?.bytes ?? 0);
 }
 
+export function parseIdempotencyHeader(raw: string | undefined): IdempotencyParse {
+  if (raw == null || raw === "") return { present: false };
+  const key = raw.trim();
+  if (!key) {
+    return {
+      present: true,
+      ok: false,
+      code: "invalid_idempotency_key",
+      error: "Idempotency-Key must be 1–128 printable characters",
+    };
+  }
+  if (key.length > MEDIA_IDEMPOTENCY_MAX_KEY_LENGTH) {
+    return {
+      present: true,
+      ok: false,
+      code: "idempotency_key_too_long",
+      error: `Idempotency-Key must be at most ${MEDIA_IDEMPOTENCY_MAX_KEY_LENGTH} characters`,
+    };
+  }
+  if (/[\u0000-\u001f\u007f]/.test(key)) {
+    return {
+      present: true,
+      ok: false,
+      code: "invalid_idempotency_key",
+      error: "Idempotency-Key contains invalid characters",
+    };
+  }
+  return { present: true, ok: true, key };
+}
+
+/** @deprecated Use parseIdempotencyHeader. Oversized/malformed keys are rejected, not ignored. */
+export function parseIdempotencyKey(raw: string | undefined): string | null {
+  const parsed = parseIdempotencyHeader(raw);
+  return parsed.present && parsed.ok ? parsed.key : null;
+}
+
 export async function loadIdempotentResponse(
   db: D1Database,
-  orgId: string,
-  key: string,
-): Promise<{ status: number; body: unknown } | null> {
+  input: {
+    orgId: string;
+    projectId: string;
+    operation: MediaIdempotencyOperation;
+    key: string;
+    now?: number;
+  },
+): Promise<IdempotencyReplay> {
+  const now = input.now ?? Math.floor(Date.now() / 1000);
   const row = await db
     .prepare(
-      `SELECT status, response_json FROM media_idempotency WHERE key = ? AND org_id = ? LIMIT 1`,
+      `SELECT status, response_json, operation, expires_at
+       FROM media_idempotency WHERE key = ? AND org_id = ? LIMIT 1`,
     )
-    .bind(idempotencyPrimaryKey(orgId, key), orgId)
-    .first<{ status: number; response_json: string }>();
-  if (!row) return null;
+    .bind(idempotencyPrimaryKey(input.orgId, input.projectId, input.key), input.orgId)
+    .first<{
+      status: number;
+      response_json: string;
+      operation: string | null;
+      expires_at: number | null;
+    }>();
+  if (!row) return { kind: "miss" };
+  if (row.expires_at == null || row.expires_at <= now) {
+    await db
+      .prepare(`DELETE FROM media_idempotency WHERE key = ? AND org_id = ?`)
+      .bind(idempotencyPrimaryKey(input.orgId, input.projectId, input.key), input.orgId)
+      .run();
+    return { kind: "miss" };
+  }
+  if (row.operation && row.operation !== input.operation) {
+    return {
+      kind: "conflict",
+      error: "Idempotency-Key was already used for a different operation",
+    };
+  }
   try {
-    return { status: row.status, body: JSON.parse(row.response_json) as unknown };
+    return { kind: "replay", status: row.status, body: JSON.parse(row.response_json) as unknown };
   } catch {
-    return null;
+    return { kind: "miss" };
   }
 }
 
 export async function saveIdempotentResponse(
   db: D1Database,
-  orgId: string,
-  key: string,
-  status: number,
-  body: unknown,
-  now: number,
+  input: {
+    orgId: string;
+    projectId: string;
+    operation: MediaIdempotencyOperation;
+    key: string;
+    status: number;
+    body: unknown;
+    now: number;
+  },
 ): Promise<void> {
   try {
     await db
       .prepare(
-        `INSERT INTO media_idempotency (key, org_id, status, response_json, created_at)
-         VALUES (?, ?, ?, ?, ?)`,
+        `INSERT INTO media_idempotency
+          (key, org_id, status, response_json, created_at, expires_at, operation, project_id)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
       )
-      .bind(idempotencyPrimaryKey(orgId, key), orgId, status, JSON.stringify(body), now)
+      .bind(
+        idempotencyPrimaryKey(input.orgId, input.projectId, input.key),
+        input.orgId,
+        input.status,
+        JSON.stringify(input.body),
+        input.now,
+        input.now + MEDIA_IDEMPOTENCY_TTL_SECONDS,
+        input.operation,
+        input.projectId,
+      )
       .run();
   } catch {
     // Unique race: the stored winner is returned by the next load.
   }
 }
 
-function idempotencyPrimaryKey(orgId: string, key: string): string {
-  return `${orgId}:${key}`;
-}
-
-export function parseIdempotencyKey(raw: string | undefined): string | null {
-  if (!raw) return null;
-  const key = raw.trim();
-  if (key.length < 1 || key.length > 128) return null;
-  if (/[\u0000-\u001f\u007f]/.test(key)) return null;
-  return key;
+function idempotencyPrimaryKey(orgId: string, projectId: string, key: string): string {
+  return `${orgId}:${projectId}:${key}`;
 }
 
 export async function createMediaAsset(
@@ -390,6 +470,14 @@ export async function replaceMediaAsset(
     .bind(versionId, existing.aliasId, input.orgId, existing.currentVersionId)
     .run();
 
+  if ((promoted.meta.changes ?? 0) !== 1) {
+    ctx.waitUntil(env.BUCKET.delete(r2Key));
+    await env.DB.prepare(`DELETE FROM asset_versions WHERE id = ? AND org_id = ?`)
+      .bind(versionId, input.orgId)
+      .run();
+    return { ok: false, status: 409, code: "conflict", error: "Asset was replaced concurrently" };
+  }
+
   await recordUsageAndAudit(env.DB, {
     orgId: input.orgId,
     projectId: input.projectId,
@@ -401,10 +489,6 @@ export async function replaceMediaAsset(
     requestId: input.requestId,
     now,
   });
-
-  if ((promoted.meta.changes ?? 0) !== 1) {
-    return { ok: false, status: 409, code: "conflict", error: "Asset was replaced concurrently" };
-  }
 
   return {
     ok: true,
@@ -472,6 +556,7 @@ export type AssetVersionRow = {
   height: number | null;
   created_at: number;
   status: string;
+  r2_key: string;
 };
 
 export async function listAssetVersions(
@@ -481,7 +566,7 @@ export async function listAssetVersions(
 ): Promise<AssetVersionRow[]> {
   const { results } = await db
     .prepare(
-      `SELECT id, mime, byte_size, width, height, created_at, status
+      `SELECT id, mime, byte_size, width, height, created_at, status, r2_key
        FROM asset_versions
        WHERE asset_id = ? AND org_id = ?
        ORDER BY created_at ASC`,
@@ -489,6 +574,80 @@ export async function listAssetVersions(
     .bind(assetId, orgId)
     .all<AssetVersionRow>();
   return results ?? [];
+}
+
+export async function deleteMediaAsset(
+  env: Cloudflare.Env,
+  ctx: { waitUntil(promise: Promise<unknown>): void },
+  input: {
+    orgId: string;
+    projectId: string;
+    assetId: string;
+    actor: MediaActorRef;
+    requestId: string;
+    now?: number;
+  },
+): Promise<{ ok: true } | MediaIngestFail> {
+  const existing = await loadLiveAsset(env.DB, input.assetId, input.orgId, input.projectId);
+  if (!existing) {
+    return { ok: false, status: 404, code: "not_found", error: "Not found" };
+  }
+
+  const versions = await listAssetVersions(env.DB, input.assetId, input.orgId);
+  const now = input.now ?? Math.floor(Date.now() / 1000);
+  const marked = await env.DB.prepare(
+    `UPDATE assets SET deleted_at = ? WHERE id = ? AND org_id = ? AND deleted_at IS NULL`,
+  )
+    .bind(now, input.assetId, input.orgId)
+    .run();
+  if ((marked.meta.changes ?? 0) !== 1) {
+    return { ok: false, status: 404, code: "not_found", error: "Not found" };
+  }
+
+  const statements = [
+    env.DB.prepare(
+      `UPDATE asset_aliases SET deleted_at = ? WHERE asset_id = ? AND org_id = ? AND deleted_at IS NULL`,
+    ).bind(now, input.assetId, input.orgId),
+    env.DB.prepare(
+      `UPDATE asset_versions SET status = 'deleted' WHERE asset_id = ? AND org_id = ? AND status = 'ready'`,
+    ).bind(input.assetId, input.orgId),
+    env.DB.prepare(
+      `INSERT INTO audit_events
+        (id, org_id, actor_user_id, actor_credential_id, action, target_type, target_id, request_id, created_at)
+       VALUES (?, ?, ?, ?, 'asset.delete', 'asset', ?, ?, ?)`,
+    ).bind(
+      crypto.randomUUID(),
+      input.orgId,
+      input.actor.userId,
+      input.actor.credentialId,
+      input.assetId,
+      input.requestId,
+      now,
+    ),
+  ];
+  for (const version of versions) {
+    statements.push(
+      env.DB.prepare(
+        `INSERT INTO usage_events
+          (id, org_id, project_id, meter, delta, idempotency_key, occurred_at, source, ref_type, ref_id)
+         VALUES (?, ?, ?, 'storage_original_bytes', ?, ?, ?, 'api', 'asset_version', ?)`,
+      ).bind(
+        crypto.randomUUID(),
+        input.orgId,
+        input.projectId,
+        -version.byte_size,
+        `${input.orgId}:storage:delete:${version.id}`,
+        now,
+        version.id,
+      ),
+    );
+  }
+  await env.DB.batch(statements);
+
+  ctx.waitUntil(
+    Promise.all(versions.map((version) => env.BUCKET.delete(version.r2_key))),
+  );
+  return { ok: true };
 }
 
 export async function listProjectAssets(

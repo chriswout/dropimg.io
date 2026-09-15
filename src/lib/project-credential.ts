@@ -24,6 +24,16 @@ export function credentialHasScope(auth: ProjectCredentialAuth, scope: MediaScop
   return auth.scopes.includes(scope);
 }
 
+export type ProjectCredentialPublic = {
+  id: string;
+  label: string;
+  prefix: string;
+  createdAt: number;
+  lastUsedAt: number | null;
+  expiresAt: number | null;
+  status: "active" | "revoked" | "expired";
+};
+
 export async function createProjectCredential(
   db: D1Database,
   input: {
@@ -42,11 +52,12 @@ export async function createProjectCredential(
   const token = generateProjectToken();
   const id = crypto.randomUUID();
   const hash = await sha256Bytes(token);
+  const prefix = token.slice(0, 16);
   await db
     .prepare(
       `INSERT INTO project_credentials
-        (id, org_id, project_id, token_hash, label, scopes, created_by, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        (id, org_id, project_id, token_hash, label, scopes, created_by, created_at, token_prefix)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .bind(
       id,
@@ -57,9 +68,69 @@ export async function createProjectCredential(
       JSON.stringify(scopes),
       input.createdBy,
       now,
+      prefix,
     )
     .run();
   return { id, token, label, scopes };
+}
+
+export function credentialStatus(
+  row: { revoked_at: number | null; expires_at: number | null },
+  now: number,
+): ProjectCredentialPublic["status"] {
+  if (row.revoked_at) return "revoked";
+  if (row.expires_at != null && row.expires_at <= now) return "expired";
+  return "active";
+}
+
+export async function listProjectCredentials(
+  db: D1Database,
+  orgId: string,
+  projectId: string,
+  now = Math.floor(Date.now() / 1000),
+): Promise<ProjectCredentialPublic[]> {
+  const { results } = await db
+    .prepare(
+      `SELECT id, label, token_prefix, created_at, last_used_at, expires_at, revoked_at
+       FROM project_credentials
+       WHERE org_id = ? AND project_id = ?
+       ORDER BY created_at DESC`,
+    )
+    .bind(orgId, projectId)
+    .all<{
+      id: string;
+      label: string;
+      token_prefix: string | null;
+      created_at: number;
+      last_used_at: number | null;
+      expires_at: number | null;
+      revoked_at: number | null;
+    }>();
+  return (results ?? []).map((row) => ({
+    id: row.id,
+    label: row.label,
+    prefix: row.token_prefix || PROJECT_KEY_PREFIX,
+    createdAt: row.created_at,
+    lastUsedAt: row.last_used_at,
+    expiresAt: row.expires_at,
+    status: credentialStatus(row, now),
+  }));
+}
+
+export async function revokeProjectCredential(
+  db: D1Database,
+  input: { id: string; orgId: string; projectId: string; now?: number },
+): Promise<"ok" | "not_found"> {
+  const now = input.now ?? Math.floor(Date.now() / 1000);
+  const result = await db
+    .prepare(
+      `UPDATE project_credentials
+       SET revoked_at = ?
+       WHERE id = ? AND org_id = ? AND project_id = ? AND revoked_at IS NULL`,
+    )
+    .bind(now, input.id, input.orgId, input.projectId)
+    .run();
+  return (result.meta.changes ?? 0) === 1 ? "ok" : "not_found";
 }
 
 export async function resolveProjectCredential(
