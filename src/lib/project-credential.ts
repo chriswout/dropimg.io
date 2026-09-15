@@ -108,3 +108,32 @@ export async function resolveProjectCredential(
     scopes,
   };
 }
+
+/** Revoke keys this user minted or that belong to orgs they still own. */
+export async function revokeProjectCredentialsForUser(
+  db: D1Database,
+  userId: string,
+  now = Math.floor(Date.now() / 1000),
+): Promise<void> {
+  await db
+    .prepare(
+      `UPDATE project_credentials
+       SET revoked_at = ?
+       WHERE revoked_at IS NULL
+         AND (
+           created_by = ?
+           OR org_id IN (
+             SELECT o.id
+             FROM organizations o
+             JOIN organization_memberships m
+               ON m.org_id = o.id
+              AND m.user_id = ?
+              AND m.role = 'owner'
+              AND m.revoked_at IS NULL
+             WHERE o.deleted_at IS NULL
+           )
+         )`,
+    )
+    .bind(now, userId, userId)
+    .run();
+}

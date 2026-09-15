@@ -16,7 +16,7 @@ export type MediaActorRef = {
 
 export type MediaIngestFail = {
   ok: false;
-  status: 400 | 409 | 413 | 415 | 422 | 500 | 503;
+  status: 400 | 404 | 409 | 413 | 415 | 422 | 500 | 503;
   code: string;
   error: string;
 };

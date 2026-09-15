@@ -2,6 +2,7 @@ import { deleteIdentitiesForUser } from "./auth/social";
 import { revokeAllSessions } from "./auth/session";
 import { cancelPairingsForUser } from "./browser-pairing";
 import { revokeAllIntegrationTokens } from "./integration-token";
+import { revokeProjectCredentialsForUser } from "./project-credential";
 import { ownerHasProductionAssets } from "./tenancy";
 import {
   cancelPaypalSubscriptionImmediately,
@@ -87,6 +88,7 @@ export async function deleteUserAccount(
   }
 
   await revokeAllIntegrationTokens(env.DB, userId, now);
+  await revokeProjectCredentialsForUser(env.DB, userId, now);
   await cancelPairingsForUser(env.DB, userId, now);
   await deleteIdentitiesForUser(env.DB, userId);
   await revokeAllSessions(env.DB, userId, now);

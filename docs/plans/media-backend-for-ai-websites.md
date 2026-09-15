@@ -1,15 +1,16 @@
 # DropIMG as the media backend for AI-built websites
 
-**Status:** plan only. Do not implement until the owner explicitly approves this document.
+**Status:** approved architecture. **Phase 1 Foundation is implemented** in git (`60a5b0a`) as an engineering preview behind `MEDIA_ENABLED`. **Phase 2+ is not started.**  
+**Canonical current-state doc:** [`docs/PROJECT_STATUS.md`](../PROJECT_STATUS.md) — this file is the long-form design, not the live inventory.
 
-**Date:** 2026-09-14  
+**Date:** 2026-09-14 (status reconciled 2026-09-15)  
 **Scope:** evolve DropIMG from a temporary image-sharing utility into a permanent, AI-native media platform, without discarding the existing product.
 
 ---
 
 ## 1. Executive architectural verdict
 
-DropIMG is a mature **single-user temporary image host** on one Cloudflare Worker. That stack is the right foundation. It is **not** a media backend yet.
+DropIMG is a mature **single-user temporary image host** on one Cloudflare Worker. That stack is the right foundation. Phase 1 added a **parallel** permanent-media domain behind `MEDIA_ENABLED`; it is not yet a production media backend (no dashboard, no media MCP, production flag off).
 
 Keep the current product as the free acquisition surface:
 
@@ -863,9 +864,11 @@ Rollback boundary per phase: disable flag; do not reverse-migrate data. D1 has n
 
 Resolve section 25. Freeze catalog numbers as config defaults.
 
-### Phase 1 — Foundation (smallest safe build) — **recommended first implementation**
+### Phase 1 — Foundation (smallest safe build) — **IMPLEMENTED (engineering preview)**
 
-**In:** personal org auto-create; one project; folders optional (root only OK); permanent original assets; stable alias on `media.dropimg.io` (or `dropimg.io/m/:project/:alias`); project-scoped key; tenancy tests; `MEDIA_ENABLED` flag; usage events for storage/uploads; audit on create/replace.
+**In git:** personal org auto-create; one project; folders optional (root only OK); permanent original assets; stable alias on `dropimg.io/m/:orgSlug/:projectSlug/:alias` (dedicated `media.dropimg.io` still deferred); project-scoped key; tenancy tests; `MEDIA_ENABLED` flag; usage events for storage/uploads; audit on create/replace.
+
+**Not yet live:** production flag is `false`. Staging config is `true`, but push `60a5b0a` did not migrate/deploy staging because CI e2e failed first. See [`docs/PROJECT_STATUS.md`](../PROJECT_STATUS.md).
 
 **Out:** custom domains, variants/AVIF, teams/invites, new PayPal SKUs (use flag + manual allowlist or reuse Pro as a temporary gate — see decisions), Cursor rewrite skill, webhooks, export zip, website IA overhaul (one sentence on homepage is enough).
 
@@ -873,9 +876,9 @@ Resolve section 25. Freeze catalog numbers as config defaults.
 
 **Rollback:** `MEDIA_ENABLED=false`.
 
-### Phase 2 — Agent workflow
+### Phase 2 — Developer Experience + Media MCP — **NOT STARTED**
 
-Upload URLs, MCP media tools, Cursor skill (audit + rewrite manifest), confirm flags.
+`/app` project UX, project keys, agent getting-started, MCP media tools on the existing `/mcp` server. See Phase 2 scope in [`docs/PROJECT_STATUS.md`](../PROJECT_STATUS.md). The older “upload URLs + rewrite skill” items remain valid and belong here or immediately after the DX slice.
 
 ### Phase 3 — Transforms
 
@@ -1021,10 +1024,9 @@ Phases 2–6 must not start until Phase 1 acceptance is green and the owner re-a
 
 ---
 
-## Exclusions (global)
+## Exclusions (still in force)
 
-- No implementation in this change set
-- No production schema applied
+- No production `MEDIA_ENABLED=true` until soak is real
 - No Durable Objects, extra Workers, or external SQL
 - No unlimited image processor
 - No replacing PayPal
@@ -1035,8 +1037,6 @@ Phases 2–6 must not start until Phase 1 acceptance is green and the owner re-a
 
 ## First implementation phase (repeat)
 
-**Phase 1 — Foundation**, after this plan is approved and section 25 defaults are confirmed or amended.
+**Phase 1 — Foundation is in git.** Do not re-implement it. Next work is **Phase 2 — Developer Experience + Media MCP**, after staging actually has `0013` and a working media ingest, with production still flagged off.
 
-Deliver personal org + project + immutable originals + stable DropIMG-hosted alias + project API key + tenant isolation tests + `MEDIA_ENABLED` flag. Leave drops, extension, ShareX, MCP drop tools, PayPal Pro, and `images` cron exactly as they are.
-
-**Stop here until explicit owner approval to implement.**
+Leave drops, extension, ShareX, MCP drop tools, PayPal Pro, and `images` cron exactly as they are.

@@ -398,4 +398,20 @@ describe("permanent media", () => {
     });
     expect(del.status).toBe(409);
   });
+
+  it("revokes project keys when an account with no live assets is deleted", async () => {
+    const { cookie } = await signIn("media-empty-delete@example.com");
+    const ctx = await bootstrapProject(cookie);
+    const del = await worker.fetch("https://dropimg.io/api/account/delete", {
+      method: "POST",
+      headers: jsonHeaders(cookie),
+    });
+    expect(del.status).toBe(200);
+
+    const listed = await worker.fetch(
+      `https://dropimg.io/api/v1/media/projects/${ctx.projectId}/assets`,
+      { headers: { Authorization: `Bearer ${ctx.token}` } },
+    );
+    expect(listed.status).toBe(401);
+  });
 });

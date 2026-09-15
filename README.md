@@ -5,7 +5,8 @@ Paste or drop an image → get a temporary shareable URL.
 **Stack:** Cloudflare Workers + R2 + D1 + Hono + Vite (vanilla TS)
 
 **Live:** https://dropimg.io  
-**Staging:** https://dropimg-staging.christenwout.workers.dev
+**Staging:** https://dropimg-staging.christenwout.workers.dev  
+**Current state:** [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md)
 
 ## Local development
 
@@ -27,7 +28,7 @@ npm run deploy:staging      # build + deploy dropimg-staging
 npm run deploy:production   # build + deploy dropimg (needs dropimg.io DNS)
 ```
 
-GitHub Actions (`.github/workflows/deploy.yml`) deploys staging on push to `main`. Set repo secrets:
+GitHub Actions (`.github/workflows/deploy.yml`) is *intended* to deploy staging on push to `main` after unit tests and Playwright. If e2e fails, remote migrate and deploy are skipped. See [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md). Set repo secrets:
 
 - `CLOUDFLARE_API_TOKEN`
 - `CLOUDFLARE_ACCOUNT_ID` (`0d63cbb8e5f0ff360d850f1456eb7d50`)
