@@ -8,6 +8,8 @@ import {
   EXPIRY_90D,
   EXPIRY_180D,
 } from "../lib/entitlements";
+import { directImagePath } from "../lib/image-url";
+import type { AllowedMime } from "../types";
 import { renderAppShellPage } from "./app-shell";
 import { siteHtmlResponse } from "./site-page";
 
@@ -256,9 +258,11 @@ export function renderAppPage(opts: {
         </div>`
       : `<ul class="drop-list">${opts.drops
           .map((d) => {
-            const sharePath = `/${d.slug}`;
+            const sharePath = d.locked
+              ? `/${d.slug}`
+              : directImagePath(d.slug, d.mime as AllowedMime);
             const shareUrl = `${opts.origin.replace(/\/$/, "")}${sharePath}`;
-            const hostPath = `dropimg.io${sharePath}`;
+            const hostPath = shareUrl;
             return `<li data-slug="${esc(d.slug)}">
         <div class="drop-type" aria-hidden="true">${esc(mimeLabel(d.mime))}</div>
         <div class="drop-main">

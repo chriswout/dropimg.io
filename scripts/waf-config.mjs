@@ -47,7 +47,8 @@ export const CUSTOM_RULES = [
 /**
  * Rate limiting (http_ratelimit) — slug / image enumeration shield.
  * Free plan: period=10 only; no regex; no counting_expression (needs Advanced RL).
- * `/i/*` covers image probing; 9-char paths cover `/:slug` share pages.
+ * `/i/*` covers legacy image probing; 9-char paths cover `/:slug` share pages.
+ * Canonical direct image paths are 13 or 14 chars including slash + extension.
  */
 export const RATE_LIMIT_RULES = [
   {
@@ -62,6 +63,21 @@ export const RATE_LIMIT_RULES = [
       'and starts_with(http.request.uri.path, "/")',
       'and not starts_with(http.request.uri.path, "/api")',
       'and not starts_with(http.request.uri.path, "/assets")',
+      ") or (",
+      "(",
+      "len(http.request.uri.path) eq 13",
+      "and (",
+      'ends_with(http.request.uri.path, ".png")',
+      'or ends_with(http.request.uri.path, ".jpg")',
+      'or ends_with(http.request.uri.path, ".gif")',
+      ")",
+      ") or (",
+      "len(http.request.uri.path) eq 14",
+      "and (",
+      'ends_with(http.request.uri.path, ".jpeg")',
+      'or ends_with(http.request.uri.path, ".webp")',
+      ")",
+      ")",
       ")",
     ].join(" "),
     action: "block",

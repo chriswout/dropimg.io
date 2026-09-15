@@ -34,7 +34,7 @@ test("signed-in upload appears on My drops", async ({ page, request }) => {
   await page.locator("#file-input").setInputFiles(fixture);
   await expect(page.locator("#state-success")).toBeVisible({ timeout: 30_000 });
   const shareUrl = await page.locator("#share-url").inputValue();
-  const slug = shareUrl.split("/").pop() || "";
+  const slug = (shareUrl.split("/").pop() || "").replace(/\.png$/, "");
 
   await page.locator("#account-app").click();
   await expect(page.locator("h1")).toContainText(/my drops/i);
@@ -43,7 +43,9 @@ test("signed-in upload appears on My drops", async ({ page, request }) => {
   const pageRoot = page.locator(".drops-page");
   await expect(pageRoot).toHaveAttribute("data-view", "list");
   const urlInput = page.locator(`li[data-slug="${slug}"] .drop-url-input`);
-  await expect(urlInput).toHaveValue(new RegExp(`dropimg\\.io/${slug}$`));
+  await expect(urlInput).toHaveValue(
+    new RegExp(`^https?://[^/]+/${slug}\\.png$`),
+  );
   await expect(page.locator(`img[src="/i/${slug}"]`)).toHaveCount(0);
   const copy = page.locator(`li[data-slug="${slug}"] button.drop-copy`);
   await expect(copy).toBeVisible();

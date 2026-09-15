@@ -54,6 +54,7 @@
     "ENVIRONMENT": "development",
     "AUTH_FROM_EMAIL": "DropIMG <signin@dropimg.io>",
     "MODERATION_ENABLED": "false",
-    "MODERATION_ENFORCE": "false"
+    "MODERATION_ENFORCE": "false",
+    "MEDIA_ENABLED": "false"
   }
 }

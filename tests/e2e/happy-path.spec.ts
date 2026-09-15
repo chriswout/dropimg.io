@@ -23,7 +23,9 @@ test("homepage upload happy path", async ({ page }) => {
   await page.locator("#file-input").setInputFiles(fixture);
 
   await expect(page.locator("#state-success")).toBeVisible({ timeout: 30_000 });
-  await expect(page.locator("#share-url")).toHaveValue(/[^/\s]+\/[A-Za-z0-9]{8}$/);
+  await expect(page.locator("#share-url")).toHaveValue(
+    /^https?:\/\/[^/\s]+\/[A-Za-z0-9]{8}\.png$/,
+  );
 
   const displayed = await page.locator("#share-url").inputValue();
   const shareUrl =
@@ -31,7 +33,7 @@ test("homepage upload happy path", async ({ page }) => {
     `${new URL(page.url()).protocol}//${displayed}`;
   const share = await page.request.get(shareUrl);
   expect(share.status()).toBe(200);
-  expect(await share.text()).toContain("Shared image");
+  expect(share.headers()["content-type"]).toBe("image/png");
 });
 
 /**

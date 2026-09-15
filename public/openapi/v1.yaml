@@ -152,9 +152,11 @@ components:
         url:
           type: string
           format: uri
+          description: HTML share page
         image_url:
           type: string
           format: uri
+          description: Direct image URL with the canonical file extension
         created_at:
           type: string
           format: date-time

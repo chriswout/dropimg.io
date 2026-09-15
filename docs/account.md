@@ -21,7 +21,7 @@ Rows show the share host path, type/size/dimensions, time left, and lock state. 
 - Uploads go to `o/pro/{date}/{id}` whatever lifetime is chosen. Anonymous/Free split between `o/24h/` (1h, 24h), `o/7d/` (7d), and `o/30d/` (30d).
 - Staging and production: `LONG_TTL_ENABLED=true` (Free 1h/24h/7d/30d, Pro adds 90d/180d, plus extend). `PRO_50MB_ENABLED` is true on staging, false in production.
 - Extend copies `o/24h`, `o/7d`, or `o/30d` → `o/pro` before bumping `expires_at`, cap `created_at+180d`.
-- Pro can set a password on upload or later via `POST /api/account/images/:slug/password`. Recipients unlock at `POST /api/i/:slug/unlock`. `GET /i/:slug` is 401 without the unlock cookie or owner session.
+- Pro can set a password on upload or later via `POST /api/account/images/:slug/password`. Recipients unlock at `POST /api/i/:slug/unlock`. Direct `/:slug.:ext` and legacy `GET /i/:slug` requests are 401 without the unlock cookie or owner session. Password-protected uploads return the extensionless share page as their primary URL so recipients see the password form.
 
 ## Header
 

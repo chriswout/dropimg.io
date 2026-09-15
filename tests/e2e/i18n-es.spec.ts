@@ -27,6 +27,6 @@ test("Spanish homepage renders localized H1 and uploads", async ({ page }) => {
 
   await expect(page.locator("#state-success")).toBeVisible({ timeout: 30_000 });
   await expect(page.locator("#share-url")).toHaveValue(
-    /[^/\s]+\/[A-Za-z0-9]{8}$/,
+    /^https?:\/\/[^/\s]+\/[A-Za-z0-9]{8}\.png$/,
   );
 });

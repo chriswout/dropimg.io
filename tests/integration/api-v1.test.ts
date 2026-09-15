@@ -131,7 +131,9 @@ describe("/api/v1/images", () => {
     const image = (await created.json()) as Record<string, unknown>;
     expect(image).toMatchObject({
       url: expect.stringMatching(/^https:\/\/dropimg\.io\/[A-Za-z0-9]+$/),
-      image_url: expect.stringMatching(/^https:\/\/dropimg\.io\/i\/[A-Za-z0-9]+$/),
+      image_url: expect.stringMatching(
+        /^https:\/\/dropimg\.io\/[A-Za-z0-9]+\.png$/,
+      ),
     });
     expect(image).toHaveProperty("created_at");
     expect(image).toHaveProperty("expires_at");

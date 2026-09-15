@@ -106,7 +106,7 @@ All four gates stay false, so this ships the new code running V1 behaviour.
 Verify before going further:
 
 - anonymous upload returns a 24-hour link, and the uploader shows no expiry selector
-- share page, direct `/i/…` URL, and the delete link all work
+- share page, direct `/:slug.:ext` URL (plus legacy `/i/…`), and the delete link all work
 - `/pro` renders with billing off and no purchase CTA
 - cron still expires images on schedule
 - `/health` is green and the tail is quiet

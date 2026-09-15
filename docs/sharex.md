@@ -31,4 +31,4 @@ Authenticated ShareX uploads are owned (My drops) and use current account entitl
 - No `Authorization`: anonymous adapter → `/api/upload`
 - `Authorization: Bearer …`: owned upload
 
-JSON matches `/api/upload` (`url`, `imageUrl`, `deleteUrl`, `deleteToken`, `expiresAt`, …). ShareX uses `{json:url}` as the share link.
+JSON matches `/api/upload` (`url`, `shareUrl`, `imageUrl`, `deleteUrl`, `deleteToken`, `expiresAt`, …). ShareX uses `{json:url}`, the direct extension-bearing image link (for example `https://dropimg.io/Ab3xYz91.png`).

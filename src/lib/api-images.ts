@@ -1,6 +1,7 @@
 import { entitlementsFor, PRO_HISTORY_PAGE } from "./entitlements";
+import { directImageUrl } from "./image-url";
 import { isValidSlug } from "./slug";
-import type { ImageRow } from "../types";
+import type { AllowedMime, ImageRow } from "../types";
 
 export type PublicImage = {
   id: string;
@@ -21,13 +22,13 @@ export function toIso(unix: number): string {
 
 export function toPublicImage(
   origin: string,
-  row: { slug: string; created_at: number; expires_at: number },
+  row: { slug: string; mime: string; created_at: number; expires_at: number },
 ): PublicImage {
   const base = origin.replace(/\/$/, "");
   return {
     id: row.slug,
     url: `${base}/${row.slug}`,
-    image_url: `${base}/i/${row.slug}`,
+    image_url: directImageUrl(base, row.slug, row.mime as AllowedMime),
     created_at: toIso(row.created_at),
     expires_at: toIso(row.expires_at),
   };
@@ -35,11 +36,12 @@ export function toPublicImage(
 
 export function publicImageFromUpload(
   origin: string,
-  body: { slug: string; expiresAt: number },
+  body: { slug: string; mime: string; expiresAt: number },
   createdAt: number,
 ): PublicImage {
   return toPublicImage(origin, {
     slug: body.slug,
+    mime: body.mime,
     created_at: createdAt,
     expires_at: body.expiresAt,
   });
@@ -77,7 +79,7 @@ export async function listOwnedLiveImages(
     entitlements.historyLimit == null ? PRO_HISTORY_PAGE : entitlements.historyLimit;
 
   const rows = await env.DB.prepare(
-    `SELECT slug, created_at, expires_at
+    `SELECT slug, mime, created_at, expires_at
      FROM images
      WHERE user_id = ? AND deleted_at IS NULL AND expires_at > ?
        AND (? = 0 OR created_at < ?)
@@ -85,7 +87,7 @@ export async function listOwnedLiveImages(
      LIMIT ?`,
   )
     .bind(userId, now, useCursor ? 1 : 0, useCursor ? cursor : 0, pageSize + 1)
-    .all<{ slug: string; created_at: number; expires_at: number }>();
+    .all<{ slug: string; mime: string; created_at: number; expires_at: number }>();
 
   const list = rows.results ?? [];
   const hasMore = list.length > pageSize;

@@ -412,7 +412,7 @@ async function tryCopy(text: string): Promise<boolean> {
 function showSuccess(result: UploadResponse, copied: boolean) {
   const title = copied ? ui.uploadedCopied : ui.uploaded;
   successTitle.textContent = title;
-  shareUrl.value = result.url.replace(/^https?:\/\//, "");
+  shareUrl.value = result.url;
   shareUrl.dataset.url = result.url;
   btnOpen.href = result.url;
   expiresLabel.textContent = `${ui.expiresPrefix} ${formatExpiry(result.expiresAt)}`;

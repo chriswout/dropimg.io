@@ -1,4 +1,4 @@
-import { Hono } from "hono";
+import { Hono, type Context } from "hono";
 import { track } from "../lib/analytics";
 import { csrfOriginOk } from "../lib/auth/csrf";
 import { resolveRequestLocale } from "../lib/auth/locale-cookie";
@@ -12,6 +12,10 @@ import {
   unlockCookieValid,
   verifyImagePassword,
 } from "../lib/image-password";
+import {
+  extensionMatchesMime,
+  parseDirectImageFilename,
+} from "../lib/image-url";
 import { mimeToExt } from "../lib/inspect";
 import { clientIp, hashIp } from "../lib/ip";
 import { resolveIpHashSecret } from "../lib/secrets";
@@ -25,8 +29,19 @@ type Env = {
 
 export const imageRoutes = new Hono<Env>();
 
-imageRoutes.get("/i/:slug", async (c) => {
-  const slug = c.req.param("slug");
+imageRoutes.get("/i/:slug", (c) => serveImage(c, c.req.param("slug")));
+
+imageRoutes.get("/:filename", async (c, next) => {
+  const parsed = parseDirectImageFilename(c.req.param("filename"));
+  if (!parsed) return next();
+  return serveImage(c, parsed.slug, parsed.ext);
+});
+
+async function serveImage(
+  c: Context<Env>,
+  slug: string,
+  requestedExt?: string,
+): Promise<Response> {
   if (!isValidSlug(slug)) {
     return c.text("Not found", 404);
   }
@@ -46,6 +61,11 @@ imageRoutes.get("/i/:slug", async (c) => {
     return c.text("Gone", 410);
   }
 
+  const mime = row.mime as AllowedMime;
+  if (requestedExt && !extensionMatchesMime(requestedExt, mime)) {
+    return c.text("Not found", 404);
+  }
+
   if (imageHasPassword(row)) {
     const allowed = await canViewProtected(c, row, slug);
     if (!allowed) return c.text("Unauthorized", 401);
@@ -56,7 +76,6 @@ imageRoutes.get("/i/:slug", async (c) => {
     return c.text("Not found", 404);
   }
 
-  const mime = row.mime as AllowedMime;
   const etag = object.httpEtag;
   const headers = imageResponseHeaders({
     mime,
@@ -74,7 +93,7 @@ imageRoutes.get("/i/:slug", async (c) => {
   }
 
   return new Response(object.body, { status: 200, headers });
-});
+}
 
 imageRoutes.post("/api/i/:slug/unlock", async (c) => {
   const slug = c.req.param("slug");

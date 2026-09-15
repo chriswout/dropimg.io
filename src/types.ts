@@ -18,7 +18,11 @@ export type AllowedMime = (typeof ALLOWED_MIMES)[number];
 
 export type UploadResponse = {
   slug: string;
+  /** Primary link: direct image unless password protection requires the share page. */
   url: string;
+  /** HTML share page used for metadata, reporting, and password entry. */
+  shareUrl: string;
+  /** Direct image URL with its real file extension. */
   imageUrl: string;
   deleteUrl: string;
   deleteToken: string;

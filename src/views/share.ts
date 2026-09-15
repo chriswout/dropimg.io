@@ -1,6 +1,8 @@
 import { themeBootScript } from "../../marketing/chrome";
 import { CHROME } from "../../marketing/content";
 import { DEFAULT_LOCALE, LOCALE_CONFIG, type Locale } from "../../marketing/locales";
+import { directImageUrl } from "../lib/image-url";
+import type { AllowedMime } from "../types";
 
 type ShareCopy = {
   pageTitle: string;
@@ -65,7 +67,7 @@ export function renderSharePage(p: ShareProps): string {
   const t = SHARE_COPY[locale];
   const chrome = CHROME[locale];
   const cfg = LOCALE_CONFIG[locale];
-  const imageUrl = `${p.origin}/i/${p.slug}`;
+  const imageUrl = directImageUrl(p.origin, p.slug, p.mime as AllowedMime);
   const pageUrl = `${p.origin}/${p.slug}`;
   const expiresIso = new Date(p.expiresAt * 1000).toISOString();
   const expiresFriendly = formatFriendlyExpiry(p.expiresAt, locale);

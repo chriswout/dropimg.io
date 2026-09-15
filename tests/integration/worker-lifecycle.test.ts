@@ -61,13 +61,26 @@ describe("Worker integration", () => {
     const uploaded = await uploadPng();
     expect(uploaded.slug).toHaveLength(8);
     expect(uploaded.deleteToken).toBeTruthy();
+    expect(uploaded.url).toBe(`https://dropimg.io/${uploaded.slug}.png`);
+    expect(uploaded.shareUrl).toBe(`https://dropimg.io/${uploaded.slug}`);
+    expect(uploaded.imageUrl).toBe(uploaded.url);
 
     const share = await worker.fetch(`https://dropimg.io/${uploaded.slug}`);
     expect(share.status).toBe(200);
     expect(share.headers.get("X-Robots-Tag")).toMatch(/noindex/i);
     const html = await share.text();
-    expect(html).toContain(`/i/${uploaded.slug}`);
+    expect(html).toContain(`/${uploaded.slug}.png`);
 
+    const direct = await worker.fetch(uploaded.url);
+    expect(direct.status).toBe(200);
+    expect(direct.headers.get("Content-Type")).toBe("image/png");
+
+    const wrongExtension = await worker.fetch(
+      `https://dropimg.io/${uploaded.slug}.gif`,
+    );
+    expect(wrongExtension.status).toBe(404);
+
+    // Keep the old raw path working for existing links.
     const image = await worker.fetch(`https://dropimg.io/i/${uploaded.slug}`);
     expect(image.status).toBe(200);
     expect(image.headers.get("Content-Type")).toBe("image/png");

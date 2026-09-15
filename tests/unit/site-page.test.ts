@@ -220,8 +220,10 @@ describe("Account pages share site chrome", () => {
       nextCursor: null,
     });
     expect(html).not.toContain('src="/i/abc123XY"');
-    expect(html).toContain("dropimg.io/abc123XY");
-    expect(html).toContain('data-url="https://dropimg.io/abc123XY"');
+    expect(html).toContain("https://dropimg.io/abc123XY.png");
+    expect(html).toContain(
+      'data-url="https://dropimg.io/abc123XY.png"',
+    );
     expect(html).toContain("drop-url-input");
     expect(html).toContain("drop-copy");
     expect(html).toContain("drops-view-btn");

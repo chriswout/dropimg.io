@@ -107,6 +107,10 @@ describe("Password-protected images", () => {
     });
     expect(up.status).toBe(201);
     const uploaded = (await up.json()) as UploadResponse;
+    expect(uploaded.url).toBe(`https://dropimg.io/${uploaded.slug}`);
+    expect(uploaded.imageUrl).toBe(
+      `https://dropimg.io/${uploaded.slug}.png`,
+    );
 
     const stored = await env.DB.prepare(
       `SELECT password_kdf, password_cost, password_block_size, password_parallelization, password_iterations
@@ -128,6 +132,8 @@ describe("Password-protected images", () => {
 
     const blocked = await worker.fetch(`https://dropimg.io/i/${uploaded.slug}`);
     expect(blocked.status).toBe(401);
+    const directBlocked = await worker.fetch(uploaded.imageUrl);
+    expect(directBlocked.status).toBe(401);
 
     const share = await worker.fetch(`https://dropimg.io/${uploaded.slug}`);
     const html = await share.text();
@@ -137,6 +143,7 @@ describe("Password-protected images", () => {
     expect(html).toContain("/og.png");
     expect(html).not.toContain(`src="/i/${uploaded.slug}"`);
     expect(html).not.toContain(`/i/${uploaded.slug}"`);
+    expect(html).not.toContain(`/${uploaded.slug}.png`);
 
     const ownerBytes = await worker.fetch(`https://dropimg.io/i/${uploaded.slug}`, {
       headers: { Cookie: cookie },
@@ -171,6 +178,10 @@ describe("Password-protected images", () => {
       headers: { Cookie: unlockCookie.split(";")[0]! },
     });
     expect(opened.status).toBe(200);
+    const directOpened = await worker.fetch(uploaded.imageUrl, {
+      headers: { Cookie: unlockCookie.split(";")[0]! },
+    });
+    expect(directOpened.status).toBe(200);
   });
 
   it("sets a password later from My drops", async () => {

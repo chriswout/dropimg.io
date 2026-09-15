@@ -7,7 +7,7 @@ Outer shield only. App-level limits stay in the Worker.
 1. **Free Managed Ruleset** — Cloudflare’s Free-plan managed WAF coverage.
 2. **Custom: block unsupported API methods** — only `POST /api/upload`, `DELETE /api/i/*`, `POST /api/report`.
 3. **Custom: Managed Challenge suspicious uploads** — `POST /api/upload` when `cf.threat_score gt 14` (not a broad challenge).
-4. **Rate limit: slug/image probing** — **Block** after **10 requests / 10s / IP** to `/i/*` or 8-char share paths (`/:slug`). Free plan: 10s period only, no Managed Challenge on rate-limit rules, no 404-only counting.
+4. **Rate limit: slug/image probing** — **Block** after **10 requests / 10s / IP** to `/i/*`, 8-char share paths (`/:slug`), or canonical direct image paths (`/:slug.:ext`). Free plan: 10s period only, no Managed Challenge on rate-limit rules, no 404-only counting.
 
 ## Explicitly not enabled
 

@@ -1,4 +1,5 @@
 import { track } from "./analytics";
+import { directImageUrl } from "./image-url";
 import { inspectImage } from "./inspect";
 import { runPostStripSafetyScan } from "./moderation-hook";
 import { generateSlug } from "./slug";
@@ -258,8 +259,11 @@ export async function storeUploadedImage(
     ok: true,
     body: {
       slug,
-      url: `${origin}/${slug}`,
-      imageUrl: `${origin}/i/${slug}`,
+      url: input.password
+        ? `${origin}/${slug}`
+        : directImageUrl(origin, slug, inspected.mime),
+      shareUrl: `${origin}/${slug}`,
+      imageUrl: directImageUrl(origin, slug, inspected.mime),
       deleteUrl: `${origin}/d/${slug}`,
       deleteToken,
       expiresAt,

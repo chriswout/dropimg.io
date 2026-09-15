@@ -2,6 +2,7 @@ import { deleteIdentitiesForUser } from "./auth/social";
 import { revokeAllSessions } from "./auth/session";
 import { cancelPairingsForUser } from "./browser-pairing";
 import { revokeAllIntegrationTokens } from "./integration-token";
+import { ownerHasProductionAssets } from "./tenancy";
 import {
   cancelPaypalSubscriptionImmediately,
   isLivePaypalStatus,
@@ -22,6 +23,15 @@ export async function deleteUserAccount(
   userId: string,
   now = Math.floor(Date.now() / 1000),
 ): Promise<AccountDeleteOk | AccountDeleteFail> {
+  if (await ownerHasProductionAssets(env.DB, userId)) {
+    return {
+      ok: false,
+      status: 409,
+      error:
+        "Delete or transfer your media library before deleting your DropIMG account.",
+    };
+  }
+
   const subs = await env.DB.prepare(
     `SELECT provider_subscription_id, status
      FROM subscriptions

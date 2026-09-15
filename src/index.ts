@@ -24,6 +24,8 @@ import { integrationRoutes } from "./routes/integrations";
 import { sharexRoutes } from "./routes/integrations-sharex";
 import { oauthRoutes } from "./routes/oauth";
 import { reportRoutes } from "./routes/report";
+import { mediaApiRoutes } from "./routes/media-api";
+import { mediaDeliveryRoutes } from "./routes/media-delivery";
 import { shareRoutes } from "./routes/share";
 import { uploadRoutes } from "./routes/upload";
 
@@ -57,6 +59,8 @@ app.use("*", async (c, next) => {
 app.get("/health", (c) => c.json({ ok: true, service: "dropimg" }));
 
 app.route("/", apiV1Routes);
+app.route("/", mediaApiRoutes);
+app.route("/", mediaDeliveryRoutes);
 app.route("/", uploadRoutes);
 app.route("/", eventRoutes);
 app.route("/", authRoutes);
