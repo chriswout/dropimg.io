@@ -76,7 +76,7 @@ export const DEVELOPERS_PAGE: DevelopersCopy = {
     },
     {
       q: "Where is the OpenAPI spec?",
-      a: "https://dropimg.io/openapi/v1.yaml — same routes as this page.",
+      a: "https://dropimg.io/openapi/v1.yaml — images plus Media (orgs, projects, keys, assets, intents). Public `/m/...` aliases are not confidential.",
     },
     {
       q: "What is the API and MCP daily limit?",

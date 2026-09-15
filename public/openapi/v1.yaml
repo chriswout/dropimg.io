@@ -3,7 +3,11 @@ info:
   title: DropIMG API
   version: "1.0.0"
   description: >
-    Temporary image hosting API. Image in, URL out. Bearer API keys required.
+    Temporary image hosting API plus optional permanent Media (flag-gated).
+    Image in, URL out. Bearer API keys required for /api/v1/images.
+    Media uses session cookies or project keys `dropimg_pk_*`.
+    Public `/m/...` aliases provide no confidentiality. Knowledge of the URL
+    is sufficient to fetch the asset.
     Anonymous REST is not available. API and MCP share one programmatic daily
     bucket: Free 20 uploads / 50 MB, Pro 100 / 500 MB. A site-wide 100 / 500 MB
     ceiling still applies across every client. Default Free API expiry is 24h.
@@ -16,6 +20,7 @@ security:
   - bearerAuth: []
 tags:
   - name: Images
+  - name: Media
 paths:
   /api/v1/images:
     post:
@@ -126,6 +131,274 @@ paths:
           $ref: "#/components/responses/Unauthorized"
         "403":
           $ref: "#/components/responses/Forbidden"
+  /api/v1/media/orgs:
+    post:
+      tags: [Media]
+      summary: Bootstrap the signed-in user's personal organization
+      operationId: bootstrapMediaOrg
+      security: []
+      responses:
+        "200":
+          description: Personal organization
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+    get:
+      tags: [Media]
+      summary: List organizations you can access
+      operationId: listMediaOrgs
+      responses:
+        "200":
+          description: Organizations
+  /api/v1/media/orgs/{orgId}/projects:
+    parameters:
+      - name: orgId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      tags: [Media]
+      summary: List projects
+      operationId: listMediaProjects
+      responses:
+        "200":
+          description: Projects, including the public /m/{org}/{project}/ namespace URL
+    post:
+      tags: [Media]
+      summary: Create a project
+      operationId: createMediaProject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [slug]
+              properties:
+                slug: { type: string, example: website }
+                name: { type: string, example: Website }
+      responses:
+        "201":
+          description: Project created
+  /api/v1/media/projects/{projectId}/keys:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      tags: [Media]
+      summary: List project keys (session only)
+      operationId: listMediaProjectKeys
+      description: Returns id, label, prefix, dates, and status. Never returns hashes or raw tokens.
+      responses:
+        "200":
+          description: Key metadata
+    post:
+      tags: [Media]
+      summary: Create a project key
+      operationId: createMediaProjectKey
+      description: Raw `dropimg_pk_*` token is returned once.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [label]
+              properties:
+                label: { type: string }
+      responses:
+        "201":
+          description: Key created
+  /api/v1/media/projects/{projectId}/keys/{keyId}/revoke:
+    post:
+      tags: [Media]
+      summary: Revoke a project key
+      operationId: revokeMediaProjectKey
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: keyId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Revoked. Authentication with that token fails immediately.
+  /api/v1/media/projects/{projectId}/assets:
+    parameters:
+      - name: projectId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+      - name: Idempotency-Key
+        in: header
+        required: false
+        schema: { type: string, maxLength: 128 }
+        description: >
+          Scoped to org + project + operation. TTL 24h. Oversized or malformed
+          keys are rejected with 400. Reusing the same key for a different
+          operation returns 409.
+    get:
+      tags: [Media]
+      summary: List live assets
+      operationId: listMediaAssets
+      responses:
+        "200":
+          description: Live assets
+    post:
+      tags: [Media]
+      summary: Upload a permanent asset
+      operationId: createMediaAsset
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, path]
+              properties:
+                file: { type: string, format: binary }
+                path: { type: string, example: logo }
+                name: { type: string }
+      responses:
+        "201":
+          description: Asset stored with a stable /m/... alias
+  /api/v1/media/assets/{assetId}:
+    parameters:
+      - name: assetId
+        in: path
+        required: true
+        schema: { type: string, format: uuid }
+    get:
+      tags: [Media]
+      summary: Get an asset and its versions
+      operationId: getMediaAsset
+      responses:
+        "200":
+          description: Asset plus immutable versions (`?v=` URLs)
+    delete:
+      tags: [Media]
+      summary: Soft-delete an asset
+      operationId: deleteMediaAsset
+      description: >
+        Alias stops serving. R2 originals are removed. Storage accounting is
+        reversed. Repeat delete returns 404.
+      responses:
+        "200":
+          description: Deleted
+  /api/v1/media/assets/{assetId}/versions:
+    post:
+      tags: [Media]
+      summary: Replace an asset (new immutable version, same alias)
+      operationId: replaceMediaAsset
+      parameters:
+        - name: assetId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+        - name: Idempotency-Key
+          in: header
+          required: false
+          schema: { type: string, maxLength: 128 }
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: { type: string, format: binary }
+      responses:
+        "201":
+          description: New version is current
+        "409":
+          description: Concurrent replace lost the alias race
+  /api/v1/media/projects/{projectId}/intents:
+    post:
+      tags: [Media]
+      summary: Create a short-lived upload intent
+      operationId: createMediaUploadIntent
+      description: >
+        Used by MCP so image bytes travel over HTTP, not JSON-RPC.
+        Intents are one-use, 10 minutes, scoped to org, project, and operation.
+        They do not grant direct R2 writes.
+      parameters:
+        - name: projectId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [operation]
+              properties:
+                operation: { type: string, enum: [create, replace] }
+                path: { type: string }
+                assetId: { type: string, format: uuid }
+                name: { type: string }
+      responses:
+        "201":
+          description: Intent with upload URL, method, headers, and expiry
+  /api/v1/media/intents/{intentId}:
+    post:
+      tags: [Media]
+      summary: Upload bytes for an intent
+      operationId: executeMediaUploadIntent
+      parameters:
+        - name: intentId
+          in: path
+          required: true
+          schema: { type: string, format: uuid }
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/octet-stream:
+            schema: { type: string, format: binary }
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file: { type: string, format: binary }
+      responses:
+        "201":
+          description: Asset created or replaced
+        "409":
+          description: Intent already used
+  /m/{orgSlug}/{projectSlug}/{path}:
+    get:
+      tags: [Media]
+      summary: Public stable alias
+      operationId: getMediaAlias
+      description: >
+        Public `/m/...` aliases provide no confidentiality. Knowledge of the URL
+        is sufficient to fetch the asset. Optional `v` query selects an immutable
+        version UUID.
+      security: []
+      parameters:
+        - name: orgSlug
+          in: path
+          required: true
+          schema: { type: string }
+        - name: projectSlug
+          in: path
+          required: true
+          schema: { type: string }
+        - name: path
+          in: path
+          required: true
+          schema: { type: string }
+        - name: v
+          in: query
+          schema: { type: string, format: uuid }
+      responses:
+        "200":
+          description: Image bytes
+        "404":
+          description: Unknown, deleted, or Media disabled
 components:
   securitySchemes:
     bearerAuth:
