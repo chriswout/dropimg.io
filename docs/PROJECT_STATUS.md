@@ -53,7 +53,11 @@ Last production Worker deployment: `2026-09-13T23:00:30Z`. Runtime plaintext var
 
 ## Current Staging State
 
-Phase 1 soaked on staging. Phase 2 adds migration `0014_media_phase2.sql` (idempotency TTL/scope, `token_prefix`, `media_upload_intents`). Apply on staging via normal main CI. Do not apply to production in this pass.
+Phase 2 is **staging-qualified** on `https://dropimg-staging.christenwout.workers.dev`.
+
+CI run [35011165971](https://github.com/chriswout/dropimg.io/actions/runs/35011165971) applied `0014_media_phase2.sql` and deployed `dropimg-staging` with `MEDIA_ENABLED=true`. Production was not migrated or deployed.
+
+Live checks (two Gmail plus-address accounts): project create/list, key create/list/revoke, upload/list/get/replace/delete, alias 404 after delete, MCP project-key tools + HTTP intents, expired/replayed intents, expired project keys, tenant isolation, Drop anonymous/direct/`/i/`/share/REST/ShareX/MCP. Production `/api/v1/media/orgs` and `/app/media` remain 404.
 
 ---
 
@@ -93,7 +97,7 @@ Media Phase 2 (git; staging apply via CI):
 
 **DropIMG Media — Phase 2 Developer Experience + Media MCP**
 
-Local gates: **52 files, 363 tests, 0 failed**; Playwright e2e **21 passed**. Production Media remains off.
+Local/CI gates: **52 files, 363 tests, 0 failed**; Playwright e2e **21 passed**. Staging qualification: **PASS**. Production Media remains off.
 
 ---
 
@@ -103,7 +107,7 @@ Local gates: **52 files, 363 tests, 0 failed**; Playwright e2e **21 passed**. Pr
 
 | Rank | Issue |
 |---|---|
-| HIGH | GitHub Actions `CLOUDFLARE_API_TOKEN` is still a Wrangler OAuth token, not a dashboard-created API token. Wrangler OAuth cannot mint user API tokens (9109). Creating a durable token requires Cloudflare dashboard login (passkey). CI now fails fast via `wrangler whoami` before migrate/deploy. |
+| HIGH | GitHub Actions `CLOUDFLARE_API_TOKEN` is still a Wrangler OAuth token, not a dashboard-created API token. Wrangler OAuth cannot mint user API tokens (9109). The stopgap OAuth used for this pass expires `2026-09-15T19:38:26Z`. Creating a durable token requires Cloudflare dashboard login (passkey). CI now fails fast via `wrangler whoami` before migrate/deploy. |
 
 ### Security
 
@@ -137,7 +141,7 @@ Isolation (`images` / cron / `o/` vs media tables / `p/`) remains intact. Asset 
 
 Production is `workflow_dispatch` only.
 
-`0014` is committed and exercised in local tests. Apply to staging via CI. Do not apply to production in this pass.
+`0014` is applied on staging. Do not apply `0013`/`0014` to production in this pass.
 
 R2 lifecycle JSON has **no** `p/` delete rule. Do not add one.
 
@@ -145,7 +149,7 @@ R2 lifecycle JSON has **no** `p/` delete rule. Do not add one.
 
 ## Next Milestone
 
-Staging qualification of Phase 2, then a production go/no-go only. Do not enable production Media automatically.
+Production Media remains **NO-GO**. Mint a durable Cloudflare API token for Actions, then a separate production enablement pass (`MEDIA_ENABLED`, D1 `0013`/`0014`) only after explicit approval. Do not enable production Media automatically.
 
 ### Explicitly Deferred
 
