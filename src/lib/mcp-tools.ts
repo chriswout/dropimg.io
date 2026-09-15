@@ -1,3 +1,4 @@
+import type { ProjectCredentialAuth } from "./project-credential";
 import { getOwnedLiveImage, listOwnedLiveImages, toIso, toPublicImage } from "./api-images";
 import { createDrop } from "./create-drop";
 import { clientIp, hashIp } from "./ip";
@@ -12,6 +13,7 @@ export type McpToolContext = {
   auth: IntegrationAuth;
   origin: string;
   request: Request;
+  mediaAuth?: ProjectCredentialAuth | null;
 };
 
 export function decodeImagePayload(raw: string): ArrayBuffer | null {

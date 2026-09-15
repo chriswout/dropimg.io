@@ -140,6 +140,11 @@ describe("MCP /mcp", () => {
     expect(init.status).toBeLessThan(500);
     expect(init.status).not.toBe(401);
 
+    const tools = await mcpCall(token, "tools/list", {}, 3);
+    const toolsText = await tools.text();
+    expect(toolsText).toMatch(/upload_image/);
+    expect(toolsText).not.toMatch(/list_media_projects/);
+
     const resource = await worker.fetch(
       "https://dropimg.io/.well-known/oauth-protected-resource/mcp",
     );

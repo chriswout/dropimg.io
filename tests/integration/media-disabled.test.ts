@@ -58,6 +58,9 @@ describe("media flag off", () => {
 
     const alias = await worker.fetch("https://dropimg.io/m/acme/site/header");
     expect(alias.status).toBe(404);
+
+    const page = await worker.fetch("https://dropimg.io/app/media");
+    expect(page.status).toBe(404);
   });
 
   it("still accepts temporary drops", async () => {

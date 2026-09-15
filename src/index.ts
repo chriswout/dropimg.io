@@ -3,13 +3,14 @@ import { Hono } from "hono";
 import { runCleanup } from "./cron/cleanup";
 import { IMAGE_SCOPES } from "./lib/integration-token";
 import { resolveIntegrationTokenValue } from "./lib/integration-token";
+import { mediaEnabled } from "./lib/media-config";
 import { limitAnonymousMcp, limitAuthenticatedMcp } from "./lib/mcp-limit";
 import {
   handleAuthenticatedMcp,
-  mcpAuthFromProps,
   wantsMcpMarketingPage,
   type McpAuthProps,
 } from "./lib/mcp-server";
+import { projectTokenFormatOk, resolveProjectCredential } from "./lib/project-credential";
 import { accountRoutes } from "./routes/account";
 import { adminRoutes } from "./routes/admin";
 import { apiV1Routes } from "./routes/api-v1";
@@ -95,7 +96,7 @@ const mcpApi = {
     }
     const limited = await limitAuthenticatedMcp(env, props.userId);
     if (limited) return limited;
-    return handleAuthenticatedMcp(request, env, ctx, mcpAuthFromProps(props));
+    return handleAuthenticatedMcp(request, env, ctx, props);
   },
 };
 
@@ -114,6 +115,25 @@ const oauth = new OAuthProvider({
     resource_name: "DropIMG",
   },
   async resolveExternalToken({ token, env }) {
+    if (projectTokenFormatOk(token)) {
+      if (!mediaEnabled(env)) return null;
+      const credential = await resolveProjectCredential(env.DB, token);
+      if (!credential) return null;
+      return {
+        props: {
+          userId: credential.userId ?? `pk:${credential.credentialId}`,
+          scopes: [],
+          tokenId: credential.credentialId,
+          media: {
+            credentialId: credential.credentialId,
+            orgId: credential.orgId,
+            projectId: credential.projectId,
+            scopes: credential.scopes,
+            userId: credential.userId,
+          },
+        } satisfies McpAuthProps,
+      };
+    }
     const auth = await resolveIntegrationTokenValue(token, env.DB);
     if (!auth) return null;
     return {
