@@ -1,4 +1,5 @@
 import type { Locale } from "../../marketing/locales";
+import { mediaEnabled } from "../lib/media-config";
 import { renderSitePage } from "./site-page";
 
 /**
@@ -6,7 +7,7 @@ import { renderSitePage } from "./site-page";
  * the four sections read as one product rather than four separate pages.
  */
 
-export type AppSection = "drops" | "integrations" | "billing" | "account";
+export type AppSection = "drops" | "media" | "integrations" | "billing" | "account";
 
 type SectionCopy = {
   nav: string;
@@ -22,6 +23,7 @@ type ShellCopy = {
   upgrade: string;
   upgradeHint: string;
   drops: SectionCopy;
+  media: SectionCopy;
   integrations: SectionCopy;
   billing: SectionCopy;
   account: SectionCopy;
@@ -39,6 +41,11 @@ export const SHELL_COPY: Record<Locale, ShellCopy> = {
       nav: "My drops",
       title: "My drops",
       lede: "Every link you have live right now.",
+    },
+    media: {
+      nav: "Media",
+      title: "Media",
+      lede: "Permanent files for a website, landing page, or storefront.",
     },
     integrations: {
       nav: "Integrations",
@@ -68,6 +75,11 @@ export const SHELL_COPY: Record<Locale, ShellCopy> = {
       title: "Mis envíos",
       lede: "Todos los enlaces que tienes activos ahora.",
     },
+    media: {
+      nav: "Media",
+      title: "Media",
+      lede: "Archivos permanentes para un sitio, landing o tienda.",
+    },
     integrations: {
       nav: "Integraciones",
       title: "Integraciones",
@@ -95,6 +107,11 @@ export const SHELL_COPY: Record<Locale, ShellCopy> = {
       nav: "Meus envios",
       title: "Meus envios",
       lede: "Todos os links que você tem ativos agora.",
+    },
+    media: {
+      nav: "Media",
+      title: "Media",
+      lede: "Arquivos permanentes para um site, landing ou loja.",
     },
     integrations: {
       nav: "Integrações",
@@ -124,6 +141,11 @@ export const SHELL_COPY: Record<Locale, ShellCopy> = {
       title: "Meine Drops",
       lede: "Alle Links, die gerade aktiv sind.",
     },
+    media: {
+      nav: "Media",
+      title: "Media",
+      lede: "Dauerhafte Dateien für Website, Landingpage oder Shop.",
+    },
     integrations: {
       nav: "Integrationen",
       title: "Integrationen",
@@ -144,6 +166,7 @@ export const SHELL_COPY: Record<Locale, ShellCopy> = {
 
 const SECTION_PATH: Record<AppSection, string> = {
   drops: "/app",
+  media: "/app/media",
   integrations: "/app/integrations",
   billing: "/app/billing",
   account: "/app/account",
@@ -151,6 +174,7 @@ const SECTION_PATH: Record<AppSection, string> = {
 
 const SECTION_ORDER: AppSection[] = [
   "drops",
+  "media",
   "integrations",
   "billing",
   "account",
@@ -158,6 +182,7 @@ const SECTION_ORDER: AppSection[] = [
 
 const SECTION_ICON: Record<AppSection, string> = {
   drops: `<path d="M4 5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v13a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 18.5z" /><path d="m4.6 16.2 4-3.7a1.8 1.8 0 0 1 2.5 0l4.6 4.3" /><circle cx="9" cy="9" r="1.4" />`,
+  media: `<path d="M4 7.2A2.2 2.2 0 0 1 6.2 5h11.6A2.2 2.2 0 0 1 20 7.2v9.6A2.2 2.2 0 0 1 17.8 19H6.2A2.2 2.2 0 0 1 4 16.8z" /><path d="M8 12.5 10.2 10l3.3 4 2-1.8L16 14" />`,
   integrations: `<path d="M8.5 3.5v4" /><path d="M15.5 3.5v4" /><path d="M6 7.5h12v4.8a6 6 0 0 1-12 0z" /><path d="M12 18.3V21" />`,
   billing: `<rect x="3" y="6" width="18" height="12" rx="2.2" /><path d="M3 10.2h18" />`,
   account: `<circle cx="12" cy="8.4" r="3.6" /><path d="M4.8 20a7.2 7.2 0 0 1 14.4 0" />`,
@@ -169,7 +194,7 @@ const SECTION_ICON: Record<AppSection, string> = {
  */
 export function renderAppShellPage(opts: {
   locale: Locale;
-  env: { ENVIRONMENT?: string };
+  env: { ENVIRONMENT?: string; MEDIA_ENABLED?: string };
   section: AppSection;
   title: string;
   plan: "free" | "pro";
@@ -181,8 +206,11 @@ export function renderAppShellPage(opts: {
 }): string {
   const shell = SHELL_COPY[opts.locale];
   const section = shell[opts.section];
+  const sections = mediaEnabled(opts.env)
+    ? SECTION_ORDER
+    : SECTION_ORDER.filter((key) => key !== "media");
 
-  const nav = SECTION_ORDER.map((key) => {
+  const nav = sections.map((key) => {
     const current = key === opts.section;
     return `          <a class="app-nav-link" href="${SECTION_PATH[key]}"${current ? ' aria-current="page"' : ""}>
             <svg class="app-nav-icon icon" viewBox="0 0 24 24" aria-hidden="true">${SECTION_ICON[key]}</svg>

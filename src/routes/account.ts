@@ -47,6 +47,7 @@ import {
 import { removeImage } from "../lib/remove-image";
 import { isValidSlug } from "../lib/slug";
 import { verifyDeleteToken } from "../lib/tokens";
+import { mediaEnabled } from "../lib/media-config";
 import { moveImageToProPrefix } from "../lib/upload-store";
 import type { ImageRow } from "../types";
 import {
@@ -56,6 +57,7 @@ import {
   integrationsHtmlResponse,
 } from "../views/account";
 import { appHtmlResponse, type AppDrop } from "../views/app";
+import { mediaHtmlResponse } from "../views/media";
 
 type Env = {
   Bindings: Cloudflare.Env;
@@ -133,6 +135,20 @@ accountRoutes.get("/app/integrations", (c) =>
 accountRoutes.get("/app/billing", (c) => settingsPage(c, billingHtmlResponse));
 
 accountRoutes.get("/app/account", (c) => settingsPage(c, accountHtmlResponse));
+
+accountRoutes.get("/app/media", async (c) => {
+  if (!mediaEnabled(c.env)) return c.text("Not found", 404);
+  const locale = resolveRequestLocale(c.req.raw);
+  const session = await resolveSession(c.env.DB, c.req.header("cookie"));
+  if (!session) return c.redirect("/login", 302);
+  const entitlements = await entitlementsFor(c.env, session.id);
+  return mediaHtmlResponse({
+    locale,
+    env: c.env,
+    plan: entitlements.plan === "pro" ? "pro" : "free",
+    origin: new URL(c.req.url).origin,
+  });
+});
 
 accountRoutes.get("/app", async (c) => {
   const locale = resolveRequestLocale(c.req.raw);
