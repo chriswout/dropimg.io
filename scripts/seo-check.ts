@@ -206,6 +206,15 @@ else {
   if (!sm.includes(`<loc>https://dropimg.io/sharex</loc>`)) {
     fail("sitemap missing sharex");
   }
+  if (!sm.includes(`<loc>https://dropimg.io/web-assets</loc>`)) {
+    fail("sitemap missing web-assets");
+  }
+  if (!sm.includes(`<loc>https://dropimg.io/pricing</loc>`)) {
+    fail("sitemap missing pricing");
+  }
+  if (!sm.includes(`<loc>https://dropimg.io/drops</loc>`)) {
+    fail("sitemap missing drops");
+  }
   for (const url of allIntentUrls()) {
     if (!sm.includes(`<loc>${url}</loc>`)) fail(`sitemap missing ${url}`);
   }
@@ -367,6 +376,60 @@ for (const id of INTENT_PAGE_IDS) {
   }
 }
 ok(`${intentPageCount} intent pages present`);
+
+{
+  const path = join(root, "web-assets/index.html");
+  if (!existsSync(path)) fail("missing web-assets/index.html");
+  else {
+    const html = readFileSync(path, "utf8");
+    if (!html.includes('rel="canonical" href="https://dropimg.io/web-assets"')) {
+      fail("web-assets: bad canonical");
+    }
+    if (!html.includes("Permanent web assets for applications")) {
+      fail("web-assets: missing H1");
+    }
+    if (!html.includes("PDF")) fail("web-assets: missing unsupported PDF");
+    if (!html.includes("/m/acme/site/branding/logo")) {
+      fail("web-assets: missing semantic URL");
+    }
+    ok("web-assets page present");
+  }
+}
+
+{
+  const path = join(root, "pricing/index.html");
+  if (!existsSync(path)) fail("missing pricing/index.html");
+  else {
+    const html = readFileSync(path, "utf8");
+    if (!html.includes("$9")) fail("pricing: missing Developer $9");
+    if (!html.includes("$29")) fail("pricing: missing Pro $29");
+    if (!html.includes("$90/year")) fail("pricing: missing annual Developer");
+    if (!html.includes("$290/year")) fail("pricing: missing annual Pro");
+    if (!html.includes("100K asset deliveries")) fail("pricing: missing Free deliveries");
+    if (/unlimited/i.test(html)) fail("pricing: must not say unlimited");
+    ok("pricing page present");
+  }
+}
+
+{
+  const path = join(root, "drops/index.html");
+  if (!existsSync(path)) fail("missing drops/index.html");
+  else {
+    const html = readFileSync(path, "utf8");
+    if (!html.includes('id="dropzone"')) fail("drops: missing dropzone");
+    if (!html.includes("Drop an image. Get a link.")) fail("drops: missing H1");
+    ok("drops page present");
+  }
+}
+
+{
+  const home = readFileSync(join(root, "index.html"), "utf8");
+  if (!home.includes("Your AI builds the site.")) fail("homepage: missing Web Assets H1");
+  if (!home.includes('id="dropzone"')) fail("homepage: missing dropzone");
+  if (!home.includes("Drops vs Web Assets")) fail("homepage: missing comparison");
+  if (!home.includes("WOFF2")) fail("homepage: missing font format");
+  ok("homepage Web Assets reposition present");
+}
 
 if (failures === 0) {
   ok(
