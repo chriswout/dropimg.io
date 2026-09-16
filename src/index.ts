@@ -28,6 +28,7 @@ import { reportRoutes } from "./routes/report";
 import { mediaApiRoutes } from "./routes/media-api";
 import { mediaDeliveryRoutes } from "./routes/media-delivery";
 import { shareRoutes } from "./routes/share";
+import { siteConfigRoutes } from "./routes/site-config";
 import { uploadRoutes } from "./routes/upload";
 
 type Env = {
@@ -64,6 +65,7 @@ app.route("/", mediaApiRoutes);
 app.route("/", mediaDeliveryRoutes);
 app.route("/", uploadRoutes);
 app.route("/", eventRoutes);
+app.route("/", siteConfigRoutes);
 app.route("/", authRoutes);
 app.route("/", billingRoutes);
 app.route("/", accountRoutes);

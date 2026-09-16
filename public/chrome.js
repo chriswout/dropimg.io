@@ -43,6 +43,9 @@
         applyPlanState(planEl, planBadge, planMenu, proAnon, true, data.entitlements?.plan === "pro");
         signin.hidden = true;
         sessionEl.hidden = false;
+        document.querySelectorAll(".account-get-started").forEach((el) => {
+          el.setAttribute("hidden", "");
+        });
         await claimLocalRecent();
       } catch {
       }

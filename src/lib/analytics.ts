@@ -36,7 +36,20 @@ export type AnalyticsEvent =
   | "dashboard_copy"
   | "dashboard_delete"
   | "moderation_decision"
-  | "moderation_flag";
+  | "moderation_flag"
+  | "homepage_viewed"
+  | "homepage_web_assets_cta_clicked"
+  | "homepage_drop_started"
+  | "homepage_drop_completed"
+  | "pricing_viewed"
+  | "pricing_plan_clicked"
+  | "developer_onboarding_viewed"
+  | "agent_connect_started"
+  | "agent_connect_completed"
+  | "media_project_created"
+  | "media_first_asset_created"
+  | "media_stable_url_returned"
+  | "media_asset_replaced";
 
 export const ANALYTICS_PLANS = ["anonymous", "free", "pro"] as const;
 export const ANALYTICS_INTERVALS = ["monthly", "annual"] as const;
@@ -60,6 +73,28 @@ export const ANALYTICS_CLIENTS = [
   "mcp",
   "other",
 ] as const;
+
+export const ANALYTICS_CTA_REASONS = [
+  "web_assets",
+  "drop",
+  "cursor",
+  "claude",
+  "codex",
+  "mcp",
+  "free",
+  "developer",
+  "pro",
+  "create_project",
+] as const;
+
+export type AnalyticsCtaReason = (typeof ANALYTICS_CTA_REASONS)[number];
+
+const CTA_REASON_SET = new Set<string>(ANALYTICS_CTA_REASONS);
+
+export function allowCtaReason(raw: string | null | undefined): AnalyticsCtaReason | "" {
+  const v = (raw || "").trim().toLowerCase();
+  return CTA_REASON_SET.has(v) ? (v as AnalyticsCtaReason) : "";
+}
 
 export type AnalyticsPlan = (typeof ANALYTICS_PLANS)[number];
 export type AnalyticsInterval = (typeof ANALYTICS_INTERVALS)[number];
@@ -87,6 +122,9 @@ export const SENSITIVE_ANALYTICS_KEYS = [
   "password",
   "label",
   "ip",
+  "path",
+  "alias",
+  "key",
 ] as const;
 
 export function allowPlan(raw: string | null | undefined): AnalyticsPlan | "" {

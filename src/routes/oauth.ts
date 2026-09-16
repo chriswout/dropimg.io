@@ -7,6 +7,7 @@ import {
 import { csrfOriginOk } from "../lib/auth/csrf";
 import { resolveSession } from "../lib/auth/session";
 import { IMAGE_SCOPES, isImageScope, type ImageScope } from "../lib/integration-token";
+import { track } from "../lib/analytics";
 import { oauthAuthorizeHtmlResponse } from "../views/oauth-authorize";
 
 type Env = {
@@ -79,6 +80,7 @@ oauthRoutes.post("/oauth/authorize", async (c) => {
     scope: scopes,
     props: { userId: session.id, scopes },
   });
+  track(c.env.ANALYTICS, "agent_connect_completed", { client: "mcp" });
   return c.redirect(redirectTo, 302);
 });
 

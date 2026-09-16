@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import {
+  allowCtaReason,
   allowInterval,
   allowPlan,
   track,
@@ -24,6 +25,13 @@ const CLIENT_EVENTS = new Set<AnalyticsEvent>([
   "dashboard_open",
   "dashboard_copy",
   "dashboard_delete",
+  "homepage_viewed",
+  "homepage_web_assets_cta_clicked",
+  "homepage_drop_started",
+  "pricing_viewed",
+  "pricing_plan_clicked",
+  "developer_onboarding_viewed",
+  "agent_connect_started",
 ]);
 
 export const eventRoutes = new Hono<Env>();
@@ -60,7 +68,10 @@ eventRoutes.post("/api/event", async (c) => {
   const reason =
     event === "landing_view"
       ? pageIntent || undefined
-      : allowInterval(body.reason) || allowInterval(body.interval) || undefined;
+      : allowCtaReason(body.reason) ||
+        allowInterval(body.reason) ||
+        allowInterval(body.interval) ||
+        undefined;
 
   track(c.env.ANALYTICS, event, {
     pageIntent: pageIntent || undefined,

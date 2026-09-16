@@ -45,7 +45,7 @@ function el<T extends HTMLElement>(id: string): T {
 
 function trackEvent(
   event: string,
-  extra: { page_intent?: string; plan?: string; interval?: string } = {},
+  extra: { page_intent?: string; plan?: string; interval?: string; reason?: string } = {},
 ): void {
   try {
     const body = JSON.stringify({
@@ -53,6 +53,7 @@ function trackEvent(
       page_intent: extra.page_intent ?? pageIntent,
       plan: extra.plan,
       interval: extra.interval,
+      reason: extra.reason,
       client: "web",
     });
     const blob = new Blob([body], { type: "application/json" });
@@ -281,6 +282,9 @@ async function handleFile(file: File) {
   trackEvent("upload_start", {
     plan: accountEntitlements?.plan || (accountUser ? "free" : "anonymous"),
   });
+  if (pageIntent === "home") {
+    trackEvent("homepage_drop_started");
+  }
 
   try {
     const result = await uploadWithProgress(file, {
@@ -668,7 +672,11 @@ shareUrl.addEventListener("focus", () => shareUrl.select());
   renderRecent();
 
   if (pageIntent === "home") {
-    trackEvent("home_view");
+    trackEvent("homepage_viewed");
+  } else if (pageIntent === "pricing") {
+    trackEvent("pricing_viewed");
+  } else if (pageIntent === "developers") {
+    trackEvent("developer_onboarding_viewed");
   } else {
     trackEvent("landing_view");
   }
@@ -763,7 +771,59 @@ setupLanguageLinks();
 setupHeaderScroll();
 setupEntrance();
 setupLangSuggest();
+setupMediaCtas();
+setupTrackedCtas();
 if (document.getElementById("dropzone")) {
   setupUploader();
   void accountReady.then(() => setupDropOptions());
+} else {
+  setupPageViews();
+}
+
+function setupPageViews() {
+  if (pageIntent === "pricing") {
+    trackEvent("pricing_viewed");
+  } else if (pageIntent === "developers") {
+    trackEvent("developer_onboarding_viewed");
+  }
+}
+
+function setupTrackedCtas() {
+  document.querySelectorAll("[data-track]").forEach((node) => {
+    node.addEventListener("click", () => {
+      const name = node.getAttribute("data-track");
+      const reason = node.getAttribute("data-plan") || undefined;
+      if (name === "homepage_web_assets_cta") {
+        trackEvent("homepage_web_assets_cta_clicked", { reason: "web_assets" });
+      } else if (name === "pricing_plan") {
+        trackEvent("pricing_plan_clicked", { reason });
+      } else if (name === "agent_connect") {
+        trackEvent("agent_connect_started", { reason: reason || "mcp" });
+      }
+    });
+  });
+}
+
+function setupMediaCtas() {
+  const nodes = document.querySelectorAll<HTMLAnchorElement>("[data-media-cta]");
+  if (!nodes.length) return;
+  void fetch("/api/site-config")
+    .then((res) => (res.ok ? res.json() : null))
+    .then((data: { mediaEnabled?: boolean } | null) => {
+      const enabled = data?.mediaEnabled === true;
+      nodes.forEach((el) => {
+        if (enabled) {
+          el.href = "/login?next=/app/media";
+          return;
+        }
+        const soon = el.getAttribute("data-cta-soon");
+        if (soon) el.textContent = soon;
+        el.href = "/web-assets";
+      });
+    })
+    .catch(() => {
+      nodes.forEach((el) => {
+        el.href = "/web-assets";
+      });
+    });
 }

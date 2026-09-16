@@ -254,6 +254,12 @@ export async function storeUploadedImage(
     pageIntent,
     expirySeconds: input.expirySeconds,
   });
+  if (pageIntent === "home") {
+    track(env.ANALYTICS, "homepage_drop_completed", {
+      client,
+      pageIntent,
+    });
+  }
 
   return {
     ok: true,

@@ -168,6 +168,37 @@ describe("Worker integration", () => {
     expect(res.headers.get("Location")).toBeNull();
   });
 
+  it("exposes mediaEnabled without secrets on /api/site-config", async () => {
+    const res = await worker.fetch("https://dropimg.io/api/site-config");
+    expect(res.status).toBe(200);
+    const body = (await res.json()) as Record<string, unknown>;
+    expect(body).toEqual({ mediaEnabled: false });
+    expect(JSON.stringify(body)).not.toMatch(/token|secret|password/i);
+  });
+
+  it("accepts homepage funnel events and rejects secrets as event names", async () => {
+    const ok = await worker.fetch("https://dropimg.io/api/event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event: "homepage_viewed",
+        page_intent: "home",
+        reason: "web_assets",
+      }),
+    });
+    expect(ok.status).toBe(200);
+
+    const secret = await worker.fetch("https://dropimg.io/api/event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        event: "dropimg_pk_abc",
+        reason: "dropimg_pk_abc",
+      }),
+    });
+    expect(secret.status).toBe(400);
+  });
+
   it("refuses uploads when production secret is missing", async () => {
     await server.update({
       workers: [

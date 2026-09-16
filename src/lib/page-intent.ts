@@ -16,6 +16,9 @@ export const PAGE_INTENTS = [
   "pro",
   "developers",
   "mcp",
+  "web-assets",
+  "pricing",
+  "drops",
 ] as const;
 
 export type PageIntent = (typeof PAGE_INTENTS)[number];

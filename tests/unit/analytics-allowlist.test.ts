@@ -40,6 +40,19 @@ const FUNNEL_EVENTS: AnalyticsEvent[] = [
   "password_protection_used",
   "unlock_ok",
   "unlock_fail",
+  "homepage_viewed",
+  "homepage_web_assets_cta_clicked",
+  "homepage_drop_started",
+  "homepage_drop_completed",
+  "pricing_viewed",
+  "pricing_plan_clicked",
+  "developer_onboarding_viewed",
+  "agent_connect_started",
+  "agent_connect_completed",
+  "media_project_created",
+  "media_first_asset_created",
+  "media_stable_url_returned",
+  "media_asset_replaced",
 ];
 
 describe("normalizeUploadClient", () => {
@@ -85,9 +98,12 @@ describe("normalizePageIntent", () => {
     expect(normalizePageIntent("sharex")).toBe("sharex");
   });
 
-  it("includes developers and mcp intents", () => {
+  it("includes developers, mcp, and Web Assets intents", () => {
     expect(PAGE_INTENTS).toContain("developers");
     expect(PAGE_INTENTS).toContain("mcp");
+    expect(PAGE_INTENTS).toContain("web-assets");
+    expect(PAGE_INTENTS).toContain("pricing");
+    expect(PAGE_INTENTS).toContain("drops");
   });
 
   it("allowlists api and mcp upload clients", () => {
@@ -138,6 +154,9 @@ describe("analytics allowlist", () => {
         "password",
         "label",
         "ip",
+        "path",
+        "alias",
+        "key",
       ]),
     );
   });

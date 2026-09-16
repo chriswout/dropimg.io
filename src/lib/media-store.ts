@@ -1,4 +1,5 @@
 import { inspectWebAsset } from "./inspect-web-asset";
+import { track } from "./analytics";
 import {
   MEDIA_IDEMPOTENCY_MAX_KEY_LENGTH,
   MEDIA_IDEMPOTENCY_TTL_SECONDS,
@@ -384,6 +385,17 @@ export async function createMediaAsset(
     now,
   });
 
+  const liveCount = await env.DB.prepare(
+    `SELECT COUNT(*) AS n FROM assets WHERE project_id = ? AND org_id = ? AND deleted_at IS NULL`,
+  )
+    .bind(input.projectId, input.orgId)
+    .first<{ n: number }>();
+  const client = input.actor.credentialId ? "api" : "web";
+  if (Number(liveCount?.n ?? 0) === 1) {
+    track(env.ANALYTICS, "media_first_asset_created", { client });
+  }
+  track(env.ANALYTICS, "media_stable_url_returned", { client });
+
   return {
     ok: true,
     asset: toPublicAsset({
@@ -507,6 +519,10 @@ export async function replaceMediaAsset(
     targetId: input.assetId,
     requestId: input.requestId,
     now,
+  });
+
+  track(env.ANALYTICS, "media_asset_replaced", {
+    client: input.actor.credentialId ? "api" : "web",
   });
 
   return {

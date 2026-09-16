@@ -1,6 +1,6 @@
 # DropIMG Project Status
 
-Canonical snapshot as of Web Asset Format Expansion (KON-53–KON-58) on `main`. Prefer this file over git history and over [`docs/plans/media-backend-for-ai-websites.md`](plans/media-backend-for-ai-websites.md).
+Canonical snapshot as of Website Repositioning & Launch Surface (KON-79–KON-81) on `main`. Prefer this file over git history and over [`docs/plans/media-backend-for-ai-websites.md`](plans/media-backend-for-ai-websites.md).
 
 ---
 
@@ -32,7 +32,7 @@ Supported Web Assets: JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, WOFF
 
 Explicitly unsupported: PDFs, video, audio, archives, EXE/APK, HTML/JS/CSS/PHP, source, generic blobs. DropIMG is not S3/R2/Vercel Blob.
 
-Phase 2 added `/app/media`, project key list/revoke, asset delete, upload intents, and Media MCP tools on the existing `/mcp` server. This pass adds the Web Asset type model and the approved extra formats. Production remains flagged off.
+Phase 2 added `/app/media`, project key list/revoke, asset delete, upload intents, and Media MCP tools on the existing `/mcp` server. Web Asset formats are live on staging. The public website now leads with Web Assets and keeps Drops as the temporary acquisition surface. Production Media remains flagged off.
 
 ---
 
@@ -115,13 +115,20 @@ Web Assets agent skill (KON-59):
 - Canonical: [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md)
 - Decision table Drops vs Media vs unsupported; replace-in-place; no invented `/m/...` URLs
 
+Website repositioning (KON-79–KON-81):
+
+- Homepage leads with Web Assets; Drop uploader stays on the same page
+- Public `/web-assets`, `/pricing`, `/drops`; `/developers` onboarding for Cursor / Claude Code / Codex / MCP
+- Display-only pricing (Free $0 / Developer $9 / Pro $29); checkout hidden while production Media is off
+- Acquisition funnel events on Analytics Engine; `GET /api/site-config` for feature-flag CTAs
+
 ---
 
 ## Milestone
 
-**DropIMG Media — Web Asset Format Expansion (KON-53–KON-58)**
+**6. Website Repositioning & Launch Surface (KON-79–KON-81)**
 
-Local/CI gates: **55 files, 401 tests, 0 failed** (skill tests included). Staging qualification: **PASS**. Production Media remains off. Do not apply `0013`/`0014`/`0015` to production.
+Local/CI gates: **57 files, 413 tests, 0 failed**. Playwright marketing + Drop regression: pass. Production Media remains off. Do not apply `0013`/`0014`/`0015` to production. Do not start KON-60 marketplace submissions.
 
 ---
 
@@ -161,9 +168,28 @@ Local/CI gates: **55 files, 401 tests, 0 failed** (skill tests included). Stagin
 | Rank | Issue |
 |---|---|
 | LOW | Production moderation is shadow-only. |
-| INFORMATIONAL | Linear MCP is not connected in this environment; KON-53–KON-58 were not updated from here. |
+| INFORMATIONAL | Linear MCP is not connected in this environment; KON-79–KON-81 were not updated from here. KON-41 (Cloudflare CI token 9109) remains open. |
 
 Isolation (`images` / cron / `o/` vs media tables / `p/`) remains intact. Asset delete does not use temporary `images` cleanup.
+
+---
+
+## Public website (KON-79–KON-81)
+
+The marketing site is generated from `marketing/*` via `npm run generate:pages`. CSS source of truth is `client/styles.css` (`generate:site-assets` copies it to `public/site.css`).
+
+| Route | Role |
+|---|---|
+| `/` | Hybrid homepage: Web Assets hero + demo + existing Drop uploader |
+| `/web-assets` | Product page (English) |
+| `/pricing` | Display-only Web Assets plans; no checkout |
+| `/developers` | Agent onboarding (Cursor / Claude Code / Codex / MCP) plus Drop API |
+| `/drops` | Dedicated temporary Drop page; homepage widget remains |
+| `/app/media` | Authenticated app (404 in production while `MEDIA_ENABLED=false`) |
+
+CTAs with `data-media-cta` call `GET /api/site-config`. If Media is off, they stay on `/web-assets` and never hit `/app/media`. Production `MEDIA_ENABLED` is still `false`.
+
+Funnel events (Cloudflare Analytics Engine, no secrets/paths/tokens): `homepage_viewed`, `homepage_web_assets_cta_clicked`, `homepage_drop_started`, `homepage_drop_completed`, `pricing_viewed`, `pricing_plan_clicked`, `developer_onboarding_viewed`, `agent_connect_started`, `agent_connect_completed`, `media_project_created`, `media_first_asset_created`, `media_stable_url_returned`, `media_asset_replaced`.
 
 ---
 
@@ -190,7 +216,7 @@ R2 lifecycle JSON has **no** `p/` delete rule. Do not add one.
 
 ## Next Milestone
 
-**KON-60 — MCP registry/marketplace packaging** of the existing `/mcp` server plus [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md). Do not add a second MCP endpoint.
+**7. Agent Skill & MCP Marketplace Packaging / KON-60** of the existing `/mcp` server plus [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md). Do not add a second MCP endpoint. Do not start marketplace submissions until this packaging pass.
 
 Production Media remains **NO-GO**. Mint a durable Cloudflare API token for Actions (KON-41), then a separate production enablement pass (`MEDIA_ENABLED`, D1 `0013`/`0014`/`0015`) only after explicit approval.
 

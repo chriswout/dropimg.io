@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { mediaEnabled } from "../lib/media-config";
+import { track } from "../lib/analytics";
 import { actorRef, requireOrg, requireProject, resolveMediaCaller } from "../lib/media-auth";
 import { mediaApiError, mediaJson, mediaRequestId } from "../lib/media-http";
 import { isUuid, mediaAliasUrl } from "../lib/media-path";
@@ -99,6 +100,7 @@ mediaApiRoutes.post("/api/v1/media/orgs/:orgId/projects", async (c) => {
     }
     return mediaApiError(409, "conflict", "Project slug already exists", requestId);
   }
+  track(c.env.ANALYTICS, "media_project_created", { client: "web" });
   const origin = new URL(c.req.url).origin;
   return mediaJson(201, { project: serializeProject(created, origin, actor.org.slug) }, requestId);
 });

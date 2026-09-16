@@ -1,4 +1,5 @@
 import { mediaEnabled } from "./media-config";
+import { track } from "./analytics";
 import { mediaAliasUrl } from "./media-path";
 import {
   createMediaUploadIntent,
@@ -159,6 +160,7 @@ export async function mcpCreateMediaProject(
   if ("error" in created) {
     return created.error === "bad_slug" ? "Invalid project slug." : "Project slug already exists.";
   }
+  track(input.env.ANALYTICS, "media_project_created", { client: "mcp" });
   return text({
     project_id: created.id,
     project_slug: created.slug,
