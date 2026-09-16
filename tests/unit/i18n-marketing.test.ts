@@ -82,17 +82,21 @@ describe("renderPage metadata", () => {
 
   it("English homepage H1 matches product copy", () => {
     const html = renderPage("home", "en");
-    expect(html).toContain(HOME.en.h1);
+    expect(html).toContain(HOME.en.h1Lead);
+    expect(html).toContain(HOME.en.h1Rest);
     expect(html).toContain("Drop an image. Get a link.");
   });
 
   it("Spanish homepage H1 is localized", () => {
     const html = renderPage("home", "es");
+    expect(html).toContain("Tu IA construye el sitio.");
     expect(html).toContain("Suelta una imagen. Llévate el enlace.");
   });
 
   it("Portuguese and German homepage H1s sound native", () => {
+    expect(renderPage("home", "pt-BR")).toContain("Sua IA constrói o site.");
     expect(renderPage("home", "pt-BR")).toContain("Solte a imagem. Pegue o link.");
+    expect(renderPage("home", "de")).toContain("Deine KI baut die Seite.");
     expect(renderPage("home", "de")).toContain("Bild rein. Link raus.");
   });
 

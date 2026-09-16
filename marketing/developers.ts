@@ -23,6 +23,36 @@ type DevelopersCopy = LandingCopy & {
 export const DEVELOPERS_PATH = "/developers";
 export const DEVELOPERS_URL = "https://dropimg.io/developers";
 export const OPENAPI_PATH = "/openapi/v1.yaml";
+export const MCP_ENDPOINT = "https://dropimg.io/mcp";
+
+export const DEVELOPERS_ONBOARDING = {
+  heading: "Connect a coding agent",
+  lede: "Sign in, create a Web Assets project, connect MCP, upload the first file, and paste the returned URL into the app. Temporary screenshot URLs still use the Drop API below.",
+  stepsHeading: "Ideal flow",
+  steps: [
+    "Visit DropIMG and sign in",
+    "Create a Web Assets project",
+    "Connect your agent over MCP",
+    "Upload the first Web Asset",
+    "Use the returned /m/… URL in the app",
+  ] as const,
+  launchNote:
+    "Web Assets MCP tools are live when Media is enabled on the workspace. Production Media is still flagged off — this page will not send you to a 404. You can connect MCP today for temporary Drops.",
+  cursorHeading: "Cursor",
+  cursorBody:
+    "Add the DropIMG MCP server (https://dropimg.io/mcp). Cursor opens OAuth after install. Ask the agent to create a project, then upload branding/logo as a Web Asset. Do not invent a /m/… URL — use the JSON url after the HTTP upload.",
+  cursorCta: "Add to Cursor",
+  claudeHeading: "Claude Code",
+  claudeBody:
+    "Register https://dropimg.io/mcp as a remote MCP server. After OAuth, the same tools are available: list_media_projects, upload_media_asset, replace_media_asset. Temporary screenshots stay on upload_image.",
+  codexHeading: "Codex",
+  codexBody:
+    "Point Codex at https://dropimg.io/mcp. Use an account OAuth session or a project key (dropimg_pk_…) for an existing project. Project keys cannot create projects.",
+  mcpHeading: "Generic MCP",
+  mcpBody:
+    "Canonical endpoint: https://dropimg.io/mcp. Streamable HTTP. One server for Drops and Web Assets — not a second MCP process.",
+  mcpEndpoint: MCP_ENDPOINT,
+};
 
 export const DEVELOPERS_PAGE: DevelopersCopy = {
   title: "Temporary Image Upload API — Image Hosting API | dropimg.io",

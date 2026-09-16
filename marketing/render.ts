@@ -14,10 +14,14 @@ import {
 import { SHAREX_PAGE, SHAREX_URL } from "./sharex";
 import {
   DEVELOPERS_EXAMPLES,
+  DEVELOPERS_ONBOARDING,
   DEVELOPERS_PAGE,
   DEVELOPERS_URL,
 } from "./developers";
+import { DROPS_PAGE, DROPS_URL } from "./drops";
 import { MCP_PAGE, MCP_URL } from "./mcp";
+import { PRICING_PAGE, PRICING_TIERS, PRICING_URL } from "./pricing";
+import { WEB_ASSETS_PAGE, WEB_ASSETS_URL } from "./web-assets";
 import type { FaqItem as SharexFaq } from "./types";
 import {
   INTENT_PAGE_PATHS,
@@ -524,6 +528,123 @@ function extensionMockHtml(): string {
           </div>`;
 }
 
+function homepageDemoHtml(copy: (typeof HOME)[Locale]): string {
+  return `          <section class="product-demo" aria-labelledby="demo-heading" data-enter>
+            <h2 id="demo-heading">${esc(copy.demoHeading)}</h2>
+            <div class="demo-board">
+              <div class="demo-turn">
+                <p class="demo-who">${esc(copy.demoYou)}</p>
+                <p class="demo-prompt">${esc(copy.demoPrompt)}</p>
+              </div>
+              <div class="demo-turn">
+                <p class="demo-who">${esc(copy.demoAgent)}</p>
+                <ul class="demo-steps">
+                  <li>${esc(copy.demoSteps[0])}</li>
+                  <li>${esc(copy.demoSteps[1])}</li>
+                  <li>${esc(copy.demoSteps[2])}</li>
+                </ul>
+              </div>
+              <p class="demo-url"><code>${esc(copy.demoUrl)}</code></p>
+              <p class="demo-note">${esc(copy.demoUnchanged)}</p>
+            </div>
+          </section>`;
+}
+
+function homepageProductHtml(copy: (typeof HOME)[Locale]): string {
+  const yes = "Yes";
+  const rows = copy.compareRows
+    .map((row) => {
+      const drops = row.drops ? yes : "";
+      const media = row.media ? yes : "";
+      return `              <tr>
+                <th scope="row">${esc(row.use)}</th>
+                <td>${drops ? `<span class="cmp-yes">${esc(drops)}</span>` : `<span class="cmp-no">—</span>`}</td>
+                <td>${media ? `<span class="cmp-yes">${esc(media)}</span>` : `<span class="cmp-no">—</span>`}</td>
+              </tr>`;
+    })
+    .join("\n");
+  const examples = copy.stableExamples
+    .map((p) => `              <li><code>${esc(p)}</code></li>`)
+    .join("\n");
+  const unsupported = copy.formatsUnsupported
+    .map((item) => `              <li>${esc(item)}</li>`)
+    .join("\n");
+  const flow = copy.agentsFlow
+    .map((step, i) => {
+      const arrow =
+        i < copy.agentsFlow.length - 1
+          ? `\n              <li class="agent-flow-arrow" aria-hidden="true">↓</li>`
+          : "";
+      return `              <li>${esc(step)}</li>${arrow}`;
+    })
+    .join("\n");
+  const facts = copy.securityFacts
+    .map((item) => `              <li>${esc(item)}</li>`)
+    .join("\n");
+
+  return `          <section class="compare-block" aria-labelledby="compare-heading" data-enter>
+            <h2 id="compare-heading">${esc(copy.compareHeading)}</h2>
+            <div class="compare-wrap">
+              <table class="compare-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Use case</th>
+                    <th scope="col">${esc(copy.compareDrops)}</th>
+                    <th scope="col">${esc(copy.compareMedia)}</th>
+                  </tr>
+                </thead>
+                <tbody>
+${rows}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="stable-block" aria-labelledby="stable-heading" data-enter>
+            <p class="feature-kicker">${esc(copy.stableKicker)}</p>
+            <h2 id="stable-heading">${esc(copy.stableTitle)}</h2>
+            <p>${esc(copy.stableBody)}</p>
+            <p class="demo-url"><code>${esc(copy.stablePath)}</code></p>
+            <p class="stable-versions">Version 1 <code>${esc(copy.stableV1)}</code> → Version 2 <code>${esc(copy.stableV2)}</code></p>
+            <ul class="path-examples">
+${examples}
+            </ul>
+          </section>
+
+          <section class="formats-block" aria-labelledby="formats-heading" data-enter>
+            <h2 id="formats-heading">${esc(copy.formatsHeading)}</h2>
+            <p>${esc(copy.formatsIntro)}</p>
+            <ul class="format-ok">
+              <li>${esc(copy.formatsRaster)}</li>
+              <li>${esc(copy.formatsVector)}</li>
+              <li>${esc(copy.formatsIcons)}</li>
+              <li>${esc(copy.formatsFonts)}</li>
+            </ul>
+            <p>${esc(copy.formatsFocus)}</p>
+            <h3>${esc(copy.formatsUnsupportedHeading)}</h3>
+            <ul class="format-no">
+${unsupported}
+            </ul>
+          </section>
+
+          <section class="agents-block" aria-labelledby="agents-heading" data-enter>
+            <h2 id="agents-heading">${esc(copy.agentsHeading)}</h2>
+            <p>${esc(copy.agentsBody)}</p>
+            <ol class="agent-flow">
+${flow}
+            </ol>
+            <p class="works-with">${esc(copy.worksWith)}</p>
+          </section>
+
+          <section class="security-block" aria-labelledby="security-heading" data-enter>
+            <h2 id="security-heading">${esc(copy.securityHeading)}</h2>
+            <ul>
+${facts}
+            </ul>
+            <p>${esc(copy.securityPublic)}</p>
+          </section>`;
+}
+
 /** Subtle post-uploader extension promo — must not dominate the dropzone. */
 function extensionPromoHtml(locale: Locale, chrome: SharedChrome): string {
   const storeCta =
@@ -581,10 +702,28 @@ ${suggest}    <div class="page page-home">
 ${topBar("home", locale, chrome)}
 
       <main>
-        <section class="hero" aria-label="Upload">
-          <h1 class="tagline">${esc(copy.h1)}</h1>
+        <section class="hero" aria-labelledby="hero-heading">
+          <h1 id="hero-heading" class="tagline">
+            <span class="tagline-lead">${esc(copy.h1Lead)}</span>
+            <span class="tagline-rest">${esc(copy.h1Rest)}</span>
+          </h1>
           <p class="sub">
-            ${copy.subHtml}
+            ${esc(copy.subHtml)}
+          </p>
+          <div class="hero-actions">
+            <a class="btn primary" href="/web-assets" data-media-cta="create" data-track="homepage_web_assets_cta">${esc(copy.primaryCta)}</a>
+            <a class="btn secondary" href="#dropzone">${esc(copy.secondaryCta)}</a>
+          </div>
+          <p class="works-with">${esc(copy.worksWith)}</p>
+        </section>
+
+${homepageDemoHtml(copy)}
+
+        <section class="hero drop-hero" id="drops" aria-labelledby="drop-heading">
+          <p class="feature-kicker">${esc(copy.dropKicker)}</p>
+          <h2 id="drop-heading" class="tagline drop-heading">${esc(copy.h1)}</h2>
+          <p class="sub">
+            ${esc(ui.idleDesktop)}
           </p>
 
 ${dropzoneHtml(locale, copy.dropzoneAria)}
@@ -598,6 +737,8 @@ ${trustStripHtml(copy.trust, chrome.productHighlights)}
 
 ${extensionPromoHtml(locale, chrome)}
         </section>
+
+${homepageProductHtml(copy)}
 
         <section class="below" aria-label="${esc(chrome.aboutAria)}">
           <section class="howto-compact" aria-labelledby="howto-heading" data-enter>
@@ -1183,6 +1324,26 @@ ${copy.heroFacts.map((f) => `              <li>${esc(f)}</li>`).join("\n")}
           </div>
         </section>
 
+        <article class="seo-article" id="onboarding" aria-labelledby="onboard-heading">
+          <h2 id="onboard-heading">${esc(DEVELOPERS_ONBOARDING.heading)}</h2>
+          <p>${esc(DEVELOPERS_ONBOARDING.lede)}</p>
+          <p class="price-launch">${esc(DEVELOPERS_ONBOARDING.launchNote)}</p>
+          <h3>${esc(DEVELOPERS_ONBOARDING.stepsHeading)}</h3>
+          <ol class="onboard-steps">
+${DEVELOPERS_ONBOARDING.steps.map((s) => `            <li>${esc(s)}</li>`).join("\n")}
+          </ol>
+          <h3 id="cursor">${esc(DEVELOPERS_ONBOARDING.cursorHeading)}</h3>
+          <p>${esc(DEVELOPERS_ONBOARDING.cursorBody)}</p>
+          <p><a class="btn primary" href="/mcp" data-track="agent_connect" data-plan="cursor">${esc(DEVELOPERS_ONBOARDING.cursorCta)}</a></p>
+          <h3 id="claude">${esc(DEVELOPERS_ONBOARDING.claudeHeading)}</h3>
+          <p>${esc(DEVELOPERS_ONBOARDING.claudeBody)}</p>
+          <h3 id="codex">${esc(DEVELOPERS_ONBOARDING.codexHeading)}</h3>
+          <p>${esc(DEVELOPERS_ONBOARDING.codexBody)}</p>
+          <h3 id="mcp">${esc(DEVELOPERS_ONBOARDING.mcpHeading)}</h3>
+          <p>${esc(DEVELOPERS_ONBOARDING.mcpBody)}</p>
+          <p class="demo-url"><code>${esc(DEVELOPERS_ONBOARDING.mcpEndpoint)}</code></p>
+        </article>
+
         <article class="seo-article" id="api-request" tabindex="-1" aria-label="${esc(copy.detailsHeading)}">
           <h2>${esc(copy.curlLabel)}</h2>
           <pre class="api-code"><code>${esc(copy.curl)}</code></pre>
@@ -1290,6 +1451,270 @@ ${faqHtml(copy.faqHeading, copy.faqs)}
           <span aria-hidden="true">·</span>
           <a href="${esc(pagePath("home", locale))}">${esc(chrome.homeLink)}</a>
         </nav>
+      </main>
+
+${footerHtml(locale, chrome)}
+    </div>
+
+    <script type="module" src="/client/main.ts"></script>
+  </body>
+</html>
+`;
+}
+
+function extraProductHead(copy: {
+  title: string;
+  description: string;
+  ogTitle: string;
+  ogDescription: string;
+  twitterTitle: string;
+  twitterDescription: string;
+}, url: string, jsonLd?: unknown): string {
+  const cfg = LOCALE_CONFIG[DEFAULT_LOCALE];
+  const ld = jsonLd
+    ? `\n    <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`
+    : "";
+  return `    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>${esc(copy.title)}</title>
+    <meta name="description" content="${esc(copy.description)}" />
+    <link rel="canonical" href="${esc(url)}" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+${themeBootScript()}
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="${esc(cfg.ogLocale)}" />
+    <meta property="og:url" content="${esc(url)}" />
+    <meta property="og:title" content="${esc(copy.ogTitle)}" />
+    <meta property="og:description" content="${esc(copy.ogDescription)}" />
+    <meta property="og:site_name" content="dropimg.io" />
+    <meta property="og:image" content="${SITE_ORIGIN}/og.png" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${esc(copy.twitterTitle)}" />
+    <meta name="twitter:description" content="${esc(copy.twitterDescription)}" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    ${consentScriptTag()}${ld}`;
+}
+
+export function renderWebAssetsPage(): string {
+  const locale = DEFAULT_LOCALE;
+  const copy = WEB_ASSETS_PAGE;
+  const chrome = CHROME[locale];
+  const home = HOME[locale];
+  const cfg = LOCALE_CONFIG[locale];
+  const url = WEB_ASSETS_URL;
+  const supported = copy.formatsSupported
+    .map((item) => `              <li>${esc(item)}</li>`)
+    .join("\n");
+  const unsupported = copy.formatsUnsupported
+    .map((item) => `              <li>${esc(item)}</li>`)
+    .join("\n");
+  const rows = home.compareRows
+    .map((row) => {
+      const drops = row.drops ? "Yes" : "—";
+      const media = row.media ? "Yes" : "—";
+      return `              <tr>
+                <th scope="row">${esc(row.use)}</th>
+                <td>${esc(drops)}</td>
+                <td>${esc(media)}</td>
+              </tr>`;
+    })
+    .join("\n");
+
+  const head = extraProductHead(copy, url, {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: copy.h1,
+    url,
+    description: copy.description,
+  });
+
+  return `<!DOCTYPE html>
+<html lang="${esc(cfg.htmlLang)}" data-locale="${esc(locale)}" data-page-intent="web-assets">
+  <head>
+${head}
+  </head>
+  <body>
+    <a class="skip-link" href="#web-assets">${esc(copy.skip)}</a>
+    <div class="page page-seo page-ext page-product">
+${topBar("home", locale, chrome)}
+
+      <main id="web-assets">
+        <section class="ext-hero ext-hero-solo">
+          <div class="ext-hero-copy">
+            <p class="ext-kicker">${esc(copy.kicker)}</p>
+            <h1 class="ext-title">${esc(copy.h1)}</h1>
+            <p class="sub ext-lede">${esc(copy.lede)}</p>
+            <div class="ext-actions">
+              <a class="btn primary" href="/login?next=/app/media" data-media-cta="create" data-cta-soon="${esc(copy.createCtaSoon)}">${esc(copy.createCta)}</a>
+              <a class="btn secondary" href="/developers">${esc(copy.connectCta)}</a>
+              <a class="btn secondary" href="/drops">${esc(copy.dropCta)}</a>
+            </div>
+          </div>
+        </section>
+
+        <article class="seo-article">
+          <h2>${esc(copy.useHeading)}</h2>
+          <p>${esc(copy.useBody)}</p>
+          <h2>${esc(copy.pathHeading)}</h2>
+          <p>${esc(copy.pathBody)}</p>
+          <p class="demo-url"><code>${esc(copy.pathExample)}</code></p>
+          <h2>${esc(copy.versionHeading)}</h2>
+          <p>${esc(copy.versionBody)}</p>
+          <h2>${esc(copy.formatsHeading)}</h2>
+          <ul>
+${supported}
+          </ul>
+          <h3>${esc(copy.formatsUnsupportedHeading)}</h3>
+          <ul>
+${unsupported}
+          </ul>
+          <h2>${esc(copy.agentHeading)}</h2>
+          <p>${esc(copy.agentBody)}</p>
+          <h2>${esc(copy.restHeading)}</h2>
+          <p>${esc(copy.restBody)}</p>
+          <h2>${esc(copy.mcpHeading)}</h2>
+          <p>${esc(copy.mcpBody)}</p>
+          <h2>${esc(copy.keysHeading)}</h2>
+          <p>${esc(copy.keysBody)}</p>
+          <h2>${esc(copy.publicHeading)}</h2>
+          <p>${esc(copy.publicBody)}</p>
+          <h2>${esc(copy.vsHeading)}</h2>
+          <div class="compare-wrap">
+            <table class="compare-table">
+              <thead>
+                <tr>
+                  <th scope="col">Use case</th>
+                  <th scope="col">${esc(home.compareDrops)}</th>
+                  <th scope="col">${esc(home.compareMedia)}</th>
+                </tr>
+              </thead>
+              <tbody>
+${rows}
+              </tbody>
+            </table>
+          </div>
+        </article>
+
+${faqHtml(copy.faqHeading, copy.faqs)}
+      </main>
+
+${footerHtml(locale, chrome)}
+    </div>
+
+    <script type="module" src="/client/main.ts"></script>
+  </body>
+</html>
+`;
+}
+
+export function renderPricingPage(): string {
+  const locale = DEFAULT_LOCALE;
+  const copy = PRICING_PAGE;
+  const chrome = CHROME[locale];
+  const cfg = LOCALE_CONFIG[locale];
+  const url = PRICING_URL;
+  const cards = PRICING_TIERS.map((tier) => {
+    const annual = tier.annual
+      ? `<p class="price-annual">${esc(tier.annual)}</p>`
+      : "";
+    const features = tier.features
+      .map((item) => `                <li>${esc(item)}</li>`)
+      .join("\n");
+    return `            <article class="price-card" data-tier="${esc(tier.id)}">
+              <h2>${esc(tier.name)}</h2>
+              <p class="price-amount">${esc(tier.price)}<span>${esc(tier.period)}</span></p>
+              ${annual}
+              <p class="price-pos">${esc(tier.positioning)}</p>
+              <ul>
+${features}
+              </ul>
+              <a class="btn ${tier.id === "developer" ? "primary" : "secondary"}" href="/web-assets" data-media-cta="create" data-track="pricing_plan" data-plan="${esc(tier.id)}">${esc(tier.cta)}</a>
+            </article>`;
+  }).join("\n");
+
+  const head = extraProductHead(copy, url);
+
+  return `<!DOCTYPE html>
+<html lang="${esc(cfg.htmlLang)}" data-locale="${esc(locale)}" data-page-intent="pricing">
+  <head>
+${head}
+  </head>
+  <body>
+    <a class="skip-link" href="#plans">${esc(copy.skip)}</a>
+    <div class="page page-seo page-ext page-pricing">
+${topBar("home", locale, chrome)}
+
+      <main>
+        <section class="ext-hero ext-hero-solo">
+          <div class="ext-hero-copy">
+            <p class="ext-kicker">${esc(copy.kicker)}</p>
+            <h1 class="ext-title">${esc(copy.h1)}</h1>
+            <p class="sub ext-lede">${esc(copy.lede)}</p>
+            <p class="price-promises">${esc(copy.noEgress)} ${esc(copy.noMcpFee)}</p>
+            <p class="price-launch">${esc(copy.launchNote)}</p>
+          </div>
+        </section>
+
+        <section id="plans" class="price-grid" aria-label="Web Assets plans">
+${cards}
+        </section>
+        <p class="price-overage">${esc(copy.overageNote)}</p>
+        <article class="seo-article">
+          <h2>${esc(copy.dropProHeading)}</h2>
+          <p>${esc(copy.dropProBody)}</p>
+        </article>
+
+${faqHtml(copy.faqHeading, copy.faqs)}
+      </main>
+
+${footerHtml(locale, chrome)}
+    </div>
+
+    <script type="module" src="/client/main.ts"></script>
+  </body>
+</html>
+`;
+}
+
+export function renderDropsPage(): string {
+  const locale = DEFAULT_LOCALE;
+  const copy = DROPS_PAGE;
+  const chrome = CHROME[locale];
+  const home = HOME[locale];
+  const ui = t(locale);
+  const cfg = LOCALE_CONFIG[locale];
+  const url = DROPS_URL;
+  const head = extraProductHead(copy, url);
+
+  return `<!DOCTYPE html>
+<html lang="${esc(cfg.htmlLang)}" data-locale="${esc(locale)}" data-page-intent="drops">
+  <head>
+${head}
+  </head>
+  <body>
+    <a class="skip-link" href="#dropzone">${esc(copy.skip)}</a>
+    <div class="page page-home page-drops">
+${topBar("home", locale, chrome)}
+
+      <main>
+        <section class="hero drop-hero" aria-labelledby="drop-heading">
+          <p class="feature-kicker">${esc(copy.kicker)}</p>
+          <h1 id="drop-heading" class="tagline">${esc(copy.h1)}</h1>
+          <p class="sub">${esc(copy.lede)}</p>
+          <p><a href="/web-assets">${esc(copy.webAssetsCta)}</a></p>
+
+${dropzoneHtml(locale, home.dropzoneAria)}
+
+${trustStripHtml(home.trust, chrome.productHighlights)}
+
+          <section id="recent" class="recent" hidden>
+            <h2>${esc(ui.recentDrops)}</h2>
+            <ul id="recent-list"></ul>
+          </section>
+        </section>
       </main>
 
 ${footerHtml(locale, chrome)}

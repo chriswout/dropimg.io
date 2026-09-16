@@ -61,8 +61,15 @@
             aria-hidden="true"
           />
         </a>
+        <nav class="product-nav" aria-label="Product">
+          <a href="/web-assets">Web Assets</a>
+          <a href="/drops">Drops</a>
+          <a href="/pricing">Pricing</a>
+          <a href="/developers">Docs</a>
+        </nav>
         <div class="header-actions">
           <nav id="account-nav" class="account-nav" aria-label="Account">
+            <a class="account-chip account-get-started" href="/web-assets" data-media-cta="create">Get started</a>
             <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/pro">Pro · €2.99</a>
             <a id="account-signin" class="account-chip" href="/login">Sign in</a>
             <div id="account-session" class="account-session" hidden>
@@ -128,6 +135,30 @@
             </div>
           </div>
         </section>
+
+        <article class="seo-article" id="onboarding" aria-labelledby="onboard-heading">
+          <h2 id="onboard-heading">Connect a coding agent</h2>
+          <p>Sign in, create a Web Assets project, connect MCP, upload the first file, and paste the returned URL into the app. Temporary screenshot URLs still use the Drop API below.</p>
+          <p class="price-launch">Web Assets MCP tools are live when Media is enabled on the workspace. Production Media is still flagged off — this page will not send you to a 404. You can connect MCP today for temporary Drops.</p>
+          <h3>Ideal flow</h3>
+          <ol class="onboard-steps">
+            <li>Visit DropIMG and sign in</li>
+            <li>Create a Web Assets project</li>
+            <li>Connect your agent over MCP</li>
+            <li>Upload the first Web Asset</li>
+            <li>Use the returned /m/… URL in the app</li>
+          </ol>
+          <h3 id="cursor">Cursor</h3>
+          <p>Add the DropIMG MCP server (https://dropimg.io/mcp). Cursor opens OAuth after install. Ask the agent to create a project, then upload branding/logo as a Web Asset. Do not invent a /m/… URL — use the JSON url after the HTTP upload.</p>
+          <p><a class="btn primary" href="/mcp" data-track="agent_connect" data-plan="cursor">Add to Cursor</a></p>
+          <h3 id="claude">Claude Code</h3>
+          <p>Register https://dropimg.io/mcp as a remote MCP server. After OAuth, the same tools are available: list_media_projects, upload_media_asset, replace_media_asset. Temporary screenshots stay on upload_image.</p>
+          <h3 id="codex">Codex</h3>
+          <p>Point Codex at https://dropimg.io/mcp. Use an account OAuth session or a project key (dropimg_pk_…) for an existing project. Project keys cannot create projects.</p>
+          <h3 id="mcp">Generic MCP</h3>
+          <p>Canonical endpoint: https://dropimg.io/mcp. Streamable HTTP. One server for Drops and Web Assets — not a second MCP process.</p>
+          <p class="demo-url"><code>https://dropimg.io/mcp</code></p>
+        </article>
 
         <article class="seo-article" id="api-request" tabindex="-1" aria-label="API">
           <h2>curl</h2>
@@ -247,10 +278,13 @@ echo json_decode(curl_exec($ch), true)[&quot;url&quot;];</code></pre>
 
       <footer class="foot">
         <div class="foot-inner">
-          <p class="foot-tagline">Temporary image sharing, without the clutter.</p>
+          <p class="foot-tagline">Web assets for AI coding agents — and a fast temporary Drop when you need one.</p>
           <div class="foot-cols">
             <nav class="foot-col" aria-label="Product">
               <h2 class="foot-col-title">Product</h2>
+              <a href="/web-assets">Web Assets</a>
+              <a href="/drops">Drops</a>
+              <a href="/pricing">Pricing</a>
               <a href="/pro">Pro</a>
               <a href="/browser-extension">Chrome / Edge extension</a>
               <a href="/sharex">ShareX</a>

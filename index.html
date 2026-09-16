@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Temporary Image Hosting &amp; Screenshot Sharing | dropimg.io</title>
-    <meta name="description" content="Paste or drop a screenshot and get a shareable link in seconds. No account required. Choose 1 hour, 24 hours, 7 days, or 30 days. PNG, JPEG, WebP, GIF up to 10 MB." />
+    <title>Web Assets for AI Coding Agents | dropimg.io</title>
+    <meta name="description" content="Give Cursor, Claude, Codex, and other coding agents stable URLs for images, SVGs, icons, and web fonts. Replace assets without changing your code. Temporary Drops still work in one paste." />
     <link rel="canonical" href="https://dropimg.io/" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es" />
@@ -29,16 +29,16 @@
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:url" content="https://dropimg.io/" />
-    <meta property="og:title" content="Temporary Image Hosting &amp; Screenshot Sharing | dropimg.io" />
-    <meta property="og:description" content="Paste or drop a screenshot and get a shareable link in seconds. No account required. You choose when it expires." />
+    <meta property="og:title" content="Web Assets for AI coding agents | dropimg.io" />
+    <meta property="og:description" content="Your AI builds the site. DropIMG gives it permanent web assets with stable URLs. Temporary screenshot links when you need them." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="dropimg.io" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="dropimg.io — Drop an image. Get a link." />
-    <meta name="twitter:description" content="Fast temporary screenshot sharing. No account required. Links expire when you say so." />
+    <meta name="twitter:title" content="Permanent web assets for coding agents" />
+    <meta name="twitter:description" content="Stable URLs for images, SVGs, icons, and web fonts. Replace the file, keep the path. Plus a one-paste temporary Drop." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -56,7 +56,7 @@
             "applicationCategory": "UtilitiesApplication",
             "operatingSystem": "Any",
             "browserRequirements": "Requires JavaScript for upload UI",
-            "description": "A temporary image sharing tool that lets users paste or upload an image and generate a shareable link that expires after 1 hour, 24 hours, 7 days, or 30 days.",
+            "description": "DropIMG gives AI coding agents permanent web assets with stable URLs, plus temporary image sharing that expires on a schedule you choose.",
             "image": "https://dropimg.io/og.png",
             "offers": {
               "@type": "Offer",
@@ -70,7 +70,7 @@
             "name": "dropimg.io",
             "url": "https://dropimg.io/",
             "inLanguage": "en",
-            "description": "dropimg.io is a temporary image-sharing service that lets users paste, drag, or upload an image and instantly create a shareable link that expires on a schedule they choose.",
+            "description": "dropimg.io hosts permanent web assets for AI-built websites and applications, and temporary screenshot links that expire.",
             "publisher": {
               "@id": "https://dropimg.io/#org"
             }
@@ -86,7 +86,7 @@
             "@type": "HowTo",
             "@id": "https://dropimg.io/#howto",
             "name": "How to share a temporary image link with dropimg.io",
-            "description": "Drop an image, choose how long the link lives, copy it, and share. Every link expires.",
+            "description": "Drop an image, choose how long the link lives, copy it, and share. Every Drop expires.",
             "inLanguage": "en",
             "totalTime": "PT1M",
             "step": [
@@ -117,10 +117,10 @@
             "mainEntity": [
               {
                 "@type": "Question",
-                "name": "How long do images stay online?",
+                "name": "What is the difference between Drops and Web Assets?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "As long as you choose: 1 hour, 24 hours, 7 days, or 30 days, with 7 days selected by default. Pro links can last up to 180 days."
+                  "text": "Drops are temporary image links for screenshots and chat. Web Assets are permanent application files — logos, heroes, favicons, SVGs, and web fonts — with stable /m/… URLs that stay put when you replace the file."
                 }
               },
               {
@@ -128,15 +128,15 @@
                 "name": "Do I need an account?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "No. Upload and share without signing up. An account is optional — free accounts keep your last 10 active links together, and Pro adds longer links, larger uploads, and passwords."
+                  "text": "Not for a Drop. Paste and share without signing up. Web Assets need a signed-in project so aliases and versions stay owned by you."
                 }
               },
               {
                 "@type": "Question",
-                "name": "Can I delete an image early?",
+                "name": "How long do Drop images stay online?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Yes. After upload you get a private delete control to remove it before expiry."
+                  "text": "As long as you choose: 1 hour, 24 hours, 7 days, or 30 days, with 7 days selected by default. Pro Drop links can last up to 180 days. Web Assets stay until you replace or delete them."
                 }
               }
             ]
@@ -180,8 +180,15 @@
             aria-hidden="true"
           />
         </a>
+        <nav class="product-nav" aria-label="Product">
+          <a href="/web-assets">Web Assets</a>
+          <a href="/drops">Drops</a>
+          <a href="/pricing">Pricing</a>
+          <a href="/developers">Docs</a>
+        </nav>
         <div class="header-actions">
           <nav id="account-nav" class="account-nav" aria-label="Account">
+            <a class="account-chip account-get-started" href="/web-assets" data-media-cta="create">Get started</a>
             <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/pro">Pro · €2.99</a>
             <a id="account-signin" class="account-chip" href="/login">Sign in</a>
             <div id="account-session" class="account-session" hidden>
@@ -230,11 +237,46 @@
       </header>
 
       <main>
-        <section class="hero" aria-label="Upload">
-          <h1 class="tagline">Drop an image. Get a link.</h1>
+        <section class="hero" aria-labelledby="hero-heading">
+          <h1 id="hero-heading" class="tagline">
+            <span class="tagline-lead">Your AI builds the site.</span>
+            <span class="tagline-rest">DropIMG gives it permanent web assets.</span>
+          </h1>
           <p class="sub">
-            Paste, drop, or choose an image.<br />
-            No account required. You choose when it expires.
+            Give Cursor, Claude, Codex, and other coding agents stable URLs for images, SVGs, icons, and web fonts. Replace assets without changing your code.
+          </p>
+          <div class="hero-actions">
+            <a class="btn primary" href="/web-assets" data-media-cta="create" data-track="homepage_web_assets_cta">Create a Web Assets project</a>
+            <a class="btn secondary" href="#dropzone">Try a temporary Drop</a>
+          </div>
+          <p class="works-with">Works with Cursor · Claude Code · Codex · MCP</p>
+        </section>
+
+          <section class="product-demo" aria-labelledby="demo-heading" data-enter>
+            <h2 id="demo-heading">Change the asset, not the code.</h2>
+            <div class="demo-board">
+              <div class="demo-turn">
+                <p class="demo-who">You</p>
+                <p class="demo-prompt">Replace the homepage hero with this image.</p>
+              </div>
+              <div class="demo-turn">
+                <p class="demo-who">Agent</p>
+                <ul class="demo-steps">
+                  <li>Found homepage/hero</li>
+                  <li>Uploaded new version</li>
+                  <li>Stable URL unchanged</li>
+                </ul>
+              </div>
+              <p class="demo-url"><code>/m/acme/site/homepage/hero</code></p>
+              <p class="demo-note">Your app code does not change.</p>
+            </div>
+          </section>
+
+        <section class="hero drop-hero" id="drops" aria-labelledby="drop-heading">
+          <p class="feature-kicker">Need a quick URL instead?</p>
+          <h2 id="drop-heading" class="tagline drop-heading">Drop an image. Get a link.</h2>
+          <p class="sub">
+            Paste, drop, or choose an image
           </p>
 
           <section
@@ -397,9 +439,133 @@
           </div>
         </section>
 
+          <section class="compare-block" aria-labelledby="compare-heading" data-enter>
+            <h2 id="compare-heading">Drops vs Web Assets</h2>
+            <div class="compare-wrap">
+              <table class="compare-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Use case</th>
+                    <th scope="col">Drops</th>
+                    <th scope="col">Web Assets</th>
+                  </tr>
+                </thead>
+                <tbody>
+              <tr>
+                <th scope="row">Bug screenshot</th>
+                <td><span class="cmp-yes">Yes</span></td>
+                <td><span class="cmp-no">—</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Slack / PR image</th>
+                <td><span class="cmp-yes">Yes</span></td>
+                <td><span class="cmp-no">—</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Temporary visual share</th>
+                <td><span class="cmp-yes">Yes</span></td>
+                <td><span class="cmp-no">—</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Site logo</th>
+                <td><span class="cmp-no">—</span></td>
+                <td><span class="cmp-yes">Yes</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Homepage hero</th>
+                <td><span class="cmp-no">—</span></td>
+                <td><span class="cmp-yes">Yes</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Favicon</th>
+                <td><span class="cmp-no">—</span></td>
+                <td><span class="cmp-yes">Yes</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Web font</th>
+                <td><span class="cmp-no">—</span></td>
+                <td><span class="cmp-yes">Yes</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Replace asset without changing code</th>
+                <td><span class="cmp-no">—</span></td>
+                <td><span class="cmp-yes">Yes</span></td>
+              </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="stable-block" aria-labelledby="stable-heading" data-enter>
+            <p class="feature-kicker">Stable semantic URLs</p>
+            <h2 id="stable-heading">Change the asset, not the code.</h2>
+            <p>Application URLs are role-based and extensionless. Replace the file — even change JPEG to AVIF — and the path stays put.</p>
+            <p class="demo-url"><code>/m/acme/site/homepage/hero</code></p>
+            <p class="stable-versions">Version 1 <code>hero-v1.avif</code> → Version 2 <code>hero-v2.webp</code></p>
+            <ul class="path-examples">
+              <li><code>branding/logo</code></li>
+              <li><code>branding/favicon</code></li>
+              <li><code>homepage/hero</code></li>
+              <li><code>products/widget/front</code></li>
+              <li><code>fonts/inter/bold</code></li>
+            </ul>
+          </section>
+
+          <section class="formats-block" aria-labelledby="formats-heading" data-enter>
+            <h2 id="formats-heading">Focused Web Assets, not generic file storage</h2>
+            <p>Approved types only. Bytes are inspected on the server. Client MIME is ignored.</p>
+            <ul class="format-ok">
+              <li>Raster: JPEG, PNG, WebP, GIF, AVIF</li>
+              <li>Vector: sanitized SVG</li>
+              <li>Icons: ICO</li>
+              <li>Fonts: WOFF, WOFF2</li>
+            </ul>
+            <p>DropIMG hosts the files a website actually serves. It is not a blob store.</p>
+            <h3>Not accepted</h3>
+            <ul class="format-no">
+              <li>PDF</li>
+              <li>Video</li>
+              <li>Audio</li>
+              <li>ZIP / archives</li>
+              <li>HTML, JavaScript, CSS</li>
+              <li>Executables</li>
+              <li>TTF / OTF / EOT</li>
+              <li>Arbitrary blobs</li>
+            </ul>
+          </section>
+
+          <section class="agents-block" aria-labelledby="agents-heading" data-enter>
+            <h2 id="agents-heading">Built for coding agents</h2>
+            <p>One MCP endpoint. The agent asks for an upload intent, POSTs bytes over HTTP, and gets a stable Web Asset URL back. Temporary screenshots still use Drops.</p>
+            <ol class="agent-flow">
+              <li>Agent</li>
+              <li class="agent-flow-arrow" aria-hidden="true">↓</li>
+              <li>DropIMG MCP</li>
+              <li class="agent-flow-arrow" aria-hidden="true">↓</li>
+              <li>Short-lived upload intent</li>
+              <li class="agent-flow-arrow" aria-hidden="true">↓</li>
+              <li>HTTP bytes</li>
+              <li class="agent-flow-arrow" aria-hidden="true">↓</li>
+              <li>Stable Web Asset URL</li>
+            </ol>
+            <p class="works-with">Works with Cursor · Claude Code · Codex · MCP</p>
+          </section>
+
+          <section class="security-block" aria-labelledby="security-heading" data-enter>
+            <h2 id="security-heading">Public assets, inspected on ingest</h2>
+            <ul>
+              <li>Server-authoritative file inspection</li>
+              <li>SVG stored only after sanitizing</li>
+              <li>Project-scoped credentials</li>
+              <li>Immutable versions behind stable aliases</li>
+              <li>No executable or source-file hosting</li>
+            </ul>
+            <p>Public /m/… URLs are public. Knowledge of the URL is enough to fetch the file. This is not confidential storage.</p>
+          </section>
+
         <section class="below" aria-label="About dropimg.io">
           <section class="howto-compact" aria-labelledby="howto-heading" data-enter>
-            <h2 id="howto-heading">How it works</h2>
+            <h2 id="howto-heading">How a Drop works</h2>
             <ol class="flow">
               <li>
                 <span class="flow-step" aria-hidden="true">01</span>
@@ -454,7 +620,7 @@
             <div class="feature-copy">
               <p class="feature-kicker">Temporary by default</p>
               <h2 id="feature-heading" class="feature-title">Share it. Forget it.</h2>
-              <p class="feature-body">Every link deletes itself. Pick 1 hour, 24 hours, 7 days, or 30 days before you upload — no cleanup, no archive, nothing left sitting on a server.</p>
+              <p class="feature-body">Every Drop link deletes itself. Pick 1 hour, 24 hours, 7 days, or 30 days before you upload — no cleanup, no archive, nothing left sitting on a server.</p>
             </div>
             <div class="feature-visual">
               <div class="fv-stage">
@@ -481,19 +647,19 @@
             <h2 id="faq-heading">FAQ</h2>
             <div class="faq-list">
               <details>
-                <summary>How long do images stay online?</summary>
+                <summary>What is the difference between Drops and Web Assets?</summary>
                 <p>
-                  As long as you choose: 1 hour, 24 hours, 7 days, or 30 days, with 7 days selected by default. Pro links can last up to 180 days.
+                  Drops are temporary image links for screenshots and chat. Web Assets are permanent application files — logos, heroes, favicons, SVGs, and web fonts — with stable /m/… URLs that stay put when you replace the file.
                 </p>
               </details>
               <details>
                 <summary>Do I need an account?</summary>
-                <p>No. Upload and share without signing up. An account is optional — free accounts keep your last 10 active links together, and Pro adds longer links, larger uploads, and passwords.</p>
+                <p>Not for a Drop. Paste and share without signing up. Web Assets need a signed-in project so aliases and versions stay owned by you.</p>
               </details>
               <details>
-                <summary>Can I delete an image early?</summary>
+                <summary>How long do Drop images stay online?</summary>
                 <p>
-                  Yes. After upload you get a private delete control to remove it before expiry.
+                  As long as you choose: 1 hour, 24 hours, 7 days, or 30 days, with 7 days selected by default. Pro Drop links can last up to 180 days. Web Assets stay until you replace or delete them.
                 </p>
               </details>
             </div>
@@ -503,10 +669,13 @@
 
       <footer class="foot">
         <div class="foot-inner">
-          <p class="foot-tagline">Temporary image sharing, without the clutter.</p>
+          <p class="foot-tagline">Web assets for AI coding agents — and a fast temporary Drop when you need one.</p>
           <div class="foot-cols">
             <nav class="foot-col" aria-label="Product">
               <h2 class="foot-col-title">Product</h2>
+              <a href="/web-assets">Web Assets</a>
+              <a href="/drops">Drops</a>
+              <a href="/pricing">Pricing</a>
               <a href="/pro">Pro</a>
               <a href="/browser-extension">Chrome / Edge extension</a>
               <a href="/sharex">ShareX</a>

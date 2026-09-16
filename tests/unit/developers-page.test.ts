@@ -8,6 +8,8 @@ describe("developers and mcp product pages", () => {
   it("opens with the product line and a curl", () => {
     const html = renderDevelopersPage();
     expect(html).toContain("Image in. URL out.");
+    expect(html).toContain("Connect a coding agent");
+    expect(html).toContain("https://dropimg.io/mcp");
     expect(html).toContain("data-page-intent=\"developers\"");
     expect(html).toContain("POST https://dropimg.io/api/v1/images");
     expect(html).toContain("Authorization: Bearer");

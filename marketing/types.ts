@@ -17,11 +17,57 @@ export type PageSeo = {
   twitterDescription: string;
 };
 
+export type CompareRow = {
+  use: string;
+  drops: boolean;
+  media: boolean;
+};
+
 export type HomeCopy = PageSeo & {
+  h1Lead: string;
+  h1Rest: string;
+  /** @deprecated Drop-era H1; kept as the Drops section heading. */
   h1: string;
   subHtml: string;
+  primaryCta: string;
+  secondaryCta: string;
+  worksWith: string;
+  demoHeading: string;
+  demoYou: string;
+  demoPrompt: string;
+  demoAgent: string;
+  demoSteps: [string, string, string];
+  demoUrl: string;
+  demoUnchanged: string;
+  dropKicker: string;
   dropzoneAria: string;
   trust: [string, string, string];
+  compareHeading: string;
+  compareDrops: string;
+  compareMedia: string;
+  compareRows: [CompareRow, CompareRow, CompareRow, CompareRow, CompareRow, CompareRow, CompareRow, CompareRow];
+  stableKicker: string;
+  stableTitle: string;
+  stableBody: string;
+  stablePath: string;
+  stableV1: string;
+  stableV2: string;
+  stableExamples: [string, string, string, string, string];
+  formatsHeading: string;
+  formatsIntro: string;
+  formatsRaster: string;
+  formatsVector: string;
+  formatsIcons: string;
+  formatsFonts: string;
+  formatsFocus: string;
+  formatsUnsupportedHeading: string;
+  formatsUnsupported: string[];
+  agentsHeading: string;
+  agentsBody: string;
+  agentsFlow: [string, string, string, string, string];
+  securityHeading: string;
+  securityFacts: [string, string, string, string, string];
+  securityPublic: string;
   howtoHeading: string;
   howto: [HowToStep, HowToStep, HowToStep];
   /** Single commercial beat between the steps and the FAQ. */
@@ -68,7 +114,16 @@ export type SharedChrome = {
     sharex: string;
     api: string;
     mcp: string;
+    webAssets: string;
+    pricing: string;
+    drops: string;
   };
+  navWebAssets: string;
+  navDrops: string;
+  navPricing: string;
+  navDocs: string;
+  getStarted: string;
+  productNavAria: string;
   homeLink: string;
   productHighlights: string;
   aboutAria: string;

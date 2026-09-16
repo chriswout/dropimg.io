@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Comparte capturas con un enlace temporal | dropimg.io</title>
-    <meta name="description" content="Pega o arrastra una captura y genera un enlace en segundos. Sin crear cuenta. Elige 1 hora, 24 horas, 7 días o 30 días. PNG, JPEG, WebP o GIF hasta 10 MB." />
+    <title>Web Assets para agentes de código | dropimg.io</title>
+    <meta name="description" content="Da a Cursor, Claude, Codex y otros agentes URLs estables para imágenes, SVG, iconos y fuentes web. Sustituye el archivo sin tocar el código. Los Drops temporales siguen funcionando en un pegado." />
     <link rel="canonical" href="https://dropimg.io/es" />
     <link rel="alternate" hreflang="en" href="https://dropimg.io/" />
     <link rel="alternate" hreflang="es" href="https://dropimg.io/es" />
@@ -29,16 +29,16 @@
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_ES" />
     <meta property="og:url" content="https://dropimg.io/es" />
-    <meta property="og:title" content="Comparte capturas con un enlace temporal | dropimg.io" />
-    <meta property="og:description" content="Pega o arrastra una captura y genera un enlace en segundos. Sin crear cuenta. Tú eliges cuándo caduca." />
+    <meta property="og:title" content="Web Assets para agentes de código | dropimg.io" />
+    <meta property="og:description" content="Tu IA construye el sitio. DropIMG le da recursos web permanentes con URLs estables. Enlaces temporales de capturas cuando los necesites." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="dropimg.io" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="dropimg.io — Suelta una imagen. Llévate el enlace." />
-    <meta name="twitter:description" content="Comparte capturas sin crear cuenta. Tú decides cuánto dura el enlace." />
+    <meta name="twitter:title" content="Web assets permanentes para agentes de código" />
+    <meta name="twitter:description" content="URLs estables para imágenes, SVG, iconos y fuentes. Sustituye el archivo, el path no cambia. Y un Drop temporal en un pegado." />
     <meta name="twitter:image" content="https://dropimg.io/og.png" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
@@ -56,7 +56,7 @@
             "applicationCategory": "UtilitiesApplication",
             "operatingSystem": "Any",
             "browserRequirements": "Requires JavaScript for upload UI",
-            "description": "Herramienta para compartir imágenes de forma temporal: pegas o subes una imagen y obtienes un enlace que caduca a la hora, a las 24 horas, a los 7 días o a los 30 días.",
+            "description": "DropIMG da a los agentes de código recursos web permanentes con URLs estables, más el envío temporal de imágenes que caduca cuando tú decides.",
             "image": "https://dropimg.io/og.png",
             "offers": {
               "@type": "Offer",
@@ -70,7 +70,7 @@
             "name": "dropimg.io",
             "url": "https://dropimg.io/es",
             "inLanguage": "es",
-            "description": "dropimg.io te deja pegar, arrastrar o subir una imagen y crear al momento un enlace temporal que caduca cuando tú decides.",
+            "description": "dropimg.io hospeda web assets permanentes para sitios y apps hechas con IA, y enlaces temporales de capturas que caducan.",
             "publisher": {
               "@id": "https://dropimg.io/#org"
             }
@@ -86,7 +86,7 @@
             "@type": "HowTo",
             "@id": "https://dropimg.io/es#howto",
             "name": "Cómo compartir una imagen temporal con dropimg.io",
-            "description": "Sube una imagen, elige cuánto dura el enlace y compártelo. Todos los enlaces caducan.",
+            "description": "Sube una imagen, elige cuánto dura el enlace y compártelo. Todos los Drops caducan.",
             "inLanguage": "es",
             "totalTime": "PT1M",
             "step": [
@@ -117,10 +117,10 @@
             "mainEntity": [
               {
                 "@type": "Question",
-                "name": "¿Cuánto tiempo está disponible la imagen?",
+                "name": "¿Qué diferencia hay entre Drops y Web Assets?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "El tiempo que elijas: 1 hora, 24 horas, 7 días o 30 días, con 7 días por defecto. Con Pro el enlace puede durar hasta 180 días."
+                  "text": "Los Drops son enlaces temporales para capturas y chats. Los Web Assets son archivos permanentes de la aplicación — logos, heroes, favicons, SVG y fuentes — con URLs /m/… que no cambian al sustituir el archivo."
                 }
               },
               {
@@ -128,15 +128,15 @@
                 "name": "¿Hace falta crear una cuenta?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "No. Subes, compartes y listo — sin registro. La cuenta es opcional: la gratuita reúne tus 10 últimos enlaces activos y Pro añade enlaces más largos, archivos más grandes y contraseñas."
+                  "text": "No para un Drop. Pegas y compartes sin registro. Los Web Assets necesitan un proyecto con sesión para que los alias y versiones sean tuyos."
                 }
               },
               {
                 "@type": "Question",
-                "name": "¿Puedo borrarla antes de que expire?",
+                "name": "¿Cuánto tiempo está disponible la imagen de un Drop?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "Sí. Al subirla te damos un enlace privado para eliminarla cuando quieras."
+                  "text": "El tiempo que elijas: 1 hora, 24 horas, 7 días o 30 días, con 7 días por defecto. Con Pro el Drop puede durar hasta 180 días. Los Web Assets se quedan hasta que los sustituyas o borres."
                 }
               }
             ]
@@ -172,8 +172,15 @@
             aria-hidden="true"
           />
         </a>
+        <nav class="product-nav" aria-label="Producto">
+          <a href="/web-assets">Web Assets</a>
+          <a href="/drops">Drops</a>
+          <a href="/pricing">Precios</a>
+          <a href="/developers">Docs</a>
+        </nav>
         <div class="header-actions">
           <nav id="account-nav" class="account-nav" aria-label="Cuenta">
+            <a class="account-chip account-get-started" href="/web-assets" data-media-cta="create">Empezar</a>
             <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/es/pro">Pro · €2.99</a>
             <a id="account-signin" class="account-chip" href="/login">Entrar</a>
             <div id="account-session" class="account-session" hidden>
@@ -222,11 +229,46 @@
       </header>
 
       <main>
-        <section class="hero" aria-label="Upload">
-          <h1 class="tagline">Suelta una imagen. Llévate el enlace.</h1>
+        <section class="hero" aria-labelledby="hero-heading">
+          <h1 id="hero-heading" class="tagline">
+            <span class="tagline-lead">Tu IA construye el sitio.</span>
+            <span class="tagline-rest">DropIMG le da recursos web permanentes.</span>
+          </h1>
           <p class="sub">
-            Pega, arrastra o elige una imagen.<br />
-            Sin crear cuenta. Tú eliges cuándo caduca.
+            Da a Cursor, Claude, Codex y otros agentes URLs estables para imágenes, SVG, iconos y fuentes web. Sustituye el archivo sin cambiar el código.
+          </p>
+          <div class="hero-actions">
+            <a class="btn primary" href="/web-assets" data-media-cta="create" data-track="homepage_web_assets_cta">Crear un proyecto de Web Assets</a>
+            <a class="btn secondary" href="#dropzone">Probar un Drop temporal</a>
+          </div>
+          <p class="works-with">Funciona con Cursor · Claude Code · Codex · MCP</p>
+        </section>
+
+          <section class="product-demo" aria-labelledby="demo-heading" data-enter>
+            <h2 id="demo-heading">Cambia el archivo, no el código.</h2>
+            <div class="demo-board">
+              <div class="demo-turn">
+                <p class="demo-who">Tú</p>
+                <p class="demo-prompt">Sustituye el hero de la home por esta imagen.</p>
+              </div>
+              <div class="demo-turn">
+                <p class="demo-who">Agente</p>
+                <ul class="demo-steps">
+                  <li>Encontró homepage/hero</li>
+                  <li>Subió una versión nueva</li>
+                  <li>La URL estable no cambió</li>
+                </ul>
+              </div>
+              <p class="demo-url"><code>/m/acme/site/homepage/hero</code></p>
+              <p class="demo-note">El código de tu app no cambia.</p>
+            </div>
+          </section>
+
+        <section class="hero drop-hero" id="drops" aria-labelledby="drop-heading">
+          <p class="feature-kicker">¿Necesitas una URL rápida?</p>
+          <h2 id="drop-heading" class="tagline drop-heading">Suelta una imagen. Llévate el enlace.</h2>
+          <p class="sub">
+            Pega, arrastra o elige una imagen
           </p>
 
           <section
@@ -389,9 +431,133 @@
           </div>
         </section>
 
+          <section class="compare-block" aria-labelledby="compare-heading" data-enter>
+            <h2 id="compare-heading">Drops vs Web Assets</h2>
+            <div class="compare-wrap">
+              <table class="compare-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Use case</th>
+                    <th scope="col">Drops</th>
+                    <th scope="col">Web Assets</th>
+                  </tr>
+                </thead>
+                <tbody>
+              <tr>
+                <th scope="row">Captura de un bug</th>
+                <td><span class="cmp-yes">Yes</span></td>
+                <td><span class="cmp-no">—</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Imagen para Slack / PR</th>
+                <td><span class="cmp-yes">Yes</span></td>
+                <td><span class="cmp-no">—</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Compartir algo temporal</th>
+                <td><span class="cmp-yes">Yes</span></td>
+                <td><span class="cmp-no">—</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Logo del sitio</th>
+                <td><span class="cmp-no">—</span></td>
+                <td><span class="cmp-yes">Yes</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Hero de la home</th>
+                <td><span class="cmp-no">—</span></td>
+                <td><span class="cmp-yes">Yes</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Favicon</th>
+                <td><span class="cmp-no">—</span></td>
+                <td><span class="cmp-yes">Yes</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Fuente web</th>
+                <td><span class="cmp-no">—</span></td>
+                <td><span class="cmp-yes">Yes</span></td>
+              </tr>
+              <tr>
+                <th scope="row">Sustituir el archivo sin tocar código</th>
+                <td><span class="cmp-no">—</span></td>
+                <td><span class="cmp-yes">Yes</span></td>
+              </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="stable-block" aria-labelledby="stable-heading" data-enter>
+            <p class="feature-kicker">URLs semánticas estables</p>
+            <h2 id="stable-heading">Cambia el archivo, no el código.</h2>
+            <p>Las URLs de la aplicación son por rol y sin extensión. Sustituye el archivo — incluso de JPEG a AVIF — y el path se queda.</p>
+            <p class="demo-url"><code>/m/acme/site/homepage/hero</code></p>
+            <p class="stable-versions">Version 1 <code>hero-v1.avif</code> → Version 2 <code>hero-v2.webp</code></p>
+            <ul class="path-examples">
+              <li><code>branding/logo</code></li>
+              <li><code>branding/favicon</code></li>
+              <li><code>homepage/hero</code></li>
+              <li><code>products/widget/front</code></li>
+              <li><code>fonts/inter/bold</code></li>
+            </ul>
+          </section>
+
+          <section class="formats-block" aria-labelledby="formats-heading" data-enter>
+            <h2 id="formats-heading">Web Assets concretos, no un almacén genérico</h2>
+            <p>Solo tipos aprobados. El servidor inspecciona los bytes. El MIME del cliente no cuenta.</p>
+            <ul class="format-ok">
+              <li>Raster: JPEG, PNG, WebP, GIF, AVIF</li>
+              <li>Vector: SVG sanitizado</li>
+              <li>Iconos: ICO</li>
+              <li>Fuentes: WOFF, WOFF2</li>
+            </ul>
+            <p>DropIMG hospeda lo que un sitio sirve de verdad. No es un blob store.</p>
+            <h3>No se acepta</h3>
+            <ul class="format-no">
+              <li>PDF</li>
+              <li>Vídeo</li>
+              <li>Audio</li>
+              <li>ZIP / archivos</li>
+              <li>HTML, JavaScript, CSS</li>
+              <li>Ejecutables</li>
+              <li>TTF / OTF / EOT</li>
+              <li>Blobs arbitrarios</li>
+            </ul>
+          </section>
+
+          <section class="agents-block" aria-labelledby="agents-heading" data-enter>
+            <h2 id="agents-heading">Hecho para agentes de código</h2>
+            <p>Un endpoint MCP. El agente pide un intent de subida, envía los bytes por HTTP y recibe una URL estable. Las capturas temporales siguen siendo Drops.</p>
+            <ol class="agent-flow">
+              <li>Agente</li>
+              <li class="agent-flow-arrow" aria-hidden="true">↓</li>
+              <li>DropIMG MCP</li>
+              <li class="agent-flow-arrow" aria-hidden="true">↓</li>
+              <li>Intent de subida de corta vida</li>
+              <li class="agent-flow-arrow" aria-hidden="true">↓</li>
+              <li>Bytes por HTTP</li>
+              <li class="agent-flow-arrow" aria-hidden="true">↓</li>
+              <li>URL estable de Web Asset</li>
+            </ol>
+            <p class="works-with">Funciona con Cursor · Claude Code · Codex · MCP</p>
+          </section>
+
+          <section class="security-block" aria-labelledby="security-heading" data-enter>
+            <h2 id="security-heading">Público, inspeccionado al subir</h2>
+            <ul>
+              <li>Inspección de archivo en el servidor</li>
+              <li>SVG solo se guarda sanitizado</li>
+              <li>Credenciales por proyecto</li>
+              <li>Versiones inmutables detrás de alias estables</li>
+              <li>Sin ejecutables ni código fuente</li>
+            </ul>
+            <p>Las URLs públicas /m/… son públicas. Quien tenga la URL puede descargar el archivo. No es almacenamiento confidencial.</p>
+          </section>
+
         <section class="below" aria-label="Sobre dropimg.io">
           <section class="howto-compact" aria-labelledby="howto-heading" data-enter>
-            <h2 id="howto-heading">Cómo funciona</h2>
+            <h2 id="howto-heading">Cómo funciona un Drop</h2>
             <ol class="flow">
               <li>
                 <span class="flow-step" aria-hidden="true">01</span>
@@ -446,7 +612,7 @@
             <div class="feature-copy">
               <p class="feature-kicker">Temporal por diseño</p>
               <h2 id="feature-heading" class="feature-title">Compártelo y olvídate.</h2>
-              <p class="feature-body">Cada enlace se borra solo. Elige 1 hora, 24 horas, 7 días o 30 días antes de subir: sin limpiar nada, sin archivo, sin restos en ningún servidor.</p>
+              <p class="feature-body">Cada enlace de Drop se borra solo. Elige 1 hora, 24 horas, 7 días o 30 días antes de subir: sin limpiar nada, sin archivo, sin restos en ningún servidor.</p>
             </div>
             <div class="feature-visual">
               <div class="fv-stage">
@@ -473,19 +639,19 @@
             <h2 id="faq-heading">Preguntas frecuentes</h2>
             <div class="faq-list">
               <details>
-                <summary>¿Cuánto tiempo está disponible la imagen?</summary>
+                <summary>¿Qué diferencia hay entre Drops y Web Assets?</summary>
                 <p>
-                  El tiempo que elijas: 1 hora, 24 horas, 7 días o 30 días, con 7 días por defecto. Con Pro el enlace puede durar hasta 180 días.
+                  Los Drops son enlaces temporales para capturas y chats. Los Web Assets son archivos permanentes de la aplicación — logos, heroes, favicons, SVG y fuentes — con URLs /m/… que no cambian al sustituir el archivo.
                 </p>
               </details>
               <details>
                 <summary>¿Hace falta crear una cuenta?</summary>
-                <p>No. Subes, compartes y listo — sin registro. La cuenta es opcional: la gratuita reúne tus 10 últimos enlaces activos y Pro añade enlaces más largos, archivos más grandes y contraseñas.</p>
+                <p>No para un Drop. Pegas y compartes sin registro. Los Web Assets necesitan un proyecto con sesión para que los alias y versiones sean tuyos.</p>
               </details>
               <details>
-                <summary>¿Puedo borrarla antes de que expire?</summary>
+                <summary>¿Cuánto tiempo está disponible la imagen de un Drop?</summary>
                 <p>
-                  Sí. Al subirla te damos un enlace privado para eliminarla cuando quieras.
+                  El tiempo que elijas: 1 hora, 24 horas, 7 días o 30 días, con 7 días por defecto. Con Pro el Drop puede durar hasta 180 días. Los Web Assets se quedan hasta que los sustituyas o borres.
                 </p>
               </details>
             </div>
@@ -495,10 +661,13 @@
 
       <footer class="foot">
         <div class="foot-inner">
-          <p class="foot-tagline">Imágenes temporales, sin complicaciones.</p>
+          <p class="foot-tagline">Recursos web para agentes de código — y un Drop temporal cuando lo necesites.</p>
           <div class="foot-cols">
             <nav class="foot-col" aria-label="Producto">
               <h2 class="foot-col-title">Producto</h2>
+              <a href="/web-assets">Web Assets</a>
+              <a href="/drops">Drops</a>
+              <a href="/pricing">Precios</a>
               <a href="/es/pro">Pro</a>
               <a href="/browser-extension">Extensión Chrome / Edge</a>
               <a href="/sharex">ShareX</a>

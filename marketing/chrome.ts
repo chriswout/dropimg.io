@@ -1,8 +1,12 @@
 import { CHROME } from "./content";
+import { DEVELOPERS_PATH } from "./developers";
+import { DROPS_PATH } from "./drops";
 import { LOCALE_CONFIG, LOCALES, type Locale } from "./locales";
 import { pagePath } from "./pages";
+import { PRICING_PATH } from "./pricing";
 import { proPath } from "./pro";
 import type { SharedChrome } from "./types";
+import { WEB_ASSETS_PATH } from "./web-assets";
 
 export function esc(s: string): string {
   return s
@@ -100,8 +104,15 @@ export function topBarHtml(opts: {
             aria-hidden="true"
           />
         </a>
+        <nav class="product-nav" aria-label="${esc(opts.chrome.productNavAria)}">
+          <a href="${esc(WEB_ASSETS_PATH)}">${esc(opts.chrome.navWebAssets)}</a>
+          <a href="${esc(DROPS_PATH)}">${esc(opts.chrome.navDrops)}</a>
+          <a href="${esc(PRICING_PATH)}">${esc(opts.chrome.navPricing)}</a>
+          <a href="${esc(DEVELOPERS_PATH)}">${esc(opts.chrome.navDocs)}</a>
+        </nav>
         <div class="header-actions">
           <nav id="account-nav" class="account-nav" aria-label="${esc(opts.chrome.accountAria)}">
+            <a class="account-chip account-get-started" href="${esc(WEB_ASSETS_PATH)}" data-media-cta="create">${esc(opts.chrome.getStarted)}</a>
             <a id="account-pro-anon" class="account-nav-link account-pro-link" href="${esc(proPath(opts.locale))}">${esc(opts.chrome.proPrice)}</a>
             <a id="account-signin" class="account-chip" href="/login">${esc(opts.chrome.signIn)}</a>
             <div id="account-session" class="account-session" hidden>
@@ -138,6 +149,9 @@ export function footerHtml(locale: Locale, chrome: SharedChrome): string {
           <div class="foot-cols">
             <nav class="foot-col" aria-label="${esc(chrome.footerProduct)}">
               <h2 class="foot-col-title">${esc(chrome.footerProduct)}</h2>
+              <a href="${esc(WEB_ASSETS_PATH)}">${esc(chrome.footerSeo.webAssets)}</a>
+              <a href="${esc(DROPS_PATH)}">${esc(chrome.footerSeo.drops)}</a>
+              <a href="${esc(PRICING_PATH)}">${esc(chrome.footerSeo.pricing)}</a>
               <a href="${esc(proPath(locale))}">${esc(chrome.pro)}</a>
               <a href="/browser-extension">${esc(chrome.footerSeo.extension)}</a>
               <a href="/sharex">${esc(chrome.footerSeo.sharex)}</a>

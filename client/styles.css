@@ -447,6 +447,40 @@ body[data-scrolled="true"] .top {
   min-width: 0;
 }
 
+.product-nav {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem 1rem;
+  min-width: 0;
+  flex: 1 1 auto;
+  justify-content: center;
+}
+
+.product-nav a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+  font-weight: 650;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.product-nav a:hover,
+.product-nav a:focus-visible {
+  color: var(--text);
+}
+
+.product-nav a:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+.account-get-started[hidden] {
+  display: none !important;
+}
+
 .account-nav {
   display: flex;
   align-items: center;
@@ -1746,13 +1780,32 @@ main {
 }
 
 .page-home .tagline {
-  max-width: 15ch;
+  max-width: 22ch;
   margin-bottom: 1rem;
 }
 
+.page-home .tagline-lead,
+.page-home .tagline-rest {
+  display: block;
+}
+
+.page-home .hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+  margin: 0 0 1rem;
+}
+
+.page-home .works-with {
+  margin: 0 0 2rem;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
 .page-home .sub {
-  max-width: 30rem;
-  margin-bottom: clamp(1.75rem, 4vh, 2.75rem);
+  max-width: 38rem;
+  margin-bottom: clamp(1.25rem, 3vh, 2rem);
 }
 
 .page-home .dropzone,
@@ -2808,6 +2861,10 @@ html[data-theme="dark"] kbd {
 
   .header-actions {
     gap: 0.35rem;
+  }
+
+  .product-nav {
+    display: none;
   }
 
   .brand-logo {
@@ -4858,5 +4915,197 @@ html[data-theme="dark"] .auth-google-btn .auth-google-btn-dark {
 @media (prefers-reduced-motion: reduce) {
   .consent-card {
     animation: none;
+  }
+}
+
+/* --- Web Assets marketing (homepage + product pages) --- */
+
+.product-demo,
+.compare-block,
+.stable-block,
+.formats-block,
+.agents-block,
+.security-block {
+  max-width: 50rem;
+  width: 100%;
+  margin: 0 auto clamp(3rem, 8vh, 4.5rem);
+}
+
+.product-demo h2,
+.compare-block h2,
+.stable-block h2,
+.formats-block h2,
+.agents-block h2,
+.security-block h2 {
+  margin: 0 0 1rem;
+  font-size: clamp(1.35rem, 3vw, 1.85rem);
+  letter-spacing: -0.03em;
+}
+
+.demo-board {
+  margin-top: 1.25rem;
+  padding: 1.25rem 1.35rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--surface-elevated);
+  text-align: left;
+}
+
+.demo-who {
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.demo-prompt,
+.demo-note {
+  margin: 0 0 1rem;
+}
+
+.demo-steps {
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.demo-steps li::before {
+  content: "✓ ";
+  color: var(--brand-text);
+}
+
+.demo-url,
+.path-examples code,
+.api-code,
+.mcp-snippet {
+  overflow-wrap: anywhere;
+}
+
+.demo-url code,
+.stable-versions code,
+.path-examples code {
+  font-size: 0.92rem;
+  word-break: break-word;
+}
+
+.drop-hero {
+  padding-top: clamp(2rem, 6vh, 4rem);
+}
+
+.drop-heading {
+  max-width: 18ch;
+}
+
+.compare-wrap {
+  overflow-x: auto;
+}
+
+.compare-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.compare-table th,
+.compare-table td {
+  padding: 0.55rem 0.7rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-soft);
+  vertical-align: top;
+}
+
+.compare-table th[scope="col"] {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+}
+
+.cmp-yes {
+  font-weight: 700;
+}
+
+.cmp-no {
+  color: var(--text-muted);
+}
+
+.path-examples {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  padding: 0;
+  list-style: none;
+}
+
+.format-ok,
+.format-no,
+.security-block ul,
+.onboard-steps {
+  padding-left: 1.2rem;
+}
+
+.agent-flow {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0;
+}
+
+.agent-flow-arrow {
+  color: var(--text-muted);
+}
+
+.price-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+  max-width: 64rem;
+  margin: 0 auto 2rem;
+}
+
+.price-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 1.25rem 1.2rem;
+  background: var(--surface-elevated);
+}
+
+.price-card h2 {
+  margin: 0 0 0.35rem;
+}
+
+.price-amount {
+  margin: 0;
+  font-size: 2rem;
+  font-weight: 760;
+  letter-spacing: -0.03em;
+}
+
+.price-amount span {
+  font-size: 0.95rem;
+  font-weight: 550;
+  color: var(--text-muted);
+}
+
+.price-annual,
+.price-pos,
+.price-overage,
+.price-launch,
+.price-promises {
+  color: var(--text-soft);
+}
+
+.price-card .btn {
+  margin-top: 1rem;
+}
+
+@media (max-width: 860px) {
+  .product-nav {
+    display: none;
+  }
+
+  .price-grid {
+    grid-template-columns: 1fr;
   }
 }
