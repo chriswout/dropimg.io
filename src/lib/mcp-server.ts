@@ -73,7 +73,7 @@ export const MCP_TOOL_META = {
   },
   list_media_projects: {
     description:
-      "List DropIMG Media projects for this account or project key. Permanent /m/{org}/{project}/... aliases, not temporary My Drops. Pass project_id explicitly to later tools — there is no implicit current project.",
+      "List DropIMG Media projects. Media is permanent Web Assets for application code (logos, heroes, favicons, illustrations, web fonts) at stable /m/{org}/{project}/... aliases. Temporary screenshots and tickets use Drop tools instead. Pass project_id explicitly later — there is no implicit current project.",
   },
   create_media_project: {
     description:
@@ -83,24 +83,25 @@ export const MCP_TOOL_META = {
   },
   list_media_assets: {
     description:
-      "List live permanent assets in one Media project. Returns asset_id, path, stable url, version, mime, size.",
+      "List live Web Assets in one Media project. Returns asset_id, path, stable url, version, asset_type, mime, size. Never invent a /m/... URL.",
     project_id: "Project UUID from list_media_projects or create_media_project.",
   },
   get_media_asset: {
-    description: "Get one live permanent Media asset by project_id and asset_id.",
+    description:
+      "Get one live Web Asset by project_id and asset_id. Returns asset_type and mime from stored bytes, not the filename.",
     project_id: "Project UUID.",
     asset_id: "Asset UUID.",
   },
   upload_media_asset: {
     description:
-      "Start a permanent Media upload. Returns a short-lived upload URL. POST the image bytes over HTTP — do not send file bytes or base64 in this tool. After the HTTP upload, use the JSON asset url as the stable /m/... alias.",
+      "Start a permanent Web Asset upload (JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, WOFF2). Returns a short-lived upload URL. POST the file bytes over HTTP — do not send bytes or base64 in this tool. Do not invent a /m/... URL; use the JSON url after the HTTP upload. Temporary screenshots belong in upload_image (Drops), not here. PDFs, video, audio, archives, and code files are rejected.",
     project_id: "Project UUID.",
-    path: "Stable alias path inside the project, e.g. logo or website/hero.",
+    path: "Stable alias path inside the project, e.g. branding/logo or fonts/inter. No file extension required.",
     name: "Optional display name.",
   },
   replace_media_asset: {
     description:
-      "Start a replacement of an existing permanent asset. Requires confirm=true. The public /m/... URL does not change. POST the new bytes to the returned upload URL.",
+      "Start a replacement of an existing Web Asset. Requires confirm=true. The public /m/... URL does not change; MIME may change (SVG logo can become PNG). POST the new bytes to the returned upload URL.",
     project_id: "Project UUID.",
     asset_id: "Asset UUID to replace.",
     confirm: "Must be true to create a replacement upload intent.",

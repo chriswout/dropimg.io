@@ -23,4 +23,15 @@ describe("MCP tool descriptions", () => {
     expect(MCP_TOOL_META.get_image.id).toMatch(/abc123xy/);
     expect(MCP_TOOL_META.delete_image.description).toMatch(/list_images/);
   });
+
+  it("teaches agents that Media is Web Assets, not Drops", () => {
+    expect(MCP_TOOL_META.upload_media_asset.description).toMatch(/Web Asset/i);
+    expect(MCP_TOOL_META.upload_media_asset.description).toMatch(/AVIF/);
+    expect(MCP_TOOL_META.upload_media_asset.description).toMatch(/WOFF2/);
+    expect(MCP_TOOL_META.upload_media_asset.description).toMatch(/upload_image/);
+    expect(MCP_TOOL_META.upload_media_asset.description).toMatch(/Do not invent a \/m\/\.\.\. URL/);
+    expect(MCP_TOOL_META.upload_media_asset.description).toMatch(/PDFs/);
+    expect(MCP_TOOL_META.list_media_projects.description).toMatch(/Temporary screenshots/);
+    expect(MCP_TOOL_META.replace_media_asset.description).toMatch(/MIME may change/);
+  });
 });

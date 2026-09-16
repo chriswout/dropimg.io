@@ -1,4 +1,4 @@
-import { inspectImage } from "./inspect";
+import { inspectWebAsset } from "./inspect-web-asset";
 import {
   MEDIA_IDEMPOTENCY_MAX_KEY_LENGTH,
   MEDIA_IDEMPOTENCY_TTL_SECONDS,
@@ -10,6 +10,12 @@ import { mediaAliasUrl, mediaVersionUrl, parseAliasPath, permanentOriginalKey } 
 import { mapModerationFail } from "./upload-store";
 import { runPostStripSafetyScan } from "./moderation-hook";
 import { StripMetadataError, stripMetadata } from "./strip";
+import {
+  assetTypeFromStored,
+  isRasterModeratedMime,
+  type MediaMime,
+  type WebAssetType,
+} from "./web-assets";
 import type { AllowedMime } from "../types";
 
 export type MediaActorRef = {
@@ -36,7 +42,8 @@ export type IdempotencyReplay =
 
 export type StoredOriginal = {
   bytes: ArrayBuffer;
-  mime: AllowedMime;
+  mime: MediaMime;
+  assetType: WebAssetType;
   width: number | null;
   height: number | null;
   sha256: string;
@@ -53,7 +60,8 @@ export type MediaAssetPublic = {
   currentVersionId: string;
   versionId: string;
   versionUrl: string;
-  mime: AllowedMime;
+  mime: MediaMime;
+  assetType: WebAssetType;
   size: number;
   width: number | null;
   height: number | null;
@@ -77,46 +85,53 @@ export async function ingestOriginalBytes(
     return { ok: false, status: 413, code: "too_large", error: "File exceeds the size limit" };
   }
 
-  const inspected = inspectImage(bytes);
+  const inspected = inspectWebAsset(bytes);
   if (!inspected.ok) {
     if (inspected.reason === "too_many_pixels") {
       return {
         ok: false,
         status: 422,
         code: "invalid_image",
-        error: "Image dimensions exceed the 50 megapixel limit",
+        error: inspected.error,
       };
     }
-    const msg =
-      inspected.reason === "svg"
-        ? "SVG uploads are not allowed"
-        : inspected.reason === "invalid"
-          ? "Invalid or truncated image file"
-          : "Unsupported or invalid image. Use PNG, JPEG, WebP, or GIF.";
+    if (inspected.reason === "too_large") {
+      return { ok: false, status: 413, code: "too_large", error: inspected.error };
+    }
+    if (inspected.reason === "unsafe") {
+      return { ok: false, status: 422, code: "unsafe_asset", error: inspected.error };
+    }
+    if (inspected.reason === "invalid" || inspected.reason === "too_short") {
+      return { ok: false, status: 400, code: "invalid_image", error: inspected.error };
+    }
     return {
       ok: false,
-      status: inspected.reason === "invalid" ? 400 : 415,
-      code: inspected.reason === "invalid" ? "invalid_image" : "unsupported_type",
-      error: msg,
+      status: 415,
+      code: "unsupported_type",
+      error: inspected.error,
     };
   }
 
-  let storeBytes: ArrayBuffer;
-  try {
-    storeBytes = stripMetadata(bytes, inspected.mime);
-  } catch (err) {
-    const msg =
-      err instanceof StripMetadataError ? err.message : "Could not strip image metadata";
-    return { ok: false, status: 422, code: "invalid_image", error: msg };
+  let storeBytes = inspected.bytes;
+  if (isRasterModeratedMime(inspected.mime)) {
+    try {
+      storeBytes = stripMetadata(storeBytes, inspected.mime as AllowedMime);
+    } catch (err) {
+      const msg =
+        err instanceof StripMetadataError ? err.message : "Could not strip image metadata";
+      return { ok: false, status: 422, code: "invalid_image", error: msg };
+    }
   }
 
-  const scan = await runPostStripSafetyScan(env, {
-    bytes: storeBytes,
-    mime: inspected.mime,
-  });
-  if (!scan.ok) {
-    const mapped = mapModerationFail(scan.reason);
-    return { ok: false, status: mapped.status, code: mapped.code, error: mapped.error };
+  if (isRasterModeratedMime(inspected.mime)) {
+    const scan = await runPostStripSafetyScan(env, {
+      bytes: storeBytes,
+      mime: inspected.mime,
+    });
+    if (!scan.ok) {
+      const mapped = mapModerationFail(scan.reason);
+      return { ok: false, status: mapped.status, code: mapped.code, error: mapped.error };
+    }
   }
 
   return {
@@ -124,6 +139,7 @@ export async function ingestOriginalBytes(
     stored: {
       bytes: storeBytes,
       mime: inspected.mime,
+      assetType: inspected.assetType,
       width: inspected.width,
       height: inspected.height,
       sha256: await sha256HexOfBytes(storeBytes),
@@ -325,8 +341,8 @@ export async function createMediaAsset(
       ).bind(assetId, input.orgId, input.projectId, name, input.actor.userId, now),
       env.DB.prepare(
         `INSERT INTO asset_versions
-          (id, org_id, asset_id, r2_key, sha256, mime, byte_size, width, height, status, created_by, created_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'ready', ?, ?)`,
+          (id, org_id, asset_id, r2_key, sha256, mime, asset_type, byte_size, width, height, status, created_by, created_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ready', ?, ?)`,
       ).bind(
         versionId,
         input.orgId,
@@ -334,6 +350,7 @@ export async function createMediaAsset(
         r2Key,
         ingested.stored.sha256,
         ingested.stored.mime,
+        ingested.stored.assetType,
         ingested.stored.byteSize,
         ingested.stored.width,
         ingested.stored.height,
@@ -379,6 +396,7 @@ export async function createMediaAsset(
       path,
       versionId,
       mime: ingested.stored.mime,
+      assetType: ingested.stored.assetType,
       size: ingested.stored.byteSize,
       width: ingested.stored.width,
       height: ingested.stored.height,
@@ -440,8 +458,8 @@ export async function replaceMediaAsset(
   try {
     await env.DB.prepare(
       `INSERT INTO asset_versions
-        (id, org_id, asset_id, r2_key, sha256, mime, byte_size, width, height, status, created_by, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'ready', ?, ?)`,
+        (id, org_id, asset_id, r2_key, sha256, mime, asset_type, byte_size, width, height, status, created_by, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'ready', ?, ?)`,
     )
       .bind(
         versionId,
@@ -450,6 +468,7 @@ export async function replaceMediaAsset(
         r2Key,
         ingested.stored.sha256,
         ingested.stored.mime,
+        ingested.stored.assetType,
         ingested.stored.byteSize,
         ingested.stored.width,
         ingested.stored.height,
@@ -502,6 +521,7 @@ export async function replaceMediaAsset(
       path: existing.path,
       versionId,
       mime: ingested.stored.mime,
+      assetType: ingested.stored.assetType,
       size: ingested.stored.byteSize,
       width: ingested.stored.width,
       height: ingested.stored.height,
@@ -518,6 +538,7 @@ export type LiveAssetRow = {
   aliasId: string;
   currentVersionId: string;
   mime: string;
+  assetType: string | null;
   byteSize: number;
   width: number | null;
   height: number | null;
@@ -535,7 +556,7 @@ export async function loadLiveAsset(
     .prepare(
       `SELECT a.id AS assetId, a.org_id AS orgId, a.project_id AS projectId, a.name,
               al.path, al.id AS aliasId, al.current_version_id AS currentVersionId,
-              v.mime, v.byte_size AS byteSize, v.width, v.height
+              v.mime, v.asset_type AS assetType, v.byte_size AS byteSize, v.width, v.height
        FROM assets a
        JOIN asset_aliases al
          ON al.asset_id = a.id AND al.org_id = a.org_id AND al.deleted_at IS NULL
@@ -551,6 +572,7 @@ export async function loadLiveAsset(
 export type AssetVersionRow = {
   id: string;
   mime: string;
+  asset_type: string | null;
   byte_size: number;
   width: number | null;
   height: number | null;
@@ -566,7 +588,7 @@ export async function listAssetVersions(
 ): Promise<AssetVersionRow[]> {
   const { results } = await db
     .prepare(
-      `SELECT id, mime, byte_size, width, height, created_at, status, r2_key
+      `SELECT id, mime, asset_type, byte_size, width, height, created_at, status, r2_key
        FROM asset_versions
        WHERE asset_id = ? AND org_id = ?
        ORDER BY created_at ASC`,
@@ -659,7 +681,7 @@ export async function listProjectAssets(
     .prepare(
       `SELECT a.id AS assetId, a.org_id AS orgId, a.project_id AS projectId, a.name,
               al.path, al.id AS aliasId, al.current_version_id AS currentVersionId,
-              v.mime, v.byte_size AS byteSize, v.width, v.height
+              v.mime, v.asset_type AS assetType, v.byte_size AS byteSize, v.width, v.height
        FROM assets a
        JOIN asset_aliases al
          ON al.asset_id = a.id AND al.org_id = a.org_id AND al.deleted_at IS NULL
@@ -688,7 +710,8 @@ export function publicAssetFromRow(
     name: row.name,
     path: row.path,
     versionId: row.currentVersionId,
-    mime: row.mime as AllowedMime,
+    mime: row.mime as MediaMime,
+    assetType: assetTypeFromStored(row.mime, row.assetType),
     size: row.byteSize,
     width: row.width,
     height: row.height,
@@ -704,7 +727,8 @@ function toPublicAsset(input: {
   name: string;
   path: string;
   versionId: string;
-  mime: AllowedMime;
+  mime: MediaMime;
+  assetType: WebAssetType;
   size: number;
   width: number | null;
   height: number | null;
@@ -727,6 +751,7 @@ function toPublicAsset(input: {
       input.versionId,
     ),
     mime: input.mime,
+    assetType: input.assetType,
     size: input.size,
     width: input.width,
     height: input.height,

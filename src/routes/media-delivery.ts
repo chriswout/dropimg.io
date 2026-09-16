@@ -1,10 +1,10 @@
 import { Hono, type Context } from "hono";
-import { imageResponseHeaders } from "../lib/headers";
-import { mimeToExt } from "../lib/inspect";
+import { IMAGE_CACHE_SECONDS } from "../types";
+import { mediaAssetResponseHeaders } from "../lib/headers";
 import { mediaEnabled } from "../lib/media-config";
 import { mediaRequestId } from "../lib/media-http";
 import { isUuid, parseMediaDeliveryPath } from "../lib/media-path";
-import { IMAGE_CACHE_SECONDS, type AllowedMime } from "../types";
+import { isMediaMime } from "../lib/web-assets";
 
 type Env = {
   Bindings: Cloudflare.Env;
@@ -12,7 +12,20 @@ type Env = {
 
 export const mediaDeliveryRoutes = new Hono<Env>();
 
-mediaDeliveryRoutes.get("/m/*", (c) => serveMediaAlias(c));
+mediaDeliveryRoutes.on(["GET", "HEAD"], "/m/*", (c) => serveMediaAlias(c));
+mediaDeliveryRoutes.options("/m/*", (c) => {
+  if (!mediaEnabled(c.env)) return c.body(null, 404);
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+      "Access-Control-Allow-Headers": "Origin, Content-Type, Accept",
+      "Access-Control-Max-Age": "86400",
+      "X-Request-Id": mediaRequestId(c.req.raw),
+    },
+  });
+});
 
 async function serveMediaAlias(c: Context<Env>): Promise<Response> {
   const requestId = mediaRequestId(c.req.raw);
@@ -63,14 +76,12 @@ async function serveMediaAlias(c: Context<Env>): Promise<Response> {
   const object = await c.env.BUCKET.get(row.r2_key);
   if (!object) return notFound();
 
-  const mime = row.mime as AllowedMime;
+  if (!isMediaMime(row.mime)) return notFound();
   const filename = row.path.split("/").pop() || parsed.alias;
-  const headers = imageResponseHeaders({
-    mime,
-    slug: filename,
-    ext: mimeToExt(mime),
+  const headers = mediaAssetResponseHeaders({
+    mime: row.mime,
+    filename,
     etag: object.httpEtag,
-    protected: false,
   });
   headers.set("X-Request-Id", requestId);
   if (versionId) {
@@ -87,6 +98,10 @@ async function serveMediaAlias(c: Context<Env>): Promise<Response> {
     headers.delete("Content-Type");
     headers.delete("Content-Disposition");
     return new Response(null, { status: 304, headers });
+  }
+
+  if (c.req.method === "HEAD") {
+    return new Response(null, { status: 200, headers });
   }
 
   return new Response(object.body, { status: 200, headers });

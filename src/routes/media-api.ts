@@ -15,6 +15,7 @@ import {
   replaceMediaAsset,
   saveIdempotentResponse,
 } from "../lib/media-store";
+import { assetTypeFromStored } from "../lib/web-assets";
 import {
   consumeMediaUploadIntent,
   createMediaUploadIntent,
@@ -405,6 +406,7 @@ mediaApiRoutes.get("/api/v1/media/assets/:assetId", async (c) => {
       versions: versions.map((v) => ({
         id: v.id,
         mime: v.mime,
+        assetType: assetTypeFromStored(v.mime, v.asset_type),
         size: v.byte_size,
         width: v.width,
         height: v.height,

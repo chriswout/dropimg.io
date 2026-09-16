@@ -41,6 +41,7 @@ function compactAsset(asset: MediaAssetPublic): Record<string, unknown> {
     url: asset.url,
     version_id: asset.versionId,
     mime: asset.mime,
+    asset_type: asset.assetType,
     size: asset.size,
     width: asset.width,
     height: asset.height,

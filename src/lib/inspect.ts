@@ -70,14 +70,14 @@ export function inspectImage(bytes: ArrayBuffer): InspectResult {
 /** @deprecated use inspectImage */
 export const inspectMime = inspectImage;
 
-function looksLikeSvg(u8: Uint8Array): boolean {
+export function looksLikeSvg(u8: Uint8Array): boolean {
   const head = new TextDecoder("utf-8", { fatal: false })
     .decode(u8.slice(0, Math.min(256, u8.byteLength)))
     .trimStart()
     .toLowerCase();
-  if (head.startsWith("<svg") || head.includes("<svg")) return true;
-  if (head.startsWith("<?xml") && head.includes("<svg")) return true;
-  return false;
+  // Binary AVIF/ICO/fonts can coincidentally contain the bytes `<svg`.
+  if (!head.startsWith("<")) return false;
+  return head.startsWith("<svg") || head.includes("<svg");
 }
 
 function isPng(u8: Uint8Array): boolean {

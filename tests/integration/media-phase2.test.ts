@@ -616,7 +616,7 @@ describe("media app shell", () => {
     });
     expect(page.status).toBe(200);
     const html = await page.text();
-    expect(html).toMatch(/Permanent Media/);
+    expect(html).toMatch(/Web Assets/);
     expect(html).toMatch(/My Drops are temporary/);
   });
 });

@@ -40,6 +40,7 @@
   "dependencies": {
     "@cloudflare/workers-oauth-provider": "^0.10.3",
     "@modelcontextprotocol/server": "^2.0.0",
+    "@xmldom/xmldom": "^0.9.12",
     "agents": "^0.22.0",
     "hono": "^4.9.0",
     "zod": "^4.5.4"

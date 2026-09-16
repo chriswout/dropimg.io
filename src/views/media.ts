@@ -8,8 +8,8 @@ export function mediaHtmlResponse(opts: {
   origin: string;
 }): Response {
   const main = `<section class="settings-card">
-      <p class="settings-eyebrow">Permanent Media</p>
-      <p>My Drops are temporary links that expire. Media is a project folder of files that keep the same URL when you replace them.</p>
+      <p class="settings-eyebrow">Web Assets</p>
+      <p>My Drops are temporary screenshots and links that expire. Media is permanent Web Assets for a website or app — logos, heroes, favicons, illustrations, and web fonts — at a URL that stays the same when you replace the file.</p>
       <p class="account-muted">Stable URL: <code>${esc(opts.origin)}/m/{org}/{project}/…</code>. Anyone with the URL can fetch the file.</p>
     </section>
     <section class="settings-card" id="media-org-card">

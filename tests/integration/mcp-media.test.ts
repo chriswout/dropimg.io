@@ -205,6 +205,48 @@ describe("Media MCP", () => {
     expect(toolText(await replace.text())).toMatch(/upload_url/);
   });
 
+  it("uploads SVG via intent and reports vector mime", async () => {
+    const cookie = await signIn("mcp-svg@example.com");
+    const ctx = await bootstrap(cookie, "brand");
+    const upload = await mcpCall(
+      ctx.token,
+      "tools/call",
+      { name: "upload_media_asset", arguments: { project_id: ctx.projectId, path: "branding/logo" } },
+    );
+    const payload = JSON.parse(toolText(await upload.text())) as {
+      upload_url: string;
+      headers: { Authorization: string };
+    };
+    const svg = new TextEncoder().encode(
+      '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 10 10"><rect width="10" height="10"/></svg>',
+    );
+    const uploaded = await worker.fetch(payload.upload_url, {
+      method: "POST",
+      headers: {
+        Authorization: payload.headers.Authorization,
+        "Content-Type": "application/octet-stream",
+      },
+      body: svg,
+    });
+    expect(uploaded.status).toBe(201);
+    const asset = (await uploaded.json()) as {
+      asset: { id: string; mime: string; assetType: string; url: string };
+    };
+    expect(asset.asset.mime).toBe("image/svg+xml");
+    expect(asset.asset.assetType).toBe("vector");
+    const got = await mcpCall(
+      ctx.token,
+      "tools/call",
+      { name: "get_media_asset", arguments: { project_id: ctx.projectId, asset_id: asset.asset.id } },
+      2,
+    );
+    const gotText = toolText(await got.text());
+    expect(gotText).toMatch(/"asset_type":"vector"/);
+    expect(gotText).toMatch(/image\/svg\+xml/);
+    const alias = await worker.fetch(asset.asset.url);
+    expect(alias.headers.get("Content-Security-Policy")).toMatch(/sandbox/);
+  });
+
   it("blocks cross-project access and revoked keys", async () => {
     const cookie = await signIn("mcp-iso@example.com");
     const a = await bootstrap(cookie, "alpha");
