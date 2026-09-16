@@ -38,6 +38,9 @@ function marketingHtmlInputs(): Record<string, string> {
   input["sharex"] = resolve(root, "sharex/index.html");
   input.developers = resolve(root, "developers/index.html");
   input.mcp = resolve(root, "mcp/index.html");
+  input["web-assets"] = resolve(root, "web-assets/index.html");
+  input.pricing = resolve(root, "pricing/index.html");
+  input.drops = resolve(root, "drops/index.html");
   for (const id of INTENT_PAGE_IDS) {
     for (const locale of intentLocales(id)) {
       const dir = intentPagePath(id, locale).replace(/^\//, "");

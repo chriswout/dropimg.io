@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { HOME } from "../../marketing/content";
 import { DEVELOPERS_ONBOARDING } from "../../marketing/developers";
@@ -112,5 +113,14 @@ describe("drops page preservation", () => {
     expect(html).toContain('id="dropzone"');
     expect(html).toContain("Drop an image. Get a link.");
     expect(html).toContain('accept="image/png,image/jpeg,image/webp,image/gif"');
+  });
+});
+
+describe("Vite production MPA inputs", () => {
+  it("includes Web Assets, pricing, and drops HTML so they ship with the Worker", () => {
+    const src = readFileSync(new URL("../../vite.config.ts", import.meta.url), "utf8");
+    expect(src).toContain('web-assets/index.html');
+    expect(src).toContain("pricing/index.html");
+    expect(src).toContain("drops/index.html");
   });
 });
