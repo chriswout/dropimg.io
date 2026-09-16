@@ -1,8 +1,10 @@
 # DropIMG Media — Cursor
 
-Permanent `/m/{org}/{project}/{path}` URLs for code you are generating. Temporary screenshots still use Drop tools (`upload_image`).
+Permanent **Web Assets** at `/m/{org}/{project}/{path}` for code you are generating (logos, heroes, favicons, illustrations, web fonts). Temporary screenshots still use Drop tools (`upload_image`).
 
 Public aliases are not secret. Anyone with the URL can fetch the file.
+
+Do not invent a `/m/...` URL. Use the `url` from the HTTP upload response or `get_media_asset`.
 
 ## Connect
 
@@ -31,12 +33,12 @@ OAuth (Add to Cursor from [dropimg.io/mcp](https://dropimg.io/mcp)) still works 
 ```
 create_media_project (account token / OAuth only)
   → list_media_projects
-  → upload_media_asset { project_id, path: "hero" }
+  → upload_media_asset { project_id, path: "branding/logo" }
   → POST the file bytes to upload_url (do not put bytes in the tool)
   → paste the returned /m/... URL into the codebase
   → replace_media_asset { project_id, asset_id, confirm: true } when the file changes
 ```
 
-The agent must not invent a URL. It must use the `url` from the HTTP upload response or `get_media_asset`.
+Supported: JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, WOFF2. PDFs, video, audio, archives, and code files are rejected. The HTTP ingest path detects the format — there is no `upload_svg` tool.
 
 Production Media remains disabled (`MEDIA_ENABLED=false`). Use staging or a local Worker with the flag on for this flow.
