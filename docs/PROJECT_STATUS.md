@@ -108,6 +108,12 @@ Web Asset Format Expansion (git; KON-53–57):
 - SVG delivery CSP + `nosniff`; fonts CORS for `@font-face`
 - MCP compact rows expose `asset_type` + `mime`; no format-specific tools
 - OpenAPI + REST/Cursor/Claude/Codex/MCP guides updated
+- Commits: `f8a69e3` (formats + SVG ingest), `6eb8107` (docs + staging record)
+
+Web Assets agent skill (KON-59):
+
+- Canonical: [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md)
+- Decision table Drops vs Media vs unsupported; replace-in-place; no invented `/m/...` URLs
 
 ---
 
@@ -115,7 +121,7 @@ Web Asset Format Expansion (git; KON-53–57):
 
 **DropIMG Media — Web Asset Format Expansion (KON-53–KON-58)**
 
-Local/CI gates: **54 files, 397 tests, 0 failed**. Staging qualification: **PASS**. Production Media remains off. Do not apply `0013`/`0014`/`0015` to production.
+Local/CI gates: **55 files, 401 tests, 0 failed** (skill tests included). Staging qualification: **PASS**. Production Media remains off. Do not apply `0013`/`0014`/`0015` to production.
 
 ---
 
@@ -184,9 +190,9 @@ R2 lifecycle JSON has **no** `p/` delete rule. Do not add one.
 
 ## Next Milestone
 
-Production Media remains **NO-GO**. Mint a durable Cloudflare API token for Actions, then a separate production enablement pass (`MEDIA_ENABLED`, D1 `0013`/`0014`/`0015`) only after explicit approval. Do not enable production Media automatically.
+**KON-60 — MCP registry/marketplace packaging** of the existing `/mcp` server plus [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md). Do not add a second MCP endpoint.
 
-KON-59: formal skill from the routing table in [`docs/media-mcp.md`](media-mcp.md).
+Production Media remains **NO-GO**. Mint a durable Cloudflare API token for Actions (KON-41), then a separate production enablement pass (`MEDIA_ENABLED`, D1 `0013`/`0014`/`0015`) only after explicit approval.
 
 ### Explicitly Deferred
 

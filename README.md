@@ -75,6 +75,8 @@ npx wrangler r2 bucket lifecycle add dropimg-images --name expire-o-prefix --pre
 - [ShareX](docs/sharex.md)
 - [Moderation](docs/moderation.md)
 - [R2 lifecycle](docs/r2-lifecycle.md)
+- [Media REST](docs/media-rest.md)
+- [Web Assets skill](.agents/skills/dropimg-web-assets/SKILL.md)
 
 ## Current product
 

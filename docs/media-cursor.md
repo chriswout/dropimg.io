@@ -41,4 +41,6 @@ create_media_project (account token / OAuth only)
 
 Supported: JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, WOFF2. PDFs, video, audio, archives, and code files are rejected. The HTTP ingest path detects the format — there is no `upload_svg` tool.
 
+The DropIMG Web Assets skill teaches the agent when to use Drops vs permanent Media. Canonical file: [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md).
+
 Production Media remains disabled (`MEDIA_ENABLED=false`). Use staging or a local Worker with the flag on for this flow.

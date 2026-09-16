@@ -36,3 +36,5 @@ curl -X POST "$UPLOAD_URL" \
 Supported: JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, WOFF2. PDFs, ZIP, video, audio, and code files are rejected.
 
 Put the JSON `url` into the app. Public `/m/...` URLs are not confidential.
+
+The DropIMG Web Assets skill teaches Drops vs Media: [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md).

@@ -62,3 +62,5 @@ Asset responses look like:
 Intents are one-use, 10 minutes, scoped to org/project/operation/path or asset. They do not mint unaudited R2 write URLs.
 
 Public `/m/...` aliases provide no confidentiality.
+
+The canonical agent behavior package is [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md). Integration guides should point there rather than restating the decision table.

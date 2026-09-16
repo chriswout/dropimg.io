@@ -137,4 +137,4 @@ Content-Security-Policy: default-src 'none'; style-src 'unsafe-inline'; img-src 
 
 A dedicated asset hostname is a future production hardening option; this pass keeps `/m/...` on the main origin.
 
-See also `/app/media`, [`docs/media-mcp.md`](media-mcp.md), and [`/openapi/v1.yaml`](https://dropimg.io/openapi/v1.yaml).
+See also `/app/media`, [`docs/media-mcp.md`](media-mcp.md), the Web Assets skill [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md), and [`/openapi/v1.yaml`](https://dropimg.io/openapi/v1.yaml).

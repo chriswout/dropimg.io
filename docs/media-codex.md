@@ -21,4 +21,4 @@ Do not send file bytes or base64 through MCP for Media. DropIMG inspects bytes, 
 
 Supported: JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, WOFF2. PDF/ZIP/video/audio/code are unsupported. Never invent a `/m/...` URL.
 
-See [`docs/media-mcp.md`](media-mcp.md).
+See [`docs/media-mcp.md`](media-mcp.md). Canonical agent skill: [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md).
