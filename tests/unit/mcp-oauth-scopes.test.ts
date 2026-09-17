@@ -17,6 +17,12 @@ describe("MCP OAuth Drop scopes", () => {
     ).toEqual(["images:read"]);
   });
 
+  it("defaults empty account grants even when the OAuth provider sets a token id", () => {
+    expect(oauthImageScopes({ userId: "u1", scopes: [], tokenId: "grant-uuid" })).toEqual([
+      ...IMAGE_SCOPES,
+    ]);
+  });
+
   it("does not give project keys Drop image scopes", () => {
     expect(
       oauthImageScopes({

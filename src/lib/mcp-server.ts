@@ -46,8 +46,8 @@ export type McpAuthProps = {
 export function oauthImageScopes(props: McpAuthProps): ImageScope[] {
   const recognized = (props.scopes ?? []).filter(isImageScope);
   if (props.media) return recognized;
-  const oauthSession = !props.tokenId || props.tokenId === "oauth";
-  if (oauthSession && recognized.length === 0) return [...IMAGE_SCOPES];
+  // Cursor OAuth tokens often carry a provider token id and no images:* scopes.
+  if (recognized.length === 0) return [...IMAGE_SCOPES];
   return recognized;
 }
 
