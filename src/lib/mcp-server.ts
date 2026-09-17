@@ -39,16 +39,12 @@ export type McpAuthProps = {
 };
 
 /**
- * Cursor (and other MCP OAuth clients) often request no `images:*` scopes.
- * Empty OAuth grants still belong to a signed-in account, so Drop tools must
- * work. Project keys keep empty image scopes and must not gain Drop access.
+ * MCP account sessions (OAuth / API) get Drop tools. Cursor OAuth grants
+ * often omit or partially include `images:*`. Project keys stay Media-only.
  */
 export function oauthImageScopes(props: McpAuthProps): ImageScope[] {
-  const recognized = (props.scopes ?? []).filter(isImageScope);
-  if (props.media) return recognized;
-  // Cursor OAuth tokens often carry a provider token id and no images:* scopes.
-  if (recognized.length === 0) return [...IMAGE_SCOPES];
-  return recognized;
+  if (props.media?.credentialId) return (props.scopes ?? []).filter(isImageScope);
+  return [...IMAGE_SCOPES];
 }
 
 export function mcpAuthFromProps(props: McpAuthProps): IntegrationAuth {

@@ -3,24 +3,12 @@ import { IMAGE_SCOPES } from "../../src/lib/integration-token";
 import { mcpAuthFromProps, oauthImageScopes } from "../../src/lib/mcp-server";
 
 describe("MCP OAuth Drop scopes", () => {
-  it("defaults empty OAuth grants to Drop image scopes", () => {
+  it("gives account MCP sessions full Drop image scopes", () => {
     expect(oauthImageScopes({ userId: "u1", scopes: [] })).toEqual([...IMAGE_SCOPES]);
     expect(mcpAuthFromProps({ userId: "u1", scopes: [] }).scopes).toEqual([...IMAGE_SCOPES]);
-    expect(mcpAuthFromProps({ userId: "u1", scopes: [], tokenId: "oauth" }).scopes).toEqual([
-      ...IMAGE_SCOPES,
-    ]);
-  });
-
-  it("keeps an explicit OAuth subset", () => {
     expect(
-      oauthImageScopes({ userId: "u1", scopes: ["images:read"], tokenId: "oauth" }),
-    ).toEqual(["images:read"]);
-  });
-
-  it("defaults empty account grants even when the OAuth provider sets a token id", () => {
-    expect(oauthImageScopes({ userId: "u1", scopes: [], tokenId: "grant-uuid" })).toEqual([
-      ...IMAGE_SCOPES,
-    ]);
+      mcpAuthFromProps({ userId: "u1", scopes: ["images:read"], tokenId: "grant-uuid" }).scopes,
+    ).toEqual([...IMAGE_SCOPES]);
   });
 
   it("does not give project keys Drop image scopes", () => {
