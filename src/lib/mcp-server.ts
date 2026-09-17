@@ -1,7 +1,12 @@
 import { McpServer } from "@modelcontextprotocol/server";
 import { createMcpHandler } from "agents/mcp/server";
 import { z } from "zod";
-import type { ImageScope, IntegrationAuth } from "./integration-token";
+import {
+  IMAGE_SCOPES,
+  isImageScope,
+  type ImageScope,
+  type IntegrationAuth,
+} from "./integration-token";
 import { mediaEnabled } from "./media-config";
 import type { MediaScope } from "./media-config";
 import {
@@ -33,13 +38,26 @@ export type McpAuthProps = {
   };
 };
 
+/**
+ * Cursor (and other MCP OAuth clients) often request no `images:*` scopes.
+ * Empty OAuth grants still belong to a signed-in account, so Drop tools must
+ * work. Project keys keep empty image scopes and must not gain Drop access.
+ */
+export function oauthImageScopes(props: McpAuthProps): ImageScope[] {
+  const recognized = (props.scopes ?? []).filter(isImageScope);
+  if (props.media) return recognized;
+  const oauthSession = !props.tokenId || props.tokenId === "oauth";
+  if (oauthSession && recognized.length === 0) return [...IMAGE_SCOPES];
+  return recognized;
+}
+
 export function mcpAuthFromProps(props: McpAuthProps): IntegrationAuth {
   return {
     userId: props.userId,
     tokenId: props.tokenId ?? "oauth",
     label: "MCP",
     kind: "api",
-    scopes: props.scopes,
+    scopes: oauthImageScopes(props),
   };
 }
 

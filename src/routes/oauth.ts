@@ -70,7 +70,7 @@ oauthRoutes.post("/oauth/authorize", async (c) => {
     return c.redirect(redirect.toString(), 302);
   }
 
-  const granted = selectedScopes(form).filter((scope) => oauthRequest.scope.includes(scope));
+  const granted = selectedScopes(form);
   const scopes = granted.length ? granted : requestedScopes(oauthRequest.scope);
 
   const { redirectTo } = await c.env.OAUTH_PROVIDER.completeAuthorization({
