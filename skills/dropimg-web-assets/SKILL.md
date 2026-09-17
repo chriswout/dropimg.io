@@ -1,0 +1,1 @@
+../../.agents/skills/dropimg-web-assets/SKILL.md

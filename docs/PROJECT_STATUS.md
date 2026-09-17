@@ -234,9 +234,9 @@ R2 lifecycle JSON has **no** `p/` delete rule. Do not add one.
 
 ## Next Milestone
 
-**8. Agent Skill & MCP Marketplace Packaging / KON-60** of the existing `/mcp` server plus [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md). Do not add a second MCP endpoint. Do not start marketplace submissions until that packaging pass. Do not mark marketplace work complete.
+**8. Cursor Marketplace plugin / KON-84** (first distribution target under KON-60). Canonical skill: [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md). Plugin manifest: [`.cursor-plugin/plugin.json`](../.cursor-plugin/plugin.json). Do not add a second MCP endpoint. Do not mark KON-60 / KON-83 / KON-85 / KON-86 complete from this pass.
 
-Also remaining: mint a durable Cloudflare API token for Actions (KON-41). Live paid-plan charges still need a controlled confirmation when you want them.
+Also remaining: mint a durable Cloudflare API token for Actions (KON-41). Live paid-plan charges still need a controlled confirmation when you want them. Marketplace submission is manual at [cursor.com/marketplace/publish](https://cursor.com/marketplace/publish) after local plugin validation.
 
 ### Explicitly Deferred
 

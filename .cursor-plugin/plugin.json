@@ -1,0 +1,33 @@
+{
+  "name": "dropimg",
+  "displayName": "DropIMG Web Assets",
+  "version": "1.0.0",
+  "description": "Permanent Web Assets for AI-built apps. Upload and replace images, SVGs, favicons, and web fonts through DropIMG while keeping stable application URLs.",
+  "author": {
+    "name": "DropIMG"
+  },
+  "homepage": "https://dropimg.io/web-assets",
+  "repository": "https://github.com/chriswout/dropimg.io",
+  "keywords": [
+    "web-assets",
+    "mcp",
+    "ai-coding",
+    "images",
+    "svg",
+    "fonts",
+    "asset-hosting",
+    "cursor"
+  ],
+  "tags": [
+    "web-assets",
+    "mcp",
+    "ai-coding",
+    "images",
+    "svg",
+    "fonts",
+    "asset-hosting",
+    "cursor"
+  ],
+  "logo": "assets/logo.svg",
+  "mcpServers": "./mcp.json"
+}

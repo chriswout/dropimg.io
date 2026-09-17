@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "dropimg": {
+      "type": "http",
+      "url": "https://dropimg.io/mcp"
+    }
+  }
+}

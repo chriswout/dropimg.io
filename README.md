@@ -1,12 +1,21 @@
 # dropimg.io
 
-Paste or drop an image → get a temporary shareable URL.
+Permanent **Web Assets** for AI-built apps, plus a fast temporary Drop when you need one.
 
-**Stack:** Cloudflare Workers + R2 + D1 + Hono + Vite (vanilla TS)
-
-**Live:** https://dropimg.io  
-**Staging:** https://dropimg-staging.christenwout.workers.dev  
+**Live:** https://dropimg.io · **Web Assets:** https://dropimg.io/web-assets · **Pricing:** https://dropimg.io/pricing  
 **Current state:** [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md)
+
+## Cursor plugin
+
+This public repo is the DropIMG Web Assets Cursor plugin (`dropimg`). MCP is `https://dropimg.io/mcp` (OAuth). Canonical skill: [`.agents/skills/dropimg-web-assets/SKILL.md`](.agents/skills/dropimg-web-assets/SKILL.md). Marketplace copy and local install: [docs/cursor-plugin.md](docs/cursor-plugin.md).
+
+```text
+User: Replace the homepage hero.
+→ find homepage/hero → replace_media_asset → same /m/... URL
+```
+
+**Stack:** Cloudflare Workers + R2 + D1 + Hono + Vite (vanilla TS)  
+**Staging:** https://dropimg-staging.christenwout.workers.dev
 
 ## Local development
 
@@ -76,6 +85,7 @@ npx wrangler r2 bucket lifecycle add dropimg-images --name expire-o-prefix --pre
 - [Moderation](docs/moderation.md)
 - [R2 lifecycle](docs/r2-lifecycle.md)
 - [Media REST](docs/media-rest.md)
+- [Cursor plugin](docs/cursor-plugin.md)
 - [Web Assets skill](.agents/skills/dropimg-web-assets/SKILL.md)
 
 ## Current product
@@ -91,6 +101,6 @@ npx wrangler r2 bucket lifecycle add dropimg-images --name expire-o-prefix --pre
 - Links up to 90 days, 50 MB when enabled, password protection, My drops history, extension + ShareX account uploads, ad-free
 - Still temporary — no permanent storage
 
-Optional passwordless accounts (`/login`, `/app`, `/account`) exist in the codebase. **Production V2 flags stay off** (`BILLING_ENABLED`, `LONG_TTL_ENABLED`, `PRO_50MB_ENABLED`). Staging has them on.
+Optional passwordless accounts (`/login`, `/app`, `/account`) are live. Temporary Drops stay free; Drop Pro is €2.99/month. Permanent Web Assets are a separate Free / Developer / Pro product — see [pricing](https://dropimg.io/pricing).
 
 ShareX authenticated uploads stay on a 10 MB multipart cap. Extension image passwords are deferred.

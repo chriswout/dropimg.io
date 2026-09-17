@@ -8,30 +8,16 @@ Do not invent a `/m/...` URL. Use the `url` from the HTTP upload response or `ge
 
 ## Connect
 
-1. Sign in at [dropimg.io/app/media](https://dropimg.io/app/media).
-2. Create a project (for example `website`).
-3. Create an API key. Copy the `dropimg_pk_*` value once.
-4. In Cursor MCP settings, add:
+Preferred: install the **DropIMG Web Assets** Cursor plugin (this repository) and complete DropIMG OAuth when Cursor connects to `https://dropimg.io/mcp`. See [cursor-plugin.md](cursor-plugin.md).
 
-```json
-{
-  "mcpServers": {
-    "dropimg": {
-      "url": "https://dropimg.io/mcp",
-      "headers": {
-        "Authorization": "Bearer dropimg_pk_YOUR_KEY"
-      }
-    }
-  }
-}
-```
+OAuth uses the existing production MCP authorization server (`/oauth/register`, `/oauth/authorize`, `/oauth/token`). You should not need to paste a token.
 
-OAuth (Add to Cursor from [dropimg.io/mcp](https://dropimg.io/mcp)) still works for temporary Drops. A project key is required for Media writes scoped to that project.
+Project keys (`dropimg_pk_*`) are a project-scoped fallback for CI. They cannot create projects. Do not use them as the default Cursor install credential.
 
 ## Workflow
 
 ```
-create_media_project (account token / OAuth only)
+create_media_project (account / OAuth)
   → list_media_projects
   → upload_media_asset { project_id, path: "branding/logo" }
   → POST the file bytes to upload_url (do not put bytes in the tool)
@@ -39,8 +25,8 @@ create_media_project (account token / OAuth only)
   → replace_media_asset { project_id, asset_id, confirm: true } when the file changes
 ```
 
+If `homepage/hero` or `branding/logo` already exists, replace it. Do not mint `hero-new`.
+
 Supported: JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, WOFF2. PDFs, video, audio, archives, and code files are rejected. The HTTP ingest path detects the format — there is no `upload_svg` tool.
 
 The DropIMG Web Assets skill teaches the agent when to use Drops vs permanent Media. Canonical file: [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md).
-
-Production Media remains disabled (`MEDIA_ENABLED=false`). Use staging or a local Worker with the flag on for this flow.

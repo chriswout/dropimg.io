@@ -25,7 +25,6 @@ Supported Media bytes: JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, WOF
 | OAuth / `dropimg_api_*` | Yes, across the user’s projects (explicit `project_id`) | Yes |
 | `dropimg_pk_*` | Yes, that project only | Missing image scopes |
 | Revoked or expired `dropimg_pk_*` | 401 | 401 |
-| Media flag off | Project keys are not accepted; Media tools are not registered | Unchanged |
 
 ## Tools
 
