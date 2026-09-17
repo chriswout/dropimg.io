@@ -30,7 +30,8 @@ describe("homepage Web Assets reposition (KON-79)", () => {
     expect(html).toContain('href="/web-assets"');
     expect(html).toContain('href="/pricing"');
     expect(html).toContain("Drops vs Web Assets");
-    expect(html).toContain("Replace asset without changing code");
+    expect(html).toContain("Need a quick image URL?");
+    expect(html).toContain("Building an app?");
     expect(html).toContain("/m/acme/site/homepage/hero");
     expect(html).toContain("sanitized SVG");
     expect(html).toContain("WOFF2");
@@ -38,6 +39,45 @@ describe("homepage Web Assets reposition (KON-79)", () => {
     expect(html).toContain("Works with Cursor · Claude Code · Codex · MCP");
     expect(html).not.toContain("Chrome Web Store badge");
     expect(html).not.toContain("marketplace");
+  });
+
+  it("lands the Web Assets story before the Drop uploader", () => {
+    const ids = [
+      ...html.matchAll(
+        /id="(hero-heading|demo-heading|stable-heading|agents-heading|drop-heading|compare-heading|formats-heading|pricing-heading|security-heading|howto-heading|faq-heading|closing-heading)"/g,
+      ),
+    ].map((match) => match[1]);
+    expect(ids).toEqual([
+      "hero-heading",
+      "demo-heading",
+      "stable-heading",
+      "agents-heading",
+      "drop-heading",
+      "compare-heading",
+      "formats-heading",
+      "pricing-heading",
+      "security-heading",
+      "howto-heading",
+      "faq-heading",
+      "closing-heading",
+    ]);
+  });
+
+  it("uses benefit-oriented formats copy, a pricing teaser, and a closing CTA", () => {
+    expect(html).toContain("Everything your AI-built site needs. Nothing it doesn’t.");
+    expect(html).toContain(
+      "Images, SVGs, icons and web fonts—validated, versioned and served from stable URLs.",
+    );
+    expect(html).not.toContain("Focused Web Assets, not generic file storage");
+    expect(html).toContain("See full pricing");
+    expect(html).toContain("$9");
+    expect(html).toContain("$29");
+    expect(html).toContain("Give your coding agent permanent web assets.");
+    expect(html).toContain("Create a project");
+    expect(html).toContain("Read the docs");
+    expect(html).toContain("Agent");
+    expect(html).toContain("Upload intent");
+    expect(html).toContain("Stable URL");
   });
 
   it("keeps Chrome Web Store listing for the extension promo", () => {

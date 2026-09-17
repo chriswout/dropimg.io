@@ -44,7 +44,11 @@ export type HomeCopy = PageSeo & {
   trust: [string, string, string];
   compareHeading: string;
   compareDrops: string;
+  compareDropsLead: string;
+  compareDropsBody: string;
   compareMedia: string;
+  compareMediaLead: string;
+  compareMediaBody: string;
   compareRows: [CompareRow, CompareRow, CompareRow, CompareRow, CompareRow, CompareRow, CompareRow, CompareRow];
   stableKicker: string;
   stableTitle: string;
@@ -64,7 +68,12 @@ export type HomeCopy = PageSeo & {
   formatsUnsupported: string[];
   agentsHeading: string;
   agentsBody: string;
-  agentsFlow: [string, string, string, string, string];
+  agentsFlow: [string, string, string];
+  pricingHeading: string;
+  pricingCta: string;
+  closingHeading: string;
+  closingPrimary: string;
+  closingSecondary: string;
   securityHeading: string;
   securityFacts: [string, string, string, string, string];
   securityPublic: string;

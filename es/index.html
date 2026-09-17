@@ -247,23 +247,70 @@
           <section class="product-demo" aria-labelledby="demo-heading" data-enter>
             <h2 id="demo-heading">Cambia el archivo, no el código.</h2>
             <div class="demo-board">
-              <div class="demo-turn">
-                <p class="demo-who">Tú</p>
-                <p class="demo-prompt">Sustituye el hero de la home por esta imagen.</p>
+              <div class="demo-layout">
+                <div class="demo-turn demo-you">
+                  <p class="demo-who">Tú</p>
+                  <p class="demo-prompt">Sustituye el hero de la home por esta imagen.</p>
+                </div>
+                <div class="demo-turn demo-agent">
+                  <p class="demo-who">Agente</p>
+                  <ul class="demo-steps">
+                    <li>Encontró homepage/hero</li>
+                    <li>Subió una versión nueva</li>
+                    <li>La URL estable no cambió</li>
+                  </ul>
+                </div>
               </div>
-              <div class="demo-turn">
-                <p class="demo-who">Agente</p>
-                <ul class="demo-steps">
-                  <li>Encontró homepage/hero</li>
-                  <li>Subió una versión nueva</li>
-                  <li>La URL estable no cambió</li>
-                </ul>
-              </div>
-              <p class="demo-url"><code>/m/acme/site/homepage/hero</code></p>
+              <p class="demo-url-bar">
+                <svg class="demo-lock" viewBox="0 0 24 24" width="18" height="18" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  aria-hidden="true" focusable="false">
+                  <rect x="5" y="11" width="14" height="10" rx="2" />
+                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                </svg>
+                <code>/m/acme/site/homepage/hero</code>
+              </p>
               <p class="demo-note">El código de tu app no cambia.</p>
             </div>
           </section>
 
+        <div class="home-band home-band-story">
+          <section class="stable-block" aria-labelledby="stable-heading" data-enter>
+            <p class="feature-kicker">Por qué importa</p>
+            <h2 id="stable-heading">URLs semánticas estables</h2>
+            <p>Las URLs de la aplicación son por rol y sin extensión. Sustituye el archivo — incluso de JPEG a AVIF — y el path se queda.</p>
+            <p class="demo-url"><code>/m/acme/site/homepage/hero</code></p>
+            <p class="stable-versions">Version 1 <code>hero-v1.avif</code> → Version 2 <code>hero-v2.webp</code></p>
+            <ul class="path-examples">
+              <li><code>branding/logo</code></li>
+              <li><code>branding/favicon</code></li>
+              <li><code>homepage/hero</code></li>
+              <li><code>products/widget/front</code></li>
+              <li><code>fonts/inter/bold</code></li>
+            </ul>
+          </section>
+          <section class="agents-block" aria-labelledby="agents-heading" data-enter>
+            <h2 id="agents-heading">Hecho para agentes de código</h2>
+            <p>Un endpoint MCP. El agente pide un intent de subida, envía el archivo y recibe una URL estable.</p>
+            <ol class="agent-steps">
+              <li>
+                <span class="agent-step-n" aria-hidden="true">1</span>
+                <strong>Agente</strong>
+              </li>
+              <li>
+                <span class="agent-step-n" aria-hidden="true">2</span>
+                <strong>Intent de subida</strong>
+              </li>
+              <li>
+                <span class="agent-step-n" aria-hidden="true">3</span>
+                <strong>URL estable</strong>
+              </li>
+            </ol>
+            <p class="works-with">Funciona con Cursor · Claude Code · Codex · MCP</p>
+          </section>
+        </div>
+
+        <div class="home-band home-band-drops">
         <section class="hero drop-hero" id="drops" aria-labelledby="drop-heading">
           <p class="feature-kicker">¿Necesitas una URL rápida?</p>
           <h2 id="drop-heading" class="tagline drop-heading">Suelta una imagen. Llévate el enlace.</h2>
@@ -430,89 +477,33 @@
             </p>
           </div>
         </section>
+        </div>
 
+        <div class="home-band home-band-detail">
           <section class="compare-block" aria-labelledby="compare-heading" data-enter>
             <h2 id="compare-heading">Drops vs Web Assets</h2>
-            <div class="compare-wrap">
-              <table class="compare-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Use case</th>
-                    <th scope="col">Drops</th>
-                    <th scope="col">Web Assets</th>
-                  </tr>
-                </thead>
-                <tbody>
-              <tr>
-                <th scope="row">Captura de un bug</th>
-                <td><span class="cmp-yes">Yes</span></td>
-                <td><span class="cmp-no">—</span></td>
-              </tr>
-              <tr>
-                <th scope="row">Imagen para Slack / PR</th>
-                <td><span class="cmp-yes">Yes</span></td>
-                <td><span class="cmp-no">—</span></td>
-              </tr>
-              <tr>
-                <th scope="row">Compartir algo temporal</th>
-                <td><span class="cmp-yes">Yes</span></td>
-                <td><span class="cmp-no">—</span></td>
-              </tr>
-              <tr>
-                <th scope="row">Logo del sitio</th>
-                <td><span class="cmp-no">—</span></td>
-                <td><span class="cmp-yes">Yes</span></td>
-              </tr>
-              <tr>
-                <th scope="row">Hero de la home</th>
-                <td><span class="cmp-no">—</span></td>
-                <td><span class="cmp-yes">Yes</span></td>
-              </tr>
-              <tr>
-                <th scope="row">Favicon</th>
-                <td><span class="cmp-no">—</span></td>
-                <td><span class="cmp-yes">Yes</span></td>
-              </tr>
-              <tr>
-                <th scope="row">Fuente web</th>
-                <td><span class="cmp-no">—</span></td>
-                <td><span class="cmp-yes">Yes</span></td>
-              </tr>
-              <tr>
-                <th scope="row">Sustituir el archivo sin tocar código</th>
-                <td><span class="cmp-no">—</span></td>
-                <td><span class="cmp-yes">Yes</span></td>
-              </tr>
-                </tbody>
-              </table>
+            <div class="compare-grid">
+              <article class="compare-card">
+                <p class="compare-kicker">Drops</p>
+                <h3>¿Necesitas una URL rápida?</h3>
+                <p>Capturas, Slack, PRs. Pégala, copia el enlace, caduca cuando tú elijas.</p>
+              </article>
+              <article class="compare-card compare-card-media">
+                <p class="compare-kicker">Web Assets</p>
+                <h3>¿Estás construyendo una app?</h3>
+                <p>Logos, heroes, favicons y fuentes con URLs /m/… que no cambian al sustituir el archivo.</p>
+              </article>
             </div>
           </section>
-
-          <section class="stable-block" aria-labelledby="stable-heading" data-enter>
-            <p class="feature-kicker">URLs semánticas estables</p>
-            <h2 id="stable-heading">Cambia el archivo, no el código.</h2>
-            <p>Las URLs de la aplicación son por rol y sin extensión. Sustituye el archivo — incluso de JPEG a AVIF — y el path se queda.</p>
-            <p class="demo-url"><code>/m/acme/site/homepage/hero</code></p>
-            <p class="stable-versions">Version 1 <code>hero-v1.avif</code> → Version 2 <code>hero-v2.webp</code></p>
-            <ul class="path-examples">
-              <li><code>branding/logo</code></li>
-              <li><code>branding/favicon</code></li>
-              <li><code>homepage/hero</code></li>
-              <li><code>products/widget/front</code></li>
-              <li><code>fonts/inter/bold</code></li>
-            </ul>
-          </section>
-
           <section class="formats-block" aria-labelledby="formats-heading" data-enter>
-            <h2 id="formats-heading">Web Assets concretos, no un almacén genérico</h2>
-            <p>Solo tipos aprobados. El servidor inspecciona los bytes. El MIME del cliente no cuenta.</p>
+            <h2 id="formats-heading">Todo lo que tu sitio hecho con IA necesita. Nada que no.</h2>
+            <p class="formats-intro">Imágenes, SVG, iconos y fuentes web: validados, versionados y servidos desde URLs estables.</p>
             <ul class="format-ok">
               <li>Raster: JPEG, PNG, WebP, GIF, AVIF</li>
               <li>Vector: SVG sanitizado</li>
               <li>Iconos: ICO</li>
               <li>Fuentes: WOFF, WOFF2</li>
             </ul>
-            <p>DropIMG hospeda lo que un sitio sirve de verdad. No es un blob store.</p>
             <h3>No se acepta</h3>
             <ul class="format-no">
               <li>PDF</li>
@@ -525,24 +516,29 @@
               <li>Blobs arbitrarios</li>
             </ul>
           </section>
-
-          <section class="agents-block" aria-labelledby="agents-heading" data-enter>
-            <h2 id="agents-heading">Hecho para agentes de código</h2>
-            <p>Un endpoint MCP. El agente pide un intent de subida, envía los bytes por HTTP y recibe una URL estable. Las capturas temporales siguen siendo Drops.</p>
-            <ol class="agent-flow">
-              <li>Agente</li>
-              <li class="agent-flow-arrow" aria-hidden="true">↓</li>
-              <li>DropIMG MCP</li>
-              <li class="agent-flow-arrow" aria-hidden="true">↓</li>
-              <li>Intent de subida de corta vida</li>
-              <li class="agent-flow-arrow" aria-hidden="true">↓</li>
-              <li>Bytes por HTTP</li>
-              <li class="agent-flow-arrow" aria-hidden="true">↓</li>
-              <li>URL estable de Web Asset</li>
-            </ol>
-            <p class="works-with">Funciona con Cursor · Claude Code · Codex · MCP</p>
+          <section class="pricing-teaser" aria-labelledby="pricing-heading" data-enter>
+            <h2 id="pricing-heading">Planes simples</h2>
+            <div class="price-grid price-teaser">
+            <article class="price-card" data-tier="free">
+              <h3>Free</h3>
+              <p class="price-amount">$0</p>
+            </article>
+            <article class="price-card" data-tier="developer">
+              <h3>Developer</h3>
+              <p class="price-amount">$9<span>/month</span></p>
+            </article>
+            <article class="price-card" data-tier="pro">
+              <h3>Pro</h3>
+              <p class="price-amount">$29<span>/month</span></p>
+            </article>
+            </div>
+            <p class="pricing-teaser-cta">
+              <a class="btn secondary" href="/pricing">Ver precios</a>
+            </p>
           </section>
+        </div>
 
+        <div class="home-band home-band-quiet">
           <section class="security-block" aria-labelledby="security-heading" data-enter>
             <h2 id="security-heading">Público, inspeccionado al subir</h2>
             <ul>
@@ -556,7 +552,7 @@
           </section>
 
         <section class="below" aria-label="Sobre dropimg.io">
-          <section class="howto-compact" aria-labelledby="howto-heading" data-enter>
+          <section class="howto-compact howto-tight" aria-labelledby="howto-heading" data-enter>
             <h2 id="howto-heading">Cómo funciona un Drop</h2>
             <ol class="flow">
               <li>
@@ -657,6 +653,15 @@
             </div>
           </section>
         </section>
+        </div>
+
+          <section class="home-close" aria-labelledby="closing-heading">
+            <h2 id="closing-heading">Dale a tu agente recursos web permanentes.</h2>
+            <div class="hero-actions">
+              <a class="btn primary" href="/web-assets" data-media-cta="create" data-track="homepage_web_assets_cta">Crear un proyecto</a>
+              <a class="btn secondary" href="/developers">Leer la documentación</a>
+            </div>
+          </section>
       </main>
 
       <footer class="foot">

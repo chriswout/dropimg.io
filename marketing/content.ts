@@ -256,7 +256,13 @@ export const HOME: Record<Locale, HomeCopy> = {
     trust: ["No account required", "You pick the expiry", "Metadata stripped"],
     compareHeading: "Drops vs Web Assets",
     compareDrops: "Drops",
+    compareDropsLead: "Need a quick image URL?",
+    compareDropsBody:
+      "Screenshots, Slack, PRs. Paste it, copy the link, it expires when you choose.",
     compareMedia: "Web Assets",
+    compareMediaLead: "Building an app?",
+    compareMediaBody:
+      "Logos, heroes, favicons, and fonts with stable /m/… URLs that stay put when you replace the file.",
     compareRows: [
       { use: "Bug screenshot", drops: true, media: false },
       { use: "Slack / PR image", drops: true, media: false },
@@ -267,8 +273,8 @@ export const HOME: Record<Locale, HomeCopy> = {
       { use: "Web font", drops: false, media: true },
       { use: "Replace asset without changing code", drops: false, media: true },
     ],
-    stableKicker: "Stable semantic URLs",
-    stableTitle: "Change the asset, not the code.",
+    stableKicker: "Why this matters",
+    stableTitle: "Stable semantic URLs",
     stableBody:
       "Application URLs are role-based and extensionless. Replace the file — even change JPEG to AVIF — and the path stays put.",
     stablePath: "/m/acme/site/homepage/hero",
@@ -281,13 +287,14 @@ export const HOME: Record<Locale, HomeCopy> = {
       "products/widget/front",
       "fonts/inter/bold",
     ],
-    formatsHeading: "Focused Web Assets, not generic file storage",
-    formatsIntro: "Approved types only. Bytes are inspected on the server. Client MIME is ignored.",
+    formatsHeading: "Everything your AI-built site needs. Nothing it doesn’t.",
+    formatsIntro:
+      "Images, SVGs, icons and web fonts—validated, versioned and served from stable URLs.",
     formatsRaster: "Raster: JPEG, PNG, WebP, GIF, AVIF",
     formatsVector: "Vector: sanitized SVG",
     formatsIcons: "Icons: ICO",
     formatsFonts: "Fonts: WOFF, WOFF2",
-    formatsFocus: "DropIMG hosts the files a website actually serves. It is not a blob store.",
+    formatsFocus: "Approved types only. Bytes are inspected on the server. Client MIME is ignored.",
     formatsUnsupportedHeading: "Not accepted",
     formatsUnsupported: [
       "PDF",
@@ -301,14 +308,13 @@ export const HOME: Record<Locale, HomeCopy> = {
     ],
     agentsHeading: "Built for coding agents",
     agentsBody:
-      "One MCP endpoint. The agent asks for an upload intent, POSTs bytes over HTTP, and gets a stable Web Asset URL back. Temporary screenshots still use Drops.",
-    agentsFlow: [
-      "Agent",
-      "DropIMG MCP",
-      "Short-lived upload intent",
-      "HTTP bytes",
-      "Stable Web Asset URL",
-    ],
+      "One MCP endpoint. The agent requests an upload intent, sends the file, and gets a stable URL back.",
+    agentsFlow: ["Agent", "Upload intent", "Stable URL"],
+    pricingHeading: "Simple plans",
+    pricingCta: "See full pricing",
+    closingHeading: "Give your coding agent permanent web assets.",
+    closingPrimary: "Create a project",
+    closingSecondary: "Read the docs",
     securityHeading: "Public assets, inspected on ingest",
     securityFacts: [
       "Server-authoritative file inspection",
@@ -388,7 +394,13 @@ export const HOME: Record<Locale, HomeCopy> = {
     trust: ["Sin crear cuenta", "Tú eliges la caducidad", "Sin metadatos"],
     compareHeading: "Drops vs Web Assets",
     compareDrops: "Drops",
+    compareDropsLead: "¿Necesitas una URL rápida?",
+    compareDropsBody:
+      "Capturas, Slack, PRs. Pégala, copia el enlace, caduca cuando tú elijas.",
     compareMedia: "Web Assets",
+    compareMediaLead: "¿Estás construyendo una app?",
+    compareMediaBody:
+      "Logos, heroes, favicons y fuentes con URLs /m/… que no cambian al sustituir el archivo.",
     compareRows: [
       { use: "Captura de un bug", drops: true, media: false },
       { use: "Imagen para Slack / PR", drops: true, media: false },
@@ -399,8 +411,8 @@ export const HOME: Record<Locale, HomeCopy> = {
       { use: "Fuente web", drops: false, media: true },
       { use: "Sustituir el archivo sin tocar código", drops: false, media: true },
     ],
-    stableKicker: "URLs semánticas estables",
-    stableTitle: "Cambia el archivo, no el código.",
+    stableKicker: "Por qué importa",
+    stableTitle: "URLs semánticas estables",
     stableBody:
       "Las URLs de la aplicación son por rol y sin extensión. Sustituye el archivo — incluso de JPEG a AVIF — y el path se queda.",
     stablePath: "/m/acme/site/homepage/hero",
@@ -413,13 +425,14 @@ export const HOME: Record<Locale, HomeCopy> = {
       "products/widget/front",
       "fonts/inter/bold",
     ],
-    formatsHeading: "Web Assets concretos, no un almacén genérico",
-    formatsIntro: "Solo tipos aprobados. El servidor inspecciona los bytes. El MIME del cliente no cuenta.",
+    formatsHeading: "Todo lo que tu sitio hecho con IA necesita. Nada que no.",
+    formatsIntro:
+      "Imágenes, SVG, iconos y fuentes web: validados, versionados y servidos desde URLs estables.",
     formatsRaster: "Raster: JPEG, PNG, WebP, GIF, AVIF",
     formatsVector: "Vector: SVG sanitizado",
     formatsIcons: "Iconos: ICO",
     formatsFonts: "Fuentes: WOFF, WOFF2",
-    formatsFocus: "DropIMG hospeda lo que un sitio sirve de verdad. No es un blob store.",
+    formatsFocus: "Solo tipos aprobados. El servidor inspecciona los bytes. El MIME del cliente no cuenta.",
     formatsUnsupportedHeading: "No se acepta",
     formatsUnsupported: [
       "PDF",
@@ -433,14 +446,13 @@ export const HOME: Record<Locale, HomeCopy> = {
     ],
     agentsHeading: "Hecho para agentes de código",
     agentsBody:
-      "Un endpoint MCP. El agente pide un intent de subida, envía los bytes por HTTP y recibe una URL estable. Las capturas temporales siguen siendo Drops.",
-    agentsFlow: [
-      "Agente",
-      "DropIMG MCP",
-      "Intent de subida de corta vida",
-      "Bytes por HTTP",
-      "URL estable de Web Asset",
-    ],
+      "Un endpoint MCP. El agente pide un intent de subida, envía el archivo y recibe una URL estable.",
+    agentsFlow: ["Agente", "Intent de subida", "URL estable"],
+    pricingHeading: "Planes simples",
+    pricingCta: "Ver precios",
+    closingHeading: "Dale a tu agente recursos web permanentes.",
+    closingPrimary: "Crear un proyecto",
+    closingSecondary: "Leer la documentación",
     securityHeading: "Público, inspeccionado al subir",
     securityFacts: [
       "Inspección de archivo en el servidor",
@@ -520,7 +532,13 @@ export const HOME: Record<Locale, HomeCopy> = {
     trust: ["Sem criar conta", "Você escolhe o prazo", "Sem metadados"],
     compareHeading: "Drops vs Web Assets",
     compareDrops: "Drops",
+    compareDropsLead: "Precisa de uma URL rápida?",
+    compareDropsBody:
+      "Prints, Slack, PRs. Cole, copie o link, expira quando você escolher.",
     compareMedia: "Web Assets",
+    compareMediaLead: "Está construindo um app?",
+    compareMediaBody:
+      "Logos, heroes, favicons e fontes com URLs /m/… que não mudam quando você troca o arquivo.",
     compareRows: [
       { use: "Print de bug", drops: true, media: false },
       { use: "Imagem no Slack / PR", drops: true, media: false },
@@ -531,8 +549,8 @@ export const HOME: Record<Locale, HomeCopy> = {
       { use: "Fonte web", drops: false, media: true },
       { use: "Trocar o arquivo sem mudar código", drops: false, media: true },
     ],
-    stableKicker: "URLs semânticas estáveis",
-    stableTitle: "Mude o arquivo, não o código.",
+    stableKicker: "Por que isso importa",
+    stableTitle: "URLs semânticas estáveis",
     stableBody:
       "As URLs da aplicação são por papel e sem extensão. Troque o arquivo — até de JPEG para AVIF — e o path fica.",
     stablePath: "/m/acme/site/homepage/hero",
@@ -545,13 +563,14 @@ export const HOME: Record<Locale, HomeCopy> = {
       "products/widget/front",
       "fonts/inter/bold",
     ],
-    formatsHeading: "Web Assets focados, não um blob store",
-    formatsIntro: "Só tipos aprovados. O servidor inspeciona os bytes. O MIME do cliente não vale.",
+    formatsHeading: "Tudo o que o seu site feito com IA precisa. Nada além disso.",
+    formatsIntro:
+      "Imagens, SVGs, ícones e fontes web — validados, versionados e servidos em URLs estáveis.",
     formatsRaster: "Raster: JPEG, PNG, WebP, GIF, AVIF",
     formatsVector: "Vetor: SVG sanitizado",
     formatsIcons: "Ícones: ICO",
     formatsFonts: "Fontes: WOFF, WOFF2",
-    formatsFocus: "O DropIMG hospeda o que um site realmente entrega. Não é armazenamento genérico.",
+    formatsFocus: "Só tipos aprovados. O servidor inspeciona os bytes. O MIME do cliente não vale.",
     formatsUnsupportedHeading: "Não aceito",
     formatsUnsupported: [
       "PDF",
@@ -565,14 +584,13 @@ export const HOME: Record<Locale, HomeCopy> = {
     ],
     agentsHeading: "Feito para agentes de código",
     agentsBody:
-      "Um endpoint MCP. O agente pede um intent de upload, manda os bytes por HTTP e recebe uma URL estável. Prints temporários continuam nos Drops.",
-    agentsFlow: [
-      "Agente",
-      "DropIMG MCP",
-      "Intent de upload de curta duração",
-      "Bytes por HTTP",
-      "URL estável de Web Asset",
-    ],
+      "Um endpoint MCP. O agente pede um intent de upload, envia o arquivo e recebe uma URL estável.",
+    agentsFlow: ["Agente", "Intent de upload", "URL estável"],
+    pricingHeading: "Planos simples",
+    pricingCta: "Ver preços",
+    closingHeading: "Dê ao seu agente web assets permanentes.",
+    closingPrimary: "Criar um projeto",
+    closingSecondary: "Ler a documentação",
     securityHeading: "Público, inspecionado no ingest",
     securityFacts: [
       "Inspeção de arquivo no servidor",
@@ -652,7 +670,13 @@ export const HOME: Record<Locale, HomeCopy> = {
     trust: ["Ohne Konto", "Laufzeit wählbar", "Ohne Metadaten"],
     compareHeading: "Drops vs Web Assets",
     compareDrops: "Drops",
+    compareDropsLead: "Nur eine schnelle URL?",
+    compareDropsBody:
+      "Screenshots, Slack, PRs. Einfügen, Link kopieren, läuft ab, wenn du es willst.",
     compareMedia: "Web Assets",
+    compareMediaLead: "Du baust eine App?",
+    compareMediaBody:
+      "Logos, Heroes, Favicons und Fonts mit stabilen /m/…-URLs, die beim Ersetzen gleich bleiben.",
     compareRows: [
       { use: "Bug-Screenshot", drops: true, media: false },
       { use: "Slack- / PR-Bild", drops: true, media: false },
@@ -663,8 +687,8 @@ export const HOME: Record<Locale, HomeCopy> = {
       { use: "Webfont", drops: false, media: true },
       { use: "Asset ersetzen, Code unverändert", drops: false, media: true },
     ],
-    stableKicker: "Stabile semantische URLs",
-    stableTitle: "Die Datei ändern, nicht den Code.",
+    stableKicker: "Warum das zählt",
+    stableTitle: "Stabile semantische URLs",
     stableBody:
       "Anwendungs-URLs sind rollenbasiert und ohne Dateiendung. Ersetze die Datei — auch JPEG durch AVIF — der Pfad bleibt.",
     stablePath: "/m/acme/site/homepage/hero",
@@ -677,13 +701,14 @@ export const HOME: Record<Locale, HomeCopy> = {
       "products/widget/front",
       "fonts/inter/bold",
     ],
-    formatsHeading: "Fokussierte Web-Assets, kein generischer Dateispeicher",
-    formatsIntro: "Nur freigegebene Typen. Der Server prüft die Bytes. Client-MIME zählt nicht.",
+    formatsHeading: "Alles, was deine KI-gebaute Seite braucht. Nichts, was sie nicht braucht.",
+    formatsIntro:
+      "Bilder, SVGs, Icons und Webfonts — geprüft, versioniert und unter stabilen URLs ausgeliefert.",
     formatsRaster: "Raster: JPEG, PNG, WebP, GIF, AVIF",
     formatsVector: "Vektor: bereinigtes SVG",
     formatsIcons: "Icons: ICO",
     formatsFonts: "Fonts: WOFF, WOFF2",
-    formatsFocus: "DropIMG hostet, was eine Website wirklich ausliefert. Kein Blob-Store.",
+    formatsFocus: "Nur freigegebene Typen. Der Server prüft die Bytes. Client-MIME zählt nicht.",
     formatsUnsupportedHeading: "Nicht akzeptiert",
     formatsUnsupported: [
       "PDF",
@@ -697,14 +722,13 @@ export const HOME: Record<Locale, HomeCopy> = {
     ],
     agentsHeading: "Für Coding-Agenten gebaut",
     agentsBody:
-      "Ein MCP-Endpunkt. Der Agent holt einen Upload-Intent, sendet Bytes per HTTP und bekommt eine stabile Web-Asset-URL. Temporäre Screenshots bleiben Drops.",
-    agentsFlow: [
-      "Agent",
-      "DropIMG MCP",
-      "Kurzlebiger Upload-Intent",
-      "HTTP-Bytes",
-      "Stabile Web-Asset-URL",
-    ],
+      "Ein MCP-Endpunkt. Der Agent holt einen Upload-Intent, sendet die Datei und bekommt eine stabile URL zurück.",
+    agentsFlow: ["Agent", "Upload-Intent", "Stabile URL"],
+    pricingHeading: "Einfache Pläne",
+    pricingCta: "Alle Preise",
+    closingHeading: "Gib deinem Coding-Agenten dauerhafte Web-Assets.",
+    closingPrimary: "Projekt anlegen",
+    closingSecondary: "Dokumentation lesen",
     securityHeading: "Öffentlich, bei Ingest geprüft",
     securityFacts: [
       "Dateiprüfung auf dem Server",

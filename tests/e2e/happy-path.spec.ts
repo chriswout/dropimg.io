@@ -18,7 +18,7 @@ test("homepage upload happy path", async ({ page }) => {
   writeFileSync(fixture, PNG_1x1);
 
   await page.goto("/");
-  await expect(page.getByRole("heading", { name: /permanent web assets/i })).toBeVisible();
+  await expect(page.locator("#hero-heading")).toBeVisible();
   await expect(page.getByRole("heading", { name: /Drop an image/i })).toBeVisible();
 
   await page.locator("#file-input").setInputFiles(fixture);

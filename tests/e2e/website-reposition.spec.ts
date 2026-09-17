@@ -4,12 +4,13 @@ test("homepage hero, nav, and dropzone stay usable on desktop", async ({
   page,
 }) => {
   await page.goto("/");
-  await expect(
-    page.getByRole("heading", { name: /permanent web assets/i }),
-  ).toBeVisible();
+  await expect(page.locator("#hero-heading")).toBeVisible();
   await expect(page.locator(".product-nav")).toBeVisible();
   await expect(page.locator("#dropzone")).toBeVisible();
   await expect(page.getByRole("heading", { name: /Drops vs Web Assets/i })).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: /Give your coding agent permanent web assets/i }),
+  ).toBeVisible();
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
   );

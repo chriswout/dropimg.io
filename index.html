@@ -255,23 +255,70 @@
           <section class="product-demo" aria-labelledby="demo-heading" data-enter>
             <h2 id="demo-heading">Change the asset, not the code.</h2>
             <div class="demo-board">
-              <div class="demo-turn">
-                <p class="demo-who">You</p>
-                <p class="demo-prompt">Replace the homepage hero with this image.</p>
+              <div class="demo-layout">
+                <div class="demo-turn demo-you">
+                  <p class="demo-who">You</p>
+                  <p class="demo-prompt">Replace the homepage hero with this image.</p>
+                </div>
+                <div class="demo-turn demo-agent">
+                  <p class="demo-who">Agent</p>
+                  <ul class="demo-steps">
+                    <li>Found homepage/hero</li>
+                    <li>Uploaded new version</li>
+                    <li>Stable URL unchanged</li>
+                  </ul>
+                </div>
               </div>
-              <div class="demo-turn">
-                <p class="demo-who">Agent</p>
-                <ul class="demo-steps">
-                  <li>Found homepage/hero</li>
-                  <li>Uploaded new version</li>
-                  <li>Stable URL unchanged</li>
-                </ul>
-              </div>
-              <p class="demo-url"><code>/m/acme/site/homepage/hero</code></p>
+              <p class="demo-url-bar">
+                <svg class="demo-lock" viewBox="0 0 24 24" width="18" height="18" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  aria-hidden="true" focusable="false">
+                  <rect x="5" y="11" width="14" height="10" rx="2" />
+                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                </svg>
+                <code>/m/acme/site/homepage/hero</code>
+              </p>
               <p class="demo-note">Your app code does not change.</p>
             </div>
           </section>
 
+        <div class="home-band home-band-story">
+          <section class="stable-block" aria-labelledby="stable-heading" data-enter>
+            <p class="feature-kicker">Why this matters</p>
+            <h2 id="stable-heading">Stable semantic URLs</h2>
+            <p>Application URLs are role-based and extensionless. Replace the file — even change JPEG to AVIF — and the path stays put.</p>
+            <p class="demo-url"><code>/m/acme/site/homepage/hero</code></p>
+            <p class="stable-versions">Version 1 <code>hero-v1.avif</code> → Version 2 <code>hero-v2.webp</code></p>
+            <ul class="path-examples">
+              <li><code>branding/logo</code></li>
+              <li><code>branding/favicon</code></li>
+              <li><code>homepage/hero</code></li>
+              <li><code>products/widget/front</code></li>
+              <li><code>fonts/inter/bold</code></li>
+            </ul>
+          </section>
+          <section class="agents-block" aria-labelledby="agents-heading" data-enter>
+            <h2 id="agents-heading">Built for coding agents</h2>
+            <p>One MCP endpoint. The agent requests an upload intent, sends the file, and gets a stable URL back.</p>
+            <ol class="agent-steps">
+              <li>
+                <span class="agent-step-n" aria-hidden="true">1</span>
+                <strong>Agent</strong>
+              </li>
+              <li>
+                <span class="agent-step-n" aria-hidden="true">2</span>
+                <strong>Upload intent</strong>
+              </li>
+              <li>
+                <span class="agent-step-n" aria-hidden="true">3</span>
+                <strong>Stable URL</strong>
+              </li>
+            </ol>
+            <p class="works-with">Works with Cursor · Claude Code · Codex · MCP</p>
+          </section>
+        </div>
+
+        <div class="home-band home-band-drops">
         <section class="hero drop-hero" id="drops" aria-labelledby="drop-heading">
           <p class="feature-kicker">Need a quick URL instead?</p>
           <h2 id="drop-heading" class="tagline drop-heading">Drop an image. Get a link.</h2>
@@ -438,89 +485,33 @@
             </p>
           </div>
         </section>
+        </div>
 
+        <div class="home-band home-band-detail">
           <section class="compare-block" aria-labelledby="compare-heading" data-enter>
             <h2 id="compare-heading">Drops vs Web Assets</h2>
-            <div class="compare-wrap">
-              <table class="compare-table">
-                <thead>
-                  <tr>
-                    <th scope="col">Use case</th>
-                    <th scope="col">Drops</th>
-                    <th scope="col">Web Assets</th>
-                  </tr>
-                </thead>
-                <tbody>
-              <tr>
-                <th scope="row">Bug screenshot</th>
-                <td><span class="cmp-yes">Yes</span></td>
-                <td><span class="cmp-no">—</span></td>
-              </tr>
-              <tr>
-                <th scope="row">Slack / PR image</th>
-                <td><span class="cmp-yes">Yes</span></td>
-                <td><span class="cmp-no">—</span></td>
-              </tr>
-              <tr>
-                <th scope="row">Temporary visual share</th>
-                <td><span class="cmp-yes">Yes</span></td>
-                <td><span class="cmp-no">—</span></td>
-              </tr>
-              <tr>
-                <th scope="row">Site logo</th>
-                <td><span class="cmp-no">—</span></td>
-                <td><span class="cmp-yes">Yes</span></td>
-              </tr>
-              <tr>
-                <th scope="row">Homepage hero</th>
-                <td><span class="cmp-no">—</span></td>
-                <td><span class="cmp-yes">Yes</span></td>
-              </tr>
-              <tr>
-                <th scope="row">Favicon</th>
-                <td><span class="cmp-no">—</span></td>
-                <td><span class="cmp-yes">Yes</span></td>
-              </tr>
-              <tr>
-                <th scope="row">Web font</th>
-                <td><span class="cmp-no">—</span></td>
-                <td><span class="cmp-yes">Yes</span></td>
-              </tr>
-              <tr>
-                <th scope="row">Replace asset without changing code</th>
-                <td><span class="cmp-no">—</span></td>
-                <td><span class="cmp-yes">Yes</span></td>
-              </tr>
-                </tbody>
-              </table>
+            <div class="compare-grid">
+              <article class="compare-card">
+                <p class="compare-kicker">Drops</p>
+                <h3>Need a quick image URL?</h3>
+                <p>Screenshots, Slack, PRs. Paste it, copy the link, it expires when you choose.</p>
+              </article>
+              <article class="compare-card compare-card-media">
+                <p class="compare-kicker">Web Assets</p>
+                <h3>Building an app?</h3>
+                <p>Logos, heroes, favicons, and fonts with stable /m/… URLs that stay put when you replace the file.</p>
+              </article>
             </div>
           </section>
-
-          <section class="stable-block" aria-labelledby="stable-heading" data-enter>
-            <p class="feature-kicker">Stable semantic URLs</p>
-            <h2 id="stable-heading">Change the asset, not the code.</h2>
-            <p>Application URLs are role-based and extensionless. Replace the file — even change JPEG to AVIF — and the path stays put.</p>
-            <p class="demo-url"><code>/m/acme/site/homepage/hero</code></p>
-            <p class="stable-versions">Version 1 <code>hero-v1.avif</code> → Version 2 <code>hero-v2.webp</code></p>
-            <ul class="path-examples">
-              <li><code>branding/logo</code></li>
-              <li><code>branding/favicon</code></li>
-              <li><code>homepage/hero</code></li>
-              <li><code>products/widget/front</code></li>
-              <li><code>fonts/inter/bold</code></li>
-            </ul>
-          </section>
-
           <section class="formats-block" aria-labelledby="formats-heading" data-enter>
-            <h2 id="formats-heading">Focused Web Assets, not generic file storage</h2>
-            <p>Approved types only. Bytes are inspected on the server. Client MIME is ignored.</p>
+            <h2 id="formats-heading">Everything your AI-built site needs. Nothing it doesn’t.</h2>
+            <p class="formats-intro">Images, SVGs, icons and web fonts—validated, versioned and served from stable URLs.</p>
             <ul class="format-ok">
               <li>Raster: JPEG, PNG, WebP, GIF, AVIF</li>
               <li>Vector: sanitized SVG</li>
               <li>Icons: ICO</li>
               <li>Fonts: WOFF, WOFF2</li>
             </ul>
-            <p>DropIMG hosts the files a website actually serves. It is not a blob store.</p>
             <h3>Not accepted</h3>
             <ul class="format-no">
               <li>PDF</li>
@@ -533,24 +524,29 @@
               <li>Arbitrary blobs</li>
             </ul>
           </section>
-
-          <section class="agents-block" aria-labelledby="agents-heading" data-enter>
-            <h2 id="agents-heading">Built for coding agents</h2>
-            <p>One MCP endpoint. The agent asks for an upload intent, POSTs bytes over HTTP, and gets a stable Web Asset URL back. Temporary screenshots still use Drops.</p>
-            <ol class="agent-flow">
-              <li>Agent</li>
-              <li class="agent-flow-arrow" aria-hidden="true">↓</li>
-              <li>DropIMG MCP</li>
-              <li class="agent-flow-arrow" aria-hidden="true">↓</li>
-              <li>Short-lived upload intent</li>
-              <li class="agent-flow-arrow" aria-hidden="true">↓</li>
-              <li>HTTP bytes</li>
-              <li class="agent-flow-arrow" aria-hidden="true">↓</li>
-              <li>Stable Web Asset URL</li>
-            </ol>
-            <p class="works-with">Works with Cursor · Claude Code · Codex · MCP</p>
+          <section class="pricing-teaser" aria-labelledby="pricing-heading" data-enter>
+            <h2 id="pricing-heading">Simple plans</h2>
+            <div class="price-grid price-teaser">
+            <article class="price-card" data-tier="free">
+              <h3>Free</h3>
+              <p class="price-amount">$0</p>
+            </article>
+            <article class="price-card" data-tier="developer">
+              <h3>Developer</h3>
+              <p class="price-amount">$9<span>/month</span></p>
+            </article>
+            <article class="price-card" data-tier="pro">
+              <h3>Pro</h3>
+              <p class="price-amount">$29<span>/month</span></p>
+            </article>
+            </div>
+            <p class="pricing-teaser-cta">
+              <a class="btn secondary" href="/pricing">See full pricing</a>
+            </p>
           </section>
+        </div>
 
+        <div class="home-band home-band-quiet">
           <section class="security-block" aria-labelledby="security-heading" data-enter>
             <h2 id="security-heading">Public assets, inspected on ingest</h2>
             <ul>
@@ -564,7 +560,7 @@
           </section>
 
         <section class="below" aria-label="About dropimg.io">
-          <section class="howto-compact" aria-labelledby="howto-heading" data-enter>
+          <section class="howto-compact howto-tight" aria-labelledby="howto-heading" data-enter>
             <h2 id="howto-heading">How a Drop works</h2>
             <ol class="flow">
               <li>
@@ -665,6 +661,15 @@
             </div>
           </section>
         </section>
+        </div>
+
+          <section class="home-close" aria-labelledby="closing-heading">
+            <h2 id="closing-heading">Give your coding agent permanent web assets.</h2>
+            <div class="hero-actions">
+              <a class="btn primary" href="/web-assets" data-media-cta="create" data-track="homepage_web_assets_cta">Create a project</a>
+              <a class="btn secondary" href="/developers">Read the docs</a>
+            </div>
+          </section>
       </main>
 
       <footer class="foot">
