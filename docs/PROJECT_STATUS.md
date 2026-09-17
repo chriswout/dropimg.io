@@ -1,6 +1,6 @@
 # DropIMG Project Status
 
-Canonical snapshot as of Website Repositioning & Launch Surface (KON-79–KON-81) on `main`. Prefer this file over git history and over [`docs/plans/media-backend-for-ai-websites.md`](plans/media-backend-for-ai-websites.md).
+Canonical snapshot as of **paid Web Assets production launch** on `main`. Prefer this file over git history and over [`docs/plans/media-backend-for-ai-websites.md`](plans/media-backend-for-ai-websites.md).
 
 ---
 
@@ -14,7 +14,7 @@ Unprotected drops copy a **direct image URL** with the real extension (`https://
 
 Drops do **not** accept SVG, AVIF, ICO, or fonts.
 
-### DropIMG Media
+### DropIMG Media (Web Assets)
 
 Permanent **Web Asset infrastructure** for AI-built websites and applications. Broader than an image host, narrower than a blob store:
 
@@ -32,8 +32,6 @@ Supported Web Assets: JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, WOFF
 
 Explicitly unsupported: PDFs, video, audio, archives, EXE/APK, HTML/JS/CSS/PHP, source, generic blobs. DropIMG is not S3/R2/Vercel Blob.
 
-Phase 2 added `/app/media`, project key list/revoke, asset delete, upload intents, and Media MCP tools on the existing `/mcp` server. Web Asset formats are live on staging. The public website now leads with Web Assets and keeps Drops as the temporary acquisition surface. Production Media remains flagged off.
-
 ---
 
 ## Architecture Snapshot
@@ -45,50 +43,96 @@ One Cloudflare Worker ([`src/index.ts`](../src/index.ts)): Hono app + OAuth prov
 | Drops | Optional `users.id`; integration tokens `dropimg_it_*` / `dropimg_api_*` | `images` + R2 `o/{24h\|7d\|30d\|pro}/…` | `/:slug.ext`, `/i/:slug`, share `/:slug` | D1 `expires_at` + cron + R2 lifecycle on `o/` prefixes |
 | Media | Personal org + project; keys `dropimg_pk_*`; MCP intents `dropimg_ui_*` | `assets` / `asset_versions` / `asset_aliases` + R2 `p/…/original` | `GET /m/…` | Soft-delete + immediate R2 delete of that asset’s originals. No cron, no R2 lifecycle on `p/` |
 
-Auth for humans is passwordless (magic link, Google, GitHub). Billing is PayPal personal Pro. Moderation is Workers AI after metadata strip for PNG/JPEG/WebP/GIF only.
+Auth for humans is passwordless (magic link, Google, GitHub). Billing is PayPal REST Subscriptions. Two products, never mixed:
+
+- **Drops Pro** — €2.99/month or €24.99/year (`product = drops_pro`)
+- **Web Assets** — Free / Developer / Pro in USD (`product = web_assets`)
+
+Moderation is Workers AI after metadata strip for PNG/JPEG/WebP/GIF only.
+
+Canonical Web Assets plan config: [`src/lib/web-assets-plans.ts`](../src/lib/web-assets-plans.ts). Entitlements come from verified PayPal rows (`product = 'web_assets'`), never from a client-supplied plan id.
 
 ---
 
 ## Current Production State
 
-**No production deploy is part of this pass.** Keep `MEDIA_ENABLED=false` in [`wrangler.jsonc`](../wrangler.jsonc) `env.production`.
+Paid Web Assets are **live** on `https://dropimg.io`.
 
-Last production Worker deployment: `2026-09-13T23:00:30Z`. Runtime plaintext vars do **not** include `MEDIA_ENABLED`. Production D1 has **`0012` applied** and **`0013` / `0014` / `0015` still pending**.
+| Item | Value |
+|---|---|
+| Feature commit | `45cb22f987777fa91101b67843215d871037aa5e` |
+| Worker version | `9f9f0c07-9f1a-438c-a246-1d27f33cff87` (2026-09-17T12:50:08Z) |
+| Production D1 | `0adba959-a9d1-42ee-af0c-e62f96e3e0c1` (`dropimg`) |
+| Applied migrations | `0001`–`0016` (including `0013`, `0014`, `0015`, `0016_web_assets_billing`) |
+| Pre-migration snapshot | `.backup/prod-20260917-1249.sql` (gitignored), taken while D1 was still at `0012` |
+| `GET /api/site-config` | `mediaEnabled=true`, `mediaDeliveryEnabled=true`, `webAssetsCheckout=true` |
+| Deploy path | Local authenticated Wrangler (GitHub Actions Cloudflare token still fails KON-41) |
 
 ---
 
 ## Current Staging State
 
-Web Asset Format Expansion is **staging-qualified** on `https://dropimg-staging.christenwout.workers.dev`.
-
-Local OAuth deploy applied `0015_media_web_assets.sql` and Worker version `d279677e-6915-4c3e-a171-3279c27a2f4a` with `MEDIA_ENABLED=true`. Production was not migrated or deployed.
-
-Live checks (account `christenwout+webassets@gmail.com`):
-
-- AVIF → `assetType=image`, alias `Content-Type: image/avif`
-- ICO (claimed as PNG) → `assetType=icon`, `Content-Type: image/x-icon` at `/m/…/favicon`
-- SVG (claimed as PNG) → `assetType=vector`, SVG CSP + `nosniff`
-- WOFF2 (claimed as TTF) → `assetType=font`, `Content-Type: font/woff2`, null width
-- Malicious SVG script upload → **422**; Drop `/api/upload` SVG → **415**
-- Replace SVG → PNG on `branding/logo`: live alias immediately `image/png`; `?v=` keeps `image/svg+xml`
-- `@font-face` from `https://example.com` loaded the staging WOFF2 (`FontFace.status=loaded`, `document.fonts.check('72px DropTest')===true`). Not HTTP 200 alone.
-- Production `/api/v1/media/orgs` and `/app/media` remain **404**
-
-Phase 2 qualification (CI [35011165971](https://github.com/chriswout/dropimg.io/actions/runs/35011165971), `0014`) still stands underneath.
+Staging remains Media-on with PayPal sandbox Web Assets SKUs. Format expansion qualification on `https://dropimg-staging.christenwout.workers.dev` still stands (AVIF/ICO/SVG/WOFF2, sanitizer 422, replace MIME, `@font-face`).
 
 ---
 
 ## Feature Flags
 
-| Flag | Development | Staging runtime | Production runtime | Gates |
+| Flag | Development | Staging | Production | Gates |
 |---|---|---|---|---|
-| `MEDIA_ENABLED` | `false` | `true` | unset / effectively `false` | `/api/v1/media/*`, `GET /m/*`, `/app/media`, Media MCP tools + `dropimg_pk_*` on `/mcp` |
-| `BILLING_ENABLED` | `false` | `true` | `true` | PayPal checkout, sync, portal, Pro CTA |
+| `MEDIA_ENABLED` | `false` | `true` | `true` | Legacy alias for control plane |
+| `MEDIA_CONTROL_PLANE_ENABLED` | `false` | `true` | `true` | `/api/v1/media/*`, `/app/media`, Media MCP tools, project keys, uploads |
+| `MEDIA_DELIVERY_ENABLED` | `false` | `true` | `true` | Public `GET /m/*` |
+| `BILLING_ENABLED` | `false` | `true` | `true` | PayPal checkout, sync, portal |
 | `LONG_TTL_ENABLED` | `false` | `true` | `true` | Expiry allowlist beyond legacy 24h |
-| `PRO_50MB_ENABLED` | `false` | `true` | `false` | Pro 50MB upload cap |
+| `PRO_50MB_ENABLED` | `false` | `true` | `false` | Drop Pro 50MB upload cap |
 | `MODERATION_ENABLED` | `false` | `false` | `true` | Post-strip Workers AI classify |
 | `MODERATION_ENFORCE` | `false` | `false` | `false` | Hard-block vs shadow |
 | `UGC_SHARE_ADS_ENABLED` | `false` | `false` | `false` | Ads on share pages |
+
+### Rollback
+
+Do **not** set `MEDIA_DELIVERY_ENABLED=false` to stop new uploads. That would 404 live `/m/…` aliases.
+
+Emergency rollback:
+
+1. `MEDIA_CONTROL_PLANE_ENABLED=false` — stops projects, uploads, replacements, keys, MCP Media writes, `/app/media`
+2. Keep `MEDIA_DELIVERY_ENABLED=true` — existing public aliases keep serving
+
+Covered by [`tests/integration/media-delivery-rollback.test.ts`](../tests/integration/media-delivery-rollback.test.ts).
+
+---
+
+## Web Assets plans (enforced)
+
+Source of truth: `WEB_ASSETS_PLANS`. Max file size is 10 MB on every plan.
+
+| Plan | Price | Projects | Storage | Deliveries / month UTC | Active keys |
+|---|---|---|---|---|---|
+| `free` | $0 | 3 | 1 GB | 100,000 | 2 |
+| `developer` | $9/month or $90/year | 20 | 10 GB | 2,000,000 | 20 |
+| `pro` | $29/month or $290/year | 100 | 100 GB | 10,000,000 | 100 |
+
+Downgrade / over-limit: do not delete assets or break `/m/…` URLs. Block new projects, new keys, and new bytes that would increase storage. Replacement is allowed only when `current_usage + incoming_size <= plan.storage_limit` (immutable versions still count).
+
+Delivery overage: live aliases never return 402/404. Crossing 100% of the monthly GET-200 count starts a **3-day grace** window and dashboard warning (80% warn). Counter resets on **calendar month UTC** for Free and paid.
+
+Meter: successful `GET /m/…` that returns **200** only. HEAD, 304, REST, MCP, dashboard HTML are not counted. Writes are `waitUntil` D1 UPSERT on `media_delivery_months` plus Analytics Engine — not a D1 write on the response path.
+
+---
+
+## Billing
+
+Provider: PayPal REST Subscriptions. Catalog and webhook details: [`docs/paypal.md`](paypal.md).
+
+Checkout:
+
+- Free → `/web-assets` / sign-in / `/app/media` (no card)
+- Developer / Pro → `POST /api/billing/web-assets/checkout` → PayPal approve URL
+- Monthly and annual supported
+- Entitlement flips only after verified webhook (`product = web_assets`, plan id mapped in env)
+
+Drop Pro checkout (`POST /api/billing/checkout`) is unchanged.
 
 ---
 
@@ -96,54 +140,24 @@ Phase 2 qualification (CI [35011165971](https://github.com/chriswout/dropimg.io/
 
 Drops (production product): unchanged. SVG/AVIF/ICO/fonts remain Drop-rejected.
 
-Media Phase 2 (git; staging apply via CI): `/app/media`, project keys, asset delete, idempotency, concurrent replace, upload intents, Media MCP tools.
+Media Phase 2, Web Asset formats (KON-53–57), agent skill (KON-59), website repositioning (KON-79–81).
 
-Web Asset Format Expansion (git; KON-53–57):
+Paid Web Assets launch:
 
-- `asset_versions.asset_type` (`image` \| `vector` \| `icon` \| `font`) with DEFAULT `image` for existing rasters
-- Authoritative byte inspection (`inspectWebAsset`); client MIME/filename ignored
-- AVIF (`image/avif`), ICO (`image/x-icon`), sanitized SVG (`image/svg+xml`), WOFF/WOFF2
-- Replace may change MIME on the same extensionless alias
-- SVG fail-closed sanitizer (`@xmldom/xmldom`); only sanitized bytes are stored
-- SVG delivery CSP + `nosniff`; fonts CORS for `@font-face`
-- MCP compact rows expose `asset_type` + `mime`; no format-specific tools
-- OpenAPI + REST/Cursor/Claude/Codex/MCP guides updated
-- Commits: `f8a69e3` (formats + SVG ingest), `6eb8107` (docs + staging record)
-
-Web Assets agent skill (KON-59):
-
-- Canonical: [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md)
-- Decision table Drops vs Media vs unsupported; replace-in-place; no invented `/m/...` URLs
-
-Website repositioning (KON-79–KON-81):
-
-- Homepage leads with Web Assets; Drop uploader stays on the same page
-- Public `/web-assets`, `/pricing`, `/drops`; `/developers` onboarding for Cursor / Claude Code / Codex / MCP
-- Display-only pricing (Free $0 / Developer $9 / Pro $29); checkout hidden while production Media is off
-- Acquisition funnel events on Analytics Engine; `GET /api/site-config` for feature-flag CTAs
+- Canonical plans + server entitlements
+- Distinct PayPal Web Assets SKUs (sandbox + live)
+- Project / storage / key / delivery quotas on app, REST, and MCP
+- Usage UI in `/app/media`; Drops vs Web Assets billing on `/app/billing`
+- Live pricing CTAs (`Start free` / `Choose Developer` / `Choose Pro`)
+- Production D1 `0013`–`0016`, Media flags on, Worker `9f9f0c07-9f1a-438c-a246-1d27f33cff87`
 
 ---
 
 ## Milestone
 
-**6. Website Repositioning & Launch Surface (KON-79–KON-81)**
+**7. Paid Web Assets production launch**
 
-Local/CI gates: **57 files, 413 tests, 0 failed**. Playwright marketing + Drop regression: pass. Production Media remains off. Do not apply `0013`/`0014`/`0015` to production. Do not start KON-60 marketplace submissions.
-
----
-
-## Product decisions (this pass)
-
-| Topic | Decision |
-|---|---|
-| Taxonomy | Coarse `asset_type` on versions, not one type per MIME |
-| ICO MIME | Canonical `image/x-icon` |
-| Replace MIME | Allowed. Alias is a role (`branding/logo`), not an extension |
-| SVG store | Sanitized form only; input hash may differ from stored hash |
-| SVG host | Stay on `dropimg.io/m/...` this pass. Dedicated asset hostname = future hardening |
-| AVIF privacy | Container/dimension validation only; no AV1 decode or EXIF strip in the Worker |
-| Fonts | WOFF/WOFF2 only (no TTF/OTF/EOT). 2 MB cap. Null width/height |
-| MCP | Same four asset tools; HTTP ingest detects format |
+Local/CI gates at feature commit: **59 files, 434 tests, 0 failed**. Production Media is on. KON-60 marketplace is **not** started. KON-41 remains open.
 
 ---
 
@@ -153,7 +167,8 @@ Local/CI gates: **57 files, 413 tests, 0 failed**. Playwright marketing + Drop r
 
 | Rank | Issue |
 |---|---|
-| HIGH | GitHub Actions `CLOUDFLARE_API_TOKEN` is still a Wrangler OAuth token, not a dashboard-created API token. Wrangler OAuth cannot mint user API tokens (9109). The stopgap OAuth used for Phase 2 expires `2026-09-15T19:38:26Z`. Creating a durable token requires Cloudflare dashboard login (passkey). CI now fails fast via `wrangler whoami` before migrate/deploy. |
+| HIGH | GitHub Actions `CLOUDFLARE_API_TOKEN` is still a Wrangler OAuth token, not a dashboard-created API token. Wrangler OAuth cannot mint user API tokens (9109). Production launch used local Wrangler OAuth. CI still fails fast via `wrangler whoami` before migrate/deploy. KON-41. |
+| MEDIUM | Live PayPal Developer/Pro subscriptions were not completed end-to-end (no real $9/$90/$29/$290 charges). Checkout URL minting works; webhook/entitlement coverage is CI. |
 
 ### Security
 
@@ -168,28 +183,33 @@ Local/CI gates: **57 files, 413 tests, 0 failed**. Playwright marketing + Drop r
 | Rank | Issue |
 |---|---|
 | LOW | Production moderation is shadow-only. |
-| INFORMATIONAL | Linear MCP is not connected in this environment; KON-79–KON-81 were not updated from here. KON-41 (Cloudflare CI token 9109) remains open. |
+| INFORMATIONAL | Linear MCP is not connected in this environment; launch issues were not updated from here. |
 
-Isolation (`images` / cron / `o/` vs media tables / `p/`) remains intact. Asset delete does not use temporary `images` cleanup.
+Isolation (`images` / cron / `o/` vs media tables / `p/`) remains intact.
 
 ---
 
-## Public website (KON-79–KON-81)
-
-The marketing site is generated from `marketing/*` via `npm run generate:pages`. CSS source of truth is `client/styles.css` (`generate:site-assets` copies it to `public/site.css`).
+## Public website
 
 | Route | Role |
 |---|---|
 | `/` | Hybrid homepage: Web Assets hero + demo + existing Drop uploader |
 | `/web-assets` | Product page (English) |
-| `/pricing` | Display-only Web Assets plans; no checkout |
+| `/pricing` | Live Web Assets plans + PayPal checkout for Developer/Pro |
 | `/developers` | Agent onboarding (Cursor / Claude Code / Codex / MCP) plus Drop API |
 | `/drops` | Dedicated temporary Drop page; homepage widget remains |
-| `/app/media` | Authenticated app (404 in production while `MEDIA_ENABLED=false`) |
+| `/app/media` | Authenticated Media app + usage |
+| `/app/billing` | Drops Pro and Web Assets shown separately |
 
-CTAs with `data-media-cta` call `GET /api/site-config`. If Media is off, they stay on `/web-assets` and never hit `/app/media`. Production `MEDIA_ENABLED` is still `false`.
+---
 
-Funnel events (Cloudflare Analytics Engine, no secrets/paths/tokens): `homepage_viewed`, `homepage_web_assets_cta_clicked`, `homepage_drop_started`, `homepage_drop_completed`, `pricing_viewed`, `pricing_plan_clicked`, `developer_onboarding_viewed`, `agent_connect_started`, `agent_connect_completed`, `media_project_created`, `media_first_asset_created`, `media_stable_url_returned`, `media_asset_replaced`.
+## Observability
+
+Cloudflare Analytics Engine (`dropimg_events`). New Web Assets events:
+
+`web_assets_checkout_started`, `web_assets_checkout_completed`, `web_assets_subscription_activated`, `web_assets_subscription_cancelled`, `web_assets_plan_upgraded`, `web_assets_plan_downgraded`, `web_assets_quota_warning`, `web_assets_quota_blocked`
+
+Existing: `media_project_created`, `media_first_asset_created`, `media_stable_url_returned`, `media_asset_replaced`, `media_asset_delivered`, plus Drop funnel events. No secrets/paths/tokens.
 
 ---
 
@@ -206,9 +226,7 @@ Funnel events (Cloudflare Analytics Engine, no secrets/paths/tokens): `homepage_
 7. Build
 8. Deploy Worker
 
-Production is `workflow_dispatch` only.
-
-`0015` is applied on staging (this pass). `0014` was already applied. Do not apply `0013`/`0014`/`0015` to production.
+Production is `workflow_dispatch` only. Until KON-41 is fixed, production deploys are local Wrangler.
 
 R2 lifecycle JSON has **no** `p/` delete rule. Do not add one.
 
@@ -216,13 +234,13 @@ R2 lifecycle JSON has **no** `p/` delete rule. Do not add one.
 
 ## Next Milestone
 
-**7. Agent Skill & MCP Marketplace Packaging / KON-60** of the existing `/mcp` server plus [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md). Do not add a second MCP endpoint. Do not start marketplace submissions until this packaging pass.
+**8. Agent Skill & MCP Marketplace Packaging / KON-60** of the existing `/mcp` server plus [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md). Do not add a second MCP endpoint. Do not start marketplace submissions until that packaging pass. Do not mark marketplace work complete.
 
-Production Media remains **NO-GO**. Mint a durable Cloudflare API token for Actions (KON-41), then a separate production enablement pass (`MEDIA_ENABLED`, D1 `0013`/`0014`/`0015`) only after explicit approval.
+Also remaining: mint a durable Cloudflare API token for Actions (KON-41). Live paid-plan charges still need a controlled confirmation when you want them.
 
 ### Explicitly Deferred
 
-Custom domains, dedicated asset hostname, teams/seats, SSO, transforms, AVIF decode/strip, TTF/OTF, resize presets, Queues, CDN analytics, usage billing, storage tiers, multi-region, second Worker, Durable Objects, external database, new PayPal SKUs, PDF/video/audio/archives.
+Custom domains, dedicated asset hostname, teams/seats, SSO, transforms, AVIF decode/strip, TTF/OTF, resize presets, Queues, CDN analytics, stock photos, video, PDF, generic blob storage, image generation, marketplace submissions.
 
 ---
 

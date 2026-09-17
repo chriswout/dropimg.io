@@ -196,9 +196,9 @@
         "PAYPAL_WA_DEVELOPER_ANNUAL": "P-09529537J9964681BNKV6BLQ",
         "PAYPAL_WA_PRO_MONTHLY": "P-0B2063130F924444DNKV6BLQ",
         "PAYPAL_WA_PRO_ANNUAL": "P-8GN492717K657513VNKV6BLQ",
-        "MEDIA_ENABLED": "false",
-        "MEDIA_CONTROL_PLANE_ENABLED": "false",
-        "MEDIA_DELIVERY_ENABLED": "false"
+        "MEDIA_ENABLED": "true",
+        "MEDIA_CONTROL_PLANE_ENABLED": "true",
+        "MEDIA_DELIVERY_ENABLED": "true"
       },
       "send_email": [
         {
