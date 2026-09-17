@@ -21,6 +21,10 @@ const workerConfig = {
     PAYPAL_ENV: "sandbox",
     PAYPAL_PLAN_MONTHLY: "P-monthly",
     PAYPAL_PLAN_ANNUAL: "P-annual",
+    PAYPAL_WA_DEVELOPER_MONTHLY: "P-wa-dev-m",
+    PAYPAL_WA_DEVELOPER_ANNUAL: "P-wa-dev-y",
+    PAYPAL_WA_PRO_MONTHLY: "P-wa-pro-m",
+    PAYPAL_WA_PRO_ANNUAL: "P-wa-pro-y",
     AUTH_FROM_EMAIL: "DropIMG <signin@dropimg.io>",
   },
 } as const;
@@ -277,6 +281,39 @@ describe("PayPal billing webhook", () => {
       .bind("I-ooo")
       .first<{ status: string }>();
     expect(row?.status).toBe("canceled");
+  });
+
+  it("stores Web Assets as a separate product from Drop Pro", async () => {
+    const { env, now } = await seedUser("wa-payer@example.com");
+    const body = JSON.stringify({
+      id: "WH-wa-dev",
+      event_type: "BILLING.SUBSCRIPTION.ACTIVATED",
+      create_time: isoFromUnix(now),
+      resource: subscriptionResource({
+        id: "I-wa-dev",
+        plan_id: "P-wa-dev-m",
+      }),
+    });
+    const res = await signedRequest(body);
+    expect(res.status).toBe(200);
+
+    const wa = await env.DB.prepare(
+      `SELECT product, price_id, status FROM subscriptions
+       WHERE provider_subscription_id = ?`,
+    )
+      .bind("I-wa-dev")
+      .first<{ product: string; price_id: string; status: string }>();
+    expect(wa?.product).toBe("web_assets");
+    expect(wa?.price_id).toBe("P-wa-dev-m");
+    expect(wa?.status).toBe("active");
+
+    const drops = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM subscriptions
+       WHERE user_id = ? AND product = 'drops_pro'`,
+    )
+      .bind(USER_ID)
+      .first<{ n: number }>();
+    expect(Number(drops?.n)).toBe(0);
   });
 
   it("rejects a bad signature", async () => {

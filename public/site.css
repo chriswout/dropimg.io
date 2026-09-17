@@ -5198,6 +5198,78 @@ html[data-theme="dark"] .auth-google-btn .auth-google-btn-dark {
   list-style: none;
 }
 
+.stable-body {
+  margin: 0 0 1.15rem;
+  color: var(--text-soft);
+  max-width: 36rem;
+}
+
+.stable-board {
+  margin: 0;
+}
+
+.stable-swap {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem 0.85rem;
+  margin: 0.85rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.stable-v {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.stable-v-label {
+  font-size: 0.7rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--brand-text);
+}
+
+.stable-arrow {
+  color: var(--brand-text);
+}
+
+.price-teaser-note {
+  margin: 0.45rem 0 0;
+  color: var(--text-soft);
+  font-size: 0.92rem;
+}
+
+.security-facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin: 1.1rem 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.security-facts li {
+  padding: 0.95rem 1rem;
+  border-radius: var(--radius-lg);
+  background: var(--surface-elevated);
+  border: 1px solid var(--border);
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.4;
+}
+
+.security-note {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.92rem;
+  max-width: 40rem;
+}
+
 .formats-intro {
   font-size: 1.08rem;
   color: var(--text-soft);
@@ -5238,7 +5310,6 @@ html[data-theme="dark"] .auth-google-btn .auth-google-btn-dark {
   background: transparent;
 }
 
-.security-block ul,
 .onboard-steps {
   padding-left: 1.2rem;
 }
@@ -5387,6 +5458,48 @@ html[data-theme="dark"] .auth-google-btn .auth-google-btn-dark {
   margin-top: 1rem;
 }
 
+.price-interval {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.price-interval [aria-checked="true"] {
+  border-color: var(--text);
+}
+
+.usage-list {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.usage-list li {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.usage-list li span:first-child {
+  color: var(--text-soft);
+  font-size: 0.9rem;
+}
+
+.usage-bar {
+  display: block;
+  height: 0.4rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 12%, transparent);
+  overflow: hidden;
+}
+
+.usage-bar > span {
+  display: block;
+  height: 100%;
+  background: var(--text);
+}
+
 @media (max-width: 860px) {
   .product-nav {
     display: none;
@@ -5395,7 +5508,8 @@ html[data-theme="dark"] .auth-google-btn .auth-google-btn-dark {
   .demo-layout,
   .compare-grid,
   .agent-steps,
-  .price-grid {
+  .price-grid,
+  .security-facts {
     grid-template-columns: 1fr;
   }
 

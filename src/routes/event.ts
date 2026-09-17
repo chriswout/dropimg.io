@@ -32,6 +32,8 @@ const CLIENT_EVENTS = new Set<AnalyticsEvent>([
   "pricing_plan_clicked",
   "developer_onboarding_viewed",
   "agent_connect_started",
+  "web_assets_checkout_started",
+  "web_assets_checkout_completed",
 ]);
 
 export const eventRoutes = new Hono<Env>();

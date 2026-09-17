@@ -772,6 +772,7 @@ setupHeaderScroll();
 setupEntrance();
 setupLangSuggest();
 setupMediaCtas();
+setupPricingCheckout();
 setupTrackedCtas();
 if (document.getElementById("dropzone")) {
   setupUploader();
@@ -802,6 +803,58 @@ function setupTrackedCtas() {
       }
     });
   });
+}
+
+function setupPricingCheckout() {
+  if (pageIntent !== "pricing") return;
+  const buttons = document.querySelectorAll<HTMLButtonElement>("[data-wa-checkout]");
+  const intervalBtns = document.querySelectorAll<HTMLButtonElement>("[data-select-interval]");
+  if (!buttons.length) return;
+
+  const selectInterval = (interval: "monthly" | "annual") => {
+    intervalBtns.forEach((btn) => {
+      btn.setAttribute(
+        "aria-checked",
+        btn.dataset.selectInterval === interval ? "true" : "false",
+      );
+    });
+    buttons.forEach((btn) => btn.setAttribute("data-interval", interval));
+  };
+  intervalBtns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      selectInterval(btn.dataset.selectInterval === "annual" ? "annual" : "monthly");
+    });
+  });
+
+  buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const plan = btn.getAttribute("data-wa-checkout") === "pro" ? "pro" : "developer";
+      const interval = btn.getAttribute("data-interval") === "annual" ? "annual" : "monthly";
+      void startWebAssetsCheckout(plan, interval);
+    });
+  });
+}
+
+async function startWebAssetsCheckout(plan: "developer" | "pro", interval: "monthly" | "annual") {
+  trackEvent("web_assets_checkout_started", { plan, interval, reason: plan });
+  let res: Response;
+  try {
+    res = await fetch("/api/billing/web-assets/checkout", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ plan, interval }),
+    });
+  } catch {
+    return;
+  }
+  if (res.status === 401) {
+    location.href = `/login?next=${encodeURIComponent("/pricing")}`;
+    return;
+  }
+  if (!res.ok) return;
+  const data = (await res.json()) as { url?: string };
+  if (data.url) location.href = data.url;
 }
 
 function setupMediaCtas() {

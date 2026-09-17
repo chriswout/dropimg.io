@@ -36,6 +36,11 @@ import {
   loadLiveProject,
   roleCanWrite,
 } from "../lib/tenancy";
+import {
+  assertCanCreateProject,
+  assertCanCreateProjectKey,
+  loadWebAssetsUsage,
+} from "../lib/web-assets-quota";
 
 type Env = {
   Bindings: Cloudflare.Env;
@@ -90,6 +95,10 @@ mediaApiRoutes.post("/api/v1/media/orgs/:orgId/projects", async (c) => {
   if (actor.kind !== "session" || !roleCanWrite(actor.role)) {
     return mediaApiError(403, "forbidden", "Forbidden", requestId);
   }
+  const quota = await assertCanCreateProject(c.env, actor.org.id);
+  if (!quota.ok) {
+    return mediaApiError(quota.status, quota.code, quota.error, requestId);
+  }
   const body = await readJson(c.req.raw);
   const slug = typeof body?.slug === "string" ? body.slug : "";
   const name = typeof body?.name === "string" ? body.name : slug;
@@ -103,6 +112,15 @@ mediaApiRoutes.post("/api/v1/media/orgs/:orgId/projects", async (c) => {
   track(c.env.ANALYTICS, "media_project_created", { client: "web" });
   const origin = new URL(c.req.url).origin;
   return mediaJson(201, { project: serializeProject(created, origin, actor.org.slug) }, requestId);
+});
+
+mediaApiRoutes.get("/api/v1/media/orgs/:orgId/usage", async (c) => {
+  const requestId = mediaRequestId(c.req.raw);
+  const actor = await requireOrg(c.req.raw, c.env.DB, c.req.param("orgId"), "read");
+  if (actor instanceof Response) return actor;
+  const usage = await loadWebAssetsUsage(c.env, actor.org.id);
+  if (!usage) return mediaApiError(404, "not_found", "Not found", requestId);
+  return mediaJson(200, { usage }, requestId);
 });
 
 mediaApiRoutes.get("/api/v1/media/orgs/:orgId/projects", async (c) => {
@@ -128,6 +146,10 @@ mediaApiRoutes.post("/api/v1/media/projects/:projectId/keys", async (c) => {
   if (actor instanceof Response) return actor;
   if (actor.kind !== "session") {
     return mediaApiError(403, "forbidden", "Forbidden", requestId);
+  }
+  const quota = await assertCanCreateProjectKey(c.env, actor.org.id);
+  if (!quota.ok) {
+    return mediaApiError(quota.status, quota.code, quota.error, requestId);
   }
   const body = await readJson(c.req.raw);
   const created = await createProjectCredential(c.env.DB, {

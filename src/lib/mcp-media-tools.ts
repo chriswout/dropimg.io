@@ -24,7 +24,7 @@ import {
   loadMembership,
   roleCanWrite,
 } from "./tenancy";
-import type { McpToolContext } from "./mcp-tools";
+import { assertCanCreateProject } from "./web-assets-quota";
 
 export type MediaMcpContext = McpToolContext & {
   mediaAuth: ProjectCredentialAuth | null;
@@ -152,6 +152,8 @@ export async function mcpCreateMediaProject(
     return "A project key cannot create projects. Sign in with an account token or OAuth.";
   }
   const org = await ensurePersonalOrg(input.env.DB, input.auth.userId);
+  const quota = await assertCanCreateProject(input.env, org.id);
+  if (!quota.ok) return quota.error;
   const created = await createProject(input.env.DB, {
     orgId: org.id,
     slug: args.slug,

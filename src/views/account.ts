@@ -487,6 +487,12 @@ type SettingsProps = {
   plan: "free" | "pro";
   periodEnd: number | null;
   cancelAtPeriodEnd: boolean;
+  webAssets?: {
+    plan: "free" | "developer" | "pro";
+    interval: "monthly" | "annual" | null;
+    periodEnd: number | null;
+    cancelAtPeriodEnd: boolean;
+  };
   identities?: Array<"google" | "github">;
   socialEnabled?: { google?: boolean; github?: boolean };
   linkError?: string;
@@ -515,8 +521,20 @@ export function renderBillingPage(opts: SettingsProps): string {
         : t.renews(formatDay(opts.periodEnd, opts.locale))
       : "";
 
+  const wa = opts.webAssets;
+  const waLabel =
+    wa?.plan === "developer" ? "Developer — $9/month" : wa?.plan === "pro" ? "Pro — $29/month" : "Free — $0";
+  const waPeriod =
+    wa?.periodEnd && wa.plan !== "free"
+      ? wa.cancelAtPeriodEnd
+        ? t.ends(formatDay(wa.periodEnd, opts.locale))
+        : t.renews(formatDay(wa.periodEnd, opts.locale))
+      : "";
+  const waCadence =
+    wa?.interval === "annual" ? "Annual" : wa?.interval === "monthly" ? "Monthly" : "";
+
   const main = `<section class="settings-card">
-      <p class="settings-eyebrow">${esc(t.plan)}</p>
+      <p class="settings-eyebrow">Drops</p>
       <p class="settings-value settings-value-lg">${esc(opts.plan === "pro" ? t.planPro : t.planFree)}</p>
       ${period ? `<p class="account-muted">${esc(period)}</p>` : ""}
       <p class="account-muted">${esc(opts.plan === "pro" ? t.manageHint : t.freePlanHint)}</p>
@@ -527,6 +545,22 @@ export function renderBillingPage(opts: SettingsProps): string {
             : `<a class="btn primary" href="/pro">${esc(t.viewPlans)}</a>`
         }
       </div>
+    </section>
+    <section class="settings-card">
+      <p class="settings-eyebrow">Web Assets</p>
+      <p class="settings-value settings-value-lg">${esc(waLabel)}</p>
+      ${waCadence ? `<p class="account-muted">${esc(waCadence)}</p>` : ""}
+      ${waPeriod ? `<p class="account-muted">${esc(waPeriod)}</p>` : ""}
+      <p class="account-muted">Projects, storage, and deliveries for permanent /m/… URLs. Separate from Drop Pro.</p>
+      <div class="settings-actions">
+        ${
+          wa && wa.plan !== "free"
+            ? `<button type="button" class="btn secondary" id="account-portal-wa">${esc(t.manage)}</button>
+               <a class="btn secondary" href="/pricing">Change plan</a>`
+            : `<a class="btn primary" href="/pricing">View Web Assets plans</a>`
+        }
+      </div>
+      <p id="wa-billing-status" class="account-muted" hidden></p>
     </section>`;
 
   return renderAppShellPage({
@@ -979,7 +1013,23 @@ const PORTAL_SCRIPT = `
         if (body.url) location.href = body.url;
       }
       document.getElementById("account-portal")?.addEventListener("click", () => { void openPortal(); });
+      document.getElementById("account-portal-wa")?.addEventListener("click", () => { void openPortal(); });
       document.getElementById("delete-fail-billing")?.addEventListener("click", () => { void openPortal(); });
+      const params = new URLSearchParams(location.search);
+      if (params.get("checkout") === "success" && params.get("product") === "web_assets") {
+        const status = document.getElementById("wa-billing-status");
+        if (status) {
+          status.hidden = false;
+          status.textContent = "Payment received. Activating Web Assets…";
+        }
+        const subscriptionId = params.get("subscription_id");
+        void fetch("/api/billing/web-assets/sync", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(subscriptionId ? { subscription_id: subscriptionId } : {}),
+        }).then((res) => res.ok ? location.replace("/app/media") : null);
+      }
     })();
   `;
 

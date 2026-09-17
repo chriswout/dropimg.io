@@ -1,9 +1,10 @@
 import { Hono, type Context } from "hono";
 import { IMAGE_CACHE_SECONDS } from "../types";
 import { mediaAssetResponseHeaders } from "../lib/headers";
-import { mediaEnabled } from "../lib/media-config";
+import { mediaDeliveryEnabled } from "../lib/media-config";
 import { mediaRequestId } from "../lib/media-http";
 import { isUuid, parseMediaDeliveryPath } from "../lib/media-path";
+import { recordSuccessfulAssetGet } from "../lib/media-delivery-meter";
 import { isMediaMime } from "../lib/web-assets";
 
 type Env = {
@@ -14,7 +15,7 @@ export const mediaDeliveryRoutes = new Hono<Env>();
 
 mediaDeliveryRoutes.on(["GET", "HEAD"], "/m/*", (c) => serveMediaAlias(c));
 mediaDeliveryRoutes.options("/m/*", (c) => {
-  if (!mediaEnabled(c.env)) return c.body(null, 404);
+  if (!mediaDeliveryEnabled(c.env)) return c.body(null, 404);
   return new Response(null, {
     status: 204,
     headers: {
@@ -35,7 +36,7 @@ async function serveMediaAlias(c: Context<Env>): Promise<Response> {
       headers: { "X-Request-Id": requestId },
     });
 
-  if (!mediaEnabled(c.env)) return notFound();
+  if (!mediaDeliveryEnabled(c.env)) return notFound();
 
   const parsed = parseMediaDeliveryPath(new URL(c.req.url).pathname);
   if (!parsed) return notFound();
@@ -45,7 +46,7 @@ async function serveMediaAlias(c: Context<Env>): Promise<Response> {
 
   const row = versionId
     ? await c.env.DB.prepare(
-        `SELECT v.r2_key, v.mime, v.id AS version_id, al.path
+        `SELECT v.r2_key, v.mime, v.id AS version_id, al.path, o.id AS org_id
          FROM organizations o
          JOIN projects p ON p.org_id = o.id AND p.deleted_at IS NULL
          JOIN asset_aliases al ON al.project_id = p.id AND al.org_id = o.id AND al.deleted_at IS NULL
@@ -56,9 +57,9 @@ async function serveMediaAlias(c: Context<Env>): Promise<Response> {
          LIMIT 1`,
       )
         .bind(versionId, parsed.orgSlug, parsed.projectSlug, parsed.alias)
-        .first<{ r2_key: string; mime: string; version_id: string; path: string }>()
+        .first<{ r2_key: string; mime: string; version_id: string; path: string; org_id: string }>()
     : await c.env.DB.prepare(
-        `SELECT v.r2_key, v.mime, v.id AS version_id, al.path
+        `SELECT v.r2_key, v.mime, v.id AS version_id, al.path, o.id AS org_id
          FROM organizations o
          JOIN projects p ON p.org_id = o.id AND p.deleted_at IS NULL
          JOIN asset_aliases al ON al.project_id = p.id AND al.org_id = o.id AND al.deleted_at IS NULL
@@ -69,7 +70,7 @@ async function serveMediaAlias(c: Context<Env>): Promise<Response> {
          LIMIT 1`,
       )
         .bind(parsed.orgSlug, parsed.projectSlug, parsed.alias)
-        .first<{ r2_key: string; mime: string; version_id: string; path: string }>();
+        .first<{ r2_key: string; mime: string; version_id: string; path: string; org_id: string }>();
 
   if (!row) return notFound();
 
@@ -104,5 +105,6 @@ async function serveMediaAlias(c: Context<Env>): Promise<Response> {
     return new Response(null, { status: 200, headers });
   }
 
+  await recordSuccessfulAssetGet(c.env, c.executionCtx, row.org_id);
   return new Response(object.body, { status: 200, headers });
 }

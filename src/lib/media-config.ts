@@ -1,11 +1,37 @@
-export type MediaEnv = { MEDIA_ENABLED?: string };
+export type MediaEnv = {
+  MEDIA_ENABLED?: string;
+  MEDIA_CONTROL_PLANE_ENABLED?: string;
+  MEDIA_DELIVERY_ENABLED?: string;
+};
 
+function flagValue(raw: string | undefined): boolean | null {
+  if (raw === "true") return true;
+  if (raw === "false") return false;
+  return null;
+}
+
+/**
+ * Ingest, `/app/media`, REST, MCP, project keys.
+ * Explicit MEDIA_CONTROL_PLANE_ENABLED wins; otherwise MEDIA_ENABLED.
+ */
+export function mediaControlPlaneEnabled(env: MediaEnv): boolean {
+  return flagValue(env.MEDIA_CONTROL_PLANE_ENABLED) ?? env.MEDIA_ENABLED === "true";
+}
+
+/**
+ * Public GET /m/… delivery.
+ * Can stay on while the control plane is rolled back so live aliases keep serving.
+ */
+export function mediaDeliveryEnabled(env: MediaEnv): boolean {
+  return flagValue(env.MEDIA_DELIVERY_ENABLED) ?? env.MEDIA_ENABLED === "true";
+}
+
+/** Control-plane alias used by existing API/MCP/app gates. */
 export function mediaEnabled(env: MediaEnv): boolean {
-  return env.MEDIA_ENABLED === "true";
+  return mediaControlPlaneEnabled(env);
 }
 
 /** Phase 1 catalog default. Prices stay out of schema. */
-export const PHASE1_PERM_STORAGE_BYTES = 5 * 1024 * 1024 * 1024;
 export const PHASE1_PERM_MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
 export const MEDIA_SCOPES = ["media:read", "media:write"] as const;

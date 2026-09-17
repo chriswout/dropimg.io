@@ -238,7 +238,7 @@
             Dê ao Cursor, Claude, Codex e outros agentes URLs estáveis para imagens, SVG, ícones e fontes web. Troque o arquivo sem mudar o código.
           </p>
           <div class="hero-actions">
-            <a class="btn primary" href="/web-assets" data-media-cta="create" data-track="homepage_web_assets_cta">Criar um projeto de Web Assets</a>
+            <a class="btn primary" href="/web-assets" data-media-cta="create" data-cta-soon="Web Assets em breve" data-track="homepage_web_assets_cta">Criar um projeto de Web Assets</a>
             <a class="btn secondary" href="#dropzone">Tentar um Drop temporário</a>
           </div>
           <p class="works-with">Funciona com Cursor · Claude Code · Codex · MCP</p>
@@ -278,16 +278,23 @@
           <section class="stable-block" aria-labelledby="stable-heading" data-enter>
             <p class="feature-kicker">Por que isso importa</p>
             <h2 id="stable-heading">URLs semânticas estáveis</h2>
-            <p>As URLs da aplicação são por papel e sem extensão. Troque o arquivo — até de JPEG para AVIF — e o path fica.</p>
-            <p class="demo-url"><code>/m/acme/site/homepage/hero</code></p>
-            <p class="stable-versions">Version 1 <code>hero-v1.avif</code> → Version 2 <code>hero-v2.webp</code></p>
-            <ul class="path-examples">
-              <li><code>branding/logo</code></li>
-              <li><code>branding/favicon</code></li>
-              <li><code>homepage/hero</code></li>
-              <li><code>products/widget/front</code></li>
-              <li><code>fonts/inter/bold</code></li>
-            </ul>
+            <p class="stable-body">Troque o arquivo — até de JPEG para AVIF — e o path fica.</p>
+            <div class="stable-board">
+              <p class="demo-url-bar">
+                <svg class="demo-lock" viewBox="0 0 24 24" width="18" height="18" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  aria-hidden="true" focusable="false">
+                  <rect x="5" y="11" width="14" height="10" rx="2" />
+                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                </svg>
+                <code>/m/acme/site/homepage/hero</code>
+              </p>
+              <p class="stable-swap">
+                <span class="stable-v"><span class="stable-v-label">v1</span> <code>hero-v1.avif</code></span>
+                <span class="stable-arrow" aria-hidden="true">→</span>
+                <span class="stable-v"><span class="stable-v-label">v2</span> <code>hero-v2.webp</code></span>
+              </p>
+            </div>
           </section>
           <section class="agents-block" aria-labelledby="agents-heading" data-enter>
             <h2 id="agents-heading">Feito para agentes de código</h2>
@@ -522,14 +529,17 @@
             <article class="price-card" data-tier="free">
               <h3>Free</h3>
               <p class="price-amount">$0</p>
+              <p class="price-teaser-note">3 projects</p>
             </article>
             <article class="price-card" data-tier="developer">
               <h3>Developer</h3>
               <p class="price-amount">$9<span>/month</span></p>
+              <p class="price-teaser-note">10 GB · 2M deliveries</p>
             </article>
             <article class="price-card" data-tier="pro">
               <h3>Pro</h3>
               <p class="price-amount">$29<span>/month</span></p>
+              <p class="price-teaser-note">100 GB · 10M deliveries</p>
             </article>
             </div>
             <p class="pricing-teaser-cta">
@@ -541,14 +551,13 @@
         <div class="home-band home-band-quiet">
           <section class="security-block" aria-labelledby="security-heading" data-enter>
             <h2 id="security-heading">Público, inspecionado no ingest</h2>
-            <ul>
-              <li>Inspeção de arquivo no servidor</li>
+            <ul class="security-facts">
+              <li>Inspecionado no ingest — o MIME do cliente não vale</li>
               <li>SVG só é gravado sanitizado</li>
-              <li>Credenciais por projeto</li>
-              <li>Versões imutáveis atrás de aliases estáveis</li>
+              <li>Versões imutáveis atrás de um alias estável</li>
               <li>Sem executáveis nem código-fonte</li>
             </ul>
-            <p>URLs públicas /m/… são públicas. Quem tem a URL baixa o arquivo. Isso não é armazenamento confidencial.</p>
+            <p class="security-note">URLs públicas /m/… são públicas. Quem tem a URL baixa o arquivo. Isso não é armazenamento confidencial.</p>
           </section>
 
         <section class="below" aria-label="Sobre o dropimg.io">
@@ -658,7 +667,7 @@
           <section class="home-close" aria-labelledby="closing-heading">
             <h2 id="closing-heading">Dê ao seu agente web assets permanentes.</h2>
             <div class="hero-actions">
-              <a class="btn primary" href="/web-assets" data-media-cta="create" data-track="homepage_web_assets_cta">Criar um projeto</a>
+              <a class="btn primary" href="/web-assets" data-media-cta="create" data-cta-soon="Web Assets em breve" data-track="homepage_web_assets_cta">Criar um projeto</a>
               <a class="btn secondary" href="/developers">Ler a documentação</a>
             </div>
           </section>

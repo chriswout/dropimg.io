@@ -50,13 +50,25 @@ app. Amounts match the site: €2.99 / month and €24.99 / year, tax included.
 | Monthly, €2.99 EUR | `P-15G50054531033903NKPD7ZI` |
 | Annual, €24.99 EUR | `P-7F863114YW191224BNKPD7ZQ` |
 
-Both plan IDs are in `env.staging.vars` and local `.dev.vars`. Staging still
+### Sandbox Web Assets (USD)
+
+Distinct product from Drop Pro. Created 2026-09-17.
+
+| Thing | Sandbox ID |
+|-------|------------|
+| Product `DropIMG Web Assets` | `PROD-5XM483746R8533505` |
+| Developer monthly, $9 | `P-8LH706826P153202CNKV6BCI` |
+| Developer annual, $90 | `P-8VU25673PE447042MNKV6BCQ` |
+| Pro monthly, $29 | `P-3JV643758U3795743NKV6BCQ` |
+| Pro annual, $290 | `P-6M302061UF3384325NKV6BCY` |
+
+Both Drop Pro plan IDs are in `env.staging.vars` and local `.dev.vars`. Staging still
 needs `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, and `PAYPAL_WEBHOOK_ID` as
 secrets.
 
 ## Live catalog
 
-Same product and amounts, created against the live REST app.
+Same Drop Pro product and amounts, created against the live REST app.
 
 | Thing | Live ID |
 |-------|---------|
@@ -64,6 +76,16 @@ Same product and amounts, created against the live REST app.
 | Monthly, €2.99 EUR | `P-3RL00862KD8203139NKPLFSI` |
 | Annual, €24.99 EUR | `P-9RD66268708840634NKPLFSQ` |
 | Webhook → `https://dropimg.io/api/billing/paypal/webhook` | `5MS36084EP647103P` |
+
+### Live Web Assets (USD)
+
+| Thing | Live ID |
+|-------|---------|
+| Product `DropIMG Web Assets` | `PROD-8JG73073F0622273B` |
+| Developer monthly, $9 | `P-65K96128FP9176350NKV6BLQ` |
+| Developer annual, $90 | `P-09529537J9964681BNKV6BLQ` |
+| Pro monthly, $29 | `P-0B2063130F924444DNKV6BLQ` |
+| Pro annual, $290 | `P-8GN492717K657513VNKV6BLQ` |
 
 ## Configuration
 
@@ -73,8 +95,12 @@ Same product and amounts, created against the live REST app.
 | secret | `PAYPAL_CLIENT_SECRET` | REST app secret |
 | secret | `PAYPAL_WEBHOOK_ID` | Dashboard webhook id for `verify-webhook-signature` |
 | var | `PAYPAL_ENV` | `sandbox` or `live` only — picks the API host |
-| var | `PAYPAL_PLAN_MONTHLY` | Plan id `P-…` |
-| var | `PAYPAL_PLAN_ANNUAL` | Plan id `P-…` |
+| var | `PAYPAL_PLAN_MONTHLY` | Drop Pro plan id `P-…` |
+| var | `PAYPAL_PLAN_ANNUAL` | Drop Pro plan id `P-…` |
+| var | `PAYPAL_WA_DEVELOPER_MONTHLY` | Web Assets Developer $9 |
+| var | `PAYPAL_WA_DEVELOPER_ANNUAL` | Web Assets Developer $90 |
+| var | `PAYPAL_WA_PRO_MONTHLY` | Web Assets Pro $29 |
+| var | `PAYPAL_WA_PRO_ANNUAL` | Web Assets Pro $290 |
 | var | `BILLING_ENABLED` | `"true"` to open checkout |
 
 `sandbox` talks to `https://api-m.sandbox.paypal.com`. `live` talks to

@@ -37,7 +37,17 @@ SVG is parsed with a real XML sanitizer (not regex). Active constructs (`script`
 
 AVIF is validated as ISO BMFF (`ftyp` brand `avif`/`avis` + `ispe` dimensions). The Worker does not decode AV1, so EXIF-style stripping is not applied to AVIF. PNG/JPEG/WebP/GIF still go through the existing metadata strip + moderation path.
 
-WOFF/WOFF2 are identified by container bytes. TTF, OTF, and EOT are rejected. Fonts have a 2 MB cap; SVG and ICO 1 MB; overall Media upload cap remains 10 MB. Storage quota is unchanged.
+WOFF/WOFF2 are identified by container bytes. TTF, OTF, and EOT are rejected. Fonts have a 2 MB cap; SVG and ICO 1 MB; overall Media upload cap remains 10 MB.
+
+Plan limits are enforced on every surface (app, REST, MCP):
+
+| Plan | Projects | Storage | Deliveries / UTC month | Active keys |
+|---|---|---|---|---|
+| Free | 3 | 1 GB | 100,000 | 2 |
+| Developer | 20 | 10 GB | 2,000,000 | 20 |
+| Pro | 100 | 100 GB | 10,000,000 | 100 |
+
+Existing public aliases keep serving if the account is over a lower plan after downgrade. New projects, keys, and uploads that would grow storage are blocked. Successful `GET /m/…` (HTTP 200) counts as a delivery. HEAD, 304, REST, and MCP calls do not. Crossing 100% of deliveries starts a 3-day grace window; live URLs are not 402'd.
 
 ## MIME changes on replace
 

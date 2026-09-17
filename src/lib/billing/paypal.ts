@@ -1,11 +1,16 @@
 import type {
   BillingConfig,
   BillingEnv,
+  BillingProduct,
   CheckoutInterval,
   PaypalMode,
   PaypalWebhookEvent,
+  WebAssetsBillingConfig,
+  WebAssetsPaidPlan,
 } from "./types";
 import { verifyHmacSignature } from "./verify";
+import { webAssetsPlanForPriceId } from "../web-assets-entitlements";
+import { webAssetsPlanRank, type WebAssetsPlanId } from "../web-assets-plans";
 
 const SANDBOX_API = "https://api-m.sandbox.paypal.com";
 const LIVE_API = "https://api-m.paypal.com";
@@ -48,6 +53,45 @@ export function billingConfig(env: BillingEnv): BillingConfig | null {
   return { mode, priceMonthly, priceAnnual };
 }
 
+export function webAssetsBillingConfig(env: BillingEnv): WebAssetsBillingConfig | null {
+  if (!billingEnabled(env)) return null;
+  const mode = paypalMode(env);
+  if (!mode) return null;
+  if (!env.PAYPAL_CLIENT_ID?.trim() || !env.PAYPAL_CLIENT_SECRET?.trim()) {
+    return null;
+  }
+  const developerMonthly = env.PAYPAL_WA_DEVELOPER_MONTHLY?.trim() || "";
+  const developerAnnual = env.PAYPAL_WA_DEVELOPER_ANNUAL?.trim() || "";
+  const proMonthly = env.PAYPAL_WA_PRO_MONTHLY?.trim() || "";
+  const proAnnual = env.PAYPAL_WA_PRO_ANNUAL?.trim() || "";
+  if (!developerMonthly || !developerAnnual || !proMonthly || !proAnnual) return null;
+  return { mode, developerMonthly, developerAnnual, proMonthly, proAnnual };
+}
+
+export function priceIdForWebAssetsPlan(
+  config: WebAssetsBillingConfig,
+  plan: WebAssetsPaidPlan,
+  interval: CheckoutInterval,
+): string {
+  if (plan === "developer") {
+    return interval === "annual" ? config.developerAnnual : config.developerMonthly;
+  }
+  return interval === "annual" ? config.proAnnual : config.proMonthly;
+}
+
+export function billingProductForPriceId(
+  env: BillingEnv,
+  priceId: string | null | undefined,
+): BillingProduct | null {
+  const id = priceId?.trim();
+  if (!id) return null;
+  if (id === env.PAYPAL_PLAN_MONTHLY?.trim() || id === env.PAYPAL_PLAN_ANNUAL?.trim()) {
+    return "drops_pro";
+  }
+  if (webAssetsPlanForPriceId(env, id)) return "web_assets";
+  return null;
+}
+
 export function priceIdForInterval(
   config: BillingConfig,
   interval: CheckoutInterval,
@@ -63,7 +107,8 @@ export function intervalForPrice(
   if (!id) return null;
   if (id === env.PAYPAL_PLAN_ANNUAL?.trim()) return "annual";
   if (id === env.PAYPAL_PLAN_MONTHLY?.trim()) return "monthly";
-  return null;
+  const mapped = webAssetsPlanForPriceId(env, id);
+  return mapped?.interval ?? null;
 }
 
 type PaypalResult<T> = { ok: true; data: T } | { ok: false; error: string };
@@ -315,6 +360,7 @@ export async function syncSubscriptionFromPaypal(
       resource,
     },
     now,
+    env,
   );
   return { ok: true, status };
 }
@@ -448,16 +494,27 @@ export async function upsertSubscriptionFromEvent(
   db: D1Database,
   event: PaypalWebhookEvent,
   now = Math.floor(Date.now() / 1000),
-): Promise<{ userId: string | null; subscriptionId: string | null }> {
+  env?: BillingEnv,
+): Promise<{
+  userId: string | null;
+  subscriptionId: string | null;
+  product: BillingProduct | null;
+  priceId: string | null;
+  status: string | null;
+}> {
   const resource = event.resource ?? {};
   const occurredAt = unixFromIso(event.create_time) ?? now;
   const eventType = event.event_type;
 
   if (eventType.startsWith("BILLING.SUBSCRIPTION.")) {
     const subscriptionId = str(resource.id);
-    if (!subscriptionId) return { userId: null, subscriptionId: null };
+    if (!subscriptionId) {
+      return { userId: null, subscriptionId: null, product: null, priceId: null, status: null };
+    }
     const customerId = subscriberId(resource);
     const status = mapPaypalStatus(str(resource.status), eventType);
+    const priceId = str(resource.plan_id);
+    const product = (env ? billingProductForPriceId(env, priceId) : null) ?? "drops_pro";
 
     let userId = customUserId(resource);
     if (!userId) {
@@ -471,21 +528,24 @@ export async function upsertSubscriptionFromEvent(
         .first<{ user_id: string }>();
       userId = existing?.user_id ?? null;
     }
-    if (!userId) return { userId: null, subscriptionId };
+    if (!userId) {
+      return { userId: null, subscriptionId, product, priceId, status };
+    }
 
     await applySubscriptionState(db, {
       userId,
       customerId,
       subscriptionId,
       status,
-      priceId: str(resource.plan_id),
+      priceId,
+      product,
       periodEnd: periodEndOf(resource),
       cancelAtPeriodEnd: status === "canceled" ? 1 : 0,
       occurredAt,
       now,
       authoritative: true,
     });
-    return { userId, subscriptionId };
+    return { userId, subscriptionId, product, priceId, status };
   }
 
   if (eventType === "PAYMENT.SALE.COMPLETED") {
@@ -503,7 +563,9 @@ export async function upsertSubscriptionFromEvent(
         .first<{ user_id: string }>();
       userId = existing?.user_id ?? null;
     }
-    if (!userId || !subscriptionId) return { userId, subscriptionId };
+    if (!userId || !subscriptionId) {
+      return { userId, subscriptionId, product: null, priceId: null, status: null };
+    }
 
     /**
      * A sale names who paid but not the billing period, so it only
@@ -516,16 +578,23 @@ export async function upsertSubscriptionFromEvent(
       subscriptionId,
       status: "active",
       priceId: null,
+      product: null,
       periodEnd: null,
       cancelAtPeriodEnd: 0,
       occurredAt,
       now,
       authoritative: false,
     });
-    return { userId, subscriptionId };
+    return { userId, subscriptionId, product: null, priceId: null, status: "active" };
   }
 
-  return { userId: customUserId(resource), subscriptionId: str(resource.id) };
+  return {
+    userId: customUserId(resource),
+    subscriptionId: str(resource.id),
+    product: null,
+    priceId: str(resource.plan_id),
+    status: str(resource.status),
+  };
 }
 
 async function applySubscriptionState(
@@ -536,6 +605,7 @@ async function applySubscriptionState(
     subscriptionId: string;
     status: string;
     priceId: string | null;
+    product: BillingProduct | null;
     periodEnd: number | null;
     cancelAtPeriodEnd: number;
     occurredAt: number;
@@ -578,6 +648,7 @@ async function applySubscriptionState(
              provider_customer_id = ?,
              status = ?,
              price_id = ?,
+             product = COALESCE(?, product),
              current_period_end = ?,
              cancel_at_period_end = ?,
              provider_occurred_at = ?,
@@ -589,6 +660,7 @@ async function applySubscriptionState(
           row.customerId,
           row.status,
           row.priceId,
+          row.product,
           row.periodEnd,
           row.cancelAtPeriodEnd,
           row.occurredAt,
@@ -615,9 +687,9 @@ async function applySubscriptionState(
     .prepare(
       `INSERT INTO subscriptions (
          id, user_id, provider, provider_customer_id, provider_subscription_id,
-         status, price_id, current_period_end, cancel_at_period_end,
+         status, price_id, product, current_period_end, cancel_at_period_end,
          provider_occurred_at, created_at, updated_at
-       ) VALUES (?, ?, 'paypal', ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       ) VALUES (?, ?, 'paypal', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     )
     .bind(
       row.subscriptionId,
@@ -626,6 +698,7 @@ async function applySubscriptionState(
       row.subscriptionId,
       row.status,
       row.priceId,
+      row.product ?? "drops_pro",
       row.periodEnd,
       row.cancelAtPeriodEnd,
       row.authoritative ? row.occurredAt : null,
@@ -634,6 +707,52 @@ async function applySubscriptionState(
     )
     .run();
   return true;
+}
+
+export async function cancelSiblingWebAssetsSubscriptions(
+  env: BillingEnv,
+  db: D1Database,
+  userId: string,
+  keepSubscriptionId: string,
+  fetchImpl: typeof fetch = fetch,
+  now = Math.floor(Date.now() / 1000),
+): Promise<void> {
+  const { results } = await db
+    .prepare(
+      `SELECT provider_subscription_id, status
+       FROM subscriptions
+       WHERE user_id = ?
+         AND provider = 'paypal'
+         AND product = 'web_assets'
+         AND provider_subscription_id != ?`,
+    )
+    .bind(userId, keepSubscriptionId)
+    .all<{ provider_subscription_id: string | null; status: string }>();
+
+  for (const row of results ?? []) {
+    const id = row.provider_subscription_id?.trim();
+    if (!id || !isLivePaypalStatus(row.status)) continue;
+    await cancelPaypalSubscriptionImmediately(env, id, fetchImpl);
+    await db
+      .prepare(
+        `UPDATE subscriptions
+         SET status = 'canceled', cancel_at_period_end = 0, updated_at = ?
+         WHERE provider_subscription_id = ?`,
+      )
+      .bind(now, id)
+      .run();
+  }
+}
+
+export function planChangeKind(
+  previous: WebAssetsPlanId | null,
+  next: WebAssetsPlanId,
+): "activated" | "upgraded" | "downgraded" | "unchanged" {
+  if (!previous || previous === "free") return "activated";
+  const delta = webAssetsPlanRank(next) - webAssetsPlanRank(previous);
+  if (delta > 0) return "upgraded";
+  if (delta < 0) return "downgraded";
+  return "unchanged";
 }
 
 export type { BillingEnv } from "./types";

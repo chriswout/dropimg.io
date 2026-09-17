@@ -172,7 +172,11 @@ describe("Worker integration", () => {
     const res = await worker.fetch("https://dropimg.io/api/site-config");
     expect(res.status).toBe(200);
     const body = (await res.json()) as Record<string, unknown>;
-    expect(body).toEqual({ mediaEnabled: false });
+    expect(body).toEqual({
+      mediaEnabled: false,
+      mediaDeliveryEnabled: false,
+      webAssetsCheckout: false,
+    });
     expect(JSON.stringify(body)).not.toMatch(/token|secret|password/i);
   });
 

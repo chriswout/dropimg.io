@@ -72,6 +72,9 @@ describe("homepage Web Assets reposition (KON-79)", () => {
     expect(html).toContain("See full pricing");
     expect(html).toContain("$9");
     expect(html).toContain("$29");
+    expect(html).toContain("3 projects");
+    expect(html).toContain("10 GB · 2M deliveries");
+    expect(html).toContain("100 GB · 10M deliveries");
     expect(html).toContain("Give your coding agent permanent web assets.");
     expect(html).toContain("Create a project");
     expect(html).toContain("Read the docs");
@@ -82,6 +85,24 @@ describe("homepage Web Assets reposition (KON-79)", () => {
 
   it("keeps Chrome Web Store listing for the extension promo", () => {
     expect(html).toContain("chromewebstore.google.com");
+  });
+
+  it("keeps Media CTAs on /web-assets until Media is enabled", () => {
+    expect(html).toContain('data-cta-soon="Web Assets launching soon"');
+    expect(html).not.toContain("/app/media");
+    const close = html.match(/class="home-close"[\s\S]*?<\/section>/)?.[0] ?? "";
+    expect(close).toContain('href="/web-assets"');
+    expect(close).toContain('data-media-cta="create"');
+  });
+
+  it("shows a single stable-path board instead of a path list", () => {
+    expect(html).toContain("stable-board");
+    expect(html).toContain("stable-v-label");
+    expect(html).toContain("hero-v1.avif");
+    expect(html).toContain("hero-v2.webp");
+    expect(html).not.toContain("path-examples");
+    expect(html).toContain("Inspected on ingest");
+    expect(html).not.toContain("Server-authoritative file inspection");
   });
 });
 
@@ -133,6 +154,8 @@ describe("pricing page (KON-80)", () => {
     expect(html).toContain("No per-MCP-call charges.");
     expect(html).not.toMatch(/\bunlimited\b/i);
     expect(html).toContain("data-media-cta=\"create\"");
+    expect(html).toContain('data-wa-checkout="developer"');
+    expect(html).toContain('data-wa-checkout="pro"');
     expect(html).not.toContain("/checkout");
   });
 });
@@ -143,7 +166,7 @@ describe("developer onboarding (KON-80)", () => {
     expect(DEVELOPERS_ONBOARDING.cursorHeading).toBe("Cursor");
     expect(DEVELOPERS_ONBOARDING.claudeHeading).toBe("Claude Code");
     expect(DEVELOPERS_ONBOARDING.codexHeading).toBe("Codex");
-    expect(DEVELOPERS_ONBOARDING.launchNote).toMatch(/Production Media is still flagged off/i);
+    expect(DEVELOPERS_ONBOARDING.launchNote).toMatch(/Media is enabled/i);
   });
 });
 

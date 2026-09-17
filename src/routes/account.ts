@@ -26,6 +26,7 @@ import {
   PRO_HISTORY_PAGE,
   resolveEntitlements,
 } from "../lib/entitlements";
+import { webAssetsEntitlementsFor } from "../lib/web-assets-entitlements";
 import {
   hashImagePassword,
   imageHasPassword,
@@ -106,6 +107,7 @@ async function settingsPage(
 
   const entitlements = await entitlementsFor(c.env, session.id);
   const subscription = await loadSubscription(c.env.DB, session.id);
+  const webAssets = await webAssetsEntitlementsFor(c.env, session.id);
   const identities = await listIdentities(c.env.DB, session.id);
   return render({
     locale,
@@ -114,6 +116,12 @@ async function settingsPage(
     plan: entitlements.plan === "pro" ? "pro" : "free",
     periodEnd: subscription?.current_period_end ?? null,
     cancelAtPeriodEnd: Boolean(subscription?.cancel_at_period_end),
+    webAssets: {
+      plan: webAssets.plan,
+      interval: webAssets.interval,
+      periodEnd: webAssets.periodEnd,
+      cancelAtPeriodEnd: webAssets.cancelAtPeriodEnd,
+    },
     identities,
     socialEnabled: enabledSocialProviders(c.env),
     linkError: accountLinkError(locale, c.req.query("link")),

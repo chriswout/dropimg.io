@@ -49,9 +49,18 @@ export type AnalyticsEvent =
   | "media_project_created"
   | "media_first_asset_created"
   | "media_stable_url_returned"
-  | "media_asset_replaced";
+  | "media_asset_replaced"
+  | "media_asset_delivered"
+  | "web_assets_checkout_started"
+  | "web_assets_checkout_completed"
+  | "web_assets_subscription_activated"
+  | "web_assets_subscription_cancelled"
+  | "web_assets_plan_upgraded"
+  | "web_assets_plan_downgraded"
+  | "web_assets_quota_warning"
+  | "web_assets_quota_blocked";
 
-export const ANALYTICS_PLANS = ["anonymous", "free", "pro"] as const;
+export const ANALYTICS_PLANS = ["anonymous", "free", "developer", "pro"] as const;
 export const ANALYTICS_INTERVALS = ["monthly", "annual"] as const;
 /** Bucketed lifetimes, so the dimension stays low-cardinality and readable. */
 export const ANALYTICS_EXPIRIES = [
@@ -85,6 +94,10 @@ export const ANALYTICS_CTA_REASONS = [
   "developer",
   "pro",
   "create_project",
+  "projects",
+  "storage",
+  "keys",
+  "deliveries",
 ] as const;
 
 export type AnalyticsCtaReason = (typeof ANALYTICS_CTA_REASONS)[number];

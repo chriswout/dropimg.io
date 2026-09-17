@@ -74,8 +74,9 @@ export type HomeCopy = PageSeo & {
   closingHeading: string;
   closingPrimary: string;
   closingSecondary: string;
+  ctaSoon: string;
   securityHeading: string;
-  securityFacts: [string, string, string, string, string];
+  securityFacts: [string, string, string, string];
   securityPublic: string;
   howtoHeading: string;
   howto: [HowToStep, HowToStep, HowToStep];

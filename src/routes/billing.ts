@@ -7,17 +7,32 @@ import { cookieSecure } from "../lib/auth/crypto";
 import {
   billingConfig,
   billingEnabled,
+  billingProductForPriceId,
+  cancelSiblingWebAssetsSubscriptions,
   createCheckoutSession,
   createPortalUrl,
   intervalForPrice,
   parsePaypalSubscriptionId,
+  planChangeKind,
   priceIdForInterval,
+  priceIdForWebAssetsPlan,
   syncSubscriptionFromPaypal,
   upsertSubscriptionFromEvent,
   verifyPaypalWebhook,
+  webAssetsBillingConfig,
 } from "../lib/billing/paypal";
-import type { BillingEnv, CheckoutInterval, PaypalWebhookEvent } from "../lib/billing/types";
+import type {
+  BillingEnv,
+  CheckoutInterval,
+  PaypalWebhookEvent,
+  WebAssetsPaidPlan,
+} from "../lib/billing/types";
 import { entitlementsFor, flagsFromEnv, loadSubscription } from "../lib/entitlements";
+import {
+  webAssetsEntitlementsFor,
+  webAssetsPlanForPriceId,
+} from "../lib/web-assets-entitlements";
+import type { WebAssetsPlanId } from "../lib/web-assets-plans";
 import { sha256Hex } from "../lib/auth/crypto";
 import { localeFromProPath, proPath } from "../../marketing/pro";
 import { renderProPage } from "../views/pro";
@@ -29,6 +44,7 @@ type Env = {
 export const billingRoutes = new Hono<Env>();
 
 const CHECKOUT_COOKIE = "dropimg_paypal_sub";
+const WA_CHECKOUT_COOKIE = "dropimg_paypal_wa_sub";
 const CHECKOUT_COOKIE_MAX_AGE = 30 * 60;
 
 function asBillingEnv(env: Cloudflare.Env): BillingEnv {
@@ -45,9 +61,10 @@ function checkoutCookieHeader(
   subscriptionId: string,
   env: { ENVIRONMENT?: string },
   maxAge = CHECKOUT_COOKIE_MAX_AGE,
+  name = CHECKOUT_COOKIE,
 ): string {
   const parts = [
-    `${CHECKOUT_COOKIE}=${encodeURIComponent(subscriptionId)}`,
+    `${name}=${encodeURIComponent(subscriptionId)}`,
     "Path=/",
     "HttpOnly",
     "SameSite=Lax",
@@ -121,6 +138,12 @@ billingRoutes.get("/api/billing/config", (c) => {
   return c.json(config);
 });
 
+billingRoutes.get("/api/billing/web-assets/config", (c) => {
+  const config = webAssetsBillingConfig(asBillingEnv(c.env));
+  if (!config) return c.json({ error: "Billing is not available." }, 404);
+  return c.json({ ok: true, mode: config.mode });
+});
+
 billingRoutes.post("/api/billing/checkout", async (c) => {
   if (!csrfOriginOk(c.req.raw)) return c.json({ error: "Invalid origin" }, 403);
   const config = billingConfig(asBillingEnv(c.env));
@@ -170,6 +193,56 @@ billingRoutes.post("/api/billing/checkout", async (c) => {
   return res;
 });
 
+billingRoutes.post("/api/billing/web-assets/checkout", async (c) => {
+  if (!csrfOriginOk(c.req.raw)) return c.json({ error: "Invalid origin" }, 403);
+  const config = webAssetsBillingConfig(asBillingEnv(c.env));
+  if (!config) return c.json({ error: "Billing is not available." }, 404);
+  const session = await resolveSession(c.env.DB, c.req.header("cookie"));
+  if (!session) return c.json({ error: "Unauthorized" }, 401);
+
+  let interval: CheckoutInterval = "monthly";
+  let plan: WebAssetsPaidPlan = "developer";
+  try {
+    const body = (await c.req.json()) as { interval?: string; plan?: string };
+    if (body.interval === "annual") interval = "annual";
+    else if (body.interval && body.interval !== "monthly") {
+      return c.json({ error: "That billing option isn’t available." }, 400);
+    }
+    if (body.plan === "pro") plan = "pro";
+    else if (body.plan && body.plan !== "developer") {
+      return c.json({ error: "That plan isn’t available." }, 400);
+    }
+  } catch {
+    interval = "monthly";
+    plan = "developer";
+  }
+
+  const origin = new URL(c.req.raw.url).origin;
+  const created = await createCheckoutSession(asBillingEnv(c.env), {
+    userId: session.id,
+    email: session.email,
+    priceId: priceIdForWebAssetsPlan(config, plan, interval),
+    successUrl: `${origin}/app/billing?checkout=success&product=web_assets`,
+    cancelUrl: `${origin}/pricing`,
+  });
+  if (!created.ok) {
+    return c.json({ error: "Checkout isn’t available right now." }, 502);
+  }
+
+  track(c.env.ANALYTICS, "web_assets_checkout_started", {
+    reason: plan,
+    interval,
+    plan,
+    client: "web",
+  });
+  const res = c.json({ url: created.data.url });
+  res.headers.append(
+    "Set-Cookie",
+    checkoutCookieHeader(created.data.id, c.env, CHECKOUT_COOKIE_MAX_AGE, WA_CHECKOUT_COOKIE),
+  );
+  return res;
+});
+
 billingRoutes.post("/api/billing/sync", async (c) => {
   if (!csrfOriginOk(c.req.raw)) return c.json({ error: "Invalid origin" }, 403);
   if (!billingEnabled(asBillingEnv(c.env))) {
@@ -199,6 +272,48 @@ billingRoutes.post("/api/billing/sync", async (c) => {
   }
   const entitlements = await entitlementsFor(c.env, session.id);
   return c.json({ plan: entitlements.plan });
+});
+
+billingRoutes.post("/api/billing/web-assets/sync", async (c) => {
+  if (!csrfOriginOk(c.req.raw)) return c.json({ error: "Invalid origin" }, 403);
+  if (!webAssetsBillingConfig(asBillingEnv(c.env))) {
+    return c.json({ error: "Billing is not available." }, 404);
+  }
+  const session = await resolveSession(c.env.DB, c.req.header("cookie"));
+  if (!session) return c.json({ error: "Unauthorized" }, 401);
+
+  let requested: string | null = null;
+  try {
+    const body = (await c.req.json()) as { subscription_id?: string };
+    requested = parsePaypalSubscriptionId(body.subscription_id);
+  } catch {
+    requested = null;
+  }
+  const pending =
+    requested ??
+    parsePaypalSubscriptionId(readCookie(c.req.header("cookie"), WA_CHECKOUT_COOKIE));
+  if (!pending) return c.json({ error: "No checkout to activate." }, 400);
+
+  const synced = await syncSubscriptionFromPaypal(asBillingEnv(c.env), c.env.DB, {
+    subscriptionId: pending,
+    expectedUserId: session.id,
+  });
+  if (!synced.ok) {
+    return c.json({ error: "Web Assets is still activating." }, 409);
+  }
+  await cancelSiblingWebAssetsSubscriptions(
+    asBillingEnv(c.env),
+    c.env.DB,
+    session.id,
+    pending,
+  );
+  const entitlements = await webAssetsEntitlementsFor(c.env, session.id);
+  track(c.env.ANALYTICS, "web_assets_checkout_completed", {
+    plan: entitlements.plan,
+    interval: entitlements.interval ?? undefined,
+    client: "web",
+  });
+  return c.json({ plan: entitlements.plan, interval: entitlements.interval });
 });
 
 billingRoutes.post("/api/billing/portal", async (c) => {
@@ -270,7 +385,7 @@ billingRoutes.post("/api/billing/paypal/webhook", async (c) => {
     return c.json({ received: true, duplicate: true });
   }
 
-  await upsertSubscriptionFromEvent(c.env.DB, event, now);
+  await upsertSubscriptionFromEvent(c.env.DB, event, now, asBillingEnv(c.env));
   await c.env.DB.prepare(
     `UPDATE billing_events
      SET status = 'processed', processed_at = ?
@@ -285,9 +400,56 @@ billingRoutes.post("/api/billing/paypal/webhook", async (c) => {
 
   const resource = event.resource;
   const status = typeof resource.status === "string" ? resource.status.toLowerCase() : "";
+  const priceId = strFrom(resource.plan_id);
   const interval =
-    intervalForPrice(asBillingEnv(c.env), strFrom(resource.plan_id)) ?? undefined;
-  if (event.event_type === "BILLING.SUBSCRIPTION.ACTIVATED") {
+    intervalForPrice(asBillingEnv(c.env), priceId) ?? undefined;
+  const waPlan = webAssetsPlanForPriceId(asBillingEnv(c.env), priceId);
+  const product = billingProductForPriceId(asBillingEnv(c.env), priceId);
+  const userId =
+    typeof resource.custom_id === "string"
+      ? resource.custom_id
+      : typeof resource.custom === "string"
+        ? resource.custom
+        : null;
+
+  if (event.event_type === "BILLING.SUBSCRIPTION.ACTIVATED" && product === "web_assets") {
+    const subId = strFrom(resource.id);
+    if (userId && subId) {
+      const previous = await previousWebAssetsPlan(
+        c.env.DB,
+        asBillingEnv(c.env),
+        userId,
+        subId,
+      );
+      await cancelSiblingWebAssetsSubscriptions(
+        asBillingEnv(c.env),
+        c.env.DB,
+        userId,
+        subId,
+      );
+      const change = planChangeKind(previous, waPlan?.plan ?? "developer");
+      track(c.env.ANALYTICS, "web_assets_subscription_activated", {
+        reason: event.event_type,
+        interval,
+        plan: waPlan?.plan ?? "developer",
+      });
+      if (change === "upgraded") {
+        track(c.env.ANALYTICS, "web_assets_plan_upgraded", {
+          reason: previous ?? "free",
+          interval,
+          plan: waPlan?.plan ?? "developer",
+        });
+      } else if (change === "downgraded") {
+        track(c.env.ANALYTICS, "web_assets_plan_downgraded", {
+          reason: previous ?? "pro",
+          interval,
+          plan: waPlan?.plan ?? "developer",
+        });
+      }
+    }
+  }
+
+  if (event.event_type === "BILLING.SUBSCRIPTION.ACTIVATED" && product !== "web_assets") {
     track(c.env.ANALYTICS, "pro_activated", {
       reason: event.event_type,
       interval,
@@ -300,14 +462,43 @@ billingRoutes.post("/api/billing/paypal/webhook", async (c) => {
     status === "cancelled" ||
     status === "canceled"
   ) {
-    track(c.env.ANALYTICS, "pro_canceled", {
-      reason: event.event_type,
-      interval,
-      plan: "pro",
-    });
+    if (product === "web_assets") {
+      track(c.env.ANALYTICS, "web_assets_subscription_cancelled", {
+        reason: event.event_type,
+        interval,
+        plan: waPlan?.plan ?? "developer",
+      });
+    } else {
+      track(c.env.ANALYTICS, "pro_canceled", {
+        reason: event.event_type,
+        interval,
+        plan: "pro",
+      });
+    }
   }
   return c.json({ received: true });
 });
+
+async function previousWebAssetsPlan(
+  db: D1Database,
+  env: BillingEnv,
+  userId: string,
+  keepSubscriptionId: string,
+): Promise<WebAssetsPlanId | null> {
+  const row = await db
+    .prepare(
+      `SELECT price_id FROM subscriptions
+       WHERE user_id = ?
+         AND provider = 'paypal'
+         AND product = 'web_assets'
+         AND provider_subscription_id != ?
+       ORDER BY updated_at DESC
+       LIMIT 1`,
+    )
+    .bind(userId, keepSubscriptionId)
+    .first<{ price_id: string | null }>();
+  return webAssetsPlanForPriceId(env, row?.price_id)?.plan ?? null;
+}
 
 function strFrom(value: unknown): string | null {
   return typeof value === "string" && value ? value : null;

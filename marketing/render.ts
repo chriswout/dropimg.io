@@ -561,18 +561,26 @@ function homepageDemoHtml(copy: (typeof HOME)[Locale]): string {
 }
 
 function homepageStableHtml(copy: (typeof HOME)[Locale]): string {
-  const examples = copy.stableExamples
-    .map((p) => `              <li><code>${esc(p)}</code></li>`)
-    .join("\n");
   return `          <section class="stable-block" aria-labelledby="stable-heading" data-enter>
             <p class="feature-kicker">${esc(copy.stableKicker)}</p>
             <h2 id="stable-heading">${esc(copy.stableTitle)}</h2>
-            <p>${esc(copy.stableBody)}</p>
-            <p class="demo-url"><code>${esc(copy.stablePath)}</code></p>
-            <p class="stable-versions">Version 1 <code>${esc(copy.stableV1)}</code> → Version 2 <code>${esc(copy.stableV2)}</code></p>
-            <ul class="path-examples">
-${examples}
-            </ul>
+            <p class="stable-body">${esc(copy.stableBody)}</p>
+            <div class="stable-board">
+              <p class="demo-url-bar">
+                <svg class="demo-lock" viewBox="0 0 24 24" width="18" height="18" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                  aria-hidden="true" focusable="false">
+                  <rect x="5" y="11" width="14" height="10" rx="2" />
+                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+                </svg>
+                <code>${esc(copy.stablePath)}</code>
+              </p>
+              <p class="stable-swap">
+                <span class="stable-v"><span class="stable-v-label">v1</span> <code>${esc(copy.stableV1)}</code></span>
+                <span class="stable-arrow" aria-hidden="true">→</span>
+                <span class="stable-v"><span class="stable-v-label">v2</span> <code>${esc(copy.stableV2)}</code></span>
+              </p>
+            </div>
           </section>`;
 }
 
@@ -639,6 +647,7 @@ function homepagePricingHtml(copy: (typeof HOME)[Locale]): string {
     return `            <article class="price-card" data-tier="${esc(tier.id)}">
               <h3>${esc(tier.name)}</h3>
               <p class="price-amount">${esc(tier.price)}${period}</p>
+              <p class="price-teaser-note">${esc(tier.teaser)}</p>
             </article>`;
   }).join("\n");
   return `          <section class="pricing-teaser" aria-labelledby="pricing-heading" data-enter>
@@ -658,10 +667,10 @@ function homepageSecurityHtml(copy: (typeof HOME)[Locale]): string {
     .join("\n");
   return `          <section class="security-block" aria-labelledby="security-heading" data-enter>
             <h2 id="security-heading">${esc(copy.securityHeading)}</h2>
-            <ul>
+            <ul class="security-facts">
 ${facts}
             </ul>
-            <p>${esc(copy.securityPublic)}</p>
+            <p class="security-note">${esc(copy.securityPublic)}</p>
           </section>`;
 }
 
@@ -669,7 +678,7 @@ function homepageClosingHtml(copy: (typeof HOME)[Locale]): string {
   return `          <section class="home-close" aria-labelledby="closing-heading">
             <h2 id="closing-heading">${esc(copy.closingHeading)}</h2>
             <div class="hero-actions">
-              <a class="btn primary" href="/web-assets" data-media-cta="create" data-track="homepage_web_assets_cta">${esc(copy.closingPrimary)}</a>
+              <a class="btn primary" href="/web-assets" data-media-cta="create" data-cta-soon="${esc(copy.ctaSoon)}" data-track="homepage_web_assets_cta">${esc(copy.closingPrimary)}</a>
               <a class="btn secondary" href="/developers">${esc(copy.closingSecondary)}</a>
             </div>
           </section>`;
@@ -770,7 +779,7 @@ ${topBar("home", locale, chrome)}
             ${esc(copy.subHtml)}
           </p>
           <div class="hero-actions">
-            <a class="btn primary" href="/web-assets" data-media-cta="create" data-track="homepage_web_assets_cta">${esc(copy.primaryCta)}</a>
+            <a class="btn primary" href="/web-assets" data-media-cta="create" data-cta-soon="${esc(copy.ctaSoon)}" data-track="homepage_web_assets_cta">${esc(copy.primaryCta)}</a>
             <a class="btn secondary" href="#dropzone">${esc(copy.secondaryCta)}</a>
           </div>
           <p class="works-with">${esc(copy.worksWith)}</p>
@@ -1675,6 +1684,10 @@ export function renderPricingPage(): string {
     const features = tier.features
       .map((item) => `                <li>${esc(item)}</li>`)
       .join("\n");
+    const cta =
+      tier.id === "free"
+        ? `<a class="btn secondary" href="/web-assets" data-media-cta="create" data-track="pricing_plan" data-plan="free">${esc(tier.cta)}</a>`
+        : `<button type="button" class="btn ${tier.id === "developer" ? "primary" : "secondary"}" data-wa-checkout="${esc(tier.id)}" data-interval="monthly" data-track="pricing_plan" data-plan="${esc(tier.id)}">${esc(tier.cta)}</button>`;
     return `            <article class="price-card" data-tier="${esc(tier.id)}">
               <h2>${esc(tier.name)}</h2>
               <p class="price-amount">${esc(tier.price)}<span>${esc(tier.period)}</span></p>
@@ -1683,7 +1696,7 @@ export function renderPricingPage(): string {
               <ul>
 ${features}
               </ul>
-              <a class="btn ${tier.id === "developer" ? "primary" : "secondary"}" href="/web-assets" data-media-cta="create" data-track="pricing_plan" data-plan="${esc(tier.id)}">${esc(tier.cta)}</a>
+              ${cta}
             </article>`;
   }).join("\n");
 
@@ -1707,6 +1720,10 @@ ${topBar("home", locale, chrome)}
             <p class="sub ext-lede">${esc(copy.lede)}</p>
             <p class="price-promises">${esc(copy.noEgress)} ${esc(copy.noMcpFee)}</p>
             <p class="price-launch">${esc(copy.launchNote)}</p>
+            <div class="price-interval" role="radiogroup" aria-label="Billing interval">
+              <button type="button" class="btn secondary" data-select-interval="monthly" aria-checked="true">Monthly</button>
+              <button type="button" class="btn secondary" data-select-interval="annual" aria-checked="false">Annual</button>
+            </div>
           </div>
         </section>
 

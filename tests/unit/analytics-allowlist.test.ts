@@ -53,6 +53,15 @@ const FUNNEL_EVENTS: AnalyticsEvent[] = [
   "media_first_asset_created",
   "media_stable_url_returned",
   "media_asset_replaced",
+  "media_asset_delivered",
+  "web_assets_checkout_started",
+  "web_assets_checkout_completed",
+  "web_assets_subscription_activated",
+  "web_assets_subscription_cancelled",
+  "web_assets_plan_upgraded",
+  "web_assets_plan_downgraded",
+  "web_assets_quota_warning",
+  "web_assets_quota_blocked",
 ];
 
 describe("normalizeUploadClient", () => {
@@ -119,7 +128,7 @@ describe("analytics allowlist", () => {
     for (const event of FUNNEL_EVENTS) {
       expect(event).toMatch(/^[a-z_]+$/);
     }
-    expect(ANALYTICS_PLANS).toEqual(["anonymous", "free", "pro"]);
+    expect(ANALYTICS_PLANS).toEqual(["anonymous", "free", "developer", "pro"]);
     expect(ANALYTICS_INTERVALS).toEqual(["monthly", "annual"]);
   });
 

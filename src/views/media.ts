@@ -16,6 +16,13 @@ export function mediaHtmlResponse(opts: {
       <h2>Organization</h2>
       <p id="media-org" class="account-muted">Loading…</p>
     </section>
+    <section class="settings-card" id="media-usage-card">
+      <h2>Plan & usage</h2>
+      <p id="media-plan" class="settings-value">Free</p>
+      <ul id="media-usage" class="usage-list"></ul>
+      <p id="media-usage-note" class="account-muted" hidden></p>
+      <p class="account-muted"><a href="/pricing">Upgrade plan</a> · <a href="/app/billing">Billing</a></p>
+    </section>
     <section class="settings-card">
       <h2>Projects</h2>
       <p class="account-muted">One project per website, landing page, client, or storefront.</p>
@@ -123,7 +130,48 @@ function mediaScript(origin: string): string {
           return;
         }
         el("media-org").textContent = org.name + " · " + org.slug;
+        await loadUsage();
         await loadProjects();
+      }
+
+      function formatBytes(n) {
+        if (n < 1024) return n + " B";
+        if (n < 1024 * 1024) return (n / 1024).toFixed(1) + " KB";
+        if (n < 1024 * 1024 * 1024) return (n / (1024 * 1024)).toFixed(1) + " MB";
+        return (n / (1024 * 1024 * 1024)).toFixed(2) + " GB";
+      }
+
+      function usageRow(label, used, limit, format) {
+        const pct = limit > 0 ? Math.min(100, Math.round((used / limit) * 100)) : 0;
+        const li = document.createElement("li");
+        li.innerHTML = "<span>" + label + "</span><strong>" + format(used) + " / " + format(limit) + "</strong>" +
+          '<span class="usage-bar" aria-hidden="true"><span style="width:' + pct + '%"></span></span>';
+        return li;
+      }
+
+      async function loadUsage() {
+        const { body } = await api("/api/v1/media/orgs/" + org.id + "/usage");
+        const usage = body.usage;
+        if (!usage) return;
+        const planLabel = usage.plan === "developer" ? "Developer" : usage.plan === "pro" ? "Pro" : "Free";
+        const cadence = usage.interval === "annual" ? " · annual" : usage.interval === "monthly" ? " · monthly" : "";
+        el("media-plan").textContent = planLabel + cadence;
+        const list = el("media-usage");
+        list.innerHTML = "";
+        list.appendChild(usageRow("Projects", usage.projects.used, usage.projects.limit, String));
+        list.appendChild(usageRow("Storage", usage.storage.used, usage.storage.limit, formatBytes));
+        list.appendChild(usageRow("Deliveries this month", usage.deliveries.used, usage.deliveries.limit, (n) => n.toLocaleString()));
+        list.appendChild(usageRow("Project keys", usage.keys.used, usage.keys.limit, String));
+        const note = el("media-usage-note");
+        if (usage.deliveries.over) {
+          note.hidden = false;
+          note.textContent = "This month's delivery allowance is used. Live URLs keep serving during a 3-day grace window. Upgrade to raise the cap.";
+        } else if (usage.deliveries.warned) {
+          note.hidden = false;
+          note.textContent = "You are over 80% of this month's delivery allowance.";
+        } else {
+          note.hidden = true;
+        }
       }
 
       async function loadProjects() {

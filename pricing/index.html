@@ -123,7 +123,11 @@
             <h1 class="ext-title">Simple plans. No egress fees.</h1>
             <p class="sub ext-lede">Pay for projects, storage, and deliveries — not per MCP call, and not a bandwidth surcharge on top of the plan. Fair-use and plan limits still apply.</p>
             <p class="price-promises">No bandwidth / egress fees. No per-MCP-call charges.</p>
-            <p class="price-launch">These plans ship with the public Web Assets launch. Checkout is not open while production Media is disabled. Drop Pro (€2.99) for temporary Drops is unchanged.</p>
+            <p class="price-launch">Free starts instantly. Developer and Pro are billed on PayPal. Drop Pro (€2.99) for temporary Drops is unchanged.</p>
+            <div class="price-interval" role="radiogroup" aria-label="Billing interval">
+              <button type="button" class="btn secondary" data-select-interval="monthly" aria-checked="true">Monthly</button>
+              <button type="button" class="btn secondary" data-select-interval="annual" aria-checked="false">Annual</button>
+            </div>
           </div>
         </section>
 
@@ -160,7 +164,7 @@
                 <li>Agent integrations</li>
                 <li>Commercial use</li>
               </ul>
-              <a class="btn primary" href="/web-assets" data-media-cta="create" data-track="pricing_plan" data-plan="developer">Choose Developer</a>
+              <button type="button" class="btn primary" data-wa-checkout="developer" data-interval="monthly" data-track="pricing_plan" data-plan="developer">Choose Developer</button>
             </article>
             <article class="price-card" data-tier="pro">
               <h2>Pro</h2>
@@ -176,10 +180,10 @@
                 <li>Versioning</li>
                 <li>Larger usage allowance</li>
               </ul>
-              <a class="btn secondary" href="/web-assets" data-media-cta="create" data-track="pricing_plan" data-plan="pro">Choose Pro</a>
+              <button type="button" class="btn secondary" data-wa-checkout="pro" data-interval="monthly" data-track="pricing_plan" data-plan="pro">Choose Pro</button>
             </article>
         </section>
-        <p class="price-overage">Storage and delivery overages, plus optional spend caps, will land with billing. Usage stays metered by plan.</p>
+        <p class="price-overage">Storage and delivery overages stay on the plan. Crossing 100% of monthly deliveries starts a 3-day grace window — live /m/… URLs keep serving. New uploads and projects still respect plan limits.</p>
         <article class="seo-article">
           <h2>Already on Drop Pro?</h2>
           <p>Drop Pro (€2.99/month) is the plan for temporary Drops: longer lifetimes, larger uploads, and passwords. Web Assets plans are separate and will not replace it.</p>
@@ -190,7 +194,7 @@
             <div class="faq-list">
               <details>
                 <summary>Can I buy Developer or Pro today?</summary>
-                <p>Not until Web Assets is enabled in production. The numbers on this page are the launch model. Buttons do not start a checkout that cannot complete.</p>
+                <p>Yes. Choose Developer or Pro on this page. Checkout is PayPal. Free does not require a card.</p>
               </details>
               <details>
                 <summary>Are the plans metered?</summary>

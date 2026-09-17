@@ -12,6 +12,7 @@ export type PricingTier = {
   period: string;
   annual: string | null;
   positioning: string;
+  teaser: string;
   features: string[];
   cta: string;
 };
@@ -24,6 +25,7 @@ export const PRICING_TIERS: [PricingTier, PricingTier, PricingTier] = [
     period: "",
     annual: null,
     positioning: "For experiments and small AI-built apps",
+    teaser: "3 projects",
     features: [
       "3 projects",
       "1 GB Web Asset storage",
@@ -43,6 +45,7 @@ export const PRICING_TIERS: [PricingTier, PricingTier, PricingTier] = [
     period: "/month",
     annual: "$90/year",
     positioning: "For developers shipping real applications",
+    teaser: "10 GB · 2M deliveries",
     features: [
       "20 projects",
       "10 GB storage",
@@ -62,6 +65,7 @@ export const PRICING_TIERS: [PricingTier, PricingTier, PricingTier] = [
     period: "/month",
     annual: "$290/year",
     positioning: "For active apps and agencies",
+    teaser: "100 GB · 10M deliveries",
     features: [
       "100 projects",
       "100 GB storage",
@@ -103,11 +107,11 @@ export const PRICING_PAGE: PageSeo & {
   h1: "Simple plans. No egress fees.",
   lede: "Pay for projects, storage, and deliveries — not per MCP call, and not a bandwidth surcharge on top of the plan. Fair-use and plan limits still apply.",
   launchNote:
-    "These plans ship with the public Web Assets launch. Checkout is not open while production Media is disabled. Drop Pro (€2.99) for temporary Drops is unchanged.",
+    "Free starts instantly. Developer and Pro are billed on PayPal. Drop Pro (€2.99) for temporary Drops is unchanged.",
   noEgress: "No bandwidth / egress fees.",
   noMcpFee: "No per-MCP-call charges.",
   overageNote:
-    "Storage and delivery overages, plus optional spend caps, will land with billing. Usage stays metered by plan.",
+    "Storage and delivery overages stay on the plan. Crossing 100% of monthly deliveries starts a 3-day grace window — live /m/… URLs keep serving. New uploads and projects still respect plan limits.",
   dropProHeading: "Already on Drop Pro?",
   dropProBody:
     "Drop Pro (€2.99/month) is the plan for temporary Drops: longer lifetimes, larger uploads, and passwords. Web Assets plans are separate and will not replace it.",
@@ -115,7 +119,7 @@ export const PRICING_PAGE: PageSeo & {
   faqs: [
     {
       q: "Can I buy Developer or Pro today?",
-      a: "Not until Web Assets is enabled in production. The numbers on this page are the launch model. Buttons do not start a checkout that cannot complete.",
+      a: "Yes. Choose Developer or Pro on this page. Checkout is PayPal. Free does not require a card.",
     },
     {
       q: "Are the plans metered?",

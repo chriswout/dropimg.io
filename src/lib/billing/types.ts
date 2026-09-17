@@ -1,12 +1,23 @@
 export type PaypalMode = "test" | "live";
 
+export type BillingProduct = "drops_pro" | "web_assets";
+
 export type BillingConfig = {
   mode: PaypalMode;
   priceMonthly: string;
   priceAnnual: string;
 };
 
+export type WebAssetsBillingConfig = {
+  mode: PaypalMode;
+  developerMonthly: string;
+  developerAnnual: string;
+  proMonthly: string;
+  proAnnual: string;
+};
+
 export type CheckoutInterval = "monthly" | "annual";
+export type WebAssetsPaidPlan = "developer" | "pro";
 
 export type BillingEnv = {
   BILLING_ENABLED?: string;
@@ -18,6 +29,10 @@ export type BillingEnv = {
   PAYPAL_WEBHOOK_SECRET?: string;
   PAYPAL_PLAN_MONTHLY?: string;
   PAYPAL_PLAN_ANNUAL?: string;
+  PAYPAL_WA_DEVELOPER_MONTHLY?: string;
+  PAYPAL_WA_DEVELOPER_ANNUAL?: string;
+  PAYPAL_WA_PRO_MONTHLY?: string;
+  PAYPAL_WA_PRO_ANNUAL?: string;
 };
 
 export type PaypalWebhookEvent = {

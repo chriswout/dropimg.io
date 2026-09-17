@@ -1,5 +1,6 @@
 import { Hono } from "hono";
-import { mediaEnabled } from "../lib/media-config";
+import { webAssetsBillingConfig } from "../lib/billing/paypal";
+import { mediaDeliveryEnabled, mediaEnabled } from "../lib/media-config";
 
 type Env = {
   Bindings: Cloudflare.Env;
@@ -13,7 +14,11 @@ export const siteConfigRoutes = new Hono<Env>();
  */
 siteConfigRoutes.get("/api/site-config", (c) => {
   return c.json(
-    { mediaEnabled: mediaEnabled(c.env) },
+    {
+      mediaEnabled: mediaEnabled(c.env),
+      mediaDeliveryEnabled: mediaDeliveryEnabled(c.env),
+      webAssetsCheckout: Boolean(webAssetsBillingConfig(c.env) && mediaEnabled(c.env)),
+    },
     200,
     { "Cache-Control": "public, max-age=60" },
   );

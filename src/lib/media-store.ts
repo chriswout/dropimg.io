@@ -4,9 +4,9 @@ import {
   MEDIA_IDEMPOTENCY_MAX_KEY_LENGTH,
   MEDIA_IDEMPOTENCY_TTL_SECONDS,
   PHASE1_PERM_MAX_UPLOAD_BYTES,
-  PHASE1_PERM_STORAGE_BYTES,
   type MediaIdempotencyOperation,
 } from "./media-config";
+import { assertCanStoreBytes } from "./web-assets-quota";
 import { mediaAliasUrl, mediaVersionUrl, parseAliasPath, permanentOriginalKey } from "./media-path";
 import { mapModerationFail } from "./upload-store";
 import { runPostStripSafetyScan } from "./moderation-hook";
@@ -303,13 +303,13 @@ export async function createMediaAsset(
   const ingested = await ingestOriginalBytes(env, input.bytes);
   if (!ingested.ok) return ingested;
 
-  const used = await orgStorageBytes(env.DB, input.orgId);
-  if (used + ingested.stored.byteSize > PHASE1_PERM_STORAGE_BYTES) {
+  const storage = await assertCanStoreBytes(env, input.orgId, ingested.stored.byteSize);
+  if (!storage.ok) {
     return {
       ok: false,
-      status: 413,
-      code: "quota_exceeded",
-      error: "Permanent storage quota exceeded",
+      status: storage.status,
+      code: storage.code,
+      error: storage.error,
     };
   }
 
@@ -439,13 +439,13 @@ export async function replaceMediaAsset(
   const ingested = await ingestOriginalBytes(env, input.bytes);
   if (!ingested.ok) return ingested;
 
-  const used = await orgStorageBytes(env.DB, input.orgId);
-  if (used + ingested.stored.byteSize > PHASE1_PERM_STORAGE_BYTES) {
+  const storage = await assertCanStoreBytes(env, input.orgId, ingested.stored.byteSize);
+  if (!storage.ok) {
     return {
       ok: false,
-      status: 413,
-      code: "quota_exceeded",
-      error: "Permanent storage quota exceeded",
+      status: storage.status,
+      code: storage.code,
+      error: storage.error,
     };
   }
 

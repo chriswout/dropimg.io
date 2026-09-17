@@ -1,6 +1,6 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from "vitest";
 import { createTestHarness } from "wrangler";
-import { PHASE1_PERM_STORAGE_BYTES } from "../../src/lib/media-config";
+import { WEB_ASSETS_PLANS } from "../../src/lib/web-assets-plans";
 
 const PNG_1x1 = Uint8Array.from([
   0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49,
@@ -328,7 +328,7 @@ describe("permanent media", () => {
     expect(res.status).toBe(403);
   });
 
-  it("rejects uploads that would exceed the phase-1 storage quota", async () => {
+  it("rejects uploads that would exceed the Free storage quota", async () => {
     const { cookie } = await signIn("media-quota@example.com");
     const ctx = await bootstrapProject(cookie);
     const env = await worker.getEnv<Cloudflare.Env>();
@@ -341,7 +341,7 @@ describe("permanent media", () => {
         crypto.randomUUID(),
         ctx.orgId,
         ctx.projectId,
-        PHASE1_PERM_STORAGE_BYTES,
+        WEB_ASSETS_PLANS.free.storageBytesLimit,
         Math.floor(Date.now() / 1000),
       )
       .run();
@@ -361,6 +361,99 @@ describe("permanent media", () => {
     expect(created.status).toBe(413);
     const payload = (await created.json()) as { code: string };
     expect(payload.code).toBe("quota_exceeded");
+  });
+
+  it("blocks a 4th project on Free", async () => {
+    const { cookie } = await signIn("media-projects@example.com");
+    const ctx = await bootstrapProject(cookie);
+    for (const slug of ["two", "three"]) {
+      const res = await worker.fetch(
+        `https://dropimg.io/api/v1/media/orgs/${ctx.orgId}/projects`,
+        {
+          method: "POST",
+          headers: jsonHeaders(cookie),
+          body: JSON.stringify({ slug, name: slug }),
+        },
+      );
+      expect(res.status).toBe(201);
+    }
+    const blocked = await worker.fetch(
+      `https://dropimg.io/api/v1/media/orgs/${ctx.orgId}/projects`,
+      {
+        method: "POST",
+        headers: jsonHeaders(cookie),
+        body: JSON.stringify({ slug: "four", name: "four" }),
+      },
+    );
+    expect(blocked.status).toBe(403);
+    const payload = (await blocked.json()) as { code: string };
+    expect(payload.code).toBe("quota_exceeded");
+  });
+
+  it("blocks a 3rd project key on Free", async () => {
+    const { cookie } = await signIn("media-keys@example.com");
+    const ctx = await bootstrapProject(cookie);
+    const second = await worker.fetch(
+      `https://dropimg.io/api/v1/media/projects/${ctx.projectId}/keys`,
+      {
+        method: "POST",
+        headers: jsonHeaders(cookie),
+        body: JSON.stringify({ label: "second" }),
+      },
+    );
+    expect(second.status).toBe(201);
+    const blocked = await worker.fetch(
+      `https://dropimg.io/api/v1/media/projects/${ctx.projectId}/keys`,
+      {
+        method: "POST",
+        headers: jsonHeaders(cookie),
+        body: JSON.stringify({ label: "third" }),
+      },
+    );
+    expect(blocked.status).toBe(403);
+    const payload = (await blocked.json()) as { code: string };
+    expect(payload.code).toBe("quota_exceeded");
+  });
+
+  it("counts successful GET deliveries and not HEAD", async () => {
+    const { cookie } = await signIn("media-meter@example.com");
+    const ctx = await bootstrapProject(cookie);
+    const { body, contentType } = multipart(PNG_1x1, { path: "hero" });
+    const created = await worker.fetch(
+      `https://dropimg.io/api/v1/media/projects/${ctx.projectId}/assets`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${ctx.token}`,
+          "Content-Type": contentType,
+        },
+        body,
+      },
+    );
+    expect(created.status).toBe(201);
+    const asset = (await created.json()) as { asset: { url: string } };
+    const get = await worker.fetch(asset.asset.url);
+    expect(get.status).toBe(200);
+    const head = await worker.fetch(asset.asset.url, { method: "HEAD" });
+    expect(head.status).toBe(200);
+    const env = await worker.getEnv<Cloudflare.Env>();
+    const row = await env.DB.prepare(
+      `SELECT count FROM media_delivery_months WHERE org_id = ?`,
+    )
+      .bind(ctx.orgId)
+      .first<{ count: number }>();
+    expect(Number(row?.count ?? 0)).toBe(1);
+    const usage = await worker.fetch(
+      `https://dropimg.io/api/v1/media/orgs/${ctx.orgId}/usage`,
+      { headers: { Cookie: cookie } },
+    );
+    expect(usage.status).toBe(200);
+    const usageBody = (await usage.json()) as {
+      usage: { plan: string; deliveries: { used: number; limit: number } };
+    };
+    expect(usageBody.usage.plan).toBe("free");
+    expect(usageBody.usage.deliveries.used).toBe(1);
+    expect(usageBody.usage.deliveries.limit).toBe(100_000);
   });
 
   it("does not let cron delete p/ originals", async () => {

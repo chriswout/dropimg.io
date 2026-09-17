@@ -37,7 +37,7 @@ export const DEVELOPERS_ONBOARDING = {
     "Use the returned /m/… URL in the app",
   ] as const,
   launchNote:
-    "Web Assets MCP tools are live when Media is enabled on the workspace. Production Media is still flagged off — this page will not send you to a 404. You can connect MCP today for temporary Drops.",
+    "Web Assets MCP tools are available when Media is enabled. Sign in, create a project, then connect the agent. Temporary Drops keep working on the same /mcp endpoint.",
   cursorHeading: "Cursor",
   cursorBody:
     "Add the DropIMG MCP server (https://dropimg.io/mcp). Cursor opens OAuth after install. Ask the agent to create a project, then upload branding/logo as a Web Asset. Do not invent a /m/… URL — use the JSON url after the HTTP upload.",

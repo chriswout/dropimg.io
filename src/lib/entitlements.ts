@@ -234,7 +234,7 @@ export async function loadSubscription(
     .prepare(
       `SELECT status, price_id, current_period_end, cancel_at_period_end
        FROM subscriptions
-       WHERE user_id = ? AND provider = 'paypal'
+       WHERE user_id = ? AND provider = 'paypal' AND product = 'drops_pro'
        ORDER BY updated_at DESC
        LIMIT 1`,
     )

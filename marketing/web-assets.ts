@@ -100,7 +100,7 @@ export const WEB_ASSETS_PAGE: PageSeo & {
   faqs: [
     {
       q: "Is this live in production?",
-      a: "Web Assets are built and staging-qualified. Production enablement is a separate launch. This page does not send you into a 404 — create-project CTAs follow the Media feature flag.",
+      a: "Sign in and create a Free Web Assets project in Media. Developer and Pro checkout from the pricing page via PayPal. Existing public /m/… URLs keep serving if new uploads have to pause.",
     },
     {
       q: "Can I host a PDF or a video?",
