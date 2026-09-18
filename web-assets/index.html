@@ -68,24 +68,27 @@
           <a href="/developers">Docs</a>
         </nav>
         <div class="header-actions">
-          <nav id="account-nav" class="account-nav" aria-label="Account">
+          <nav id="account-nav" class="account-nav" aria-label="Account"
+            data-label-web="Web Assets"
+            data-label-drops="Drops"
+            data-label-free="Free"
+            data-label-developer="Developer"
+            data-label-wa-pro="Pro"
+            data-label-drops-pro="Drops Pro">
             <a class="account-chip account-get-started" href="/web-assets" data-media-cta="create">Get started</a>
-            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/pro">Pro · €2.99</a>
             <a id="account-signin" class="account-chip" href="/login">Sign in</a>
             <div id="account-session" class="account-session" hidden>
-              <a id="account-app" class="account-nav-link" href="/app">My drops</a>
-              <a id="account-plan" class="account-plan" href="/pro" hidden
-                data-label-pro="Pro"
-                data-label-upgrade="Upgrade"></a>
+              <a id="account-app" class="account-nav-link" href="/app">Dashboard</a>
               <details class="account-menu">
                 <summary class="account-chip account-summary">
-                  <span id="account-plan-badge" class="account-plan-badge" hidden>Pro</span>
                   <span id="account-email" class="account-email"></span>
                 </summary>
                 <div class="account-menu-panel">
                   <p id="account-email-full" class="account-email-full"></p>
-                  <a id="account-app-menu" class="account-menu-item account-menu-mobile" href="/app">My drops</a>
-                  <a id="account-plan-menu" class="account-menu-item account-menu-mobile" href="/pro" hidden>Upgrade</a>
+                  <p id="account-plan-web" class="account-plan-line" hidden></p>
+                  <p id="account-plan-drops" class="account-plan-line" hidden></p>
+                  <a id="account-media-menu" class="account-menu-item" href="/app/media">Web Assets</a>
+                  <a id="account-app-menu" class="account-menu-item" href="/app">My Drops</a>
                   <a id="account-edit" class="account-menu-item" href="/app/account">Edit account</a>
                   <button id="account-signout" type="button" class="account-menu-item">Sign out</button>
                 </div>
@@ -120,11 +123,11 @@
       <main id="web-assets">
         <section class="ext-hero ext-hero-solo">
           <div class="ext-hero-copy">
-            <p class="ext-kicker">DropIMG Media</p>
+            <p class="ext-kicker">Web Assets</p>
             <h1 class="ext-title">Permanent web assets for applications</h1>
             <p class="sub ext-lede">Your AI builds the site. DropIMG hosts the files the site actually serves — with role-based URLs that do not change when the bytes do.</p>
             <div class="ext-actions">
-              <a class="btn primary" href="/login?next=/app/media" data-media-cta="create" data-cta-soon="Web Assets launching soon">Create a Web Assets project</a>
+              <a class="btn primary" href="/login?next=/app/media" data-media-cta="create">Create a Web Assets project</a>
               <a class="btn secondary" href="/developers">Connect your agent</a>
               <a class="btn secondary" href="/drops">Try a temporary Drop</a>
             </div>
@@ -160,7 +163,7 @@
           <h2>REST</h2>
           <p>Authenticated /api/v1/media for orgs, projects, keys, assets, and upload intents. Same write path as MCP. OpenAPI at /openapi/v1.yaml.</p>
           <h2>MCP</h2>
-          <p>One server at https://dropimg.io/mcp. Media tools list, create, get, upload, and replace Web Assets. Bytes never travel in JSON-RPC.</p>
+          <p>One server at https://dropimg.io/mcp. Tools list, create, get, upload, and replace Web Assets. Bytes never travel in JSON-RPC.</p>
           <h2>Project keys</h2>
           <p>Project-scoped dropimg_pk_… credentials. A key cannot create projects. Humans sign in; agents use OAuth or a project key.</p>
           <h2>Public delivery</h2>
@@ -226,11 +229,11 @@
             <div class="faq-list">
               <details>
                 <summary>Is this live in production?</summary>
-                <p>Sign in and create a Free Web Assets project in Media. Developer and Pro checkout from the pricing page via PayPal. Existing public /m/… URLs keep serving if new uploads have to pause.</p>
+                <p>Yes. Sign in and create a Free Web Assets project. Developer and Pro checkout from the pricing page via PayPal. Existing public /m/… URLs keep serving if new uploads have to pause.</p>
               </details>
               <details>
                 <summary>Can I host a PDF or a video?</summary>
-                <p>No. DropIMG Media is focused Web Asset infrastructure, not S3. Use Drops for a temporary screenshot; use Web Assets for the files a website serves.</p>
+                <p>No. DropIMG Web Assets is focused infrastructure for application files, not S3. Use Drops for a temporary screenshot; use Web Assets for the files a website serves.</p>
               </details>
               <details>
                 <summary>Do I pay per MCP call?</summary>
@@ -249,10 +252,10 @@
               <a href="/web-assets">Web Assets</a>
               <a href="/drops">Drops</a>
               <a href="/pricing">Pricing</a>
-              <a href="/pro">Pro</a>
+              <a href="/developers">Developer Docs</a>
+              <a href="/pro">Drops Pro</a>
               <a href="/browser-extension">Chrome / Edge extension</a>
               <a href="/sharex">ShareX</a>
-              <a href="/developers">API</a>
               <a href="/mcp">MCP</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="Legal">

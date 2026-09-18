@@ -136,7 +136,7 @@
                 "name": "How long do Drop images stay online?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "As long as you choose: 1 hour, 24 hours, 7 days, or 30 days, with 7 days selected by default. Pro Drop links can last up to 180 days. Web Assets stay until you replace or delete them."
+                  "text": "As long as you choose: 1 hour, 24 hours, 7 days, or 30 days, with 7 days selected by default. Drops Pro links can last up to 180 days. Web Assets stay until you replace or delete them. A Web Assets subscription does not change Drop expiry or password features."
                 }
               }
             ]
@@ -187,24 +187,27 @@
           <a href="/developers">Docs</a>
         </nav>
         <div class="header-actions">
-          <nav id="account-nav" class="account-nav" aria-label="Account">
+          <nav id="account-nav" class="account-nav" aria-label="Account"
+            data-label-web="Web Assets"
+            data-label-drops="Drops"
+            data-label-free="Free"
+            data-label-developer="Developer"
+            data-label-wa-pro="Pro"
+            data-label-drops-pro="Drops Pro">
             <a class="account-chip account-get-started" href="/web-assets" data-media-cta="create">Get started</a>
-            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/pro">Pro · €2.99</a>
             <a id="account-signin" class="account-chip" href="/login">Sign in</a>
             <div id="account-session" class="account-session" hidden>
-              <a id="account-app" class="account-nav-link" href="/app">My drops</a>
-              <a id="account-plan" class="account-plan" href="/pro" hidden
-                data-label-pro="Pro"
-                data-label-upgrade="Upgrade"></a>
+              <a id="account-app" class="account-nav-link" href="/app">Dashboard</a>
               <details class="account-menu">
                 <summary class="account-chip account-summary">
-                  <span id="account-plan-badge" class="account-plan-badge" hidden>Pro</span>
                   <span id="account-email" class="account-email"></span>
                 </summary>
                 <div class="account-menu-panel">
                   <p id="account-email-full" class="account-email-full"></p>
-                  <a id="account-app-menu" class="account-menu-item account-menu-mobile" href="/app">My drops</a>
-                  <a id="account-plan-menu" class="account-menu-item account-menu-mobile" href="/pro" hidden>Upgrade</a>
+                  <p id="account-plan-web" class="account-plan-line" hidden></p>
+                  <p id="account-plan-drops" class="account-plan-line" hidden></p>
+                  <a id="account-media-menu" class="account-menu-item" href="/app/media">Web Assets</a>
+                  <a id="account-app-menu" class="account-menu-item" href="/app">My Drops</a>
                   <a id="account-edit" class="account-menu-item" href="/app/account">Edit account</a>
                   <button id="account-signout" type="button" class="account-menu-item">Sign out</button>
                 </div>
@@ -246,7 +249,7 @@
             Give Cursor, Claude, Codex, and other coding agents stable URLs for images, SVGs, icons, and web fonts. Replace assets without changing your code.
           </p>
           <div class="hero-actions">
-            <a class="btn primary" href="/web-assets" data-media-cta="create" data-cta-soon="Web Assets launching soon" data-track="homepage_web_assets_cta">Create a Web Assets project</a>
+            <a class="btn primary" href="/web-assets" data-media-cta="create" data-track="homepage_web_assets_cta">Create a Web Assets project</a>
             <a class="btn secondary" href="#dropzone">Try a temporary Drop</a>
           </div>
           <p class="works-with">Works with Cursor · Claude Code · Codex · MCP</p>
@@ -419,11 +422,11 @@
                 <button id="btn-another" type="button" class="btn secondary">
                   Upload another
                 </button>
-                <a id="btn-manage" class="btn secondary" href="/app" hidden>Manage in My drops</a>
+                <a id="btn-manage" class="btn secondary" href="/app" hidden>Manage in My Drops</a>
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>Need it longer?</strong>
-                Keep links up to 180 days with Pro — €2.99/month.
+                Keep links up to 180 days with Drops Pro — €2.99/month.
               </p>
             </div>
 
@@ -449,7 +452,7 @@
             <div class="drop-field" id="pro-password-wrap" hidden>
               <span id="pro-password-label" class="drop-field-label">Password</span>
               <div class="pro-password-controls">
-                <span class="drop-field-badge">PRO</span>
+                <span class="drop-field-badge">DROPS PRO</span>
                 <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password"></button>
                 <input id="pro-password" type="password" minlength="8" placeholder="Min. 8 characters" autocomplete="new-password" hidden />
               </div>
@@ -664,7 +667,7 @@
               <details>
                 <summary>How long do Drop images stay online?</summary>
                 <p>
-                  As long as you choose: 1 hour, 24 hours, 7 days, or 30 days, with 7 days selected by default. Pro Drop links can last up to 180 days. Web Assets stay until you replace or delete them.
+                  As long as you choose: 1 hour, 24 hours, 7 days, or 30 days, with 7 days selected by default. Drops Pro links can last up to 180 days. Web Assets stay until you replace or delete them. A Web Assets subscription does not change Drop expiry or password features.
                 </p>
               </details>
             </div>
@@ -675,7 +678,7 @@
           <section class="home-close" aria-labelledby="closing-heading">
             <h2 id="closing-heading">Give your coding agent permanent web assets.</h2>
             <div class="hero-actions">
-              <a class="btn primary" href="/web-assets" data-media-cta="create" data-cta-soon="Web Assets launching soon" data-track="homepage_web_assets_cta">Create a project</a>
+              <a class="btn primary" href="/web-assets" data-media-cta="create" data-track="homepage_web_assets_cta">Create a project</a>
               <a class="btn secondary" href="/developers">Read the docs</a>
             </div>
           </section>
@@ -690,10 +693,10 @@
               <a href="/web-assets">Web Assets</a>
               <a href="/drops">Drops</a>
               <a href="/pricing">Pricing</a>
-              <a href="/pro">Pro</a>
+              <a href="/developers">Developer Docs</a>
+              <a href="/pro">Drops Pro</a>
               <a href="/browser-extension">Chrome / Edge extension</a>
               <a href="/sharex">ShareX</a>
-              <a href="/developers">API</a>
               <a href="/mcp">MCP</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="Legal">

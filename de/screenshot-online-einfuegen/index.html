@@ -77,24 +77,27 @@
           <a href="/developers">Docs</a>
         </nav>
         <div class="header-actions">
-          <nav id="account-nav" class="account-nav" aria-label="Konto">
+          <nav id="account-nav" class="account-nav" aria-label="Konto"
+            data-label-web="Web Assets"
+            data-label-drops="Drops"
+            data-label-free="Kostenlos"
+            data-label-developer="Developer"
+            data-label-wa-pro="Pro"
+            data-label-drops-pro="Drops Pro">
             <a class="account-chip account-get-started" href="/web-assets" data-media-cta="create">Loslegen</a>
-            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/de/pro">Pro · €2.99</a>
             <a id="account-signin" class="account-chip" href="/login">Anmelden</a>
             <div id="account-session" class="account-session" hidden>
-              <a id="account-app" class="account-nav-link" href="/app">Meine Drops</a>
-              <a id="account-plan" class="account-plan" href="/de/pro" hidden
-                data-label-pro="Pro"
-                data-label-upgrade="Upgrade"></a>
+              <a id="account-app" class="account-nav-link" href="/app">Dashboard</a>
               <details class="account-menu">
                 <summary class="account-chip account-summary">
-                  <span id="account-plan-badge" class="account-plan-badge" hidden>Pro</span>
                   <span id="account-email" class="account-email"></span>
                 </summary>
                 <div class="account-menu-panel">
                   <p id="account-email-full" class="account-email-full"></p>
-                  <a id="account-app-menu" class="account-menu-item account-menu-mobile" href="/app">Meine Drops</a>
-                  <a id="account-plan-menu" class="account-menu-item account-menu-mobile" href="/de/pro" hidden>Upgrade</a>
+                  <p id="account-plan-web" class="account-plan-line" hidden></p>
+                  <p id="account-plan-drops" class="account-plan-line" hidden></p>
+                  <a id="account-media-menu" class="account-menu-item" href="/app/media">Web Assets</a>
+                  <a id="account-app-menu" class="account-menu-item" href="/app">Meine Drops</a>
                   <a id="account-edit" class="account-menu-item" href="/app/account">Konto bearbeiten</a>
                   <button id="account-signout" type="button" class="account-menu-item">Abmelden</button>
                 </div>
@@ -221,7 +224,7 @@
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>Länger behalten?</strong>
-                Links bis 180 Tage mit Pro — €2.99/Monat.
+                Links bis 180 Tage mit Drops Pro — €2.99/Monat.
               </p>
             </div>
 
@@ -247,7 +250,7 @@
             <div class="drop-field" id="pro-password-wrap" hidden>
               <span id="pro-password-label" class="drop-field-label">Passwort</span>
               <div class="pro-password-controls">
-                <span class="drop-field-badge">PRO</span>
+                <span class="drop-field-badge">DROPS PRO</span>
                 <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password"></button>
                 <input id="pro-password" type="password" minlength="8" placeholder="Mind. 8 Zeichen" autocomplete="new-password" hidden />
               </div>
@@ -330,10 +333,10 @@
               <a href="/web-assets">Web Assets</a>
               <a href="/drops">Drops</a>
               <a href="/pricing">Preise</a>
-              <a href="/de/pro">Pro</a>
+              <a href="/developers">Entwickler-Docs</a>
+              <a href="/de/pro">Drops Pro</a>
               <a href="/browser-extension">Chrome- / Edge-Erweiterung</a>
               <a href="/sharex">ShareX</a>
-              <a href="/developers">API</a>
               <a href="/mcp">MCP</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="Rechtliches">

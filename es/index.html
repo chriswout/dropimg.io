@@ -136,7 +136,7 @@
                 "name": "¿Cuánto tiempo está disponible la imagen de un Drop?",
                 "acceptedAnswer": {
                   "@type": "Answer",
-                  "text": "El tiempo que elijas: 1 hora, 24 horas, 7 días o 30 días, con 7 días por defecto. Con Pro el Drop puede durar hasta 180 días. Los Web Assets se quedan hasta que los sustituyas o borres."
+                  "text": "El tiempo que elijas: 1 hora, 24 horas, 7 días o 30 días, con 7 días por defecto. Con Drops Pro el Drop puede durar hasta 180 días. Los Web Assets se quedan hasta que los sustituyas o borres. Una suscripción de Web Assets no cambia la caducidad ni las contraseñas de los Drops."
                 }
               }
             ]
@@ -179,24 +179,27 @@
           <a href="/developers">Docs</a>
         </nav>
         <div class="header-actions">
-          <nav id="account-nav" class="account-nav" aria-label="Cuenta">
+          <nav id="account-nav" class="account-nav" aria-label="Cuenta"
+            data-label-web="Web Assets"
+            data-label-drops="Drops"
+            data-label-free="Gratis"
+            data-label-developer="Developer"
+            data-label-wa-pro="Pro"
+            data-label-drops-pro="Drops Pro">
             <a class="account-chip account-get-started" href="/web-assets" data-media-cta="create">Empezar</a>
-            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/es/pro">Pro · €2.99</a>
             <a id="account-signin" class="account-chip" href="/login">Entrar</a>
             <div id="account-session" class="account-session" hidden>
-              <a id="account-app" class="account-nav-link" href="/app">Mis envíos</a>
-              <a id="account-plan" class="account-plan" href="/es/pro" hidden
-                data-label-pro="Pro"
-                data-label-upgrade="Mejorar"></a>
+              <a id="account-app" class="account-nav-link" href="/app">Panel</a>
               <details class="account-menu">
                 <summary class="account-chip account-summary">
-                  <span id="account-plan-badge" class="account-plan-badge" hidden>Pro</span>
                   <span id="account-email" class="account-email"></span>
                 </summary>
                 <div class="account-menu-panel">
                   <p id="account-email-full" class="account-email-full"></p>
-                  <a id="account-app-menu" class="account-menu-item account-menu-mobile" href="/app">Mis envíos</a>
-                  <a id="account-plan-menu" class="account-menu-item account-menu-mobile" href="/es/pro" hidden>Mejorar</a>
+                  <p id="account-plan-web" class="account-plan-line" hidden></p>
+                  <p id="account-plan-drops" class="account-plan-line" hidden></p>
+                  <a id="account-media-menu" class="account-menu-item" href="/app/media">Web Assets</a>
+                  <a id="account-app-menu" class="account-menu-item" href="/app">Mis Drops</a>
                   <a id="account-edit" class="account-menu-item" href="/app/account">Editar cuenta</a>
                   <button id="account-signout" type="button" class="account-menu-item">Salir</button>
                 </div>
@@ -238,7 +241,7 @@
             Da a Cursor, Claude, Codex y otros agentes URLs estables para imágenes, SVG, iconos y fuentes web. Sustituye el archivo sin cambiar el código.
           </p>
           <div class="hero-actions">
-            <a class="btn primary" href="/web-assets" data-media-cta="create" data-cta-soon="Web Assets, próximamente" data-track="homepage_web_assets_cta">Crear un proyecto de Web Assets</a>
+            <a class="btn primary" href="/web-assets" data-media-cta="create" data-track="homepage_web_assets_cta">Crear un proyecto de Web Assets</a>
             <a class="btn secondary" href="#dropzone">Probar un Drop temporal</a>
           </div>
           <p class="works-with">Funciona con Cursor · Claude Code · Codex · MCP</p>
@@ -411,11 +414,11 @@
                 <button id="btn-another" type="button" class="btn secondary">
                   Subir otra
                 </button>
-                <a id="btn-manage" class="btn secondary" href="/app" hidden>Gestionar en Mis envíos</a>
+                <a id="btn-manage" class="btn secondary" href="/app" hidden>Gestionar en Mis Drops</a>
               </div>
               <p id="success-upsell" class="success-upsell" hidden>
                 <strong>¿Lo necesitas más tiempo?</strong>
-                Conserva enlaces hasta 180 días con Pro — €2.99/mes.
+                Conserva enlaces hasta 180 días con Drops Pro — €2.99/mes.
               </p>
             </div>
 
@@ -441,7 +444,7 @@
             <div class="drop-field" id="pro-password-wrap" hidden>
               <span id="pro-password-label" class="drop-field-label">Contraseña</span>
               <div class="pro-password-controls">
-                <span class="drop-field-badge">PRO</span>
+                <span class="drop-field-badge">DROPS PRO</span>
                 <button type="button" id="pro-password-toggle" class="switch" role="switch" aria-checked="false" aria-labelledby="pro-password-label" aria-controls="pro-password"></button>
                 <input id="pro-password" type="password" minlength="8" placeholder="Mín. 8 caracteres" autocomplete="new-password" hidden />
               </div>
@@ -529,17 +532,17 @@
             <article class="price-card" data-tier="free">
               <h3>Free</h3>
               <p class="price-amount">$0</p>
-              <p class="price-teaser-note">3 projects</p>
+              <p class="price-teaser-note">3 proyectos</p>
             </article>
             <article class="price-card" data-tier="developer">
               <h3>Developer</h3>
               <p class="price-amount">$9<span>/month</span></p>
-              <p class="price-teaser-note">10 GB · 2M deliveries</p>
+              <p class="price-teaser-note">10 GB · 2M entregas</p>
             </article>
             <article class="price-card" data-tier="pro">
               <h3>Pro</h3>
               <p class="price-amount">$29<span>/month</span></p>
-              <p class="price-teaser-note">100 GB · 10M deliveries</p>
+              <p class="price-teaser-note">100 GB · 10M entregas</p>
             </article>
             </div>
             <p class="pricing-teaser-cta">
@@ -656,7 +659,7 @@
               <details>
                 <summary>¿Cuánto tiempo está disponible la imagen de un Drop?</summary>
                 <p>
-                  El tiempo que elijas: 1 hora, 24 horas, 7 días o 30 días, con 7 días por defecto. Con Pro el Drop puede durar hasta 180 días. Los Web Assets se quedan hasta que los sustituyas o borres.
+                  El tiempo que elijas: 1 hora, 24 horas, 7 días o 30 días, con 7 días por defecto. Con Drops Pro el Drop puede durar hasta 180 días. Los Web Assets se quedan hasta que los sustituyas o borres. Una suscripción de Web Assets no cambia la caducidad ni las contraseñas de los Drops.
                 </p>
               </details>
             </div>
@@ -667,7 +670,7 @@
           <section class="home-close" aria-labelledby="closing-heading">
             <h2 id="closing-heading">Dale a tu agente recursos web permanentes.</h2>
             <div class="hero-actions">
-              <a class="btn primary" href="/web-assets" data-media-cta="create" data-cta-soon="Web Assets, próximamente" data-track="homepage_web_assets_cta">Crear un proyecto</a>
+              <a class="btn primary" href="/web-assets" data-media-cta="create" data-track="homepage_web_assets_cta">Crear un proyecto</a>
               <a class="btn secondary" href="/developers">Leer la documentación</a>
             </div>
           </section>
@@ -682,10 +685,10 @@
               <a href="/web-assets">Web Assets</a>
               <a href="/drops">Drops</a>
               <a href="/pricing">Precios</a>
-              <a href="/es/pro">Pro</a>
+              <a href="/developers">Docs para developers</a>
+              <a href="/es/pro">Drops Pro</a>
               <a href="/browser-extension">Extensión Chrome / Edge</a>
               <a href="/sharex">ShareX</a>
-              <a href="/developers">API</a>
               <a href="/mcp">MCP</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="Legal">
