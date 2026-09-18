@@ -36,7 +36,7 @@ export const SHAREX_PAGE: SharexCopy = {
   twitterDescription:
     "Free temporary ShareX image host. Double-click the .sxcu, capture as usual, link copied.",
   h1: "ShareX image uploader",
-  lede: "dropimg.io is a free ShareX image host: import one custom uploader file, keep capturing the way you already do, and get a temporary URL. No account required. The public config is anonymous; an account config attaches uploads to My drops.",
+  lede: "dropimg.io is a free ShareX image host: import one custom uploader file, keep capturing the way you already do, and get a temporary URL. No account required. The public config is anonymous; an account config attaches uploads to My Drops.",
   heroKicker: "ShareX custom uploader",
   heroTitle: "ShareX image uploader",
   heroTagline: "Upload a screenshot to a URL",
@@ -68,7 +68,7 @@ export const SHAREX_PAGE: SharexCopy = {
     },
     {
       q: "Do I need an account to upload a ShareX screenshot to a URL?",
-      a: "No. The public .sxcu is anonymous. Sign in only if you want uploads in My drops, or longer Pro expiries (90 or 180 days).",
+      a: "No. The public .sxcu is anonymous. Sign in only if you want uploads in My Drops, or longer Drops Pro expiries (90 or 180 days).",
     },
     {
       q: "How long do temporary ShareX links last?",
@@ -98,7 +98,7 @@ export const SHAREX_PAGE: SharexCopy = {
     },
     {
       type: "p",
-      text: "Account: sign in, open Integrations, and click Create ShareX config. Download dropimg-sharex.sxcu immediately — the token is shown once. Those uploads appear in My drops and follow your plan’s expiry options. Never commit that file.",
+      text: "Account: sign in, open Integrations, and click Create ShareX config. Download dropimg-sharex.sxcu immediately — the token is shown once. Those uploads appear in My Drops and follow your plan’s expiry options. Never commit that file.",
     },
     {
       type: "h2",

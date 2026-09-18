@@ -77,7 +77,7 @@ async function pollUntilPro() {
     location.href = "/app";
     return;
   }
-  setStatus(copy("activating", "Payment received. Activating Pro…"));
+  setStatus(copy("activating", "Payment received. Activating Drops Pro…"));
   const subscriptionId = new URLSearchParams(location.search).get("subscription_id");
   try {
     const synced = await fetch("/api/billing/sync", {
@@ -112,7 +112,7 @@ async function pollUntilPro() {
   setStatus(
     copy(
       "timeout",
-      "Your payment was received. Pro is still activating. Refresh My drops in a moment.",
+      "Your payment was received. Drops Pro is still activating. Refresh My Drops in a moment.",
     ),
   );
 }

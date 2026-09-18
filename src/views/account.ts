@@ -124,8 +124,8 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     plan: "Plan",
     manageHint: "Cancel or change payment in your PayPal wallet.",
     freePlanHint: "10 MB uploads, 24-hour links, last 10 drops.",
-    planFree: "Free",
-    planPro: "Pro",
+    planFree: "Drops Free",
+    planPro: "Drops Pro",
     renews: (date) => `Renews ${date}`,
     ends: (date) => `Ends ${date}`,
     viewPlans: "View plans",
@@ -136,7 +136,7 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     integrations: "Integrations",
     integrationsHint: "Connect DropIMG to tools you already use.",
     extensionTitle: "Browser extension",
-    extensionBody: "Capture screenshots and save them directly to My drops.",
+    extensionBody: "Capture screenshots and save them directly to My Drops.",
     extensionPairHint: "Connect from the DropIMG extension — no token to copy.",
     connectExtension: "Create a token manually",
     kindExtension: "Browser Extension",
@@ -181,14 +181,14 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     delete: "Delete account",
     deleteHint: "This permanently closes the account.",
     deleteWill: "Deleting your account will:",
-    deleteCancelPro: "cancel Pro if active",
+    deleteCancelPro: "cancel Drops Pro if active",
     deleteImages: "delete your active DropIMG images",
     deleteIntegrations: "revoke connected integrations",
     deleteSignOut: "sign you out everywhere",
     deleteUndo: "This cannot be undone.",
     deleteAction: "Delete account",
     deleteFailed: "Could not delete this account.",
-    billingFail: "We couldn't cancel your Pro subscription, so your DropIMG account was not deleted.",
+    billingFail: "We couldn't cancel your Drops Pro subscription, so your DropIMG account was not deleted.",
     billingFailHint: "Manage billing or try again.",
     skip: "Skip to account",
   },
@@ -219,8 +219,8 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     plan: "Plan",
     manageHint: "Cancela o cambia el pago en tu cuenta de PayPal.",
     freePlanHint: "Subidas de 10 MB, enlaces de 24 h, últimos 10 envíos.",
-    planFree: "Gratis",
-    planPro: "Pro",
+    planFree: "Drops gratis",
+    planPro: "Drops Pro",
     renews: (date) => `Se renueva el ${date}`,
     ends: (date) => `Termina el ${date}`,
     viewPlans: "Ver planes",
@@ -276,14 +276,14 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     delete: "Borrar cuenta",
     deleteHint: "Esto cierra la cuenta de forma permanente.",
     deleteWill: "Al borrar tu cuenta:",
-    deleteCancelPro: "se cancela Pro si está activo",
+    deleteCancelPro: "se cancela Drops Pro si está activo",
     deleteImages: "se borran tus imágenes activas de DropIMG",
     deleteIntegrations: "se revocan las integraciones conectadas",
     deleteSignOut: "se cierra la sesión en todos lados",
     deleteUndo: "Esto no se puede deshacer.",
     deleteAction: "Borrar cuenta",
     deleteFailed: "No se pudo borrar la cuenta.",
-    billingFail: "No pudimos cancelar tu suscripción Pro, así que la cuenta no se borró.",
+    billingFail: "No pudimos cancelar tu suscripción Drops Pro, así que la cuenta no se borró.",
     billingFailHint: "Gestiona la facturación o inténtalo de nuevo.",
     skip: "Ir a la cuenta",
   },
@@ -314,8 +314,8 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     plan: "Plano",
     manageHint: "Cancele ou altere o pagamento na sua conta PayPal.",
     freePlanHint: "Envios de 10 MB, links de 24 h, últimos 10 envios.",
-    planFree: "Grátis",
-    planPro: "Pro",
+    planFree: "Drops grátis",
+    planPro: "Drops Pro",
     renews: (date) => `Renova em ${date}`,
     ends: (date) => `Termina em ${date}`,
     viewPlans: "Ver planos",
@@ -371,14 +371,14 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     delete: "Excluir conta",
     deleteHint: "Isso encerra a conta de forma permanente.",
     deleteWill: "Excluir sua conta vai:",
-    deleteCancelPro: "cancelar o Pro se estiver ativo",
+    deleteCancelPro: "cancelar o Drops Pro se estiver ativo",
     deleteImages: "apagar suas imagens ativas do DropIMG",
     deleteIntegrations: "revogar integrações conectadas",
     deleteSignOut: "sair da conta em todos os lugares",
     deleteUndo: "Isso não tem como desfazer.",
     deleteAction: "Excluir conta",
     deleteFailed: "Não foi possível excluir a conta.",
-    billingFail: "Não foi possível cancelar sua assinatura Pro, então a conta não foi excluída.",
+    billingFail: "Não foi possível cancelar sua assinatura Drops Pro, então a conta não foi excluída.",
     billingFailHint: "Gerencie a cobrança ou tente de novo.",
     skip: "Ir para a conta",
   },
@@ -409,8 +409,8 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     plan: "Plan",
     manageHint: "Zahlung in deinem PayPal-Konto ändern oder kündigen.",
     freePlanHint: "10 MB pro Upload, 24-Stunden-Links, letzte 10 Drops.",
-    planFree: "Kostenlos",
-    planPro: "Pro",
+    planFree: "Drops kostenlos",
+    planPro: "Drops Pro",
     renews: (date) => `Verlängert sich am ${date}`,
     ends: (date) => `Endet am ${date}`,
     viewPlans: "Pläne ansehen",
@@ -466,7 +466,7 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     delete: "Konto löschen",
     deleteHint: "Das schließt das Konto dauerhaft.",
     deleteWill: "Wenn du dein Konto löschst:",
-    deleteCancelPro: "Pro wird gekündigt, falls aktiv",
+    deleteCancelPro: "Drops Pro wird gekündigt, falls aktiv",
     deleteImages: "deine aktiven DropIMG-Bilder werden gelöscht",
     deleteIntegrations: "verbundene Integrationen werden widerrufen",
     deleteSignOut: "du wirst überall abgemeldet",
@@ -474,7 +474,7 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     deleteAction: "Konto löschen",
     deleteFailed: "Konto konnte nicht gelöscht werden.",
     billingFail:
-      "Wir konnten dein Pro-Abo nicht kündigen, daher wurde das DropIMG-Konto nicht gelöscht.",
+      "Wir konnten dein Drops-Pro-Abo nicht kündigen, daher wurde das DropIMG-Konto nicht gelöscht.",
     billingFailHint: "Abrechnung verwalten oder erneut versuchen.",
     skip: "Zum Konto",
   },
@@ -523,7 +523,11 @@ export function renderBillingPage(opts: SettingsProps): string {
 
   const wa = opts.webAssets;
   const waLabel =
-    wa?.plan === "developer" ? "Developer — $9/month" : wa?.plan === "pro" ? "Pro — $29/month" : "Free — $0";
+    wa?.plan === "developer"
+      ? "Web Assets Developer — $9/month"
+      : wa?.plan === "pro"
+        ? "Web Assets Pro — $29/month"
+        : "Web Assets Free — $0";
   const waPeriod =
     wa?.periodEnd && wa.plan !== "free"
       ? wa.cancelAtPeriodEnd
@@ -551,7 +555,7 @@ export function renderBillingPage(opts: SettingsProps): string {
       <p class="settings-value settings-value-lg">${esc(waLabel)}</p>
       ${waCadence ? `<p class="account-muted">${esc(waCadence)}</p>` : ""}
       ${waPeriod ? `<p class="account-muted">${esc(waPeriod)}</p>` : ""}
-      <p class="account-muted">Projects, storage, and deliveries for permanent /m/… URLs. Separate from Drop Pro.</p>
+      <p class="account-muted">Projects, storage, and deliveries for permanent /m/… URLs. Separate from Drops Pro.</p>
       <div class="settings-actions">
         ${
           wa && wa.plan !== "free"
@@ -569,6 +573,7 @@ export function renderBillingPage(opts: SettingsProps): string {
     section: "billing",
     title: t.titleBilling,
     plan: opts.plan,
+    webAssetsPlan: opts.webAssets?.plan,
     main,
     extraBody: `<script>${PORTAL_SCRIPT}</script>`,
   });
@@ -621,6 +626,7 @@ export function renderIntegrationsPage(opts: SettingsProps): string {
     section: "integrations",
     title: t.titleIntegrations,
     plan: opts.plan,
+    webAssetsPlan: opts.webAssets?.plan,
     main,
     extraBody: integrationsExtraBody(t, opts.locale),
   });
@@ -994,6 +1000,7 @@ export function renderAccountPage(opts: SettingsProps): string {
     section: "account",
     title: t.title,
     plan: opts.plan,
+    webAssetsPlan: opts.webAssets?.plan,
     main,
     extraBody: dangerExtraBody(t),
   });

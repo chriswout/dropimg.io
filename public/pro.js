@@ -61,7 +61,7 @@
       location.href = "/app";
       return;
     }
-    setStatus(copy("activating", "Payment received. Activating Pro\u2026"));
+    setStatus(copy("activating", "Payment received. Activating Drops Pro\u2026"));
     const subscriptionId = new URLSearchParams(location.search).get("subscription_id");
     try {
       const synced = await fetch("/api/billing/sync", {
@@ -94,7 +94,7 @@
     setStatus(
       copy(
         "timeout",
-        "Your payment was received. Pro is still activating. Refresh My drops in a moment."
+        "Your payment was received. Drops Pro is still activating. Refresh My Drops in a moment."
       )
     );
   }

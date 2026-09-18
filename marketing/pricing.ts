@@ -104,17 +104,17 @@ export const PRICING_PAGE: PageSeo & {
     "Free, Developer $9, Pro $29. Storage and deliveries included. No bandwidth surcharge, no MCP call fees.",
   skip: "Skip to plans",
   kicker: "Web Assets",
-  h1: "Simple plans. No egress fees.",
+  h1: "Web Assets pricing",
   lede: "Pay for projects, storage, and deliveries — not per MCP call, and not a bandwidth surcharge on top of the plan. Fair-use and plan limits still apply.",
   launchNote:
-    "Free starts instantly. Developer and Pro are billed on PayPal. Drop Pro (€2.99) for temporary Drops is unchanged.",
+    "Free starts instantly. Developer and Pro are billed on PayPal. Drops Pro (€2.99) for temporary Drops is a separate product.",
   noEgress: "No bandwidth / egress fees.",
   noMcpFee: "No per-MCP-call charges.",
   overageNote:
     "Storage and delivery overages stay on the plan. Crossing 100% of monthly deliveries starts a 3-day grace window — live /m/… URLs keep serving. New uploads and projects still respect plan limits.",
-  dropProHeading: "Already on Drop Pro?",
+  dropProHeading: "Looking for Drops pricing?",
   dropProBody:
-    "Drop Pro (€2.99/month) is the plan for temporary Drops: longer lifetimes, larger uploads, and passwords. Web Assets plans are separate and will not replace it.",
+    "Drops are free for temporary image sharing. Drops Pro adds longer expiry and password protection for €2.99/month. Web Assets subscriptions do not change Drop expiry or password features.",
   faqHeading: "Pricing questions",
   faqs: [
     {
@@ -127,7 +127,7 @@ export const PRICING_PAGE: PageSeo & {
     },
     {
       q: "What about Drops?",
-      a: "Temporary Drops stay free at the current site limits. Drop Pro is still €2.99/month for longer Drop links. Web Assets storage is billed on the table above.",
+      a: "Temporary Drops stay free at the current site limits. Drops Pro is still €2.99/month for longer Drop links and passwords. Web Assets storage is billed on the table above.",
     },
   ],
 };

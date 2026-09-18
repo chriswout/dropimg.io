@@ -5,11 +5,12 @@ export function mediaHtmlResponse(opts: {
   locale: "en" | "es" | "pt-BR" | "de";
   env: { ENVIRONMENT?: string; MEDIA_ENABLED?: string };
   plan: "free" | "pro";
+  webAssetsPlan?: "free" | "developer" | "pro";
   origin: string;
 }): Response {
   const main = `<section class="settings-card">
       <p class="settings-eyebrow">Web Assets</p>
-      <p>My Drops are temporary screenshots and links that expire. Media is permanent Web Assets for a website or app — logos, heroes, favicons, illustrations, and web fonts — at a URL that stays the same when you replace the file.</p>
+      <p>My Drops are temporary screenshots and links that expire. Web Assets are permanent files for a website or app — logos, heroes, favicons, illustrations, and web fonts — at a URL that stays the same when you replace the file.</p>
       <p class="account-muted">Stable URL: <code>${esc(opts.origin)}/m/{org}/{project}/…</code>. Anyone with the URL can fetch the file.</p>
     </section>
     <section class="settings-card" id="media-org-card">
@@ -87,8 +88,9 @@ export function mediaHtmlResponse(opts: {
     locale: opts.locale,
     env: opts.env,
     section: "media",
-    title: "Media — dropimg.io",
+    title: "Web Assets — dropimg.io",
     plan: opts.plan,
+    webAssetsPlan: opts.webAssetsPlan,
     main,
   });
   return siteHtmlResponse(html);

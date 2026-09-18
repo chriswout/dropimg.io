@@ -342,10 +342,10 @@ describe("PayPal billing webhook", () => {
     const page = await worker.fetch("https://dropimg.io/pro");
     expect(page.status).toBe(200);
     const html = await page.text();
-    expect(html).toContain("DropIMG Pro");
+    expect(html).toContain("Drops Pro");
     expect(html).toContain("€2.99");
     expect(html).toContain("€24.99");
-    expect(html).toContain("Sign in to get Pro");
+    expect(html).toContain("Sign in to get Drops Pro");
     expect(html).not.toContain("paddle.js");
     expect(html).not.toContain("Stripe");
 

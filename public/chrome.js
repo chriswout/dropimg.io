@@ -19,15 +19,20 @@
     const sessionEl = document.getElementById("account-session");
     const emailEl = document.getElementById("account-email");
     const emailFullEl = document.getElementById("account-email-full");
-    const planEl = document.getElementById("account-plan");
-    const planMenu = document.getElementById("account-plan-menu");
-    const planBadge = document.getElementById("account-plan-badge");
-    const proAnon = document.getElementById("account-pro-anon");
+    const planWeb = document.getElementById("account-plan-web");
+    const planDrops = document.getElementById("account-plan-drops");
+    const mediaMenu = document.getElementById("account-media-menu");
     const signout = document.getElementById("account-signout");
     const accountMenu = document.querySelector(".account-menu");
+    const accountNav = document.getElementById("account-nav");
     if (!signin || !sessionEl || !emailEl || !signout) return;
     exclusiveDetails();
     setupModals();
+    void fetch("/api/site-config").then((res) => res.ok ? res.json() : null).then((raw) => {
+      const data = raw;
+      if (mediaMenu && data?.mediaEnabled !== true) mediaMenu.hidden = true;
+    }).catch(() => {
+    });
     accountReady = (async () => {
       try {
         const res = await fetch("/api/account/me", { credentials: "same-origin" });
@@ -40,7 +45,7 @@
         emailEl.textContent = local;
         emailEl.title = data.user.email;
         if (emailFullEl) emailFullEl.textContent = data.user.email;
-        applyPlanState(planEl, planBadge, planMenu, proAnon, true, data.entitlements?.plan === "pro");
+        paintPlanLines(accountNav, planWeb, planDrops, data);
         signin.hidden = true;
         sessionEl.hidden = false;
         document.querySelectorAll(".account-get-started").forEach((el) => {
@@ -65,28 +70,34 @@
       emailEl.textContent = "";
       if (emailFullEl) emailFullEl.textContent = "";
       if (accountMenu) accountMenu.open = false;
-      applyPlanState(planEl, planBadge, planMenu, proAnon, false, false);
-      if (planEl) {
-        planEl.hidden = true;
-        planEl.textContent = "";
-        planEl.removeAttribute("data-plan");
+      if (planWeb) {
+        planWeb.hidden = true;
+        planWeb.textContent = "";
+      }
+      if (planDrops) {
+        planDrops.hidden = true;
+        planDrops.textContent = "";
       }
     });
   }
-  function applyPlanState(planEl, badgeEl, planMenu, proAnon, signedIn, isPro) {
-    if (planEl) {
-      if (isPro) {
-        planEl.hidden = true;
-        planEl.removeAttribute("data-plan");
-      } else {
-        planEl.textContent = planEl.getAttribute("data-label-upgrade") || "Upgrade";
-        planEl.dataset.plan = "free";
-        planEl.hidden = false;
-      }
+  function paintPlanLines(nav, planWeb, planDrops, data) {
+    const webLabel = nav?.getAttribute("data-label-web") || "Web Assets";
+    const dropsLabel = nav?.getAttribute("data-label-drops") || "Drops";
+    const free = nav?.getAttribute("data-label-free") || "Free";
+    const developer = nav?.getAttribute("data-label-developer") || "Developer";
+    const waPro = nav?.getAttribute("data-label-wa-pro") || "Pro";
+    const dropsPro = nav?.getAttribute("data-label-drops-pro") || "Drops Pro";
+    const waPlan = data.webAssets?.plan ?? "free";
+    const dropsPlan = data.entitlements?.plan === "pro" ? dropsPro : free;
+    const waName = waPlan === "pro" ? waPro : waPlan === "developer" ? developer : free;
+    if (planWeb) {
+      planWeb.textContent = `${webLabel} \u2014 ${waName}`;
+      planWeb.hidden = false;
     }
-    if (planMenu) planMenu.hidden = !signedIn || isPro;
-    if (badgeEl) badgeEl.hidden = !isPro;
-    if (proAnon) proAnon.hidden = signedIn;
+    if (planDrops) {
+      planDrops.textContent = `${dropsLabel} \u2014 ${dropsPlan}`;
+      planDrops.hidden = false;
+    }
   }
   function setupModals() {
     document.querySelectorAll(".modal").forEach(bindModal);

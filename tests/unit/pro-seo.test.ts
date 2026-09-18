@@ -47,7 +47,7 @@ describe("localized /pro SEO", () => {
       periodEnd: 1_790_721_044,
       cancelAtPeriodEnd: false,
     }).text();
-    expect(html).toContain("You're on DropIMG Pro");
+    expect(html).toContain("You're on Drops Pro");
     expect(html).toContain("Manage billing");
     expect(html).not.toContain("data-interval");
     expect(html).not.toContain("Pay with PayPal");

@@ -133,7 +133,7 @@ describe("V2 locale completeness", () => {
         UI[locale].dropHintFormats,
       ].join(" "),
     ).join(" ");
-    expect(joined).toContain("DropIMG Pro");
+    expect(joined).toContain("Drops Pro");
     expect(joined).toContain("ShareX");
     expect(joined).toMatch(/PNG/);
     expect(joined).toMatch(/JPEG/);

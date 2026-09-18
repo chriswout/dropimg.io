@@ -78,10 +78,12 @@ accountRoutes.get("/api/account/me", async (c) => {
       user: null,
       locale,
       entitlements: resolveEntitlements({ userId: null, flags }),
+      webAssets: { plan: "free" as const },
     });
   }
 
   const entitlements = await entitlementsFor(c.env, session.id);
+  const webAssets = await webAssetsEntitlementsFor(c.env, session.id);
   return c.json({
     user: {
       id: session.id,
@@ -89,6 +91,7 @@ accountRoutes.get("/api/account/me", async (c) => {
     },
     locale,
     entitlements,
+    webAssets: { plan: webAssets.plan },
   });
 });
 
@@ -150,10 +153,12 @@ accountRoutes.get("/app/media", async (c) => {
   const session = await resolveSession(c.env.DB, c.req.header("cookie"));
   if (!session) return c.redirect("/login", 302);
   const entitlements = await entitlementsFor(c.env, session.id);
+  const webAssets = await webAssetsEntitlementsFor(c.env, session.id);
   return mediaHtmlResponse({
     locale,
     env: c.env,
     plan: entitlements.plan === "pro" ? "pro" : "free",
+    webAssetsPlan: webAssets.plan,
     origin: new URL(c.req.url).origin,
   });
 });
@@ -164,6 +169,7 @@ accountRoutes.get("/app", async (c) => {
   if (!session) return c.redirect("/login", 302);
 
   const entitlements = await entitlementsFor(c.env, session.id);
+  const webAssets = await webAssetsEntitlementsFor(c.env, session.id);
   const now = Math.floor(Date.now() / 1000);
   const cursorRaw = c.req.query("cursor");
   const cursor = cursorRaw ? Number(cursorRaw) : NaN;
@@ -197,6 +203,7 @@ accountRoutes.get("/app", async (c) => {
     origin: new URL(c.req.url).origin,
     email: session.email,
     plan: entitlements.plan,
+    webAssetsPlan: webAssets.plan,
     extendChoices:
       entitlements.plan === "pro" &&
       entitlements.allowedExpirySeconds.includes(MAX_LIFETIME_SECONDS)

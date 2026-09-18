@@ -111,24 +111,27 @@ export function topBarHtml(opts: {
           <a href="${esc(DEVELOPERS_PATH)}">${esc(opts.chrome.navDocs)}</a>
         </nav>
         <div class="header-actions">
-          <nav id="account-nav" class="account-nav" aria-label="${esc(opts.chrome.accountAria)}">
+          <nav id="account-nav" class="account-nav" aria-label="${esc(opts.chrome.accountAria)}"
+            data-label-web="${esc(opts.chrome.planWebAssets)}"
+            data-label-drops="${esc(opts.chrome.planDrops)}"
+            data-label-free="${esc(opts.chrome.planFree)}"
+            data-label-developer="${esc(opts.chrome.planDeveloper)}"
+            data-label-wa-pro="${esc(opts.chrome.planWebAssetsPro)}"
+            data-label-drops-pro="${esc(opts.chrome.planDropsPro)}">
             <a class="account-chip account-get-started" href="${esc(WEB_ASSETS_PATH)}" data-media-cta="create">${esc(opts.chrome.getStarted)}</a>
-            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="${esc(proPath(opts.locale))}">${esc(opts.chrome.proPrice)}</a>
             <a id="account-signin" class="account-chip" href="/login">${esc(opts.chrome.signIn)}</a>
             <div id="account-session" class="account-session" hidden>
-              <a id="account-app" class="account-nav-link" href="/app">${esc(opts.chrome.myDrops)}</a>
-              <a id="account-plan" class="account-plan" href="${esc(proPath(opts.locale))}" hidden
-                data-label-pro="${esc(opts.chrome.pro)}"
-                data-label-upgrade="${esc(opts.chrome.upgradeToPro)}"></a>
+              <a id="account-app" class="account-nav-link" href="/app">${esc(opts.chrome.dashboard)}</a>
               <details class="account-menu">
                 <summary class="account-chip account-summary">
-                  <span id="account-plan-badge" class="account-plan-badge" hidden>${esc(opts.chrome.pro)}</span>
                   <span id="account-email" class="account-email"></span>
                 </summary>
                 <div class="account-menu-panel">
                   <p id="account-email-full" class="account-email-full"></p>
-                  <a id="account-app-menu" class="account-menu-item account-menu-mobile" href="/app">${esc(opts.chrome.myDrops)}</a>
-                  <a id="account-plan-menu" class="account-menu-item account-menu-mobile" href="${esc(proPath(opts.locale))}" hidden>${esc(opts.chrome.upgradeToPro)}</a>
+                  <p id="account-plan-web" class="account-plan-line" hidden></p>
+                  <p id="account-plan-drops" class="account-plan-line" hidden></p>
+                  <a id="account-media-menu" class="account-menu-item" href="/app/media">${esc(opts.chrome.webAssetsNav)}</a>
+                  <a id="account-app-menu" class="account-menu-item" href="/app">${esc(opts.chrome.myDrops)}</a>
                   <a id="account-edit" class="account-menu-item" href="/app/account">${esc(opts.chrome.editAccount)}</a>
                   <button id="account-signout" type="button" class="account-menu-item">${esc(opts.chrome.signOut)}</button>
                 </div>
@@ -152,10 +155,10 @@ export function footerHtml(locale: Locale, chrome: SharedChrome): string {
               <a href="${esc(WEB_ASSETS_PATH)}">${esc(chrome.footerSeo.webAssets)}</a>
               <a href="${esc(DROPS_PATH)}">${esc(chrome.footerSeo.drops)}</a>
               <a href="${esc(PRICING_PATH)}">${esc(chrome.footerSeo.pricing)}</a>
-              <a href="${esc(proPath(locale))}">${esc(chrome.pro)}</a>
+              <a href="/developers">${esc(chrome.footerDocs)}</a>
+              <a href="${esc(proPath(locale))}">${esc(chrome.dropsPro)}</a>
               <a href="/browser-extension">${esc(chrome.footerSeo.extension)}</a>
               <a href="/sharex">${esc(chrome.footerSeo.sharex)}</a>
-              <a href="/developers">${esc(chrome.footerSeo.api)}</a>
               <a href="/mcp">${esc(chrome.footerSeo.mcp)}</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="${esc(chrome.footerLegal)}">

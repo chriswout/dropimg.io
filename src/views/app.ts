@@ -66,15 +66,15 @@ type Copy = {
 
 export const APP_COPY: Record<Locale, Copy> = {
   en: {
-    title: "My drops — dropimg.io",
-    heading: "My drops",
+    title: "My Drops — dropimg.io",
+    heading: "My Drops",
     empty: "Your drops will show up here.",
     emptyHint:
       "Upload an image from DropIMG, the browser extension, or ShareX and it will appear here.",
     uploadCta: "Upload image",
-    upgrade: "Upgrade",
-    freeNote: "Free · Last 10 active uploads",
-    proNote: "PRO · Full active history",
+    upgrade: "Drops Pro",
+    freeNote: "Drops Free · Last 10 active uploads",
+    proNote: "Drops Pro · Full active history",
     expires: "Expires",
     left: (d, h) => `${d}d ${h}h left`,
     leftHours: (h) => `${h}h left`,
@@ -112,9 +112,9 @@ export const APP_COPY: Record<Locale, Copy> = {
     emptyHint:
       "Sube una imagen desde DropIMG, la extensión del navegador o ShareX y se verá aquí.",
     uploadCta: "Subir imagen",
-    upgrade: "Mejorar",
-    freeNote: "Gratis · Últimos 10 envíos activos",
-    proNote: "PRO · Historial activo completo",
+    upgrade: "Drops Pro",
+    freeNote: "Drops gratis · Últimos 10 envíos activos",
+    proNote: "Drops Pro · Historial activo completo",
     expires: "Caduca",
     left: (d, h) => `${d}d ${h}h restantes`,
     leftHours: (h) => `${h}h restantes`,
@@ -152,9 +152,9 @@ export const APP_COPY: Record<Locale, Copy> = {
     emptyHint:
       "Envie uma imagem pelo DropIMG, pela extensão ou pelo ShareX e ela entra nesta lista.",
     uploadCta: "Enviar imagem",
-    upgrade: "Assinar",
-    freeNote: "Grátis · Últimos 10 envios ativos",
-    proNote: "PRO · Histórico ativo completo",
+    upgrade: "Drops Pro",
+    freeNote: "Drops grátis · Últimos 10 envios ativos",
+    proNote: "Drops Pro · Histórico ativo completo",
     expires: "Expira",
     left: (d, h) => `${d}d ${h}h restantes`,
     leftHours: (h) => `${h}h restantes`,
@@ -192,9 +192,9 @@ export const APP_COPY: Record<Locale, Copy> = {
     emptyHint:
       "Lade ein Bild über DropIMG, die Browser-Erweiterung oder ShareX hoch — dann steht es hier.",
     uploadCta: "Bild hochladen",
-    upgrade: "Upgrade",
-    freeNote: "Kostenlos · Die 10 neuesten aktiven Uploads",
-    proNote: "PRO · Volle aktive Historie",
+    upgrade: "Drops Pro",
+    freeNote: "Drops kostenlos · Die 10 neuesten aktiven Uploads",
+    proNote: "Drops Pro · Volle aktive Historie",
     expires: "Läuft ab",
     left: (d, h) => `noch ${d}d ${h}h`,
     leftHours: (h) => `noch ${h}h`,
@@ -232,6 +232,7 @@ export function renderAppPage(opts: {
   env: { ENVIRONMENT?: string };
   email: string;
   plan: string;
+  webAssetsPlan?: "free" | "developer" | "pro";
   drops: AppDrop[];
   historyCapped: boolean;
   nextCursor: number | null;
@@ -503,6 +504,7 @@ export function renderAppPage(opts: {
     section: "drops",
     title: t.title,
     plan: isPro ? "pro" : "free",
+    webAssetsPlan: opts.webAssetsPlan,
     lede: notes,
     actions,
     main,

@@ -61,7 +61,7 @@ export const MCP_PAGE: McpCopy = {
       a: "upload_image (base64 or data URL, optional expiry), get_image, list_images, and delete_image. List is one text line per live drop, not the REST JSON envelope. When Media is enabled: list_media_projects, create_media_project, list_media_assets, get_media_asset, upload_media_asset, and replace_media_asset (confirm: true). Media uploads send bytes over HTTP, not JSON-RPC.",
     },
     {
-      q: "Do uploads show in My drops?",
+      q: "Do uploads show in My Drops?",
       a: "Yes. source=mcp, owned by your account, same history caps as the rest of DropIMG.",
     },
     {

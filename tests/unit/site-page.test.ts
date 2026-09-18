@@ -29,11 +29,9 @@ describe("Account pages share site chrome", () => {
     expect(html).toContain("Sign in to DropIMG");
     expect(html).toContain("No password required");
     expect(html).not.toContain("Continue with GitHub");
-    expect(html).toContain('id="account-plan"');
     expect(html).toContain('class="account-menu"');
-    expect(html).toContain('href="/pro"');
-    expect(html).toContain("Upgrade");
-    expect(html).toContain("Pro · €2.99");
+    expect(html).toContain("Dashboard");
+    expect(html).not.toContain("Pro · €2.99");
     expect(html).toContain("Edit account");
     expect(html).toContain('href="/app/account"');
   });
@@ -178,7 +176,7 @@ describe("Account pages share site chrome", () => {
       cancelAtPeriodEnd: false,
     });
     const memberHtml = await member.text();
-    expect(memberHtml).toContain("You're on DropIMG Pro");
+    expect(memberHtml).toContain("You're on Drops Pro");
     expect(memberHtml).toContain("Manage billing");
     expect(memberHtml).not.toContain("Pay with PayPal");
   });
@@ -196,7 +194,7 @@ describe("Account pages share site chrome", () => {
     });
     expect(html).toContain('class="page"');
     expect(html).toContain("brand-logo");
-    expect(html).toContain("My drops");
+    expect(html).toContain("My Drops");
     expect(html).toContain('href="/site.css"');
   });
 
@@ -239,7 +237,7 @@ describe("Account pages share site chrome", () => {
       cancelAtPeriodEnd: false,
     });
     expect(html).toContain("Danger zone");
-    expect(html).toContain("cancel Pro if active");
+    expect(html).toContain("cancel Drops Pro if active");
     expect(html).toContain("delete your active DropIMG images");
     expect(html).toContain("revoke connected integrations");
     expect(html).toContain("sign you out everywhere");
@@ -261,7 +259,7 @@ describe("Account pages share site chrome", () => {
     expect(html).toContain("Your drops will show up here.");
     expect(html).toContain("Upload image");
     expect(html).toContain("Last 10 active uploads");
-    expect(html).toContain("Upgrade");
+    expect(html).toContain("Drops Pro");
   });
 
   /**

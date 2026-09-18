@@ -9,7 +9,6 @@ export const WEB_ASSETS_PAGE: PageSeo & {
   h1: string;
   lede: string;
   createCta: string;
-  createCtaSoon: string;
   connectCta: string;
   dropCta: string;
   useHeading: string;
@@ -47,11 +46,10 @@ export const WEB_ASSETS_PAGE: PageSeo & {
   twitterDescription:
     "Replace branding/logo without touching the URL. JPEG, PNG, WebP, GIF, AVIF, SVG, ICO, WOFF, WOFF2.",
   skip: "Skip to Web Assets",
-  kicker: "DropIMG Media",
+  kicker: "Web Assets",
   h1: "Permanent web assets for applications",
   lede: "Your AI builds the site. DropIMG hosts the files the site actually serves — with role-based URLs that do not change when the bytes do.",
   createCta: "Create a Web Assets project",
-  createCtaSoon: "Web Assets launching soon",
   connectCta: "Connect your agent",
   dropCta: "Try a temporary Drop",
   useHeading: "What Web Assets are for",
@@ -88,7 +86,7 @@ export const WEB_ASSETS_PAGE: PageSeo & {
     "Authenticated /api/v1/media for orgs, projects, keys, assets, and upload intents. Same write path as MCP. OpenAPI at /openapi/v1.yaml.",
   mcpHeading: "MCP",
   mcpBody:
-    "One server at https://dropimg.io/mcp. Media tools list, create, get, upload, and replace Web Assets. Bytes never travel in JSON-RPC.",
+    "One server at https://dropimg.io/mcp. Tools list, create, get, upload, and replace Web Assets. Bytes never travel in JSON-RPC.",
   keysHeading: "Project keys",
   keysBody:
     "Project-scoped dropimg_pk_… credentials. A key cannot create projects. Humans sign in; agents use OAuth or a project key.",
@@ -100,11 +98,11 @@ export const WEB_ASSETS_PAGE: PageSeo & {
   faqs: [
     {
       q: "Is this live in production?",
-      a: "Sign in and create a Free Web Assets project in Media. Developer and Pro checkout from the pricing page via PayPal. Existing public /m/… URLs keep serving if new uploads have to pause.",
+      a: "Yes. Sign in and create a Free Web Assets project. Developer and Pro checkout from the pricing page via PayPal. Existing public /m/… URLs keep serving if new uploads have to pause.",
     },
     {
       q: "Can I host a PDF or a video?",
-      a: "No. DropIMG Media is focused Web Asset infrastructure, not S3. Use Drops for a temporary screenshot; use Web Assets for the files a website serves.",
+      a: "No. DropIMG Web Assets is focused infrastructure for application files, not S3. Use Drops for a temporary screenshot; use Web Assets for the files a website serves.",
     },
     {
       q: "Do I pay per MCP call?",

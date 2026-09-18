@@ -47,10 +47,18 @@ export const CHROME: Record<Locale, SharedChrome> = {
     suggestDismiss: "Dismiss",
     signIn: "Sign in",
     signOut: "Sign out",
-    myDrops: "My drops",
-    pro: "Pro",
-    proPrice: "Pro · €2.99",
-    upgradeToPro: "Upgrade",
+    dashboard: "Dashboard",
+    myDrops: "My Drops",
+    webAssetsNav: "Web Assets",
+    dropsPro: "Drops Pro",
+    dropsProPrice: "Drops Pro · €2.99",
+    footerDocs: "Developer Docs",
+    planWebAssets: "Web Assets",
+    planDrops: "Drops",
+    planFree: "Free",
+    planDeveloper: "Developer",
+    planWebAssetsPro: "Pro",
+    planDropsPro: "Drops Pro",
     editAccount: "Edit account",
     accountAria: "Account",
     themeToggleAria: "Color theme",
@@ -101,10 +109,18 @@ export const CHROME: Record<Locale, SharedChrome> = {
     suggestDismiss: "Ahora no",
     signIn: "Entrar",
     signOut: "Salir",
-    myDrops: "Mis envíos",
-    pro: "Pro",
-    proPrice: "Pro · €2.99",
-    upgradeToPro: "Mejorar",
+    dashboard: "Panel",
+    myDrops: "Mis Drops",
+    webAssetsNav: "Web Assets",
+    dropsPro: "Drops Pro",
+    dropsProPrice: "Drops Pro · €2.99",
+    footerDocs: "Docs para developers",
+    planWebAssets: "Web Assets",
+    planDrops: "Drops",
+    planFree: "Gratis",
+    planDeveloper: "Developer",
+    planWebAssetsPro: "Pro",
+    planDropsPro: "Drops Pro",
     editAccount: "Editar cuenta",
     accountAria: "Cuenta",
     themeToggleAria: "Tema",
@@ -155,10 +171,18 @@ export const CHROME: Record<Locale, SharedChrome> = {
     suggestDismiss: "Agora não",
     signIn: "Entrar",
     signOut: "Sair",
-    myDrops: "Meus envios",
-    pro: "Pro",
-    proPrice: "Pro · €2.99",
-    upgradeToPro: "Assinar",
+    dashboard: "Painel",
+    myDrops: "Meus Drops",
+    webAssetsNav: "Web Assets",
+    dropsPro: "Drops Pro",
+    dropsProPrice: "Drops Pro · €2.99",
+    footerDocs: "Docs para desenvolvedores",
+    planWebAssets: "Web Assets",
+    planDrops: "Drops",
+    planFree: "Grátis",
+    planDeveloper: "Developer",
+    planWebAssetsPro: "Pro",
+    planDropsPro: "Drops Pro",
     editAccount: "Editar conta",
     accountAria: "Conta",
     themeToggleAria: "Tema",
@@ -209,10 +233,18 @@ export const CHROME: Record<Locale, SharedChrome> = {
     suggestDismiss: "Nein danke",
     signIn: "Anmelden",
     signOut: "Abmelden",
+    dashboard: "Dashboard",
     myDrops: "Meine Drops",
-    pro: "Pro",
-    proPrice: "Pro · €2.99",
-    upgradeToPro: "Upgrade",
+    webAssetsNav: "Web Assets",
+    dropsPro: "Drops Pro",
+    dropsProPrice: "Drops Pro · €2.99",
+    footerDocs: "Entwickler-Docs",
+    planWebAssets: "Web Assets",
+    planDrops: "Drops",
+    planFree: "Kostenlos",
+    planDeveloper: "Developer",
+    planWebAssetsPro: "Pro",
+    planDropsPro: "Drops Pro",
     editAccount: "Konto bearbeiten",
     accountAria: "Konto",
     themeToggleAria: "Farbschema",
@@ -314,7 +346,9 @@ export const HOME: Record<Locale, HomeCopy> = {
     closingHeading: "Give your coding agent permanent web assets.",
     closingPrimary: "Create a project",
     closingSecondary: "Read the docs",
-    ctaSoon: "Web Assets launching soon",
+    compareUse: "Use case",
+    compareYes: "Yes",
+    pricingTeasers: ["3 projects", "10 GB · 2M deliveries", "100 GB · 10M deliveries"],
     securityHeading: "Public assets, inspected on ingest",
     securityFacts: [
       "Inspected on ingest — client MIME is ignored",
@@ -348,7 +382,7 @@ export const HOME: Record<Locale, HomeCopy> = {
       },
       {
         q: "How long do Drop images stay online?",
-        a: "As long as you choose: 1 hour, 24 hours, 7 days, or 30 days, with 7 days selected by default. Pro Drop links can last up to 180 days. Web Assets stay until you replace or delete them.",
+        a: "As long as you choose: 1 hour, 24 hours, 7 days, or 30 days, with 7 days selected by default. Drops Pro links can last up to 180 days. Web Assets stay until you replace or delete them. A Web Assets subscription does not change Drop expiry or password features.",
       },
     ],
     schemaAppDescription:
@@ -451,7 +485,9 @@ export const HOME: Record<Locale, HomeCopy> = {
     closingHeading: "Dale a tu agente recursos web permanentes.",
     closingPrimary: "Crear un proyecto",
     closingSecondary: "Leer la documentación",
-    ctaSoon: "Web Assets, próximamente",
+    compareUse: "Uso",
+    compareYes: "Sí",
+    pricingTeasers: ["3 proyectos", "10 GB · 2M entregas", "100 GB · 10M entregas"],
     securityHeading: "Público, inspeccionado al subir",
     securityFacts: [
       "Inspección al subir — el MIME del cliente no cuenta",
@@ -485,7 +521,7 @@ export const HOME: Record<Locale, HomeCopy> = {
       },
       {
         q: "¿Cuánto tiempo está disponible la imagen de un Drop?",
-        a: "El tiempo que elijas: 1 hora, 24 horas, 7 días o 30 días, con 7 días por defecto. Con Pro el Drop puede durar hasta 180 días. Los Web Assets se quedan hasta que los sustituyas o borres.",
+        a: "El tiempo que elijas: 1 hora, 24 horas, 7 días o 30 días, con 7 días por defecto. Con Drops Pro el Drop puede durar hasta 180 días. Los Web Assets se quedan hasta que los sustituyas o borres. Una suscripción de Web Assets no cambia la caducidad ni las contraseñas de los Drops.",
       },
     ],
     schemaAppDescription:
@@ -588,7 +624,9 @@ export const HOME: Record<Locale, HomeCopy> = {
     closingHeading: "Dê ao seu agente web assets permanentes.",
     closingPrimary: "Criar um projeto",
     closingSecondary: "Ler a documentação",
-    ctaSoon: "Web Assets em breve",
+    compareUse: "Uso",
+    compareYes: "Sim",
+    pricingTeasers: ["3 projetos", "10 GB · 2M entregas", "100 GB · 10M entregas"],
     securityHeading: "Público, inspecionado no ingest",
     securityFacts: [
       "Inspecionado no ingest — o MIME do cliente não vale",
@@ -622,7 +660,7 @@ export const HOME: Record<Locale, HomeCopy> = {
       },
       {
         q: "Por quanto tempo a imagem de um Drop fica no ar?",
-        a: "Pelo tempo que você escolher: 1 hora, 24 horas, 7 dias ou 30 dias, sendo 7 dias o padrão. Com o Pro, o Drop pode durar até 180 dias. Web Assets ficam até você trocar ou apagar.",
+        a: "Pelo tempo que você escolher: 1 hora, 24 horas, 7 dias ou 30 dias, sendo 7 dias o padrão. Com o Drops Pro, o Drop pode durar até 180 dias. Web Assets ficam até você trocar ou apagar. Uma assinatura de Web Assets não muda prazo nem senha dos Drops.",
       },
     ],
     schemaAppDescription:
@@ -725,7 +763,9 @@ export const HOME: Record<Locale, HomeCopy> = {
     closingHeading: "Gib deinem Coding-Agenten dauerhafte Web-Assets.",
     closingPrimary: "Projekt anlegen",
     closingSecondary: "Dokumentation lesen",
-    ctaSoon: "Web Assets folgen bald",
+    compareUse: "Einsatz",
+    compareYes: "Ja",
+    pricingTeasers: ["3 Projekte", "10 GB · 2M Auslieferungen", "100 GB · 10M Auslieferungen"],
     securityHeading: "Öffentlich, bei Ingest geprüft",
     securityFacts: [
       "Prüfung beim Ingest — Client-MIME zählt nicht",
@@ -759,7 +799,7 @@ export const HOME: Record<Locale, HomeCopy> = {
       },
       {
         q: "Wie lange bleibt ein Drop-Bild online?",
-        a: "So lange du willst: 1 Stunde, 24 Stunden, 7 Tage oder 30 Tage, voreingestellt sind 7 Tage. Mit Pro sind bis zu 180 Tage möglich. Web Assets bleiben, bis du sie ersetzt oder löschst.",
+        a: "So lange du willst: 1 Stunde, 24 Stunden, 7 Tage oder 30 Tage, voreingestellt sind 7 Tage. Mit Drops Pro sind bis zu 180 Tage möglich. Web Assets bleiben, bis du sie ersetzt oder löschst. Ein Web-Assets-Abo ändert Drop-Laufzeit und Passwortschutz nicht.",
       },
     ],
     schemaAppDescription:
@@ -810,7 +850,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "Need longer? A Pro account can choose 90 or 180 days, add a password, and upload up to 50 MB. Need it gone sooner? After upload you get a private delete control.",
+          text: "Need longer? Drops Pro can choose 90 or 180 days, add a password, and upload up to 50 MB. Need it gone sooner? After upload you get a private delete control.",
         },
         { type: "h2", text: "What you can upload" },
         {
@@ -860,7 +900,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "¿Necesitas más tiempo? Con Pro puedes elegir 90 o 180 días, poner contraseña y subir hasta 50 MB. ¿Hay que quitarla ya? Al subirla tienes un enlace privado para borrarla al momento.",
+          text: "¿Necesitas más tiempo? Con Drops Pro puedes elegir 90 o 180 días, poner contraseña y subir hasta 50 MB. ¿Hay que quitarla ya? Al subirla tienes un enlace privado para borrarla al momento.",
         },
         { type: "h2", text: "Qué puedes subir" },
         {
@@ -914,7 +954,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "Precisa de mais tempo? Com o Pro dá pra escolher 90 ou 180 dias, colocar senha e enviar até 50 MB. Precisa sumir agora? Depois do envio você ganha um link privado pra excluir na hora.",
+          text: "Precisa de mais tempo? Com o Drops Pro dá pra escolher 90 ou 180 dias, colocar senha e enviar até 50 MB. Precisa sumir agora? Depois do envio você ganha um link privado pra excluir na hora.",
         },
         { type: "h2", text: "O que dá pra enviar" },
         {
@@ -968,7 +1008,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "Länger nötig? Mit Pro sind 90 oder 180 Tage, ein Passwort und bis zu 50 MB drin. Früher weg? Nach dem Upload gibt’s einen privaten Link zum Sofortlöschen.",
+          text: "Länger nötig? Mit Drops Pro sind 90 oder 180 Tage, ein Passwort und bis zu 50 MB drin. Früher weg? Nach dem Upload gibt’s einen privaten Link zum Sofortlöschen.",
         },
         { type: "h2", text: "Was du hochladen kannst" },
         {
@@ -1253,7 +1293,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "Links expire on the schedule you pick — 1 hour, 24 hours, 7 days, or 30 days, and up to 180 days with Pro. Temporary by design: not a CMS, not a CDN for your brand assets.",
+          text: "Links expire on the schedule you pick — 1 hour, 24 hours, 7 days, or 30 days, and up to 180 days with Drops Pro. Temporary by design: not a CMS, not a CDN for your brand assets.",
         },
         { type: "h2", text: "What recipients see" },
         {
@@ -1302,7 +1342,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "Los enlaces caducan cuando tú digas: 1 hora, 24 horas, 7 días o 30 días, y hasta 180 días con Pro. Son temporales a propósito: no es un CMS ni un sitio para los assets de tu marca.",
+          text: "Los enlaces caducan cuando tú digas: 1 hora, 24 horas, 7 días o 30 días, y hasta 180 días con Drops Pro. Son temporales a propósito: no es un CMS ni un sitio para los assets de tu marca.",
         },
         { type: "h2", text: "Qué ve quien recibe el enlace" },
         {
@@ -1351,7 +1391,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "Os links expiram quando você quiser: 1 hora, 24 horas, 7 dias ou 30 dias, e até 180 dias com o Pro. São temporários de propósito: não é CMS nem CDN pra asset de marca.",
+          text: "Os links expiram quando você quiser: 1 hora, 24 horas, 7 dias ou 30 dias, e até 180 dias com o Drops Pro. São temporários de propósito: não é CMS nem CDN pra asset de marca.",
         },
         { type: "h2", text: "O que quem recebe vê" },
         {
@@ -1400,7 +1440,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "Links laufen ab, wann du willst: 1 Stunde, 24 Stunden, 7 Tage oder 30 Tage, mit Pro bis zu 180 Tage. Absichtlich temporär — kein CMS und kein CDN für Marken-Assets.",
+          text: "Links laufen ab, wann du willst: 1 Stunde, 24 Stunden, 7 Tage oder 30 Tage, mit Drops Pro bis zu 180 Tage. Absichtlich temporär — kein CMS und kein CDN für Marken-Assets.",
         },
         { type: "h2", text: "Was Empfänger sehen" },
         {

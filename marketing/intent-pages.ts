@@ -121,11 +121,11 @@ export const INTENT_PAGES: Record<
         },
         {
           q: "Can I password-protect a screenshot?",
-          a: "Yes, with Pro. Pro links can require a password before the image is shown, and can stay online for up to 180 days.",
+          a: "Yes, with Drops Pro. Drops Pro links can require a password before the image is shown, and can stay online for up to 180 days. A Web Assets subscription does not change Drop expiry or passwords.",
         },
         {
           q: "Can I delete a screenshot before it expires?",
-          a: "Yes. The delete control appears next to the link right after upload, and signed-in users can delete any active drop from My drops.",
+          a: "Yes. The delete control appears next to the link right after upload, and signed-in users can delete any active drop from My Drops.",
         },
       ],
       schemaHowtoName: "Share a screenshot with a link",
@@ -379,7 +379,7 @@ export const INTENT_PAGES: Record<
         },
         {
           q: "What files can I convert to a URL?",
-          a: "PNG, JPEG, WebP, and GIF up to 10 MB on the free tier, or up to 50 MB with Pro. SVG is not accepted.",
+          a: "PNG, JPEG, WebP, and GIF up to 10 MB on the free tier, or up to 50 MB with Drops Pro. SVG is not accepted.",
         },
       ],
       schemaHowtoName: "Convert an image to a URL",
@@ -622,7 +622,7 @@ export const INTENT_PAGES: Record<
         },
         {
           q: "Can I host an image anonymously forever?",
-          a: "No. Every link expires — there is no permanent storage tier. The longest lifetime on the service is 180 days, with Pro.",
+          a: "No. Every Drop link expires — there is no permanent storage tier for Drops. The longest Drop lifetime is 180 days, with Drops Pro. Permanent application files belong in Web Assets.",
         },
         {
           q: "Are uploads really anonymous?",
@@ -678,7 +678,7 @@ export const INTENT_PAGES: Record<
             "1 hour for a password reset screenshot or a one-question answer.",
             "24 hours for something you are actively working through today.",
             "7 days for a thread, a review, or a ticket that stays open — this is the default.",
-            "Up to 90 or 180 days with Pro, when a link has to outlive the month.",
+            "Up to 90 or 180 days with Drops Pro, when a link has to outlive the month.",
           ],
         },
         { type: "h2", text: "Good for" },
@@ -712,7 +712,7 @@ export const INTENT_PAGES: Record<
         },
         {
           q: "Can I make the link expire sooner?",
-          a: "Yes. Use the delete control shown after upload, or delete the drop from My drops if you are signed in.",
+          a: "Yes. Use the delete control shown after upload, or delete the drop from My Drops if you are signed in.",
         },
       ],
       schemaHowtoName: "Create an expiring image link",

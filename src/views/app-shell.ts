@@ -20,6 +20,9 @@ type ShellCopy = {
   skip: string;
   planFree: string;
   planPro: string;
+  planWebAssetsFree: string;
+  planWebAssetsDeveloper: string;
+  planWebAssetsPro: string;
   upgrade: string;
   upgradeHint: string;
   drops: SectionCopy;
@@ -33,18 +36,21 @@ export const SHELL_COPY: Record<Locale, ShellCopy> = {
   en: {
     navAria: "Sections",
     skip: "Skip to content",
-    planFree: "Free plan",
-    planPro: "Pro plan",
-    upgrade: "Upgrade to Pro",
-    upgradeHint: "Bigger uploads, longer links, passwords.",
+    planFree: "Drops — Free",
+    planPro: "Drops — Drops Pro",
+    planWebAssetsFree: "Web Assets — Free",
+    planWebAssetsDeveloper: "Web Assets — Developer",
+    planWebAssetsPro: "Web Assets — Pro",
+    upgrade: "Drops Pro",
+    upgradeHint: "Longer Drop links and password protection.",
     drops: {
-      nav: "My drops",
-      title: "My drops",
+      nav: "My Drops",
+      title: "My Drops",
       lede: "Every link you have live right now.",
     },
     media: {
-      nav: "Media",
-      title: "Media",
+      nav: "Web Assets",
+      title: "Web Assets",
       lede: "Permanent files for a website, landing page, or storefront.",
     },
     integrations: {
@@ -66,18 +72,21 @@ export const SHELL_COPY: Record<Locale, ShellCopy> = {
   es: {
     navAria: "Secciones",
     skip: "Ir al contenido",
-    planFree: "Plan gratis",
-    planPro: "Plan Pro",
-    upgrade: "Mejorar a Pro",
-    upgradeHint: "Más tamaño, más tiempo, contraseñas.",
+    planFree: "Drops — Gratis",
+    planPro: "Drops — Drops Pro",
+    planWebAssetsFree: "Web Assets — Gratis",
+    planWebAssetsDeveloper: "Web Assets — Developer",
+    planWebAssetsPro: "Web Assets — Pro",
+    upgrade: "Drops Pro",
+    upgradeHint: "Enlaces de Drop más largos y contraseña.",
     drops: {
       nav: "Mis envíos",
       title: "Mis envíos",
       lede: "Todos los enlaces que tienes activos ahora.",
     },
     media: {
-      nav: "Media",
-      title: "Media",
+      nav: "Web Assets",
+      title: "Web Assets",
       lede: "Archivos permanentes para un sitio, landing o tienda.",
     },
     integrations: {
@@ -99,18 +108,21 @@ export const SHELL_COPY: Record<Locale, ShellCopy> = {
   "pt-BR": {
     navAria: "Seções",
     skip: "Ir para o conteúdo",
-    planFree: "Plano grátis",
-    planPro: "Plano Pro",
-    upgrade: "Assinar o Pro",
-    upgradeHint: "Mais tamanho, mais tempo, senhas.",
+    planFree: "Drops — Grátis",
+    planPro: "Drops — Drops Pro",
+    planWebAssetsFree: "Web Assets — Grátis",
+    planWebAssetsDeveloper: "Web Assets — Developer",
+    planWebAssetsPro: "Web Assets — Pro",
+    upgrade: "Drops Pro",
+    upgradeHint: "Links de Drop mais longos e senha.",
     drops: {
       nav: "Meus envios",
       title: "Meus envios",
       lede: "Todos os links que você tem ativos agora.",
     },
     media: {
-      nav: "Media",
-      title: "Media",
+      nav: "Web Assets",
+      title: "Web Assets",
       lede: "Arquivos permanentes para um site, landing ou loja.",
     },
     integrations: {
@@ -132,18 +144,21 @@ export const SHELL_COPY: Record<Locale, ShellCopy> = {
   de: {
     navAria: "Bereiche",
     skip: "Zum Inhalt",
-    planFree: "Kostenloser Plan",
-    planPro: "Pro-Plan",
-    upgrade: "Auf Pro upgraden",
-    upgradeHint: "Größer, länger, mit Passwort.",
+    planFree: "Drops — Kostenlos",
+    planPro: "Drops — Drops Pro",
+    planWebAssetsFree: "Web Assets — Kostenlos",
+    planWebAssetsDeveloper: "Web Assets — Developer",
+    planWebAssetsPro: "Web Assets — Pro",
+    upgrade: "Drops Pro",
+    upgradeHint: "Längere Drop-Links und Passwortschutz.",
     drops: {
       nav: "Meine Drops",
       title: "Meine Drops",
       lede: "Alle Links, die gerade aktiv sind.",
     },
     media: {
-      nav: "Media",
-      title: "Media",
+      nav: "Web Assets",
+      title: "Web Assets",
       lede: "Dauerhafte Dateien für Website, Landingpage oder Shop.",
     },
     integrations: {
@@ -173,8 +188,8 @@ const SECTION_PATH: Record<AppSection, string> = {
 };
 
 const SECTION_ORDER: AppSection[] = [
-  "drops",
   "media",
+  "drops",
   "integrations",
   "billing",
   "account",
@@ -198,6 +213,7 @@ export function renderAppShellPage(opts: {
   section: AppSection;
   title: string;
   plan: "free" | "pro";
+  webAssetsPlan?: "free" | "developer" | "pro";
   main: string;
   heading?: string;
   lede?: string;
@@ -218,16 +234,27 @@ export function renderAppShellPage(opts: {
           </a>`;
   }).join("\n");
 
-  // Billing already leads with plan state; a sidebar card would just repeat it.
+  const waPlan = opts.webAssetsPlan ?? "free";
+  const waLabel =
+    waPlan === "pro"
+      ? shell.planWebAssetsPro
+      : waPlan === "developer"
+        ? shell.planWebAssetsDeveloper
+        : shell.planWebAssetsFree;
+  const dropsLabel = opts.plan === "pro" ? shell.planPro : shell.planFree;
+
   const planCard =
     opts.section === "billing"
       ? ""
-      : opts.plan === "pro"
-        ? `<p class="app-plan-card is-pro">${esc(shell.planPro)}</p>`
-        : `<div class="app-plan-card">
-          <p class="app-plan-name">${esc(shell.planFree)}</p>
-          <p class="app-plan-hint">${esc(shell.upgradeHint)}</p>
-          <a class="btn primary btn-sm" href="/pro">${esc(shell.upgrade)}</a>
+      : `<div class="app-plan-card${opts.plan === "pro" || waPlan !== "free" ? " is-pro" : ""}">
+          <p class="app-plan-name">${esc(waLabel)}</p>
+          <p class="app-plan-name">${esc(dropsLabel)}</p>
+          ${
+            opts.plan === "pro"
+              ? ""
+              : `<p class="app-plan-hint">${esc(shell.upgradeHint)}</p>
+          <a class="btn primary btn-sm" href="/pro">${esc(shell.upgrade)}</a>`
+          }
         </div>`;
 
   const main = `<div class="app-shell">
