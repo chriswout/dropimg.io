@@ -28,12 +28,18 @@ test("pricing and web-assets pages render launch-safe CTAs", async ({ page }) =>
 
   await page.goto("/pricing");
   await expect(page.getByRole("heading", { name: "Free" })).toBeVisible();
-  await expect(page.locator(".price-card[data-tier='developer'] .price-amount")).toHaveText(/\$9/);
-  await expect(page.locator(".price-card[data-tier='pro'] .price-amount")).toHaveText(/\$29/);
-  await expect(page.getByRole("heading", { name: /Looking for Drops pricing/i })).toBeVisible();
+  await expect(page.locator(".price-card[data-tier='developer'] .price-amount:not([hidden])")).toHaveText(/\$9/);
+  await expect(page.locator(".price-card[data-tier='pro'] .price-amount:not([hidden])")).toHaveText(/\$29/);
+  await expect(page.getByRole("heading", { name: /Need temporary image sharing instead/i })).toBeVisible();
   await expect(page.getByRole("link", { name: "Drops Pro" }).first()).toBeVisible();
-  await expect(page.getByText(/€2\.99\/month/).first()).toBeVisible();
+  await expect(page.getByText(/€2\.99/).first()).toBeVisible();
   await expect(page.locator("text=unlimited")).toHaveCount(0);
+  await expect(page.locator('[data-wa-checkout="developer"]')).toHaveAttribute("data-interval", "monthly");
+  await page.locator('[data-select-interval="annual"]').click();
+  await expect(page.locator(".price-card[data-tier='developer'] .price-amount:not([hidden])")).toHaveText(/\$7\.50/);
+  await expect(page.locator(".price-card[data-tier='pro'] .price-amount:not([hidden])")).toHaveText(/\$24\.17/);
+  await expect(page.locator('[data-wa-checkout="developer"]')).toHaveAttribute("data-interval", "annual");
+  await expect(page.locator('[data-wa-checkout="pro"]')).toHaveAttribute("data-interval", "annual");
 
   await page.goto("/developers");
   await expect(page.getByRole("heading", { name: /Web assets your coding agent can manage/i })).toBeVisible();
@@ -51,6 +57,18 @@ for (const width of [390, 768, 1280] as const) {
     await page.setViewportSize({ width, height: 800 });
     await page.goto("/");
     await expect(page.locator("#dropzone")).toBeVisible();
+    const overflow = await page.evaluate(
+      () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
+    );
+    expect(overflow).toBe(false);
+  });
+}
+
+for (const width of [320, 390, 768, 1280, 1440] as const) {
+  test(`pricing page does not overflow at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/pricing");
+    await expect(page.locator("#plans")).toBeVisible();
     const overflow = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
     );

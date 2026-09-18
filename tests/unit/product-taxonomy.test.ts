@@ -41,7 +41,7 @@ describe("pricing page scope", () => {
 
   it("is Web Assets first with Drops Pro called out separately", () => {
     expect(html).toContain("Web Assets pricing");
-    expect(html).toContain("Looking for Drops pricing?");
+    expect(html).toContain("Need temporary image sharing instead?");
     expect(html).toContain("Drops Pro");
     expect(html).toContain("€2.99/month");
     expect(PRICING_TIERS[0]).toMatchObject({ id: "free", price: "$0" });
@@ -49,7 +49,7 @@ describe("pricing page scope", () => {
     expect(PRICING_TIERS[2]).toMatchObject({ id: "pro", price: "$29" });
     expect(html).toContain('data-wa-checkout="developer"');
     expect(html).toContain('data-wa-checkout="pro"');
-    expect(PRICING_PAGE.h1).toBe("Web Assets pricing");
+    expect(PRICING_PAGE.h1).toBe("Simple pricing for assets your apps actually use.");
   });
 });
 

@@ -820,6 +820,9 @@ function setupPricingCheckout() {
       );
     });
     buttons.forEach((btn) => btn.setAttribute("data-interval", interval));
+    document.querySelectorAll<HTMLElement>("[data-interval-view]").forEach((el) => {
+      el.hidden = el.getAttribute("data-interval-view") !== interval;
+    });
   };
   intervalBtns.forEach((btn) => {
     btn.addEventListener("click", () => {

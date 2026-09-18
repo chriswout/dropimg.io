@@ -141,14 +141,14 @@ describe("pricing page (KON-80)", () => {
       annual: "$290/year",
     });
     expect(html).toContain("3 projects");
-    expect(html).toContain("1 GB Web Asset storage");
-    expect(html).toContain("100K asset deliveries / month");
-    expect(html).toContain("20 projects");
-    expect(html).toContain("10 GB storage");
-    expect(html).toContain("2M asset deliveries / month");
-    expect(html).toContain("100 projects");
-    expect(html).toContain("100 GB storage");
-    expect(html).toContain("10M asset deliveries / month");
+    expect(html).toContain("1 GB");
+    expect(html).toContain("100K");
+    expect(html).toContain("20 project keys");
+    expect(html).toContain("10 GB");
+    expect(html).toContain("2M");
+    expect(html).toContain("100 project keys");
+    expect(html).toContain("100 GB");
+    expect(html).toContain("10M");
     expect(html).toContain("No bandwidth / egress fees.");
     expect(html).toContain("No per-MCP-call charges.");
     expect(html).not.toMatch(/\bunlimited\b/i);

@@ -40,7 +40,13 @@ import {
 } from "./developers";
 import { DROPS_PAGE, DROPS_URL } from "./drops";
 import { MCP_PAGE, MCP_URL } from "./mcp";
-import { PRICING_PAGE, PRICING_TIERS, PRICING_URL } from "./pricing";
+import {
+  PRICING_COMPARE_ROWS,
+  PRICING_PAGE,
+  PRICING_TIERS,
+  PRICING_URL,
+  type PricingTier,
+} from "./pricing";
 import { WEB_ASSETS_PAGE, WEB_ASSETS_URL } from "./web-assets";
 import type { FaqItem as SharexFaq } from "./types";
 import {
@@ -663,7 +669,7 @@ ${unsupported}
 
 function homepagePricingHtml(copy: (typeof HOME)[Locale]): string {
   const cards = PRICING_TIERS.map((tier, i) => {
-    const period = tier.period ? `<span>${esc(tier.period)}</span>` : "";
+    const period = tier.period.startsWith("/") ? `<span>${esc(tier.period)}</span>` : "";
     const teaser = copy.pricingTeasers[i] ?? tier.teaser;
     return `            <article class="price-card" data-tier="${esc(tier.id)}">
               <h3>${esc(tier.name)}</h3>
@@ -1854,34 +1860,104 @@ ${footerHtml(locale, chrome)}
 `;
 }
 
+function pricingCheckIcon(): string {
+  return `<svg class="pricing-check" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path fill="currentColor" d="M6.4 11.3 3.2 8.1l1.1-1.1 2.1 2.1 5.2-5.3 1.1 1.1z"/></svg>`;
+}
+
+function pricingCardHtml(tier: PricingTier, copy: typeof PRICING_PAGE): string {
+  const recommended = tier.recommended
+    ? `<p class="pricing-badge">${esc(copy.recommended)}</p>`
+    : "";
+  const metrics = tier.metrics
+    .map(
+      (metric) => `                <div class="pricing-metric">
+                  <span class="pricing-metric-value">${esc(metric.value)}</span>
+                  <span class="pricing-metric-label">${esc(metric.label)}</span>
+                </div>`,
+    )
+    .join("\n");
+  const includes = tier.includesLabel
+    ? `<p class="pricing-includes">${esc(tier.includesLabel)}</p>`
+    : "";
+  const features = tier.features
+    .map(
+      (item) =>
+        `                <li>${pricingCheckIcon()}<span>${esc(item)}</span></li>`,
+    )
+    .join("\n");
+  const ctaClass =
+    tier.id === "developer" ? "primary" : tier.id === "pro" ? "secondary pricing-cta-pro" : "secondary";
+  const cta =
+    tier.id === "free"
+      ? `<a class="btn ${ctaClass} pricing-cta" href="/web-assets" data-media-cta="create" data-track="pricing_plan" data-plan="free">${esc(tier.cta)}</a>`
+      : `<button type="button" class="btn ${ctaClass} pricing-cta" data-wa-checkout="${esc(tier.id)}" data-interval="monthly" data-track="pricing_plan" data-plan="${esc(tier.id)}">${esc(tier.cta)}</button>`;
+  const annualPrice = tier.annualAmount
+    ? `<div class="price-amount" data-interval-view="annual" hidden>
+                <span class="price-figure">${esc(tier.annualAmount)}</span>
+                <span class="price-period">/month</span>
+              </div>
+              <p class="price-annual" data-interval-view="annual" hidden>${esc(tier.annualBill ?? tier.annual ?? "")}</p>`
+    : "";
+  const monthlyAttr = tier.annualAmount ? ` data-interval-view="monthly"` : "";
+  return `            <article class="price-card${tier.recommended ? " is-recommended" : ""}" data-tier="${esc(tier.id)}">
+              ${recommended}
+              <h2>${esc(tier.name)}</h2>
+              <p class="price-pos">${esc(tier.positioning)}</p>
+              <div class="price-amount"${monthlyAttr}>
+                <span class="price-figure">${esc(tier.price)}</span>
+                <span class="price-period">${esc(tier.period)}</span>
+              </div>
+              ${annualPrice}
+              <div class="pricing-metrics">
+${metrics}
+              </div>
+              ${includes}
+              <ul class="pricing-features">
+${features}
+              </ul>
+              ${cta}
+            </article>`;
+}
+
+function pricingCompareHtml(copy: typeof PRICING_PAGE): string {
+  const rows = PRICING_COMPARE_ROWS.map(
+    (row) => `              <tr>
+                <th scope="row">${esc(row.feature)}</th>
+                <td>${esc(row.free)}</td>
+                <td>${esc(row.developer)}</td>
+                <td>${esc(row.pro)}</td>
+              </tr>`,
+  ).join("\n");
+  return `        <section class="pricing-compare" aria-labelledby="compare-heading">
+          <h2 id="compare-heading">${esc(copy.compareHeading)}</h2>
+          <div class="compare-wrap pricing-compare-wrap">
+            <table class="compare-table pricing-compare-table">
+              <thead>
+                <tr>
+                  <th scope="col">Feature</th>
+                  <th scope="col">Free</th>
+                  <th scope="col">Developer</th>
+                  <th scope="col">Pro</th>
+                </tr>
+              </thead>
+              <tbody>
+${rows}
+              </tbody>
+            </table>
+          </div>
+        </section>`;
+}
+
 export function renderPricingPage(): string {
   const locale = DEFAULT_LOCALE;
   const copy = PRICING_PAGE;
   const chrome = CHROME[locale];
   const cfg = LOCALE_CONFIG[locale];
   const url = PRICING_URL;
-  const cards = PRICING_TIERS.map((tier) => {
-    const annual = tier.annual
-      ? `<p class="price-annual">${esc(tier.annual)}</p>`
-      : "";
-    const features = tier.features
-      .map((item) => `                <li>${esc(item)}</li>`)
-      .join("\n");
-    const cta =
-      tier.id === "free"
-        ? `<a class="btn secondary" href="/web-assets" data-media-cta="create" data-track="pricing_plan" data-plan="free">${esc(tier.cta)}</a>`
-        : `<button type="button" class="btn ${tier.id === "developer" ? "primary" : "secondary"}" data-wa-checkout="${esc(tier.id)}" data-interval="monthly" data-track="pricing_plan" data-plan="${esc(tier.id)}">${esc(tier.cta)}</button>`;
-    return `            <article class="price-card" data-tier="${esc(tier.id)}">
-              <h2>${esc(tier.name)}</h2>
-              <p class="price-amount">${esc(tier.price)}<span>${esc(tier.period)}</span></p>
-              ${annual}
-              <p class="price-pos">${esc(tier.positioning)}</p>
-              <ul>
-${features}
-              </ul>
-              ${cta}
-            </article>`;
-  }).join("\n");
+  const cards = PRICING_TIERS.map((tier) => pricingCardHtml(tier, copy)).join("\n");
+  const dropFeatures = copy.dropProFeatures
+    .map((item) => `                <li>${pricingCheckIcon()}<span>${esc(item)}</span></li>`)
+    .join("\n");
 
   const head = extraProductHead(copy, url);
 
@@ -1896,30 +1972,63 @@ ${head}
 ${topBar("home", locale, chrome)}
 
       <main>
-        <section class="ext-hero ext-hero-solo">
-          <div class="ext-hero-copy">
-            <p class="ext-kicker">${esc(copy.kicker)}</p>
-            <h1 class="ext-title">${esc(copy.h1)}</h1>
-            <p class="sub ext-lede">${esc(copy.lede)}</p>
-            <p class="price-promises">${esc(copy.noEgress)} ${esc(copy.noMcpFee)}</p>
-            <p class="price-launch">${esc(copy.launchNote)}</p>
-            <div class="price-interval" role="radiogroup" aria-label="Billing interval">
-              <button type="button" class="btn secondary" data-select-interval="monthly" aria-checked="true">Monthly</button>
-              <button type="button" class="btn secondary" data-select-interval="annual" aria-checked="false">Annual</button>
-            </div>
+        <section class="pricing-hero">
+          <p class="ext-kicker">${esc(copy.kicker)}</p>
+          <h1 class="ext-title">${esc(copy.h1)}</h1>
+          <p class="sub pricing-lede">${esc(copy.lede)}</p>
+          <p class="visually-hidden">${esc(copy.noEgress)} ${esc(copy.noMcpFee)} ${esc(copy.launchNote)}</p>
+          <div class="price-interval" role="radiogroup" aria-label="${esc(copy.intervalAria)}">
+            <button type="button" role="radio" data-select-interval="monthly" aria-checked="true">${esc(copy.monthly)}</button>
+            <button type="button" role="radio" data-select-interval="annual" aria-checked="false">${esc(copy.annual)} <span class="pricing-save">${esc(copy.annualSave)}</span></button>
           </div>
         </section>
 
         <section id="plans" class="price-grid" aria-label="Web Assets plans">
 ${cards}
         </section>
-        <p class="price-overage">${esc(copy.overageNote)}</p>
-        <article class="seo-article">
-          <h2>${esc(copy.dropProHeading)}</h2>
-          <p>${esc(copy.dropProBody)}</p>
-        </article>
+        <p class="pricing-trust">${esc(copy.trustLine)}</p>
 
+        <aside class="pricing-protect" aria-labelledby="overage-heading">
+          <h2 id="overage-heading">${esc(copy.overageHeading)}</h2>
+          <p class="pricing-protect-lead">${esc(copy.overageLead)}</p>
+          <p>${esc(copy.overageBody)}</p>
+          <p class="pricing-protect-note">${esc(copy.overageNote)}</p>
+        </aside>
+
+${pricingCompareHtml(copy)}
+
+        <section class="pricing-drops" aria-labelledby="drops-pricing-heading">
+          <h2 id="drops-pricing-heading">${esc(copy.dropProHeading)}</h2>
+          <article class="pricing-drops-card">
+            <div class="pricing-drops-free">
+              <h3>${esc(copy.dropFreeName)}</h3>
+              <p class="pricing-drops-label">Free</p>
+              <p>${esc(copy.dropFreePos)}</p>
+            </div>
+            <div class="pricing-drops-pro">
+              <h3>${esc(copy.dropProName)}</h3>
+              <p class="price-amount pricing-drops-price"><span class="price-figure">€2.99</span><span class="price-period">/month</span></p>
+              <ul class="pricing-features">
+${dropFeatures}
+              </ul>
+              <a class="btn secondary pricing-cta" href="/pro">${esc(copy.dropProCta)}</a>
+            </div>
+          </article>
+          <p class="pricing-drops-note">${esc(copy.dropProSeparate)}</p>
+        </section>
+
+        <div class="pricing-faq">
 ${faqHtml(copy.faqHeading, copy.faqs)}
+        </div>
+
+        <section class="pricing-close" aria-labelledby="pricing-close-heading">
+          <h2 id="pricing-close-heading">${esc(copy.closeHeading)}</h2>
+          <p>${esc(copy.closeLede)}</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="/web-assets" data-media-cta="create" data-track="pricing_plan" data-plan="free">${esc(copy.closePrimary)}</a>
+            <a class="btn secondary" href="/developers">${esc(copy.closeSecondary)}</a>
+          </div>
+        </section>
       </main>
 
 ${footerHtml(locale, chrome)}
