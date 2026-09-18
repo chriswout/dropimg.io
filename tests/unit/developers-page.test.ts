@@ -5,20 +5,31 @@ import { MCP_PAGE } from "../../marketing/mcp";
 import { renderDevelopersPage, renderExtensionPage, renderHome, renderMcpPage } from "../../marketing/render";
 
 describe("developers and mcp product pages", () => {
-  it("opens with the product line and a curl", () => {
+  it("positions docs around Web Assets, MCP, and REST", () => {
     const html = renderDevelopersPage();
-    expect(html).toContain("Image in. URL out.");
-    expect(html).toContain("Connect a coding agent");
+    expect(html).toContain("Web assets your coding agent can manage.");
+    expect(html).toContain("Connect with MCP");
     expect(html).toContain("https://dropimg.io/mcp");
     expect(html).toContain("data-page-intent=\"developers\"");
+    expect(html).toContain("dropimg_api_");
+    expect(html).toContain("dropimg_pk_");
+    expect(html).toContain("list_media_projects");
+    expect(html).toContain("upload_media_asset");
+    expect(html).toContain("POST https://dropimg.io/api/v1/media/orgs");
+    expect(html).toContain("Temporary Drops API");
     expect(html).toContain("POST https://dropimg.io/api/v1/images");
     expect(html).toContain("Authorization: Bearer");
     expect(html).toContain("image_url");
     expect(html).toContain("created_at");
     expect(html).not.toContain("delete_url");
     expect(html).toContain("/openapi/v1.yaml");
-    expect(html).toContain("Free 20 uploads / 50 MB per day");
-    expect(DEVELOPERS_PAGE.title.toLowerCase()).toContain("image upload api");
+    expect(html).toContain("quota_exceeded");
+    expect(html).toContain("Knowledge of the URL is sufficient");
+    expect(html).toContain("code-box");
+    expect(DEVELOPERS_PAGE.title).toContain("Web Assets");
+    expect(DEVELOPERS_PAGE.title).toContain("MCP");
+    expect(html).not.toContain("Temporary Image Upload API");
+    expect(html).not.toContain("when Media is enabled");
   });
 
   it("sells MCP as a temporary image URL for agents", () => {

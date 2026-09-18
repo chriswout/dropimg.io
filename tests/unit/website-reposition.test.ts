@@ -87,12 +87,10 @@ describe("homepage Web Assets reposition (KON-79)", () => {
     expect(html).toContain("chromewebstore.google.com");
   });
 
-  it("keeps Media CTAs on /web-assets until Media is enabled", () => {
-    expect(html).toContain('data-cta-soon="Web Assets launching soon"');
-    expect(html).not.toContain("/app/media");
-    const close = html.match(/class="home-close"[\s\S]*?<\/section>/)?.[0] ?? "";
-    expect(close).toContain('href="/web-assets"');
-    expect(close).toContain('data-media-cta="create"');
+  it("keeps Media CTAs live and does not ship coming-soon fallbacks", () => {
+    expect(html).not.toContain('data-cta-soon="Web Assets launching soon"');
+    expect(html).not.toContain("data-cta-soon");
+    expect(html).toContain('data-media-cta="create"');
   });
 
   it("shows a single stable-path board instead of a path list", () => {
@@ -118,7 +116,8 @@ describe("Web Assets product page (KON-80)", () => {
     expect(html).toContain("PDF");
     expect(html).toContain("not confidential");
     expect(html).toContain("data-media-cta=\"create\"");
-    expect(html).toContain("Web Assets launching soon");
+    expect(html).not.toContain("Web Assets launching soon");
+    expect(html).not.toContain("data-cta-soon");
   });
 });
 
@@ -166,7 +165,7 @@ describe("developer onboarding (KON-80)", () => {
     expect(DEVELOPERS_ONBOARDING.cursorHeading).toBe("Cursor");
     expect(DEVELOPERS_ONBOARDING.claudeHeading).toBe("Claude Code");
     expect(DEVELOPERS_ONBOARDING.codexHeading).toBe("Codex");
-    expect(DEVELOPERS_ONBOARDING.launchNote).toMatch(/Media is enabled/i);
+    expect(DEVELOPERS_ONBOARDING.launchNote).toBe("");
   });
 });
 

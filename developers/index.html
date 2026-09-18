@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>Temporary Image Upload API — Image Hosting API | dropimg.io</title>
-    <meta name="description" content="Temporary image upload API. POST an image, get a URL. Authenticated REST for scripts: upload, list, and delete. No albums. No permanent archive." />
+    <title>Developer Docs — Web Assets, MCP &amp; Image API | DropIMG</title>
+    <meta name="description" content="Integrate DropIMG Web Assets with MCP and REST. Give AI coding agents stable URLs for images, SVGs, icons and web fonts. Temporary Drops API included." />
     <link rel="canonical" href="https://dropimg.io/developers" />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
@@ -24,20 +24,20 @@
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:url" content="https://dropimg.io/developers" />
-    <meta property="og:title" content="Image hosting API | dropimg.io" />
-    <meta property="og:description" content="Image in. URL out. A temporary image upload API with Bearer keys. Free and Pro use the same write path." />
+    <meta property="og:title" content="Developer Docs — Web Assets, MCP &amp; Image API | DropIMG" />
+    <meta property="og:description" content="Connect Cursor, Claude Code, Codex, or any MCP client. Upload and replace images, SVGs, icons, and web fonts without changing the URL." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Temporary image upload API — dropimg.io" />
-    <meta name="twitter:description" content="POST /api/v1/images. Get a URL. Links expire. Bearer API key required." />
+    <meta name="twitter:title" content="DropIMG developer docs — Web Assets, MCP, REST" />
+    <meta name="twitter:description" content="Stable /m/… URLs for AI-built apps. MCP OAuth. REST for scripts. Temporary Drops API included." />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <script src="/consent.js" defer></script>
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebAPI","name":"DropIMG Image Upload API","url":"https://dropimg.io/developers","description":"Temporary image upload API. POST an image, get a URL. Authenticated REST for scripts: upload, list, and delete. No albums. No permanent archive.","documentation":"https://dropimg.io/developers"}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebAPI","name":"DropIMG Web Assets API","url":"https://dropimg.io/developers","description":"Integrate DropIMG Web Assets with MCP and REST. Give AI coding agents stable URLs for images, SVGs, icons and web fonts. Temporary Drops API included.","documentation":"https://dropimg.io/developers"}</script>
   </head>
   <body>
-    <a class="skip-link" href="#api-request">Skip to the request</a>
-    <div class="page page-seo page-ext">
+    <a class="skip-link" href="#quickstart">Skip to quickstart</a>
+    <div class="page page-seo page-ext page-docs">
       <header class="top">
        <div class="top-inner">
         <a class="brand" href="/" aria-label="dropimg.io home">
@@ -68,24 +68,27 @@
           <a href="/developers">Docs</a>
         </nav>
         <div class="header-actions">
-          <nav id="account-nav" class="account-nav" aria-label="Account">
+          <nav id="account-nav" class="account-nav" aria-label="Account"
+            data-label-web="Web Assets"
+            data-label-drops="Drops"
+            data-label-free="Free"
+            data-label-developer="Developer"
+            data-label-wa-pro="Pro"
+            data-label-drops-pro="Drops Pro">
             <a class="account-chip account-get-started" href="/web-assets" data-media-cta="create">Get started</a>
-            <a id="account-pro-anon" class="account-nav-link account-pro-link" href="/pro">Pro · €2.99</a>
             <a id="account-signin" class="account-chip" href="/login">Sign in</a>
             <div id="account-session" class="account-session" hidden>
-              <a id="account-app" class="account-nav-link" href="/app">My drops</a>
-              <a id="account-plan" class="account-plan" href="/pro" hidden
-                data-label-pro="Pro"
-                data-label-upgrade="Upgrade"></a>
+              <a id="account-app" class="account-nav-link" href="/app">Dashboard</a>
               <details class="account-menu">
                 <summary class="account-chip account-summary">
-                  <span id="account-plan-badge" class="account-plan-badge" hidden>Pro</span>
                   <span id="account-email" class="account-email"></span>
                 </summary>
                 <div class="account-menu-panel">
                   <p id="account-email-full" class="account-email-full"></p>
-                  <a id="account-app-menu" class="account-menu-item account-menu-mobile" href="/app">My drops</a>
-                  <a id="account-plan-menu" class="account-menu-item account-menu-mobile" href="/pro" hidden>Upgrade</a>
+                  <p id="account-plan-web" class="account-plan-line" hidden></p>
+                  <p id="account-plan-drops" class="account-plan-line" hidden></p>
+                  <a id="account-media-menu" class="account-menu-item" href="/app/media">Web Assets</a>
+                  <a id="account-app-menu" class="account-menu-item" href="/app">My Drops</a>
                   <a id="account-edit" class="account-menu-item" href="/app/account">Edit account</a>
                   <button id="account-signout" type="button" class="account-menu-item">Sign out</button>
                 </div>
@@ -117,82 +120,316 @@
        </div>
       </header>
 
-      <main>
-        <section class="ext-hero ext-hero-solo">
-          <div class="ext-hero-copy">
-            <p class="ext-kicker">Image hosting API</p>
-            <h1 class="ext-title">Image in. URL out.</h1>
-            <p class="ext-tagline">Temporary image upload API</p>
-            <p class="sub ext-lede">A temporary image hosting API. Send bytes, get a short URL. Same limits as the site. Authenticated only — no anonymous /api/v1.</p>
-            <ul class="ext-facts">
-              <li>Bearer key — dropimg_api_…</li>
-              <li>Upload, list, delete</li>
-              <li>Expires: 1h · 24h · 7d · 30d · 90d · 180d</li>
-            </ul>
+      <div class="docs-layout">
+        <nav class="docs-toc" aria-label="On this page">
+          <a href="#overview">Overview</a>
+          <a href="#quickstart">Quickstart</a>
+          <a href="#mcp">MCP</a>
+          <a href="#rest">REST API</a>
+          <a href="#auth">Authentication</a>
+          <a href="#formats">Formats</a>
+          <a href="#limits">Limits</a>
+          <a href="#errors">Errors</a>
+        </nav>
+        <main class="docs-main">
+          <section class="docs-hero" id="overview">
+            <p class="ext-kicker">Developers</p>
+            <h1 class="ext-title">Web assets your coding agent can manage.</h1>
+            <p class="sub ext-lede">Connect Cursor, Claude Code, Codex, or any MCP client to DropIMG. Upload and replace images, SVGs, favicons, and web fonts without changing the URL in your application.</p>
             <div class="ext-actions">
-              <a class="btn primary" href="/app/integrations">Create an API key</a>
-              <a class="btn secondary" href="/openapi/v1.yaml">OpenAPI spec</a>
+              <a class="btn primary" href="#mcp">Connect with MCP</a>
+              <a class="btn secondary" href="#rest">View REST API</a>
             </div>
+          </section>
+
+          <section class="docs-card-row" aria-label="Start here">
+            <article class="docs-card">
+              <p class="docs-badge">Recommended</p>
+              <h3>MCP</h3>
+              <p>Best for AI coding agents</p>
+              <p class="docs-meta"><code>https://dropimg.io/mcp</code></p>
+              <a class="btn secondary" href="#mcp">Connect MCP</a>
+            </article>
+            <article class="docs-card">
+              <p class="docs-badge">REST</p>
+              <h3>Web Assets API</h3>
+              <p>Best for scripts and backend workflows</p>
+              <p class="docs-meta"><code>/api/v1/media</code></p>
+              <a class="btn secondary" href="#rest">View examples</a>
+            </article>
+            <article class="docs-card">
+              <p class="docs-badge">Drops</p>
+              <h3>Temporary Drops API</h3>
+              <p>Best for screenshots and short-lived links</p>
+              <p class="docs-meta"><code>/api/v1/images</code></p>
+              <a class="btn secondary" href="#drops-api">View Drops API</a>
+            </article>
+          </section>
+
+          <section id="quickstart" class="docs-section">
+            <h2>5-minute quickstart</h2>
+            <p>Sign in, create a Web Assets project, connect MCP, upload the first file, and paste the returned URL into the app. Temporary screenshot URLs still use the Drop API below.</p>
+            <ol class="docs-steps">
+            <li class="docs-step">
+              <span class="docs-step-n">1</span>
+              <div>
+                <h3>Sign in</h3>
+                <p>Create your DropIMG account.</p>
+              </div>
+            </li>
+            <li class="docs-step">
+              <span class="docs-step-n">2</span>
+              <div>
+                <h3>Create a Web Assets project</h3>
+                <p>Use a slug like website.</p>
+              </div>
+            </li>
+            <li class="docs-step">
+              <span class="docs-step-n">3</span>
+              <div>
+                <h3>Connect MCP</h3>
+                <p>https://dropimg.io/mcp</p>
+              </div>
+            </li>
+            <li class="docs-step">
+              <span class="docs-step-n">4</span>
+              <div>
+                <h3>Upload an asset</h3>
+                <p>Upload this logo as branding/logo.</p>
+              </div>
+            </li>
+            <li class="docs-step">
+              <span class="docs-step-n">5</span>
+              <div>
+                <h3>Use the stable URL</h3>
+                <p>https://dropimg.io/m/acme/site/branding/logo</p>
+              </div>
+            </li>
+            </ol>
+            <p class="docs-callout">Replace the asset later and the URL stays unchanged.</p>
+            <div class="code-box">
+            <div class="code-box-bar">
+              <span class="code-box-lang">JSON</span>
+              <button type="button" class="code-copy" data-copy>Copy</button>
+            </div>
+            <pre class="code-box-pre"><code>{
+  &quot;mcpServers&quot;: {
+    &quot;dropimg&quot;: {
+      &quot;url&quot;: &quot;https://dropimg.io/mcp&quot;
+    }
+  }
+}</code></pre>
           </div>
-        </section>
+          </section>
 
-        <article class="seo-article" id="onboarding" aria-labelledby="onboard-heading">
-          <h2 id="onboard-heading">Connect a coding agent</h2>
-          <p>Sign in, create a Web Assets project, connect MCP, upload the first file, and paste the returned URL into the app. Temporary screenshot URLs still use the Drop API below.</p>
-          <p class="price-launch">Web Assets MCP tools are available when Media is enabled. Sign in, create a project, then connect the agent. Temporary Drops keep working on the same /mcp endpoint.</p>
-          <h3>Ideal flow</h3>
-          <ol class="onboard-steps">
-            <li>Visit DropIMG and sign in</li>
-            <li>Create a Web Assets project</li>
-            <li>Connect your agent over MCP</li>
-            <li>Upload the first Web Asset</li>
-            <li>Use the returned /m/… URL in the app</li>
-          </ol>
-          <h3 id="cursor">Cursor</h3>
-          <p>Add the DropIMG MCP server (https://dropimg.io/mcp). Cursor opens OAuth after install. Ask the agent to create a project, then upload branding/logo as a Web Asset. Do not invent a /m/… URL — use the JSON url after the HTTP upload.</p>
-          <p><a class="btn primary" href="/mcp" data-track="agent_connect" data-plan="cursor">Add to Cursor</a></p>
-          <h3 id="claude">Claude Code</h3>
-          <p>Register https://dropimg.io/mcp as a remote MCP server. After OAuth, the same tools are available: list_media_projects, upload_media_asset, replace_media_asset. Temporary screenshots stay on upload_image.</p>
-          <h3 id="codex">Codex</h3>
-          <p>Point Codex at https://dropimg.io/mcp. Use an account OAuth session or a project key (dropimg_pk_…) for an existing project. Project keys cannot create projects.</p>
-          <h3 id="mcp">Generic MCP</h3>
-          <p>Canonical endpoint: https://dropimg.io/mcp. Streamable HTTP. One server for Drops and Web Assets — not a second MCP process.</p>
-          <p class="demo-url"><code>https://dropimg.io/mcp</code></p>
-        </article>
+          <section id="mcp" class="docs-section">
+            <div class="docs-heading-row">
+              <h2>MCP</h2>
+              <span class="docs-badge">Recommended</span>
+            </div>
+            <p>Cursor and compatible MCP clients can authenticate through OAuth.</p>
+            <div class="code-box">
+            <div class="code-box-bar">
+              <span class="code-box-lang">Endpoint</span>
+              <button type="button" class="code-copy" data-copy>Copy</button>
+            </div>
+            <pre class="code-box-pre"><code>https://dropimg.io/mcp</code></pre>
+          </div>
+            <p>Canonical endpoint: https://dropimg.io/mcp. Streamable HTTP. One server for Drops and Web Assets — not a second MCP process.</p>
+            <div class="docs-tool-grid">
+            <article class="docs-tool-card">
+              <h3>Projects</h3>
+              <ul><li><code>list_media_projects</code></li><li><code>create_media_project</code></li></ul>
+            </article>
+            <article class="docs-tool-card">
+              <h3>Assets</h3>
+              <ul><li><code>list_media_assets</code></li><li><code>get_media_asset</code></li></ul>
+            </article>
+            <article class="docs-tool-card">
+              <h3>Upload</h3>
+              <ul><li><code>upload_media_asset</code></li><li><code>replace_media_asset</code></li></ul>
+            </article>
+            <article class="docs-tool-card">
+              <h3>Temporary Drops</h3>
+              <ul><li><code>upload_image</code></li><li><code>get_image</code></li><li><code>list_images</code></li><li><code>delete_image</code></li></ul>
+            </article>
+            </div>
+            <p class="docs-workflow-label">Application code does not change.</p>
+            <div class="code-box">
+            <div class="code-box-bar">
+              <span class="code-box-lang">Workflow</span>
+              <button type="button" class="code-copy" data-copy>Copy</button>
+            </div>
+            <pre class="code-box-pre"><code>You:
+Replace the homepage hero.
 
-        <article class="seo-article" id="api-request" tabindex="-1" aria-label="API">
-          <h2>curl</h2>
-          <pre class="api-code"><code>curl -X POST https://dropimg.io/api/v1/images \
+Agent:
+✓ Found homepage/hero
+✓ Requested replacement upload
+✓ Uploaded new image
+✓ Stable URL unchanged
+
+https://dropimg.io/m/acme/site/homepage/hero</code></pre>
+          </div>
+            <p><a class="btn primary" href="/mcp" data-track="agent_connect" data-plan="cursor">Add to Cursor</a></p>
+          </section>
+
+          <section id="rest" class="docs-section">
+            <h2>REST API</h2>
+            <div class="docs-tabs" role="tablist" aria-label="REST products">
+              <button type="button" class="docs-tab" data-tab="web-assets" aria-pressed="true">Web Assets</button>
+              <button type="button" class="docs-tab" data-tab="drops" aria-pressed="false">Drops</button>
+            </div>
+            <div class="docs-tab-panel" data-panel="web-assets">
+              <h3>Create organization</h3>
+              <p>REST create is a signed-in session. Prefer the dashboard or MCP <code>create_media_project</code>. Project keys cannot create projects.</p>
+              <div class="code-box">
+            <div class="code-box-bar">
+              <span class="code-box-lang">cURL</span>
+              <button type="button" class="code-copy" data-copy>Copy</button>
+            </div>
+            <pre class="code-box-pre"><code>curl -X POST https://dropimg.io/api/v1/media/orgs</code></pre>
+          </div>
+              <h3>Create project</h3>
+              <div class="code-box">
+            <div class="code-box-bar">
+              <span class="code-box-lang">cURL</span>
+              <button type="button" class="code-copy" data-copy>Copy</button>
+            </div>
+            <pre class="code-box-pre"><code>curl -X POST https://dropimg.io/api/v1/media/orgs/$ORG_ID/projects \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;slug&quot;: &quot;website&quot;,
+    &quot;name&quot;: &quot;website&quot;
+  }'</code></pre>
+          </div>
+              <h3>Request upload intent</h3>
+              <p>POST file bytes to the returned <code>intent.uploadUrl</code> with <code>intent.headers</code>. Do not put bytes in JSON.</p>
+              <div class="code-box">
+            <div class="code-box-bar">
+              <span class="code-box-lang">cURL</span>
+              <button type="button" class="code-copy" data-copy>Copy</button>
+            </div>
+            <pre class="code-box-pre"><code>curl -X POST https://dropimg.io/api/v1/media/projects/$PROJECT_ID/intents \
+  -H &quot;Authorization: Bearer $DROPIMG_PROJECT_KEY&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;operation&quot;: &quot;create&quot;,
+    &quot;path&quot;: &quot;branding/logo&quot;
+  }'</code></pre>
+          </div>
+              <div class="code-box">
+            <div class="code-box-bar">
+              <span class="code-box-lang">cURL</span>
+              <button type="button" class="code-copy" data-copy>Copy</button>
+            </div>
+            <pre class="code-box-pre"><code>curl -X POST &quot;$UPLOAD_URL&quot; \
+  -H &quot;Authorization: Bearer $INTENT_TOKEN&quot; \
+  --data-binary @logo.png</code></pre>
+          </div>
+              <h3>Replace asset</h3>
+              <p>Replacement preserves the stable alias. MIME may change.</p>
+              <div class="code-box">
+            <div class="code-box-bar">
+              <span class="code-box-lang">cURL</span>
+              <button type="button" class="code-copy" data-copy>Copy</button>
+            </div>
+            <pre class="code-box-pre"><code>curl -X POST https://dropimg.io/api/v1/media/projects/$PROJECT_ID/intents \
+  -H &quot;Authorization: Bearer $DROPIMG_PROJECT_KEY&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;operation&quot;: &quot;replace&quot;,
+    &quot;asset_id&quot;: &quot;$ASSET_ID&quot;
+  }'</code></pre>
+          </div>
+              <h3>JavaScript</h3>
+              <div class="code-box">
+            <div class="code-box-bar">
+              <span class="code-box-lang">JavaScript</span>
+              <button type="button" class="code-copy" data-copy>Copy</button>
+            </div>
+            <pre class="code-box-pre"><code>const intentRes = await fetch(
+  `https://dropimg.io/api/v1/media/projects/${process.env.DROPIMG_PROJECT_ID}/intents`,
+  {
+    method: &quot;POST&quot;,
+    headers: {
+      Authorization: `Bearer ${process.env.DROPIMG_PROJECT_KEY}`,
+      &quot;Content-Type&quot;: &quot;application/json&quot;,
+    },
+    body: JSON.stringify({ operation: &quot;create&quot;, path: &quot;branding/logo&quot; }),
+  },
+);
+const { intent } = await intentRes.json();
+
+const uploadRes = await fetch(intent.uploadUrl, {
+  method: &quot;POST&quot;,
+  headers: intent.headers,
+  body: logoBytes,
+});
+const { asset } = await uploadRes.json();
+console.log(asset.url);</code></pre>
+          </div>
+              <h3>Python</h3>
+              <div class="code-box">
+            <div class="code-box-bar">
+              <span class="code-box-lang">Python</span>
+              <button type="button" class="code-copy" data-copy>Copy</button>
+            </div>
+            <pre class="code-box-pre"><code>import os
+import requests
+
+headers = {
+    &quot;Authorization&quot;: f&quot;Bearer {os.environ['DROPIMG_PROJECT_KEY']}&quot;,
+    &quot;Content-Type&quot;: &quot;application/json&quot;,
+}
+
+intent = requests.post(
+    f&quot;https://dropimg.io/api/v1/media/projects/{os.environ['DROPIMG_PROJECT_ID']}/intents&quot;,
+    headers=headers,
+    json={&quot;operation&quot;: &quot;create&quot;, &quot;path&quot;: &quot;branding/logo&quot;},
+).json()[&quot;intent&quot;]
+
+asset = requests.post(
+    intent[&quot;uploadUrl&quot;],
+    headers=intent[&quot;headers&quot;],
+    data=open(&quot;logo.png&quot;, &quot;rb&quot;),
+).json()[&quot;asset&quot;]
+print(asset[&quot;url&quot;])</code></pre>
+          </div>
+            </div>
+            <div class="docs-tab-panel" data-panel="drops" hidden>
+              <h2 id="drops-api">Temporary Drops API</h2>
+              <p>Upload a screenshot or image and get a short-lived share URL. Multipart field <code>file</code>. This is not the Web Assets quota.</p>
+              <div class="code-box">
+            <div class="code-box-bar">
+              <span class="code-box-lang">cURL</span>
+              <button type="button" class="code-copy" data-copy>Copy</button>
+            </div>
+            <pre class="code-box-pre"><code>curl -X POST https://dropimg.io/api/v1/images \
   -H &quot;Authorization: Bearer $DROPIMG_API_KEY&quot; \
-  -F file=@shot.png \
+  -F file=@screenshot.png \
   -F expiry=7d</code></pre>
-          <h2>Response</h2>
-          <pre class="api-code"><code>{
+          </div>
+              <h3>Response</h3>
+              <div class="code-box">
+            <div class="code-box-bar">
+              <span class="code-box-lang">JSON</span>
+              <button type="button" class="code-copy" data-copy>Copy</button>
+            </div>
+            <pre class="code-box-pre"><code>{
   &quot;id&quot;: &quot;abc123xy&quot;,
   &quot;url&quot;: &quot;https://dropimg.io/abc123xy&quot;,
   &quot;image_url&quot;: &quot;https://dropimg.io/i/abc123xy&quot;,
   &quot;created_at&quot;: &quot;2026-09-07T12:00:00.000Z&quot;,
   &quot;expires_at&quot;: &quot;2026-09-14T12:00:00.000Z&quot;
 }</code></pre>
-          <h2>Auth</h2>
-
-          <p>Authorization: Bearer dropimg_api_…. Keys are shown once. Revoke them on Integrations. Do not put a key in a query string.</p>
-
-          <h2>Routes</h2>
-
-          <ul>
-            <li>POST /api/v1/images — multipart file + optional expiry=7d. Scope images:write.</li>
-            <li>GET /api/v1/images/:id — one of your live images. Scope images:read.</li>
-            <li>GET /api/v1/images — list envelope with next_cursor. Scope images:read.</li>
-            <li>DELETE /api/v1/images/:id — owner delete. Scope images:delete. Create does not return a delete token.</li>
-          </ul>
-
-          <h2>Limits</h2>
-
-          <p>Same entitlements as the rest of DropIMG: 10 MB per file on Free, plan expiries, and the upload burst. API and MCP share 20 uploads / 50 MB per day on Free, 100 / 500 MB on Pro. Errors are { &quot;error&quot;, &quot;code&quot; } with 401 or 403 when the key is missing or too narrow, and 429 quota_exceeded when the programmatic daily bucket is full.</p>
-          <h2>Other languages</h2>
-          <h3>JavaScript</h3>
-          <pre class="api-code"><code>const form = new FormData();
+          </div>
+              <div class="code-box">
+            <div class="code-box-bar">
+              <span class="code-box-lang">JavaScript</span>
+              <button type="button" class="code-copy" data-copy>Copy</button>
+            </div>
+            <pre class="code-box-pre"><code>const form = new FormData();
 form.append(&quot;file&quot;, file);
 form.append(&quot;expiry&quot;, &quot;7d&quot;);
 
@@ -203,78 +440,219 @@ const res = await fetch(&quot;https://dropimg.io/api/v1/images&quot;, {
 });
 const image = await res.json();
 console.log(image.url);</code></pre>
-          <h3>Python</h3>
-          <pre class="api-code"><code>import os, requests
+          </div>
+              <div class="code-box">
+            <div class="code-box-bar">
+              <span class="code-box-lang">Python</span>
+              <button type="button" class="code-copy" data-copy>Copy</button>
+            </div>
+            <pre class="code-box-pre"><code>import os
+import requests
 
 r = requests.post(
     &quot;https://dropimg.io/api/v1/images&quot;,
     headers={&quot;Authorization&quot;: f&quot;Bearer {os.environ['DROPIMG_API_KEY']}&quot;},
-    files={&quot;file&quot;: open(&quot;shot.png&quot;, &quot;rb&quot;)},
+    files={&quot;file&quot;: open(&quot;screenshot.png&quot;, &quot;rb&quot;)},
     data={&quot;expiry&quot;: &quot;7d&quot;},
 )
 print(r.json()[&quot;url&quot;])</code></pre>
-          <h3>Node</h3>
-          <pre class="api-code"><code>import { readFile } from &quot;node:fs/promises&quot;;
+          </div>
+            </div>
+            <p class="account-muted"><a href="/openapi/v1.yaml">OpenAPI spec</a> · <a href="/app/integrations">Create an API key</a></p>
+          </section>
 
-const form = new FormData();
-form.set(&quot;file&quot;, new Blob([await readFile(&quot;shot.png&quot;)]), &quot;shot.png&quot;);
-form.set(&quot;expiry&quot;, &quot;7d&quot;);
+          <section id="auth" class="docs-section">
+            <h2>Authentication</h2>
+            <div class="docs-card-row">
+            <article class="docs-auth-card">
+              <h3>OAuth</h3>
+              <p class="docs-meta"><code>MCP session</code></p>
+              <p>Cursor, MCP clients, humans</p>
+              <p class="account-muted">Cursor and compatible MCP clients authenticate through OAuth.</p>
+            </article>
+            <article class="docs-auth-card">
+              <h3>Account API key</h3>
+              <p class="docs-meta"><code>dropimg_api_</code></p>
+              <p>Scripts, backend automation, multiple projects</p>
+              <p class="account-muted">Drops REST and MCP across projects. Minted once on Integrations.</p>
+            </article>
+            <article class="docs-auth-card">
+              <h3>Project key</h3>
+              <p class="docs-meta"><code>dropimg_pk_</code></p>
+              <p>CI/CD, one project, scoped automation</p>
+              <p class="account-muted">Web Assets REST for that project. Project keys cannot create projects.</p>
+            </article>
+            </div>
+          </section>
 
-const res = await fetch(&quot;https://dropimg.io/api/v1/images&quot;, {
-  method: &quot;POST&quot;,
-  headers: { Authorization: `Bearer ${process.env.DROPIMG_API_KEY}` },
-  body: form,
-});
-console.log((await res.json()).url);</code></pre>
-          <h3>PHP</h3>
-          <pre class="api-code"><code>&lt;?php
-$ch = curl_init(&quot;https://dropimg.io/api/v1/images&quot;);
-curl_setopt_array($ch, [
-  CURLOPT_POST =&gt; true,
-  CURLOPT_HTTPHEADER =&gt; [&quot;Authorization: Bearer &quot; . getenv(&quot;DROPIMG_API_KEY&quot;)],
-  CURLOPT_POSTFIELDS =&gt; [
-    &quot;file&quot; =&gt; new CURLFile(&quot;shot.png&quot;),
-    &quot;expiry&quot; =&gt; &quot;7d&quot;,
-  ],
-  CURLOPT_RETURNTRANSFER =&gt; true,
-]);
-echo json_decode(curl_exec($ch), true)[&quot;url&quot;];</code></pre>
-        </article>
+          <section id="formats" class="docs-section">
+            <h2>Formats</h2>
+            <h3>Web Assets</h3>
+            <ul class="docs-chips"><li>JPEG</li><li>PNG</li><li>WebP</li><li>GIF</li><li>AVIF</li><li>SVG</li><li>ICO</li><li>WOFF</li><li>WOFF2</li></ul>
+            <h3>Drops</h3>
+            <ul class="docs-chips"><li>PNG</li><li>JPEG</li><li>WebP</li><li>GIF</li></ul>
+            <h3>Unsupported</h3>
+            <ul class="docs-chips docs-chips-muted"><li>PDF</li><li>Video</li><li>Audio</li><li>ZIP</li><li>HTML</li><li>JavaScript</li><li>CSS</li><li>Executables</li><li>TTF</li><li>OTF</li><li>EOT</li></ul>
+          </section>
+
+          <section id="limits" class="docs-section">
+            <h2>Limits</h2>
+            <h3>Web Assets limits</h3>
+            <div class="docs-table-wrap">
+              <table class="docs-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Plan</th>
+                    <th scope="col">Projects</th>
+                    <th scope="col">Storage</th>
+                    <th scope="col">Deliveries</th>
+                    <th scope="col">Keys</th>
+                    <th scope="col">File</th>
+                  </tr>
+                </thead>
+                <tbody>
+              <tr>
+                <th scope="row">Free</th>
+                <td>3</td>
+                <td>1 GB</td>
+                <td>100K / month</td>
+                <td>2</td>
+                <td>10 MB</td>
+              </tr>
+              <tr>
+                <th scope="row">Developer</th>
+                <td>20</td>
+                <td>10 GB</td>
+                <td>2M / month</td>
+                <td>20</td>
+                <td>10 MB</td>
+              </tr>
+              <tr>
+                <th scope="row">Pro</th>
+                <td>100</td>
+                <td>100 GB</td>
+                <td>10M / month</td>
+                <td>100</td>
+                <td>10 MB</td>
+              </tr>
+                </tbody>
+              </table>
+            </div>
+            <h3>Drops limits</h3>
+            <div class="docs-table-wrap">
+              <table class="docs-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Plan</th>
+                    <th scope="col">File</th>
+                    <th scope="col">Expiry</th>
+                    <th scope="col">API / MCP</th>
+                  </tr>
+                </thead>
+                <tbody>
+              <tr>
+                <th scope="row">Drops Free</th>
+                <td>10 MB</td>
+                <td>1h · 24h · 7d · 30d</td>
+                <td>20 uploads / 50 MB per day</td>
+              </tr>
+              <tr>
+                <th scope="row">Drops Pro</th>
+                <td>10 MB (50 MB when enabled)</td>
+                <td>plus 90d · 180d</td>
+                <td>100 uploads / 500 MB per day</td>
+              </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="errors" class="docs-section">
+            <h2>Errors</h2>
+            <div class="code-box">
+            <div class="code-box-bar">
+              <span class="code-box-lang">JSON</span>
+              <button type="button" class="code-copy" data-copy>Copy</button>
+            </div>
+            <pre class="code-box-pre"><code>{
+  &quot;error&quot;: &quot;Plan allows 3 projects&quot;,
+  &quot;code&quot;: &quot;quota_exceeded&quot;
+}</code></pre>
+          </div>
+            <div class="docs-table-wrap">
+              <table class="docs-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Code</th>
+                    <th scope="col">When</th>
+                  </tr>
+                </thead>
+                <tbody>
+              <tr>
+                <th scope="row"><code>unauthorized</code></th>
+                <td>Missing or invalid Bearer token.</td>
+              </tr>
+              <tr>
+                <th scope="row"><code>forbidden</code></th>
+                <td>Key is missing the required scope, or a project key tried to create a project.</td>
+              </tr>
+              <tr>
+                <th scope="row"><code>quota_exceeded</code></th>
+                <td>Plan limit reached — projects, storage, keys, or Drop API/MCP daily bucket.</td>
+              </tr>
+              <tr>
+                <th scope="row"><code>unsupported_type</code></th>
+                <td>Bytes are not an accepted Web Asset or Drop type.</td>
+              </tr>
+              <tr>
+                <th scope="row"><code>not_found</code></th>
+                <td>Org, project, asset, Drop, or intent does not exist.</td>
+              </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <aside class="docs-callout" id="public-urls">
+            <p>Web Asset <code>/m/...</code> URLs are public and can be used directly in <code>&lt;img&gt;</code>, favicon links, CSS, and <code>@font-face</code>.</p>
+            <p>Knowledge of the URL is sufficient for access. Do not use Web Assets for secrets or confidential files.</p>
+          </aside>
 
           <section class="faq-compact" id="faq" aria-labelledby="intent-faq" data-enter>
             <h2 id="intent-faq">API questions</h2>
             <div class="faq-list">
               <details>
-                <summary>Is this a temporary image upload API?</summary>
-                <p>Yes. DropIMG is an image hosting API for short-lived links, not a permanent archive. Default expiry is 7 days when your plan allows it. Free: 1h, 24h, 7d, 30d. Pro also has 90d and 180d.</p>
+                <summary>Is this a Web Assets API?</summary>
+                <p>Yes. The primary product is permanent Web Assets with stable /m/… URLs. The same /mcp endpoint also uploads temporary Drops. Drops expire; Web Assets stay until you replace or delete them.</p>
               </details>
               <details>
                 <summary>Do I need an account?</summary>
-                <p>Yes for /api/v1. Create an API key on Integrations. Anonymous uploads stay on the website and ShareX — not on the public REST API.</p>
+                <p>Yes for MCP OAuth, REST, and Web Assets projects. Create an account API key (dropimg_api_…) on Integrations, or a project key (dropimg_pk_…) for one project. Anonymous uploads stay on the website and ShareX — not on the public REST API.</p>
               </details>
               <details>
-                <summary>What scopes does a key have?</summary>
-                <p>images:write, images:read, and images:delete. New keys get all three. Uncheck any you do not want. ShareX and extension tokens stay upload-only.</p>
+                <summary>What can a project key do?</summary>
+                <p>A dropimg_pk_… key is scoped to one project. It can list, upload, and replace assets in that project. Project keys cannot create projects.</p>
               </details>
               <details>
                 <summary>Where is the OpenAPI spec?</summary>
-                <p>https://dropimg.io/openapi/v1.yaml — images plus Media (orgs, projects, keys, assets, intents). Public `/m/...` aliases are not confidential.</p>
+                <p>https://dropimg.io/openapi/v1.yaml — Drops images plus Web Assets (orgs, projects, keys, assets, intents). Public /m/… aliases are not confidential.</p>
               </details>
               <details>
-                <summary>What is the API and MCP daily limit?</summary>
-                <p>API and MCP share one programmatic bucket: Free 20 uploads / 50 MB per day, Pro 100 / 500 MB. The site-wide 100 uploads / 500 MB ceiling still applies across every client. Default expiry on Free API/MCP is 24 hours.</p>
+                <summary>Do Web Assets and Drops share quotas?</summary>
+                <p>No. Web Assets plans cap projects, storage, keys, and monthly deliveries. Drops API/MCP share a separate daily bucket: Free 20 uploads / 50 MB, Drops Pro 100 / 500 MB. Site Drop uploads are not the same meter.</p>
               </details>
             </div>
           </section>
 
-        <nav class="seo-more" aria-label="Related">
-          <a href="/mcp">MCP</a>
-          <span aria-hidden="true">·</span>
-          <a href="/sharex">ShareX</a>
-          <span aria-hidden="true">·</span>
-          <a href="/">Home</a>
-        </nav>
-      </main>
+          <nav class="seo-more" aria-label="Related">
+            <a href="/mcp">MCP</a>
+            <span aria-hidden="true">·</span>
+            <a href="/sharex">ShareX</a>
+            <span aria-hidden="true">·</span>
+            <a href="/">Home</a>
+          </nav>
+        </main>
+      </div>
 
       <footer class="foot">
         <div class="foot-inner">
@@ -285,10 +663,10 @@ echo json_decode(curl_exec($ch), true)[&quot;url&quot;];</code></pre>
               <a href="/web-assets">Web Assets</a>
               <a href="/drops">Drops</a>
               <a href="/pricing">Pricing</a>
-              <a href="/pro">Pro</a>
+              <a href="/developers">Developer Docs</a>
+              <a href="/pro">Drops Pro</a>
               <a href="/browser-extension">Chrome / Edge extension</a>
               <a href="/sharex">ShareX</a>
-              <a href="/developers">API</a>
               <a href="/mcp">MCP</a>
             </nav>
             <nav class="foot-col foot-legal" aria-label="Legal">

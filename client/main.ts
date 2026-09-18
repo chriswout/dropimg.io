@@ -774,6 +774,7 @@ setupLangSuggest();
 setupMediaCtas();
 setupPricingCheckout();
 setupTrackedCtas();
+setupDocsUi();
 if (document.getElementById("dropzone")) {
   setupUploader();
   void accountReady.then(() => setupDropOptions());
@@ -862,16 +863,11 @@ function setupMediaCtas() {
   if (!nodes.length) return;
   void fetch("/api/site-config")
     .then((res) => (res.ok ? res.json() : null))
-    .then((data: { mediaEnabled?: boolean } | null) => {
+    .then((raw) => {
+      const data = raw as { mediaEnabled?: boolean } | null;
       const enabled = data?.mediaEnabled === true;
       nodes.forEach((el) => {
-        if (enabled) {
-          el.href = "/login?next=/app/media";
-          return;
-        }
-        const soon = el.getAttribute("data-cta-soon");
-        if (soon) el.textContent = soon;
-        el.href = "/web-assets";
+        el.href = enabled ? "/login?next=/app/media" : "/web-assets";
       });
     })
     .catch(() => {
@@ -879,4 +875,34 @@ function setupMediaCtas() {
         el.href = "/web-assets";
       });
     });
+}
+
+function setupDocsUi() {
+  document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
+    btn.addEventListener("click", async () => {
+      const box = btn.closest(".code-box");
+      const code = box?.querySelector("code")?.textContent ?? "";
+      try {
+        await navigator.clipboard.writeText(code);
+        btn.textContent = "Copied";
+        window.setTimeout(() => {
+          btn.textContent = "Copy";
+        }, 1600);
+      } catch {
+        btn.textContent = "Copy";
+      }
+    });
+  });
+
+  const tabs = document.querySelectorAll<HTMLButtonElement>(".docs-tab");
+  if (!tabs.length) return;
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const id = tab.getAttribute("data-tab");
+      tabs.forEach((other) => other.setAttribute("aria-pressed", String(other === tab)));
+      document.querySelectorAll<HTMLElement>(".docs-tab-panel").forEach((panel) => {
+        panel.hidden = panel.getAttribute("data-panel") !== id;
+      });
+    });
+  });
 }

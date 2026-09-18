@@ -13,9 +13,29 @@ import {
 } from "./extension";
 import { SHAREX_PAGE, SHAREX_URL } from "./sharex";
 import {
+  AUTH_CARDS,
+  DEVELOPERS_CARDS,
   DEVELOPERS_EXAMPLES,
   DEVELOPERS_ONBOARDING,
   DEVELOPERS_PAGE,
+  DEVELOPERS_QUICKSTART,
+  DROP_FORMATS,
+  DROPS_CURL,
+  DROPS_LIMIT_ROWS,
+  ERROR_CODES,
+  ERROR_EXAMPLE,
+  MCP_CONFIG,
+  MCP_ENDPOINT,
+  MCP_TOOL_GROUPS,
+  MCP_WORKFLOW,
+  REST_CREATE_INTENT,
+  REST_CREATE_ORG,
+  REST_CREATE_PROJECT,
+  REST_REPLACE_INTENT,
+  REST_UPLOAD_BYTES,
+  UNSUPPORTED_FORMATS,
+  WEB_ASSET_FORMATS,
+  WEB_ASSETS_LIMIT_ROWS,
   DEVELOPERS_URL,
 } from "./developers";
 import { DROPS_PAGE, DROPS_URL } from "./drops";
@@ -642,12 +662,13 @@ ${unsupported}
 }
 
 function homepagePricingHtml(copy: (typeof HOME)[Locale]): string {
-  const cards = PRICING_TIERS.map((tier) => {
+  const cards = PRICING_TIERS.map((tier, i) => {
     const period = tier.period ? `<span>${esc(tier.period)}</span>` : "";
+    const teaser = copy.pricingTeasers[i] ?? tier.teaser;
     return `            <article class="price-card" data-tier="${esc(tier.id)}">
               <h3>${esc(tier.name)}</h3>
               <p class="price-amount">${esc(tier.price)}${period}</p>
-              <p class="price-teaser-note">${esc(tier.teaser)}</p>
+              <p class="price-teaser-note">${esc(teaser)}</p>
             </article>`;
   }).join("\n");
   return `          <section class="pricing-teaser" aria-labelledby="pricing-heading" data-enter>
@@ -678,14 +699,14 @@ function homepageClosingHtml(copy: (typeof HOME)[Locale]): string {
   return `          <section class="home-close" aria-labelledby="closing-heading">
             <h2 id="closing-heading">${esc(copy.closingHeading)}</h2>
             <div class="hero-actions">
-              <a class="btn primary" href="/web-assets" data-media-cta="create" data-cta-soon="${esc(copy.ctaSoon)}" data-track="homepage_web_assets_cta">${esc(copy.closingPrimary)}</a>
+              <a class="btn primary" href="/web-assets" data-media-cta="create" data-track="homepage_web_assets_cta">${esc(copy.closingPrimary)}</a>
               <a class="btn secondary" href="/developers">${esc(copy.closingSecondary)}</a>
             </div>
           </section>`;
 }
 
 function compareTableHtml(copy: (typeof HOME)[Locale]): string {
-  const yes = "Yes";
+  const yes = copy.compareYes;
   const rows = copy.compareRows
     .map((row) => {
       const drops = row.drops ? yes : "";
@@ -701,7 +722,7 @@ function compareTableHtml(copy: (typeof HOME)[Locale]): string {
               <table class="compare-table">
                 <thead>
                   <tr>
-                    <th scope="col">Use case</th>
+                    <th scope="col">${esc(copy.compareUse)}</th>
                     <th scope="col">${esc(copy.compareDrops)}</th>
                     <th scope="col">${esc(copy.compareMedia)}</th>
                   </tr>
@@ -779,7 +800,7 @@ ${topBar("home", locale, chrome)}
             ${esc(copy.subHtml)}
           </p>
           <div class="hero-actions">
-            <a class="btn primary" href="/web-assets" data-media-cta="create" data-cta-soon="${esc(copy.ctaSoon)}" data-track="homepage_web_assets_cta">${esc(copy.primaryCta)}</a>
+            <a class="btn primary" href="/web-assets" data-media-cta="create" data-track="homepage_web_assets_cta">${esc(copy.primaryCta)}</a>
             <a class="btn secondary" href="#dropzone">${esc(copy.secondaryCta)}</a>
           </div>
           <p class="works-with">${esc(copy.worksWith)}</p>
@@ -1338,122 +1359,284 @@ ${footerHtml(locale, chrome)}
 `;
 }
 
+function codeBox(lang: string, source: string): string {
+  return `<div class="code-box">
+            <div class="code-box-bar">
+              <span class="code-box-lang">${esc(lang)}</span>
+              <button type="button" class="code-copy" data-copy>Copy</button>
+            </div>
+            <pre class="code-box-pre"><code>${esc(source)}</code></pre>
+          </div>`;
+}
+
 export function renderDevelopersPage(): string {
   const locale = DEFAULT_LOCALE;
   const copy = DEVELOPERS_PAGE;
   const chrome = CHROME[locale];
-  const cfg = LOCALE_CONFIG[locale];
   const url = DEVELOPERS_URL;
-  const examples = [
-    ["JavaScript", DEVELOPERS_EXAMPLES.js],
-    ["Python", DEVELOPERS_EXAMPLES.python],
-    ["Node", DEVELOPERS_EXAMPLES.node],
-    ["PHP", DEVELOPERS_EXAMPLES.php],
-  ] as const;
 
-  const head = `    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>${esc(copy.title)}</title>
-    <meta name="description" content="${esc(copy.description)}" />
-    <link rel="canonical" href="${esc(url)}" />
-    <meta name="robots" content="index, follow" />
-    <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#0B0E17" media="(prefers-color-scheme: dark)" />
-    <meta name="color-scheme" content="light dark" />
-${themeBootScript()}
-    <meta property="og:type" content="website" />
-    <meta property="og:locale" content="${esc(cfg.ogLocale)}" />
-    <meta property="og:url" content="${esc(url)}" />
-    <meta property="og:title" content="${esc(copy.ogTitle)}" />
-    <meta property="og:description" content="${esc(copy.ogDescription)}" />
-    <meta property="og:site_name" content="dropimg.io" />
-    <meta property="og:image" content="${SITE_ORIGIN}/og.png" />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="${esc(copy.twitterTitle)}" />
-    <meta name="twitter:description" content="${esc(copy.twitterDescription)}" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    ${consentScriptTag()}
-    <script type="application/ld+json">${JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "WebAPI",
-      name: "DropIMG Image Upload API",
-      url,
-      description: copy.description,
-      documentation: url,
-    })}</script>`;
+  const cards = DEVELOPERS_CARDS.map(
+    (card) => `            <article class="docs-card">
+              <p class="docs-badge">${esc(card.kicker)}</p>
+              <h3>${esc(card.title)}</h3>
+              <p>${esc(card.body)}</p>
+              <p class="docs-meta"><code>${esc(card.meta)}</code></p>
+              <a class="btn secondary" href="${esc(card.href)}">${esc(card.cta)}</a>
+            </article>`,
+  ).join("\n");
+
+  const steps = DEVELOPERS_QUICKSTART.map(
+    (step) => `            <li class="docs-step">
+              <span class="docs-step-n">${esc(step.n)}</span>
+              <div>
+                <h3>${esc(step.title)}</h3>
+                <p>${esc(step.body)}</p>
+              </div>
+            </li>`,
+  ).join("\n");
+
+  const toolGroups = MCP_TOOL_GROUPS.map(
+    (group) => `            <article class="docs-tool-card">
+              <h3>${esc(group.title)}</h3>
+              <ul>${group.tools.map((tool) => `<li><code>${esc(tool)}</code></li>`).join("")}</ul>
+            </article>`,
+  ).join("\n");
+
+  const authCards = AUTH_CARDS.map(
+    (card) => `            <article class="docs-auth-card">
+              <h3>${esc(card.title)}</h3>
+              <p class="docs-meta"><code>${esc(card.prefix)}</code></p>
+              <p>${esc(card.best)}</p>
+              <p class="account-muted">${esc(card.note)}</p>
+            </article>`,
+  ).join("\n");
+
+  const formatChips = (items: string[]) =>
+    items.map((item) => `<li>${esc(item)}</li>`).join("");
+
+  const waLimitRows = WEB_ASSETS_LIMIT_ROWS.map(
+    (row) => `              <tr>
+                <th scope="row">${esc(row.name)}</th>
+                <td>${esc(row.projects)}</td>
+                <td>${esc(row.storage)}</td>
+                <td>${esc(row.deliveries)}</td>
+                <td>${esc(row.keys)}</td>
+                <td>${esc(row.file)}</td>
+              </tr>`,
+  ).join("\n");
+
+  const dropLimitRows = DROPS_LIMIT_ROWS.map(
+    (row) => `              <tr>
+                <th scope="row">${esc(row.name)}</th>
+                <td>${esc(row.file)}</td>
+                <td>${esc(row.expiry)}</td>
+                <td>${esc(row.api)}</td>
+              </tr>`,
+  ).join("\n");
+
+  const errorRows = ERROR_CODES.map(
+    (row) => `              <tr>
+                <th scope="row"><code>${esc(row.code)}</code></th>
+                <td>${esc(row.meaning)}</td>
+              </tr>`,
+  ).join("\n");
+
+  const head = extraProductHead(copy, url, {
+    "@context": "https://schema.org",
+    "@type": "WebAPI",
+    name: "DropIMG Web Assets API",
+    url,
+    description: copy.description,
+    documentation: url,
+  });
 
   return `<!DOCTYPE html>
-<html lang="${esc(cfg.htmlLang)}" data-locale="${esc(locale)}" data-page-intent="developers">
+<html lang="${esc(LOCALE_CONFIG[locale].htmlLang)}" data-locale="${esc(locale)}" data-page-intent="developers">
   <head>
 ${head}
   </head>
   <body>
-    <a class="skip-link" href="#api-request">${esc(copy.skip)}</a>
-    <div class="page page-seo page-ext">
+    <a class="skip-link" href="#quickstart">${esc(copy.skip)}</a>
+    <div class="page page-seo page-ext page-docs">
 ${topBar("home", locale, chrome)}
 
-      <main>
-        <section class="ext-hero ext-hero-solo">
-          <div class="ext-hero-copy">
+      <div class="docs-layout">
+        <nav class="docs-toc" aria-label="On this page">
+          <a href="#overview">Overview</a>
+          <a href="#quickstart">Quickstart</a>
+          <a href="#mcp">MCP</a>
+          <a href="#rest">REST API</a>
+          <a href="#auth">Authentication</a>
+          <a href="#formats">Formats</a>
+          <a href="#limits">Limits</a>
+          <a href="#errors">Errors</a>
+        </nav>
+        <main class="docs-main">
+          <section class="docs-hero" id="overview">
             <p class="ext-kicker">${esc(copy.heroKicker)}</p>
             <h1 class="ext-title">${esc(copy.heroTitle)}</h1>
-            <p class="ext-tagline">${esc(copy.heroTagline)}</p>
             <p class="sub ext-lede">${esc(copy.lede)}</p>
-            <ul class="ext-facts">
-${copy.heroFacts.map((f) => `              <li>${esc(f)}</li>`).join("\n")}
-            </ul>
             <div class="ext-actions">
-              <a class="btn primary" href="${esc(copy.accountHref)}">${esc(copy.accountCta)}</a>
-              <a class="btn secondary" href="${esc(copy.specHref)}">${esc(copy.specCta)}</a>
+              <a class="btn primary" href="#mcp">${esc(copy.primaryCta)}</a>
+              <a class="btn secondary" href="#rest">${esc(copy.secondaryCta)}</a>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <article class="seo-article" id="onboarding" aria-labelledby="onboard-heading">
-          <h2 id="onboard-heading">${esc(DEVELOPERS_ONBOARDING.heading)}</h2>
-          <p>${esc(DEVELOPERS_ONBOARDING.lede)}</p>
-          <p class="price-launch">${esc(DEVELOPERS_ONBOARDING.launchNote)}</p>
-          <h3>${esc(DEVELOPERS_ONBOARDING.stepsHeading)}</h3>
-          <ol class="onboard-steps">
-${DEVELOPERS_ONBOARDING.steps.map((s) => `            <li>${esc(s)}</li>`).join("\n")}
-          </ol>
-          <h3 id="cursor">${esc(DEVELOPERS_ONBOARDING.cursorHeading)}</h3>
-          <p>${esc(DEVELOPERS_ONBOARDING.cursorBody)}</p>
-          <p><a class="btn primary" href="/mcp" data-track="agent_connect" data-plan="cursor">${esc(DEVELOPERS_ONBOARDING.cursorCta)}</a></p>
-          <h3 id="claude">${esc(DEVELOPERS_ONBOARDING.claudeHeading)}</h3>
-          <p>${esc(DEVELOPERS_ONBOARDING.claudeBody)}</p>
-          <h3 id="codex">${esc(DEVELOPERS_ONBOARDING.codexHeading)}</h3>
-          <p>${esc(DEVELOPERS_ONBOARDING.codexBody)}</p>
-          <h3 id="mcp">${esc(DEVELOPERS_ONBOARDING.mcpHeading)}</h3>
-          <p>${esc(DEVELOPERS_ONBOARDING.mcpBody)}</p>
-          <p class="demo-url"><code>${esc(DEVELOPERS_ONBOARDING.mcpEndpoint)}</code></p>
-        </article>
+          <section class="docs-card-row" aria-label="Start here">
+${cards}
+          </section>
 
-        <article class="seo-article" id="api-request" tabindex="-1" aria-label="${esc(copy.detailsHeading)}">
-          <h2>${esc(copy.curlLabel)}</h2>
-          <pre class="api-code"><code>${esc(copy.curl)}</code></pre>
-          <h2>${esc(copy.responseHeading)}</h2>
-          <pre class="api-code"><code>${esc(copy.responseJson)}</code></pre>
-${renderBlocks(copy.blocks)}
-          <h2>${esc(copy.examplesHeading)}</h2>
-${examples
-  .map(
-    ([label, src]) =>
-      `          <h3>${esc(label)}</h3>\n          <pre class="api-code"><code>${esc(src)}</code></pre>`,
-  )
-  .join("\n")}
-        </article>
+          <section id="quickstart" class="docs-section">
+            <h2>${esc(DEVELOPERS_ONBOARDING.heading)}</h2>
+            <p>${esc(DEVELOPERS_ONBOARDING.lede)}</p>
+            <ol class="docs-steps">
+${steps}
+            </ol>
+            <p class="docs-callout">Replace the asset later and the URL stays unchanged.</p>
+            ${codeBox("JSON", MCP_CONFIG)}
+          </section>
+
+          <section id="mcp" class="docs-section">
+            <div class="docs-heading-row">
+              <h2>MCP</h2>
+              <span class="docs-badge">Recommended</span>
+            </div>
+            <p>Cursor and compatible MCP clients can authenticate through OAuth.</p>
+            ${codeBox("Endpoint", MCP_ENDPOINT)}
+            <p>${esc(DEVELOPERS_ONBOARDING.mcpBody)}</p>
+            <div class="docs-tool-grid">
+${toolGroups}
+            </div>
+            <p class="docs-workflow-label">Application code does not change.</p>
+            ${codeBox("Workflow", MCP_WORKFLOW)}
+            <p><a class="btn primary" href="/mcp" data-track="agent_connect" data-plan="cursor">${esc(DEVELOPERS_ONBOARDING.cursorCta)}</a></p>
+          </section>
+
+          <section id="rest" class="docs-section">
+            <h2>${esc(copy.detailsHeading)}</h2>
+            <div class="docs-tabs" role="tablist" aria-label="REST products">
+              <button type="button" class="docs-tab" data-tab="web-assets" aria-pressed="true">Web Assets</button>
+              <button type="button" class="docs-tab" data-tab="drops" aria-pressed="false">Drops</button>
+            </div>
+            <div class="docs-tab-panel" data-panel="web-assets">
+              <h3>Create organization</h3>
+              <p>REST create is a signed-in session. Prefer the dashboard or MCP <code>create_media_project</code>. Project keys cannot create projects.</p>
+              ${codeBox("cURL", REST_CREATE_ORG)}
+              <h3>Create project</h3>
+              ${codeBox("cURL", REST_CREATE_PROJECT)}
+              <h3>Request upload intent</h3>
+              <p>POST file bytes to the returned <code>intent.uploadUrl</code> with <code>intent.headers</code>. Do not put bytes in JSON.</p>
+              ${codeBox("cURL", REST_CREATE_INTENT)}
+              ${codeBox("cURL", REST_UPLOAD_BYTES)}
+              <h3>Replace asset</h3>
+              <p>Replacement preserves the stable alias. MIME may change.</p>
+              ${codeBox("cURL", REST_REPLACE_INTENT)}
+              <h3>JavaScript</h3>
+              ${codeBox("JavaScript", DEVELOPERS_EXAMPLES.js)}
+              <h3>Python</h3>
+              ${codeBox("Python", DEVELOPERS_EXAMPLES.python)}
+            </div>
+            <div class="docs-tab-panel" data-panel="drops" hidden>
+              <h2 id="drops-api">Temporary Drops API</h2>
+              <p>Upload a screenshot or image and get a short-lived share URL. Multipart field <code>file</code>. This is not the Web Assets quota.</p>
+              ${codeBox("cURL", DROPS_CURL)}
+              <h3>Response</h3>
+              ${codeBox("JSON", copy.responseJson)}
+              ${codeBox("JavaScript", DEVELOPERS_EXAMPLES.dropsJs)}
+              ${codeBox("Python", DEVELOPERS_EXAMPLES.dropsPython)}
+            </div>
+            <p class="account-muted"><a href="${esc(copy.specHref)}">${esc(copy.specCta)}</a> · <a href="${esc(copy.accountHref)}">${esc(copy.accountCta)}</a></p>
+          </section>
+
+          <section id="auth" class="docs-section">
+            <h2>Authentication</h2>
+            <div class="docs-card-row">
+${authCards}
+            </div>
+          </section>
+
+          <section id="formats" class="docs-section">
+            <h2>Formats</h2>
+            <h3>Web Assets</h3>
+            <ul class="docs-chips">${formatChips([...WEB_ASSET_FORMATS])}</ul>
+            <h3>Drops</h3>
+            <ul class="docs-chips">${formatChips([...DROP_FORMATS])}</ul>
+            <h3>Unsupported</h3>
+            <ul class="docs-chips docs-chips-muted">${formatChips([...UNSUPPORTED_FORMATS])}</ul>
+          </section>
+
+          <section id="limits" class="docs-section">
+            <h2>Limits</h2>
+            <h3>Web Assets limits</h3>
+            <div class="docs-table-wrap">
+              <table class="docs-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Plan</th>
+                    <th scope="col">Projects</th>
+                    <th scope="col">Storage</th>
+                    <th scope="col">Deliveries</th>
+                    <th scope="col">Keys</th>
+                    <th scope="col">File</th>
+                  </tr>
+                </thead>
+                <tbody>
+${waLimitRows}
+                </tbody>
+              </table>
+            </div>
+            <h3>Drops limits</h3>
+            <div class="docs-table-wrap">
+              <table class="docs-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Plan</th>
+                    <th scope="col">File</th>
+                    <th scope="col">Expiry</th>
+                    <th scope="col">API / MCP</th>
+                  </tr>
+                </thead>
+                <tbody>
+${dropLimitRows}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <section id="errors" class="docs-section">
+            <h2>Errors</h2>
+            ${codeBox("JSON", ERROR_EXAMPLE)}
+            <div class="docs-table-wrap">
+              <table class="docs-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Code</th>
+                    <th scope="col">When</th>
+                  </tr>
+                </thead>
+                <tbody>
+${errorRows}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <aside class="docs-callout" id="public-urls">
+            <p>Web Asset <code>/m/...</code> URLs are public and can be used directly in <code>&lt;img&gt;</code>, favicon links, CSS, and <code>@font-face</code>.</p>
+            <p>Knowledge of the URL is sufficient for access. Do not use Web Assets for secrets or confidential files.</p>
+          </aside>
 
 ${faqHtml(copy.faqHeading, copy.faqs)}
 
-        <nav class="seo-more" aria-label="${esc(chrome.relatedAria)}">
-          <a href="/mcp">${esc(chrome.footerSeo.mcp)}</a>
-          <span aria-hidden="true">·</span>
-          <a href="/sharex">${esc(chrome.footerSeo.sharex)}</a>
-          <span aria-hidden="true">·</span>
-          <a href="${esc(pagePath("home", locale))}">${esc(chrome.homeLink)}</a>
-        </nav>
-      </main>
+          <nav class="seo-more" aria-label="${esc(chrome.relatedAria)}">
+            <a href="/mcp">${esc(chrome.footerSeo.mcp)}</a>
+            <span aria-hidden="true">·</span>
+            <a href="/sharex">${esc(chrome.footerSeo.sharex)}</a>
+            <span aria-hidden="true">·</span>
+            <a href="${esc(pagePath("home", locale))}">${esc(chrome.homeLink)}</a>
+          </nav>
+        </main>
+      </div>
 
 ${footerHtml(locale, chrome)}
     </div>
@@ -1622,7 +1805,7 @@ ${topBar("home", locale, chrome)}
             <h1 class="ext-title">${esc(copy.h1)}</h1>
             <p class="sub ext-lede">${esc(copy.lede)}</p>
             <div class="ext-actions">
-              <a class="btn primary" href="/login?next=/app/media" data-media-cta="create" data-cta-soon="${esc(copy.createCtaSoon)}">${esc(copy.createCta)}</a>
+              <a class="btn primary" href="/login?next=/app/media" data-media-cta="create">${esc(copy.createCta)}</a>
               <a class="btn secondary" href="/developers">${esc(copy.connectCta)}</a>
               <a class="btn secondary" href="/drops">${esc(copy.dropCta)}</a>
             </div>
