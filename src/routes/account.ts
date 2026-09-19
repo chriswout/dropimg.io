@@ -27,6 +27,7 @@ import {
   resolveEntitlements,
 } from "../lib/entitlements";
 import { intervalForPrice } from "../lib/billing/paypal";
+import { loadBillingPortal, type BillingPortalModel } from "../lib/billing/portal";
 import { webAssetsEntitlementsFor } from "../lib/web-assets-entitlements";
 import {
   hashImagePassword,
@@ -147,7 +148,38 @@ accountRoutes.get("/app/integrations", (c) =>
   settingsPage(c, integrationsHtmlResponse),
 );
 
-accountRoutes.get("/app/billing", (c) => settingsPage(c, billingHtmlResponse));
+accountRoutes.get("/app/billing", async (c) => {
+  const locale = resolveRequestLocale(c.req.raw);
+  const session = await resolveSession(c.env.DB, c.req.header("cookie"));
+  if (!session) return c.redirect("/login", 302);
+
+  const entitlements = await entitlementsFor(c.env, session.id);
+  const subscription = await loadSubscription(c.env.DB, session.id);
+  const webAssets = await webAssetsEntitlementsFor(c.env, session.id);
+  const portal = await loadBillingPortal(c.env, session.id);
+  const identities = await listIdentities(c.env.DB, session.id);
+  return billingHtmlResponse({
+    locale,
+    env: c.env,
+    email: session.email,
+    plan: entitlements.plan === "pro" ? "pro" : "free",
+    periodEnd: subscription?.current_period_end ?? null,
+    cancelAtPeriodEnd: Boolean(subscription?.cancel_at_period_end),
+    dropsInterval: intervalForPrice(c.env, subscription?.price_id),
+    dropsStatus: subscription?.status ?? null,
+    webAssets: {
+      plan: webAssets.plan,
+      interval: webAssets.interval,
+      periodEnd: webAssets.periodEnd,
+      cancelAtPeriodEnd: webAssets.cancelAtPeriodEnd,
+      status: webAssets.status,
+    },
+    identities,
+    socialEnabled: enabledSocialProviders(c.env),
+    linkError: accountLinkError(locale, c.req.query("link")),
+    portal,
+  });
+});
 
 accountRoutes.get("/app/account", (c) => settingsPage(c, accountHtmlResponse));
 

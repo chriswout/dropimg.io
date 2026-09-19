@@ -125,8 +125,9 @@ describe("Account pages share site chrome", () => {
     const billing = renderBillingPage(props);
     expect(billing).toContain("Manage in PayPal");
     expect(billing).toContain("/api/billing/portal");
-    expect(billing).not.toContain("Change plan");
-    expect(billing).toContain("does not list invoices");
+    expect(billing).toContain("Payment history");
+    expect(billing).toContain("No payments yet.");
+    expect(billing).not.toContain("invoice");
 
     const waAnnual = renderBillingPage({
       ...props,
@@ -139,7 +140,6 @@ describe("Account pages share site chrome", () => {
       },
     });
     expect(waAnnual).toContain("Web Assets Developer — $90/year");
-    expect(waAnnual).toContain("does not prorate");
     expect(waAnnual).not.toContain("$9/month");
 
     const integrations = renderIntegrationsPage(props);

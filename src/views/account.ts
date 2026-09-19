@@ -1,6 +1,7 @@
 import { CHROME_WEB_STORE_URL } from "../../marketing/extension";
 import { LOCALE_CONFIG, type Locale } from "../../marketing/locales";
 import { mediaEnabled } from "../lib/media-config";
+import type { BillingPortalModel, PortalProductCard } from "../lib/billing/portal";
 import { renderAppShellPage } from "./app-shell";
 import { siteHtmlResponse } from "./site-page";
 
@@ -141,7 +142,7 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     accountGone: "This account is no longer available.",
     plan: "Plan",
     manageHint:
-      "Cancel or update payment in your PayPal wallet. Receipts come from PayPal; DropIMG does not list invoices here.",
+      "Payment methods stay in PayPal. Receipts for charges appear below as payment history.",
     freePlanHint: "25 MB uploads, 1 hour to 30 days, last 10 drops.",
     planFree: "Drops Free",
     planPro: "Drops Pro",
@@ -162,10 +163,10 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     waSeparate:
       "Projects, storage, and deliveries for permanent /m/… URLs. Separate from Drops Pro.",
     waPlanChangeHint:
-      "To switch Web Assets plan or interval, cancel renewal in PayPal, wait until the paid period ends, then subscribe to the new plan from Pricing. DropIMG does not prorate, credit unused time, or start a second subscription.",
+      "Plan changes use the same PayPal subscription and take effect at the next renewal. There is no prorated charge today and no second subscription.",
     waViewPlans: "View Web Assets plans",
     suspendedHint:
-      "PayPal marked this subscription as suspended after payment failed. Update the payment method in PayPal. DropIMG does not send payment-retry emails.",
+      "PayPal marked this subscription as suspended after payment failed. Update the payment method in PayPal. DropIMG may email you about payment issues; delivery is not guaranteed.",
     sectionSecurity: "Security",
     sessionsHint: "Sign out everywhere this account is open.",
     signOutAll: "Sign out of all devices",
@@ -257,7 +258,7 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     accountGone: "Esta cuenta ya no está disponible.",
     plan: "Plan",
     manageHint:
-      "Cancela o actualiza el pago en tu cuenta de PayPal. Los recibos llegan de PayPal; DropIMG no lista facturas aquí.",
+      "Los métodos de pago siguen en PayPal. Los recibos de los cargos aparecen abajo como historial de pagos.",
     freePlanHint: "Subidas de 25 MB, enlaces de 1 h a 30 días, últimos 10 envíos.",
     planFree: "Drops gratis",
     planPro: "Drops Pro",
@@ -278,10 +279,10 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     waSeparate:
       "Proyectos, almacenamiento y entregas para URLs permanentes /m/…. Independiente de Drops Pro.",
     waPlanChangeHint:
-      "Para cambiar de plan o intervalo de Web Assets, cancela la renovación en PayPal, espera a que termine el periodo pagado y luego suscríbete al plan nuevo desde Precios. DropIMG no prorratea, no acredita tiempo no usado ni abre una segunda suscripción.",
+      "Los cambios de plan usan la misma suscripción de PayPal y se aplican en la siguiente renovación. No hay cargo prorrateado hoy ni una segunda suscripción.",
     waViewPlans: "Ver planes de Web Assets",
     suspendedHint:
-      "PayPal marcó esta suscripción como suspendida tras un pago fallido. Actualiza el método de pago en PayPal. DropIMG no envía correos de reintento de cobro.",
+      "PayPal marcó esta suscripción como suspendida tras un pago fallido. Actualiza el método de pago en PayPal. DropIMG puede enviarte un correo sobre el problema; la entrega no está garantizada.",
     sectionSecurity: "Seguridad",
     sessionsHint: "Cierra sesión en todos los dispositivos.",
     signOutAll: "Salir de todos los dispositivos",
@@ -373,7 +374,7 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     accountGone: "Esta conta não está mais disponível.",
     plan: "Plano",
     manageHint:
-      "Cancele ou atualize o pagamento na sua conta PayPal. Os recibos vêm do PayPal; o DropIMG não lista faturas aqui.",
+      "Os métodos de pagamento ficam no PayPal. Os recibos dos cobranças aparecem abaixo no histórico de pagamentos.",
     freePlanHint: "Envios de 25 MB, links de 1 h a 30 dias, últimos 10 envios.",
     planFree: "Drops grátis",
     planPro: "Drops Pro",
@@ -394,10 +395,10 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     waSeparate:
       "Projetos, armazenamento e entregas para URLs permanentes /m/…. Separado do Drops Pro.",
     waPlanChangeHint:
-      "Para mudar o plano ou o intervalo de Web Assets, cancele a renovação no PayPal, espere o período pago terminar e então assine o plano novo em Preços. O DropIMG não faz rateio, não credita tempo não usado e não abre uma segunda assinatura.",
+      "Mudanças de plano usam a mesma assinatura PayPal e valem na próxima renovação. Não há cobrança proporcional hoje nem uma segunda assinatura.",
     waViewPlans: "Ver planos de Web Assets",
     suspendedHint:
-      "O PayPal marcou esta assinatura como suspensa depois de um pagamento recusado. Atualize o pagamento no PayPal. O DropIMG não envia e-mails de nova tentativa de cobrança.",
+      "O PayPal marcou esta assinatura como suspensa depois de um pagamento recusado. Atualize o pagamento no PayPal. O DropIMG pode enviar um e-mail sobre o problema; a entrega não é garantida.",
     sectionSecurity: "Segurança",
     sessionsHint: "Sair de todos os dispositivos desta conta.",
     signOutAll: "Sair de todos os dispositivos",
@@ -489,7 +490,7 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     accountGone: "Dieses Konto ist nicht mehr verfügbar.",
     plan: "Plan",
     manageHint:
-      "Zahlung in deinem PayPal-Konto ändern oder kündigen. Belege kommen von PayPal; DropIMG listet hier keine Rechnungen.",
+      "Zahlungsmittel bleiben bei PayPal. Belege zu Abbuchungen stehen unten unter Zahlungshistorie.",
     freePlanHint: "25 MB pro Upload, 1 Stunde bis 30 Tage, letzte 10 Drops.",
     planFree: "Drops kostenlos",
     planPro: "Drops Pro",
@@ -510,10 +511,10 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     waSeparate:
       "Projekte, Speicher und Auslieferungen für permanente /m/…-URLs. Getrennt von Drops Pro.",
     waPlanChangeHint:
-      "Um den Web-Assets-Plan oder das Intervall zu wechseln, kündige die Verlängerung in PayPal, warte bis das bezahlte Ende, und abonniere dann den neuen Plan unter Preise. DropIMG rechnet nicht anteilig, schreibt ungenutzte Zeit nicht gut und startet kein zweites Abo.",
+      "Planwechsel nutzen dasselbe PayPal-Abo und gelten ab der nächsten Verlängerung. Heute gibt es keine anteilige Abbuchung und kein zweites Abo.",
     waViewPlans: "Web-Assets-Pläne ansehen",
     suspendedHint:
-      "PayPal hat dieses Abo nach einem fehlgeschlagenen Zahlung als gesperrt markiert. Zahlungsmittel in PayPal aktualisieren. DropIMG schickt keine Mahn-E-Mails.",
+      "PayPal hat dieses Abo nach einem fehlgeschlagenen Zahlung als gesperrt markiert. Zahlungsmittel in PayPal aktualisieren. DropIMG kann eine E-Mail zum Zahlungsproblem senden; Zustellung ist nicht garantiert.",
     sectionSecurity: "Sicherheit",
     sessionsHint: "Überall abmelden, wo dieses Konto offen ist.",
     signOutAll: "Auf allen Geräten abmelden",
@@ -601,6 +602,7 @@ type SettingsProps = {
   identities?: Array<"google" | "github">;
   socialEnabled?: { google?: boolean; github?: boolean };
   linkError?: string;
+  portal?: BillingPortalModel;
 };
 
 export function accountLinkError(
@@ -616,91 +618,61 @@ export function accountLinkError(
   return t.socialFailed;
 }
 
-/** Plan state and the PayPal wallet hand-off. */
+/** Plan state, payment history, and PayPal-backed management. */
 export function renderBillingPage(opts: SettingsProps): string {
   const t = ACCOUNT_COPY[opts.locale];
-  const period =
-    opts.periodEnd && (opts.plan === "pro" || opts.cancelAtPeriodEnd)
-      ? opts.cancelAtPeriodEnd
-        ? t.ends(formatDay(opts.periodEnd, opts.locale))
-        : t.renews(formatDay(opts.periodEnd, opts.locale))
-      : "";
+  const portal = opts.portal ?? fallbackPortal(opts);
+  const drops = portal.drops;
+  const wa = portal.webAssets;
+  const payments = portal.payments;
 
-  const dropsLabel =
-    opts.plan === "pro"
-      ? opts.dropsInterval === "annual"
-        ? t.dropsProAnnual
-        : opts.dropsInterval === "monthly"
-          ? t.dropsProMonthly
-          : t.planPro
-      : t.planFree;
-  const dropsSuspended = opts.dropsStatus?.trim().toLowerCase() === "suspended";
-
-  const wa = opts.webAssets;
-  const waLabel =
-    wa?.plan === "developer"
-      ? wa.interval === "annual"
-        ? t.waDeveloperAnnual
-        : t.waDeveloperMonthly
-      : wa?.plan === "pro"
-        ? wa.interval === "annual"
-          ? t.waProAnnual
-          : t.waProMonthly
-        : t.waFreeLabel;
-  const waPeriod =
-    wa?.periodEnd && wa.plan !== "free"
-      ? wa.cancelAtPeriodEnd
-        ? t.ends(formatDay(wa.periodEnd, opts.locale))
-        : t.renews(formatDay(wa.periodEnd, opts.locale))
-      : "";
-  const waCadence =
-    wa?.interval === "annual"
-      ? t.intervalAnnual
-      : wa?.interval === "monthly"
-        ? t.intervalMonthly
-        : "";
-  const waSuspended = wa?.status?.trim().toLowerCase() === "suspended";
-  const waPaid = Boolean(wa && wa.plan !== "free");
-
-  const main = `<section class="settings-card">
-      <p class="settings-eyebrow">Drops</p>
-      <p class="settings-value settings-value-lg">${esc(dropsLabel)}</p>
-      ${period ? `<p class="account-muted">${esc(period)}</p>` : ""}
-      <p class="account-muted">${esc(
-        dropsSuspended
-          ? t.suspendedHint
-          : opts.plan === "pro"
-            ? t.manageHint
-            : t.freePlanHint,
-      )}</p>
-      <div class="settings-actions">
-        ${
-          opts.plan === "pro" || dropsSuspended
-            ? `<button type="button" class="btn secondary" id="account-portal">${esc(t.managePaypal)}</button>`
-            : `<a class="btn primary" href="/pro">${esc(t.viewPlans)}</a>`
-        }
-      </div>
-    </section>
-    <section class="settings-card">
-      <p class="settings-eyebrow">Web Assets</p>
-      <p class="settings-value settings-value-lg">${esc(waLabel)}</p>
-      ${waCadence ? `<p class="account-muted">${esc(waCadence)}</p>` : ""}
-      ${waPeriod ? `<p class="account-muted">${esc(waPeriod)}</p>` : ""}
-      <p class="account-muted">${esc(t.waSeparate)}</p>
+  const main = `${productCardHtml({
+    locale: opts.locale,
+    t,
+    title: "Web Assets",
+    card: wa,
+    fallbackLabel: waLabelFromProps(opts, t),
+    fallbackHint: t.waSeparate,
+    viewPlansHref: "/pricing",
+    viewPlansLabel: t.waViewPlans,
+    portalId: "account-portal-wa",
+    changeId: "billing-change-wa",
+    cancelId: "billing-cancel-wa",
+    product: "web_assets",
+  })}
+    ${productCardHtml({
+      locale: opts.locale,
+      t,
+      title: "Drops Pro",
+      card: drops,
+      fallbackLabel:
+        opts.plan === "pro"
+          ? opts.dropsInterval === "annual"
+            ? t.dropsProAnnual
+            : opts.dropsInterval === "monthly"
+              ? t.dropsProMonthly
+              : t.planPro
+          : t.planFree,
+      fallbackHint: opts.dropsStatus?.trim().toLowerCase() === "suspended" ? t.suspendedHint : opts.plan === "pro" ? t.manageHint : t.freePlanHint,
+      viewPlansHref: "/pro",
+      viewPlansLabel: t.viewPlans,
+      portalId: "account-portal",
+      changeId: "billing-change-drops",
+      cancelId: "billing-cancel-drops",
+      product: "drops_pro",
+    })}
+    <section class="settings-card billing-history">
+      <h2>Payment history</h2>
       ${
-        waPaid || waSuspended
-          ? `<p class="account-muted">${esc(waSuspended ? t.suspendedHint : t.waPlanChangeHint)}</p>`
-          : ""
+        payments.length === 0
+          ? `<p class="account-muted">No payments yet.</p>`
+          : `<div class="billing-pay-list">${payments
+              .map((row) => paymentRowHtml(row, opts.locale))
+              .join("")}</div>`
       }
-      <div class="settings-actions">
-        ${
-          waPaid || waSuspended
-            ? `<button type="button" class="btn secondary" id="account-portal-wa">${esc(t.managePaypal)}</button>`
-            : `<a class="btn primary" href="/pricing">${esc(t.waViewPlans)}</a>`
-        }
-      </div>
-      <p id="wa-billing-status" class="account-muted" hidden></p>
-    </section>`;
+    </section>
+    <p id="wa-billing-status" class="account-muted" hidden></p>
+    ${billingDialogsHtml(t)}`;
 
   return renderAppShellPage({
     locale: opts.locale,
@@ -710,8 +682,198 @@ export function renderBillingPage(opts: SettingsProps): string {
     plan: opts.plan,
     webAssetsPlan: opts.webAssets?.plan,
     main,
-    extraBody: `<script>${PORTAL_SCRIPT}</script>`,
+    extraBody: `<script type="application/json" id="billing-portal-data">${escJson({
+      drops,
+      webAssets: wa,
+    })}</script><script>${PORTAL_SCRIPT}</script>`,
   });
+}
+
+function fallbackPortal(opts: SettingsProps): BillingPortalModel {
+  const dropsEntitled = opts.plan === "pro";
+  const waPlan = opts.webAssets?.plan ?? "free";
+  const waEntitled = waPlan !== "free";
+  const dropsSuspended = opts.dropsStatus?.trim().toLowerCase() === "suspended";
+  const waSuspended = opts.webAssets?.status?.trim().toLowerCase() === "suspended";
+  return {
+    drops: {
+      product: "drops_pro",
+      entitled: dropsEntitled,
+      planLabel:
+        opts.plan === "pro"
+          ? opts.dropsInterval === "annual"
+            ? ACCOUNT_COPY[opts.locale].dropsProAnnual
+            : opts.dropsInterval === "monthly"
+              ? ACCOUNT_COPY[opts.locale].dropsProMonthly
+              : ACCOUNT_COPY[opts.locale].planPro
+          : ACCOUNT_COPY[opts.locale].planFree,
+      priceLabel: "",
+      status: dropsSuspended ? "suspended" : dropsEntitled ? "active" : "expired",
+      statusLabel: dropsSuspended ? "Suspended" : dropsEntitled ? "Active" : "Free",
+      periodEnd: opts.periodEnd,
+      cancelAtPeriodEnd: opts.cancelAtPeriodEnd,
+      pendingLabel: null,
+      pendingEffectiveAt: null,
+      canChangePlan: dropsEntitled && !opts.cancelAtPeriodEnd && !dropsSuspended,
+      canCancel: dropsEntitled && !opts.cancelAtPeriodEnd && !dropsSuspended,
+      options: dropsEntitled
+        ? [
+            {
+              plan: "pro",
+              interval: opts.dropsInterval === "annual" ? "monthly" : "annual",
+              label:
+                opts.dropsInterval === "annual"
+                  ? ACCOUNT_COPY[opts.locale].dropsProMonthly
+                  : ACCOUNT_COPY[opts.locale].dropsProAnnual,
+            },
+          ]
+        : [],
+    },
+    webAssets: {
+      product: "web_assets",
+      entitled: waEntitled,
+      planLabel: waLabelFromProps(opts, ACCOUNT_COPY[opts.locale]),
+      priceLabel: "",
+      status: waSuspended ? "suspended" : waEntitled ? "active" : "expired",
+      statusLabel: waSuspended ? "Suspended" : waEntitled ? "Active" : "Free",
+      periodEnd: opts.webAssets?.periodEnd ?? null,
+      cancelAtPeriodEnd: Boolean(opts.webAssets?.cancelAtPeriodEnd),
+      pendingLabel: null,
+      pendingEffectiveAt: null,
+      canChangePlan: waEntitled && !opts.webAssets?.cancelAtPeriodEnd && !waSuspended,
+      canCancel: waEntitled && !opts.webAssets?.cancelAtPeriodEnd && !waSuspended,
+      options: [],
+    },
+    payments: [],
+    paypalWalletUrl: null,
+  };
+}
+
+function waLabelFromProps(opts: SettingsProps, t: Copy): string {
+  const wa = opts.webAssets;
+  if (wa?.plan === "developer") {
+    return wa.interval === "annual" ? t.waDeveloperAnnual : t.waDeveloperMonthly;
+  }
+  if (wa?.plan === "pro") {
+    return wa.interval === "annual" ? t.waProAnnual : t.waProMonthly;
+  }
+  return t.waFreeLabel;
+}
+
+function productCardHtml(opts: {
+  locale: Locale;
+  t: Copy;
+  title: string;
+  card?: PortalProductCard;
+  fallbackLabel: string;
+  fallbackHint: string;
+  viewPlansHref: string;
+  viewPlansLabel: string;
+  portalId: string;
+  changeId: string;
+  cancelId: string;
+  product: "drops_pro" | "web_assets";
+}): string {
+  const card = opts.card;
+  const label = card?.planLabel || opts.fallbackLabel;
+  const status = card?.statusLabel;
+  const periodEnd = card?.periodEnd;
+  const period =
+    periodEnd && (card?.entitled || card?.cancelAtPeriodEnd)
+      ? card.cancelAtPeriodEnd || card.status === "canceled_paid_through"
+        ? opts.t.ends(formatDay(periodEnd, opts.locale))
+        : opts.t.renews(formatDay(periodEnd, opts.locale))
+      : "";
+  const suspended = card?.status === "suspended";
+  const hint = suspended
+    ? opts.t.suspendedHint
+    : card?.entitled
+      ? opts.product === "web_assets"
+        ? `${opts.t.waSeparate} ${opts.t.waPlanChangeHint}`
+        : opts.t.manageHint
+      : opts.fallbackHint;
+  const pending =
+    card?.pendingLabel && card.pendingEffectiveAt
+      ? `<p class="account-muted">Scheduled: ${esc(card.pendingLabel)} from ${esc(formatDay(card.pendingEffectiveAt, opts.locale))}. No prorated charge today.</p>`
+      : "";
+
+  let actions = "";
+  if (card?.canChangePlan) {
+    actions += `<button type="button" class="btn secondary" id="${opts.changeId}" data-product="${opts.product}">Change plan</button>`;
+  }
+  if (card?.entitled || suspended || card?.status === "canceled_paid_through") {
+    actions += `<button type="button" class="btn secondary" id="${opts.portalId}">${esc(opts.t.managePaypal)}</button>`;
+  }
+  if (card?.canCancel) {
+    actions += `<button type="button" class="btn ghost" id="${opts.cancelId}" data-product="${opts.product}" data-period-end="${periodEnd ?? ""}">Cancel renewal</button>`;
+  }
+  if (!actions) {
+    actions = `<a class="btn primary" href="${esc(opts.viewPlansHref)}">${esc(opts.viewPlansLabel)}</a>`;
+  }
+
+  return `<section class="settings-card billing-product" data-product="${opts.product}">
+      <p class="settings-eyebrow">${esc(opts.title)}</p>
+      <p class="settings-value settings-value-lg">${esc(label)}</p>
+      ${card?.priceLabel && card.entitled ? `<p class="account-muted">${esc(card.priceLabel)}</p>` : ""}
+      ${status ? `<p class="account-muted">Status: ${esc(status)}</p>` : ""}
+      ${period ? `<p class="account-muted">${esc(period)}</p>` : ""}
+      ${pending}
+      <p class="account-muted">${esc(hint)}</p>
+      <div class="settings-actions">${actions}</div>
+    </section>`;
+}
+
+function paymentRowHtml(
+  row: BillingPortalModel["payments"][number],
+  locale: Locale,
+): string {
+  const date = row.paidAt ? formatDay(row.paidAt, locale) : "";
+  const status =
+    row.status === "refunded" ? "Refunded" : row.status === "failed" ? "Failed" : "Paid";
+  const receipt = row.receiptUrl
+    ? `<a class="billing-receipt" href="${esc(row.receiptUrl)}" rel="noopener" target="_blank">View in PayPal</a>`
+    : "";
+  return `<article class="billing-pay-row">
+      <div>
+        <p class="billing-pay-date">${esc(date)}</p>
+        <p class="billing-pay-product">${esc(row.productLabel)}</p>
+      </div>
+      <p class="billing-pay-amount">${esc(row.amountLabel)}</p>
+      <p class="billing-pay-status">${esc(status)}</p>
+      ${receipt}
+    </article>`;
+}
+
+function billingDialogsHtml(t: Copy): string {
+  return `<div id="billing-change-modal" class="modal" hidden>
+    <div class="dialog dialog-wide" role="dialog" aria-modal="true" aria-labelledby="billing-change-title">
+      <h2 id="billing-change-title">Change plan</h2>
+      <p id="billing-change-preview"></p>
+      <label class="sr-only" for="billing-change-select">New plan</label>
+      <select id="billing-change-select"></select>
+      <p class="account-muted">No prorated charge today. The new price is billed at the next renewal.</p>
+      <p id="billing-change-error" class="form-error" hidden role="alert"></p>
+      <div class="dialog-actions">
+        <button type="button" class="btn secondary" id="billing-change-close">${esc(t.cancel)}</button>
+        <button type="button" class="btn primary" id="billing-change-ok">Confirm change</button>
+      </div>
+    </div>
+  </div>
+  <div id="billing-cancel-modal" class="modal" hidden>
+    <div class="dialog dialog-wide" role="dialog" aria-modal="true" aria-labelledby="billing-cancel-title">
+      <h2 id="billing-cancel-title">Cancel renewal?</h2>
+      <p id="billing-cancel-body"></p>
+      <p id="billing-cancel-error" class="form-error" hidden role="alert"></p>
+      <div class="dialog-actions">
+        <button type="button" class="btn secondary" id="billing-cancel-keep">Keep subscription</button>
+        <button type="button" class="btn danger" id="billing-cancel-ok">Cancel renewal</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function escJson(value: unknown): string {
+  return JSON.stringify(value).replace(/</g, "\\u003c");
 }
 
 /** Extension and ShareX tokens. `/account` also lands here, see routes. */
@@ -1159,7 +1321,7 @@ export function renderAccountPage(opts: SettingsProps): string {
   });
 }
 
-/** Opens the PayPal wallet. Shared by Billing and the delete fallback. */
+/** Opens the PayPal wallet and runs plan-change / cancel dialogs. */
 const PORTAL_SCRIPT = `
     (() => {
       async function openPortal() {
@@ -1175,6 +1337,113 @@ const PORTAL_SCRIPT = `
       document.getElementById("account-portal")?.addEventListener("click", () => { void openPortal(); });
       document.getElementById("account-portal-wa")?.addEventListener("click", () => { void openPortal(); });
       document.getElementById("delete-fail-billing")?.addEventListener("click", () => { void openPortal(); });
+
+      const dataEl = document.getElementById("billing-portal-data");
+      const portal = dataEl ? JSON.parse(dataEl.textContent || "{}") : {};
+      let changeProduct = "web_assets";
+      let cancelProduct = "web_assets";
+      let cancelPeriodEnd = "";
+      const changeModal = document.getElementById("billing-change-modal");
+      const cancelModal = document.getElementById("billing-cancel-modal");
+      const select = document.getElementById("billing-change-select");
+      const preview = document.getElementById("billing-change-preview");
+      const changeErr = document.getElementById("billing-change-error");
+      const cancelBody = document.getElementById("billing-cancel-body");
+      const cancelErr = document.getElementById("billing-cancel-error");
+
+      function card(product) {
+        return product === "drops_pro" ? portal.drops : portal.webAssets;
+      }
+      function fmt(unix) {
+        if (!unix) return "";
+        try {
+          return new Date(Number(unix) * 1000).toLocaleDateString(undefined, {
+            year: "numeric", month: "long", day: "numeric"
+          });
+        } catch { return ""; }
+      }
+      function openChange(product) {
+        const c = card(product);
+        if (!c || !select) return;
+        changeProduct = product;
+        select.innerHTML = (c.options || []).map((o) =>
+          "<option value=\\"" + o.plan + ":" + o.interval + "\\">" + o.label + "</option>"
+        ).join("");
+        if (preview) {
+          const first = (c.options || [])[0];
+          preview.textContent = first
+            ? ("Current: " + c.planLabel + ". Change to " + first.label + ". Effective " + fmt(c.periodEnd) + ". Next charge billed at renewal. No prorated charge today.")
+            : "";
+        }
+        if (changeErr) changeErr.hidden = true;
+        if (changeModal) changeModal.hidden = false;
+      }
+      function openCancel(product, periodEnd) {
+        cancelProduct = product;
+        cancelPeriodEnd = periodEnd || "";
+        const c = card(product);
+        const when = fmt(periodEnd || (c && c.periodEnd));
+        if (cancelBody) {
+          cancelBody.textContent = when
+            ? ("Cancel " + ((c && c.planLabel) || "this subscription") + "? You will keep paid access until " + when + ". After that, the account returns to Free limits. Existing public /m/… URLs continue serving according to the established downgrade policy.")
+            : "Cancel renewal? Paid access continues until the end of the period already paid for.";
+        }
+        if (cancelErr) cancelErr.hidden = true;
+        if (cancelModal) cancelModal.hidden = false;
+      }
+      document.getElementById("billing-change-wa")?.addEventListener("click", () => openChange("web_assets"));
+      document.getElementById("billing-change-drops")?.addEventListener("click", () => openChange("drops_pro"));
+      document.getElementById("billing-cancel-wa")?.addEventListener("click", (e) => {
+        openCancel("web_assets", e.currentTarget.getAttribute("data-period-end"));
+      });
+      document.getElementById("billing-cancel-drops")?.addEventListener("click", (e) => {
+        openCancel("drops_pro", e.currentTarget.getAttribute("data-period-end"));
+      });
+      select?.addEventListener("change", () => {
+        const c = card(changeProduct);
+        const [plan, interval] = (select.value || "").split(":");
+        const opt = (c && c.options || []).find((o) => o.plan === plan && o.interval === interval);
+        if (preview && c && opt) {
+          preview.textContent = "Current: " + c.planLabel + ". Change to " + opt.label + ". Effective " + fmt(c.periodEnd) + ". Next charge billed at renewal. No prorated charge today.";
+        }
+      });
+      document.getElementById("billing-change-close")?.addEventListener("click", () => {
+        if (changeModal) changeModal.hidden = true;
+      });
+      document.getElementById("billing-cancel-keep")?.addEventListener("click", () => {
+        if (cancelModal) cancelModal.hidden = true;
+      });
+      document.getElementById("billing-change-ok")?.addEventListener("click", async () => {
+        const [plan, interval] = (select && select.value || "").split(":");
+        const res = await fetch("/api/billing/revise", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ product: changeProduct, plan, interval }),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          if (changeErr) { changeErr.hidden = false; changeErr.textContent = body.error || "Could not start that plan change."; }
+          return;
+        }
+        if (body.url) location.href = body.url;
+        else location.reload();
+      });
+      document.getElementById("billing-cancel-ok")?.addEventListener("click", async () => {
+        const res = await fetch("/api/billing/cancel", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ product: cancelProduct }),
+        });
+        const body = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          if (cancelErr) { cancelErr.hidden = false; cancelErr.textContent = body.error || "Could not cancel renewal."; }
+          return;
+        }
+        location.reload();
+      });
+
       const params = new URLSearchParams(location.search);
       if (params.get("checkout") === "success" && params.get("product") === "web_assets") {
         const status = document.getElementById("wa-billing-status");
@@ -1188,7 +1457,18 @@ const PORTAL_SCRIPT = `
           credentials: "same-origin",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(subscriptionId ? { subscription_id: subscriptionId } : {}),
-        }).then((res) => res.ok ? location.replace("/app/media") : null);
+        }).then((res) => res.ok ? location.replace("/app/billing") : null);
+      }
+      if (params.get("revise") === "success") {
+        const subscriptionId = params.get("subscription_id");
+        const product = params.get("product");
+        const path = product === "drops_pro" ? "/api/billing/sync" : "/api/billing/web-assets/sync";
+        void fetch(path, {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(subscriptionId ? { subscription_id: subscriptionId } : {}),
+        }).then(() => location.replace("/app/billing"));
       }
     })();
   `;

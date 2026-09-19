@@ -3837,6 +3837,60 @@ html[data-theme="dark"] .auth-google-btn .auth-google-btn-dark {
   margin-top: 0;
 }
 
+.billing-pay-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+}
+
+.billing-pay-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
+  gap: 0.75rem 1rem;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.billing-pay-row:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.billing-pay-date,
+.billing-pay-product,
+.billing-pay-amount,
+.billing-pay-status {
+  margin: 0;
+}
+
+.billing-pay-date {
+  font-weight: 650;
+}
+
+.billing-pay-product,
+.billing-pay-status {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.billing-receipt {
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .billing-pay-row {
+    grid-template-columns: 1fr auto;
+    align-items: start;
+  }
+
+  .billing-pay-status,
+  .billing-receipt {
+    grid-column: 1 / -1;
+  }
+}
+
 .settings-danger .btn {
   border-color: var(--danger);
   color: var(--danger);
