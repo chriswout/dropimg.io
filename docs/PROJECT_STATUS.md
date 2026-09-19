@@ -66,7 +66,7 @@ Paid Web Assets are **live** on `https://dropimg.io`.
 | Applied migrations | `0001`–`0017` (including `0016_web_assets_billing`, `0017_billing_portal`) |
 | Pre-migration snapshot | `.backup/prod-20260917-1249.sql` (gitignored), taken while D1 was still at `0012` |
 | `GET /api/site-config` | `mediaEnabled=true`, `mediaDeliveryEnabled=true`, `webAssetsCheckout=true` |
-| Deploy path | Local authenticated Wrangler for production (GitHub Actions Cloudflare token still fails KON-41). Push to `main` deploys staging. |
+| Deploy path | GitHub Actions: push to `main` deploys staging; production is `workflow_dispatch`. `CLOUDFLARE_API_TOKEN` is a dashboard API token (KON-41). |
 
 ---
 
@@ -160,7 +160,7 @@ Paid Web Assets launch:
 
 **7. Paid Web Assets production launch**
 
-Local/CI gates at this snapshot: **509 Vitest tests, 0 failed**. Production Web Assets are on. Cursor plugin is in-repo (KON-84); marketplace submission is not complete. KON-41 and KON-82 remain open.
+Local/CI gates at this snapshot: **509 Vitest tests, 0 failed**. Production Web Assets are on. Cursor plugin is in-repo (KON-84); marketplace submission is not complete. KON-41 is done. KON-82 remains open.
 
 ---
 
@@ -170,8 +170,8 @@ Local/CI gates at this snapshot: **509 Vitest tests, 0 failed**. Production Web 
 
 | Rank | Issue |
 |---|---|
-| HIGH | GitHub Actions `CLOUDFLARE_API_TOKEN` is still a Wrangler OAuth token, not a dashboard-created API token. Wrangler OAuth cannot mint user API tokens (9109). Production launch used local Wrangler OAuth. CI still fails fast via `wrangler whoami` before migrate/deploy. KON-41. |
-| MEDIUM | Live PayPal Developer/Pro subscriptions were not completed end-to-end (no real $9/$90/$29/$290 charges). Checkout URL minting works; webhook/entitlement coverage is CI. |
+| MEDIUM | Live PayPal Developer/Pro subscriptions were not completed end-to-end (no real $9/$90/$29/$290 charges). Checkout URL minting works; webhook/entitlement coverage is CI. KON-82. |
+| MEDIUM | Push-to-`main` deploys currently die in Playwright (`billing-portal` magic-link sign-in) before `wrangler whoami` / remote migrate. Staging/production Actions deploys wait on that e2e. |
 
 ### Security
 
@@ -229,7 +229,7 @@ Existing: `media_project_created`, `media_first_asset_created`, `media_stable_ur
 7. Build
 8. Deploy Worker
 
-Production is `workflow_dispatch` only. Until KON-41 is fixed, production deploys are local Wrangler.
+Production is `workflow_dispatch` only. Cloudflare credentials for Actions are a dashboard API token (KON-41).
 
 R2 lifecycle JSON has **no** `p/` delete rule. Do not add one.
 
@@ -239,7 +239,7 @@ R2 lifecycle JSON has **no** `p/` delete rule. Do not add one.
 
 **8. Cursor Marketplace plugin / KON-84** (first distribution target under KON-60). Canonical skill: [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md). Plugin manifest: [`.cursor-plugin/plugin.json`](../.cursor-plugin/plugin.json). Plugin work is **in progress** in the repo. Do not add a second MCP endpoint. Do not mark KON-60 / KON-83 / KON-85 / KON-86 complete from a copy pass.
 
-Also remaining: mint a durable Cloudflare API token for Actions (KON-41). Live paid-plan charges still need a controlled confirmation (KON-82). Marketplace submission is manual at [cursor.com/marketplace/publish](https://cursor.com/marketplace/publish) after local plugin validation.
+Also remaining: live paid-plan charges still need a controlled confirmation (KON-82). Marketplace submission is manual at [cursor.com/marketplace/publish](https://cursor.com/marketplace/publish) after local plugin validation.
 
 ### Explicitly Deferred
 
