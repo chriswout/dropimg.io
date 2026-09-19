@@ -86,7 +86,7 @@ describe("checkoutBlockForRows", () => {
     );
     expect(block?.code).toBe("plan_change_blocked");
     expect(checkoutBlockMessage("plan_change_blocked", "web_assets")).toMatch(
-      /does not prorate/i,
+      /second subscription/i,
     );
   });
 

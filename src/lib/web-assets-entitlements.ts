@@ -1,6 +1,7 @@
 /** Server-authoritative Web Assets plan. Never trust a client-supplied plan id. */
 
 import type { BillingEnv } from "./billing/types";
+import { settlePendingPlanChanges } from "./billing/pending";
 import { isProSubscription, type SubscriptionSnapshot } from "./entitlements";
 import {
   WEB_ASSETS_PLANS,
@@ -86,6 +87,7 @@ export async function webAssetsEntitlementsFor(
   env: Cloudflare.Env & BillingEnv,
   userId: string,
 ): Promise<WebAssetsEntitlements> {
+  await settlePendingPlanChanges(env.DB, { userId });
   const subscription = await loadWebAssetsSubscription(env.DB, userId);
   return resolveWebAssetsEntitlements({ subscription, env });
 }

@@ -504,6 +504,161 @@ describe("PayPal billing webhook", () => {
     expect(row?.status).toBe("active");
   });
 
+  it("records a sale payment once and ignores webhook replay", async () => {
+    const { env, now } = await seedUser("history@example.com");
+    await signedRequest(
+      JSON.stringify({
+        id: "WH-hist-act",
+        event_type: "BILLING.SUBSCRIPTION.ACTIVATED",
+        create_time: isoFromUnix(now),
+        resource: subscriptionResource({ id: "I-hist" }),
+      }),
+    );
+    const sale = JSON.stringify({
+      id: "WH-hist-sale",
+      event_type: "PAYMENT.SALE.COMPLETED",
+      create_time: isoFromUnix(now),
+      resource: {
+        id: "SALEHIST1",
+        custom: USER_ID,
+        billing_agreement_id: "I-hist",
+        amount: { total: "2.99", currency: "EUR" },
+        payer: { payer_id: "PAYERHIST" },
+      },
+    });
+    expect((await signedRequest(sale)).status).toBe(200);
+    expect((await signedRequest(sale)).status).toBe(200);
+
+    const payments = await env.DB.prepare(
+      `SELECT COUNT(*) AS n, product, amount, currency, status
+       FROM billing_payments WHERE user_id = ?`,
+    )
+      .bind(USER_ID)
+      .first<{ n: number; product: string; amount: string; currency: string; status: string }>();
+    expect(Number(payments?.n)).toBe(1);
+    expect(payments?.product).toBe("drops_pro");
+    expect(payments?.amount).toBe("2.99");
+    expect(payments?.currency).toBe("EUR");
+    expect(payments?.status).toBe("paid");
+  });
+
+  it("sends one failed-payment notification and ignores replay", async () => {
+    const { env, now } = await seedUser("dunning@example.com");
+    await signedRequest(
+      JSON.stringify({
+        id: "WH-dun-act",
+        event_type: "BILLING.SUBSCRIPTION.ACTIVATED",
+        create_time: isoFromUnix(now),
+        resource: subscriptionResource({ id: "I-dun", plan_id: "P-wa-dev-m" }),
+      }),
+    );
+    const failed = JSON.stringify({
+      id: "WH-dun-fail",
+      event_type: "BILLING.SUBSCRIPTION.PAYMENT.FAILED",
+      create_time: isoFromUnix(now),
+      resource: subscriptionResource({
+        id: "I-dun",
+        plan_id: "P-wa-dev-m",
+        status: "ACTIVE",
+      }),
+    });
+    expect((await signedRequest(failed)).status).toBe(200);
+    expect((await signedRequest(failed)).status).toBe(200);
+    const notes = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM billing_notifications
+       WHERE event_id = ? AND notification_type = 'payment_failed'`,
+    )
+      .bind("WH-dun-fail")
+      .first<{ n: number }>();
+    expect(Number(notes?.n)).toBe(1);
+  });
+
+  it("records suspension and recovery notifications", async () => {
+    const { env, now } = await seedUser("recover@example.com");
+    await signedRequest(
+      JSON.stringify({
+        id: "WH-rec-act",
+        event_type: "BILLING.SUBSCRIPTION.ACTIVATED",
+        create_time: isoFromUnix(now),
+        resource: subscriptionResource({ id: "I-rec" }),
+      }),
+    );
+    expect(
+      (
+        await signedRequest(
+          JSON.stringify({
+            id: "WH-rec-sus",
+            event_type: "BILLING.SUBSCRIPTION.SUSPENDED",
+            create_time: isoFromUnix(now + 1),
+            resource: subscriptionResource({ id: "I-rec", status: "SUSPENDED" }),
+          }),
+        )
+      ).status,
+    ).toBe(200);
+    expect(
+      (
+        await signedRequest(
+          JSON.stringify({
+            id: "WH-rec-ok",
+            event_type: "BILLING.SUBSCRIPTION.ACTIVATED",
+            create_time: isoFromUnix(now + 2),
+            resource: subscriptionResource({ id: "I-rec", status: "ACTIVE" }),
+          }),
+        )
+      ).status,
+    ).toBe(200);
+
+    const types = await env.DB.prepare(
+      `SELECT notification_type FROM billing_notifications WHERE user_id = ? ORDER BY sent_at`,
+    )
+      .bind(USER_ID)
+      .all<{ notification_type: string }>();
+    expect((types.results ?? []).map((r) => r.notification_type)).toEqual([
+      "subscription_suspended",
+      "payment_recovered",
+    ]);
+  });
+
+  it("keeps the entitled plan when PayPal revises plan_id before period end", async () => {
+    const { env, now } = await seedUser("revise-hook@example.com");
+    await signedRequest(
+      JSON.stringify({
+        id: "WH-rev-act",
+        event_type: "BILLING.SUBSCRIPTION.ACTIVATED",
+        create_time: isoFromUnix(now),
+        resource: subscriptionResource({
+          id: "I-rev",
+          plan_id: "P-wa-dev-m",
+        }),
+      }),
+    );
+    await signedRequest(
+      JSON.stringify({
+        id: "WH-rev-upd",
+        event_type: "BILLING.SUBSCRIPTION.UPDATED",
+        create_time: isoFromUnix(now + 5),
+        resource: subscriptionResource({
+          id: "I-rev",
+          plan_id: "P-wa-pro-m",
+          billing_info: { next_billing_time: isoFromUnix(now + 20 * 86400) },
+        }),
+      }),
+    );
+    const row = await env.DB.prepare(
+      `SELECT price_id, pending_price_id, pending_effective_at FROM subscriptions
+       WHERE provider_subscription_id = ?`,
+    )
+      .bind("I-rev")
+      .first<{
+        price_id: string;
+        pending_price_id: string | null;
+        pending_effective_at: number | null;
+      }>();
+    expect(row?.price_id).toBe("P-wa-dev-m");
+    expect(row?.pending_price_id).toBe("P-wa-pro-m");
+    expect(row?.pending_effective_at).toBeGreaterThan(now);
+  });
+
   it("serves /pro and checkout 401 when signed out", async () => {
     const page = await worker.fetch("https://dropimg.io/pro");
     expect(page.status).toBe(200);

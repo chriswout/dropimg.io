@@ -145,8 +145,8 @@ does not call PayPal.
 - Web Assets: `plan_change_blocked` or `checkout_in_progress`
 
 Launch does **not** start a second Web Assets subscription to “change plan”.
-There is no PayPal proration or invented credit. Cancel renewal in PayPal, keep
-access until `current_period_end`, then subscribe to the new plan.
+Plan changes call PayPal `revise` on the existing `I-…`. The new price is
+billed at the next renewal. DropIMG does not prorate or invent a credit.
 
 `custom_id = userId`. The browser is sent to the `rel=approve` URL. Success
 pages may sync the mint we created; they never grant entitlement by themselves.
@@ -163,8 +163,9 @@ also true. Overlapping catalog IDs disable checkout.
 `provider` on `subscriptions` is `paypal`. `provider_subscription_id` is the
 PayPal `I-…`. `product` is `drops_pro` or `web_assets`.
 
-**Manage in PayPal** opens the PayPal wallet (`/myaccount/autopay`). There is
-no in-app invoice list and no DropIMG customer portal. Account deletion cancels
+**Manage payment in PayPal** opens the PayPal wallet (`/myaccount/autopay`).
+`/app/billing` is the first-party portal: current plans, deferred plan changes,
+cancel renewal, and payment history (not invoices). Account deletion cancels
 every live PayPal row (both products) before the user is tombstoned.
 
 ## Cancellation and paid-through access
@@ -181,18 +182,18 @@ and closes the account.
 ## Failed payments
 
 PayPal retry exhaustion typically yields `SUSPENDED`. Suspended rows do **not**
-grant Drops Pro or a paid Web Assets plan. There is no `past_due` mapping and
-no dunning email. `BILLING.SUBSCRIPTION.PAYMENT.FAILED`, if subscribed, is
-recorded for observability and does not change entitlement by itself. The
-billing UI must not claim retries DropIMG does not perform. Update the payment
-method in PayPal.
+grant Drops Pro or a paid Web Assets plan. There is no `past_due` mapping.
+`BILLING.SUBSCRIPTION.PAYMENT.FAILED` does not change entitlement by itself.
+DropIMG may email the account holder (failed payment, suspension, recovery,
+expiry). Retries of the same PayPal event do not send a second email. Delivery
+is not guaranteed. Update the payment method in PayPal.
 
 ## Customer-facing checkout states
 
 - Opening PayPal…
 - Payment received. Activating Pro… (back from PayPal, entitlements still Free)
 - Your payment was received. Pro is still activating. Refresh My drops in a moment. (poll timeout)
-- You already have Drops Pro. Manage it in PayPal. (409)
+- You already have Drops Pro. Change the billing interval from Billing… (409)
 - You already have a live Web Assets subscription… (409)
 - Billing isn’t available right now. (flags off or config missing)
 
@@ -206,5 +207,5 @@ Controlled live Web Assets purchase walkthrough (do not auto-charge):
 - Braintree, NVP/SOAP, Paddle, or a second Stripe path
 - Anonymous PayPal charges
 - Fake proration, account credits, or a second overlapping paid subscription
-- In-app invoice history or a custom billing portal
+- Calling payment history “invoices”
 - Changing advertised prices or mixing Drops Pro with Web Assets SKUs

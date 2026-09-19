@@ -9,10 +9,21 @@ import {
   releaseCheckoutReservation,
   reserveCheckout,
 } from "../lib/billing/checkout-guard";
+import { billingLog } from "../lib/billing/log";
+import { maybeSendDunningEmail } from "../lib/billing/notifications";
+import { recordPaymentFromSaleEvent } from "../lib/billing/payments";
+import { getSubscriptionEntitlementState } from "../lib/billing/lifecycle";
+import {
+  loadOwnedSubscription,
+  persistPendingRevision,
+  previewPlanChange,
+  resolvePlanChangeTarget,
+} from "../lib/billing/revision";
 import {
   billingConfig,
   billingEnabled,
   billingProductForPriceId,
+  cancelPaypalSubscriptionImmediately,
   cancelSiblingWebAssetsSubscriptions,
   createCheckoutSession,
   createPortalUrl,
@@ -21,6 +32,7 @@ import {
   planChangeKind,
   priceIdForInterval,
   priceIdForWebAssetsPlan,
+  revisePaypalSubscription,
   syncSubscriptionFromPaypal,
   upsertSubscriptionFromEvent,
   verifyPaypalWebhook,
@@ -28,6 +40,7 @@ import {
 } from "../lib/billing/paypal";
 import type {
   BillingEnv,
+  BillingProduct,
   CheckoutInterval,
   PaypalWebhookEvent,
   WebAssetsPaidPlan,
@@ -50,6 +63,7 @@ export const billingRoutes = new Hono<Env>();
 
 const CHECKOUT_COOKIE = "dropimg_paypal_sub";
 const WA_CHECKOUT_COOKIE = "dropimg_paypal_wa_sub";
+const REVISE_COOKIE = "dropimg_paypal_revise";
 const CHECKOUT_COOKIE_MAX_AGE = 30 * 60;
 
 function asBillingEnv(env: Cloudflare.Env): BillingEnv {
@@ -295,7 +309,8 @@ billingRoutes.post("/api/billing/sync", async (c) => {
   }
   const pending =
     requested ??
-    parsePaypalSubscriptionId(readCookie(c.req.header("cookie"), CHECKOUT_COOKIE));
+    parsePaypalSubscriptionId(readCookie(c.req.header("cookie"), CHECKOUT_COOKIE)) ??
+    parsePaypalSubscriptionId(readCookie(c.req.header("cookie"), REVISE_COOKIE));
   if (!pending) return c.json({ error: "No checkout to activate." }, 400);
 
   const synced = await syncSubscriptionFromPaypal(asBillingEnv(c.env), c.env.DB, {
@@ -326,7 +341,8 @@ billingRoutes.post("/api/billing/web-assets/sync", async (c) => {
   }
   const pending =
     requested ??
-    parsePaypalSubscriptionId(readCookie(c.req.header("cookie"), WA_CHECKOUT_COOKIE));
+    parsePaypalSubscriptionId(readCookie(c.req.header("cookie"), WA_CHECKOUT_COOKIE)) ??
+    parsePaypalSubscriptionId(readCookie(c.req.header("cookie"), REVISE_COOKIE));
   if (!pending) return c.json({ error: "No checkout to activate." }, 400);
 
   const synced = await syncSubscriptionFromPaypal(asBillingEnv(c.env), c.env.DB, {
@@ -377,6 +393,169 @@ billingRoutes.post("/api/billing/portal", async (c) => {
   return c.json({ url });
 });
 
+function parseProduct(value: unknown): BillingProduct | null {
+  if (value === "web_assets" || value === "drops_pro") return value;
+  return null;
+}
+
+billingRoutes.post("/api/billing/revise", async (c) => {
+  if (!csrfOriginOk(c.req.raw)) return c.json({ error: "Invalid origin" }, 403);
+  const session = await resolveSession(c.env.DB, c.req.header("cookie"));
+  if (!session) return c.json({ error: "Unauthorized" }, 401);
+
+  let product: BillingProduct | null = null;
+  let plan: string | undefined;
+  let interval: string | undefined;
+  try {
+    const body = (await c.req.json()) as { product?: string; plan?: string; interval?: string };
+    product = parseProduct(body.product);
+    plan = body.plan;
+    interval = body.interval;
+  } catch {
+    return c.json({ error: "Invalid payload" }, 400);
+  }
+  if (!product) return c.json({ error: "That plan isn’t available." }, 400);
+
+  const env = asBillingEnv(c.env);
+  const target = resolvePlanChangeTarget(env, product, { plan, interval });
+  if ("error" in target) return c.json({ error: target.error }, 400);
+
+  const row = await loadOwnedSubscription(c.env.DB, session.id, product);
+  if (!row?.provider_subscription_id) {
+    return c.json({ error: "No billing account yet." }, 400);
+  }
+  const paypalId = parsePaypalSubscriptionId(row.provider_subscription_id);
+  if (!paypalId) return c.json({ error: "No billing account yet." }, 400);
+
+  const preview = previewPlanChange(env, row, target);
+  if ("error" in preview) {
+    return c.json({ error: preview.error, code: preview.code }, 409);
+  }
+
+  const origin = new URL(c.req.raw.url).origin;
+  const returnPath = `${origin}/app/billing`;
+  const revised = await revisePaypalSubscription(env, {
+    subscriptionId: paypalId,
+    planId: target.priceId,
+    successUrl: `${returnPath}?revise=success&product=${product}`,
+    cancelUrl: returnPath,
+  });
+  if (!revised.ok) {
+    billingLog("revision", {
+      userId: session.id,
+      subscriptionId: paypalId,
+      product,
+      planId: target.priceId,
+      result: revised.error,
+    });
+    return c.json({ error: "Could not start that plan change." }, 502);
+  }
+
+  await persistPendingRevision(c.env.DB, {
+    subscriptionId: paypalId,
+    pendingPriceId: target.priceId,
+    pendingEffectiveAt: preview.effectiveAt,
+    now: Math.floor(Date.now() / 1000),
+  });
+  billingLog("revision", {
+    userId: session.id,
+    subscriptionId: paypalId,
+    product,
+    planId: target.priceId,
+    result: revised.data.approveUrl ? "approval_required" : "scheduled",
+  });
+  track(c.env.ANALYTICS, "billing_revision_started", {
+    plan: target.plan,
+    interval: target.interval,
+    client: "web",
+  });
+
+  const res = c.json({
+    url: revised.data.approveUrl,
+    preview: {
+      current: preview.currentLabel,
+      next: preview.nextLabel,
+      effectiveAt: preview.effectiveAt,
+      nextCharge: preview.nextCharge,
+      proratedToday: false,
+    },
+  });
+  if (revised.data.approveUrl) {
+    res.headers.append(
+      "Set-Cookie",
+      checkoutCookieHeader(paypalId, c.env, CHECKOUT_COOKIE_MAX_AGE, REVISE_COOKIE),
+    );
+  }
+  return res;
+});
+
+billingRoutes.post("/api/billing/cancel", async (c) => {
+  if (!csrfOriginOk(c.req.raw)) return c.json({ error: "Invalid origin" }, 403);
+  const session = await resolveSession(c.env.DB, c.req.header("cookie"));
+  if (!session) return c.json({ error: "Unauthorized" }, 401);
+
+  let product: BillingProduct | null = null;
+  try {
+    const body = (await c.req.json()) as { product?: string };
+    product = parseProduct(body.product);
+  } catch {
+    return c.json({ error: "Invalid payload" }, 400);
+  }
+  if (!product) return c.json({ error: "That plan isn’t available." }, 400);
+
+  const row = await loadOwnedSubscription(c.env.DB, session.id, product);
+  const life = getSubscriptionEntitlementState(row);
+  if (life.state === "canceled_paid_through" || life.state === "canceled") {
+    return c.json({ ok: true, periodEnd: row?.current_period_end ?? null });
+  }
+  if (!row?.provider_subscription_id || !life.cancelAllowed) {
+    return c.json({ error: "This subscription cannot be canceled right now." }, 409);
+  }
+  const paypalId = parsePaypalSubscriptionId(row.provider_subscription_id);
+  if (!paypalId) return c.json({ error: "This subscription cannot be canceled right now." }, 409);
+
+  const now = Math.floor(Date.now() / 1000);
+  const canceled = await cancelPaypalSubscriptionImmediately(
+    asBillingEnv(c.env),
+    paypalId,
+    fetch,
+    "Canceled renewal from DropIMG billing",
+  );
+  if (!canceled.ok) {
+    billingLog("cancel", {
+      userId: session.id,
+      subscriptionId: paypalId,
+      product,
+      result: canceled.error,
+    });
+    return c.json({ error: "Could not cancel renewal." }, 502);
+  }
+
+  await c.env.DB.prepare(
+    `UPDATE subscriptions
+     SET status = 'canceled',
+         cancel_at_period_end = 1,
+         pending_price_id = NULL,
+         pending_effective_at = NULL,
+         updated_at = ?
+     WHERE provider_subscription_id = ? AND user_id = ?`,
+  )
+    .bind(now, paypalId, session.id)
+    .run();
+
+  billingLog("cancel", {
+    userId: session.id,
+    subscriptionId: paypalId,
+    product,
+    result: "canceled",
+  });
+  track(c.env.ANALYTICS, "billing_cancel_requested", {
+    plan: product === "web_assets" ? "developer" : "pro",
+    client: "web",
+  });
+  return c.json({ ok: true, periodEnd: row.current_period_end });
+});
+
 billingRoutes.post("/api/billing/paypal/webhook", async (c) => {
   const rawBody = await c.req.text();
   if (!rawBody) {
@@ -420,7 +599,32 @@ billingRoutes.post("/api/billing/paypal/webhook", async (c) => {
     return c.json({ received: true, duplicate: true });
   }
 
-  await upsertSubscriptionFromEvent(c.env.DB, event, now, asBillingEnv(c.env));
+  const resource = event.resource;
+  const subId = strFrom(resource.id) || strFrom(resource.billing_agreement_id);
+  const previous = subId
+    ? await c.env.DB.prepare(
+        `SELECT status, user_id, product, price_id FROM subscriptions
+         WHERE provider_subscription_id = ? LIMIT 1`,
+      )
+        .bind(subId)
+        .first<{ status: string; user_id: string; product: BillingProduct; price_id: string | null }>()
+    : null;
+
+  const upserted = await upsertSubscriptionFromEvent(c.env.DB, event, now, asBillingEnv(c.env));
+  if (
+    event.event_type.startsWith("PAYMENT.SALE.") ||
+    event.event_type.endsWith("PAYMENT.FAILED")
+  ) {
+    await recordPaymentFromSaleEvent(c.env.DB, asBillingEnv(c.env), {
+      eventId: event.id,
+      eventType: event.event_type,
+      resource,
+      userId: upserted.userId || previous?.user_id || null,
+      subscriptionId: upserted.subscriptionId || subId,
+      now,
+    });
+  }
+
   await c.env.DB.prepare(
     `UPDATE billing_events
      SET status = 'processed', processed_at = ?
@@ -433,19 +637,25 @@ billingRoutes.post("/api/billing/paypal/webhook", async (c) => {
     reason: event.event_type,
   });
 
-  const resource = event.resource;
   const status = typeof resource.status === "string" ? resource.status.toLowerCase() : "";
-  const priceId = strFrom(resource.plan_id);
+  const priceId = strFrom(resource.plan_id) || upserted.priceId;
   const interval =
     intervalForPrice(asBillingEnv(c.env), priceId) ?? undefined;
   const waPlan = webAssetsPlanForPriceId(asBillingEnv(c.env), priceId);
-  const product = billingProductForPriceId(asBillingEnv(c.env), priceId);
-  const userId =
-    typeof resource.custom_id === "string"
-      ? resource.custom_id
-      : typeof resource.custom === "string"
-        ? resource.custom
-        : null;
+  const product = upserted.product || billingProductForPriceId(asBillingEnv(c.env), priceId);
+  const userId = upserted.userId || previous?.user_id || strFrom(resource.custom_id) || strFrom(resource.custom);
+  const manageUrl = createPortalUrl(asBillingEnv(c.env)) || "https://www.paypal.com/myaccount/autopay";
+  const mappedStatus = upserted.status?.toLowerCase() || status;
+
+  billingLog("webhook", {
+    userId,
+    subscriptionId: upserted.subscriptionId || subId,
+    product,
+    planId: priceId,
+    eventId: event.id,
+    transition: event.event_type,
+    result: mappedStatus,
+  });
 
   if (
     event.event_type === "BILLING.SUBSCRIPTION.PAYMENT.FAILED" ||
@@ -453,6 +663,65 @@ billingRoutes.post("/api/billing/paypal/webhook", async (c) => {
   ) {
     track(c.env.ANALYTICS, "billing_payment_failed", {
       reason: event.event_type,
+    });
+    await maybeSendDunningEmail(c.env, c.env.DB, {
+      eventId: event.id,
+      type: "payment_failed",
+      userId,
+      subscriptionId: upserted.subscriptionId || subId,
+      product,
+      planId: priceId,
+      manageUrl,
+      now,
+    });
+  }
+
+  if (event.event_type === "BILLING.SUBSCRIPTION.SUSPENDED" || mappedStatus === "suspended") {
+    if (event.event_type === "BILLING.SUBSCRIPTION.SUSPENDED") {
+      track(c.env.ANALYTICS, "billing_subscription_suspended", {
+        reason: event.event_type,
+      });
+      await maybeSendDunningEmail(c.env, c.env.DB, {
+        eventId: event.id,
+        type: "subscription_suspended",
+        userId,
+        subscriptionId: upserted.subscriptionId || subId,
+        product,
+        planId: priceId,
+        manageUrl,
+        now,
+      });
+    }
+  }
+
+  if (
+    previous?.status === "suspended" &&
+    mappedStatus === "active" &&
+    (event.event_type === "BILLING.SUBSCRIPTION.ACTIVATED" ||
+      event.event_type === "BILLING.SUBSCRIPTION.UPDATED")
+  ) {
+    await maybeSendDunningEmail(c.env, c.env.DB, {
+      eventId: event.id,
+      type: "payment_recovered",
+      userId,
+      subscriptionId: upserted.subscriptionId || subId,
+      product,
+      planId: priceId,
+      manageUrl,
+      now,
+    });
+  }
+
+  if (event.event_type === "BILLING.SUBSCRIPTION.EXPIRED") {
+    await maybeSendDunningEmail(c.env, c.env.DB, {
+      eventId: event.id,
+      type: "subscription_ended",
+      userId,
+      subscriptionId: upserted.subscriptionId || subId,
+      product,
+      planId: priceId,
+      manageUrl,
+      now,
     });
   }
 

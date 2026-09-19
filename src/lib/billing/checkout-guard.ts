@@ -43,9 +43,9 @@ export function checkoutBlockMessage(
     return "Checkout is already in progress. Finish PayPal approval or wait a few minutes.";
   }
   if (product === "web_assets") {
-    return "You already have a live Web Assets subscription. Cancel renewal in PayPal and wait until the paid period ends before starting a different plan. DropIMG does not prorate or start a second subscription.";
+    return "You already have a live Web Assets subscription. Change plan from Billing — DropIMG will not start a second subscription or prorate unused time.";
   }
-  return "You already have Drops Pro. Manage it in PayPal.";
+  return "You already have Drops Pro. Change the billing interval from Billing, or manage it in PayPal.";
 }
 
 export function checkoutBlockForRows(

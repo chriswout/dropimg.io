@@ -193,7 +193,7 @@ export async function getAccessToken(
     };
   }
   const ttlSec =
-    typeof body.expires_in === "number" && body.expires_in > 0
+    typeof body?.expires_in === "number" && body.expires_in > 0
       ? body.expires_in
       : 300;
   tokenCache = {
@@ -219,8 +219,8 @@ async function paypalRequest<T>(
     method: init.method ?? "POST",
     headers: {
       Authorization: `Bearer ${token.data}`,
-      "Content-Type": "application/json",
       Accept: "application/json",
+      ...(init.body === undefined ? {} : { "Content-Type": "application/json" }),
     },
     body: init.body === undefined ? undefined : JSON.stringify(init.body),
   });
@@ -297,11 +297,12 @@ export async function cancelPaypalSubscriptionImmediately(
   env: BillingEnv,
   subscriptionId: string,
   fetchImpl: typeof fetch = fetch,
+  reason = "DropIMG account deleted",
 ): Promise<{ ok: true } | { ok: false; error: string }> {
   const res = await paypalRequest<{ id?: string }>(
     env,
     `/v1/billing/subscriptions/${encodeURIComponent(subscriptionId)}/cancel`,
-    { method: "POST", body: { reason: "DropIMG account deleted" } },
+    { method: "POST", body: { reason } },
     fetchImpl,
   );
   if (res.ok) return { ok: true };
@@ -320,6 +321,42 @@ export async function cancelPaypalSubscriptionImmediately(
         : "paypal_cancel_failed",
   };
 }
+
+export async function revisePaypalSubscription(
+  env: BillingEnv,
+  opts: {
+    subscriptionId: string;
+    planId: string;
+    successUrl: string;
+    cancelUrl: string;
+  },
+  fetchImpl: typeof fetch = fetch,
+): Promise<PaypalResult<{ id: string; approveUrl: string | null }>> {
+  const subscriptionId = parsePaypalSubscriptionId(opts.subscriptionId);
+  if (!subscriptionId) return { ok: false, error: "invalid_id" };
+  const res = await paypalRequest<{ id?: string; links?: PaypalLink[] }>(
+    env,
+    `/v1/billing/subscriptions/${encodeURIComponent(subscriptionId)}/revise`,
+    {
+      method: "POST",
+      body: {
+        plan_id: opts.planId,
+        application_context: {
+          brand_name: "DropIMG",
+          return_url: opts.successUrl,
+          cancel_url: opts.cancelUrl,
+        },
+      },
+    },
+    fetchImpl,
+  );
+  if (!res.ok) return res;
+  const id = res.data.id?.trim() || subscriptionId;
+  const approveUrl = res.data.links?.find((l) => l.rel === "approve")?.href?.trim() ?? null;
+  return { ok: true, data: { id, approveUrl } };
+}
+
+export { settlePendingPlanChanges } from "./pending";
 
 /** Statuses worth cancelling before we delete an account. */
 export const LIVE_PAYPAL_STATUSES = new Set([
@@ -693,11 +730,20 @@ async function applySubscriptionState(
 ): Promise<boolean> {
   const existing = await db
     .prepare(
-      `SELECT provider_occurred_at, current_period_end FROM subscriptions
+      `SELECT provider_occurred_at, current_period_end, price_id,
+              pending_price_id, pending_effective_at, status
+       FROM subscriptions
        WHERE provider_subscription_id = ? LIMIT 1`,
     )
     .bind(row.subscriptionId)
-    .first<{ provider_occurred_at: number | null; current_period_end: number | null }>();
+    .first<{
+      provider_occurred_at: number | null;
+      current_period_end: number | null;
+      price_id: string | null;
+      pending_price_id: string | null;
+      pending_effective_at: number | null;
+      status: string;
+    }>();
 
   /**
    * Only snapshots are ordered against each other. A sale is often delivered
@@ -726,6 +772,26 @@ async function applySubscriptionState(
       ? 1
       : row.cancelAtPeriodEnd;
 
+  let nextPriceId = row.priceId;
+  let pendingPriceId = existing?.pending_price_id ?? null;
+  let pendingEffectiveAt = existing?.pending_effective_at ?? null;
+  if (row.authoritative && row.priceId && existing?.price_id && row.priceId !== existing.price_id) {
+    const keepUntil = pendingEffectiveAt ?? periodEnd;
+    if (keepUntil != null && keepUntil > row.now) {
+      nextPriceId = existing.price_id;
+      pendingPriceId = row.priceId;
+      pendingEffectiveAt = keepUntil;
+    } else {
+      nextPriceId = row.priceId;
+      pendingPriceId = null;
+      pendingEffectiveAt = null;
+    }
+  }
+  if (row.status === "canceled" || row.status === "expired") {
+    pendingPriceId = null;
+    pendingEffectiveAt = null;
+  }
+
   if (existing) {
     if (row.authoritative) {
       await db
@@ -734,10 +800,12 @@ async function applySubscriptionState(
              user_id = ?,
              provider_customer_id = ?,
              status = ?,
-             price_id = ?,
+             price_id = COALESCE(?, price_id),
              product = COALESCE(?, product),
              current_period_end = ?,
              cancel_at_period_end = ?,
+             pending_price_id = ?,
+             pending_effective_at = ?,
              provider_occurred_at = ?,
              updated_at = ?
            WHERE provider_subscription_id = ?`,
@@ -746,10 +814,12 @@ async function applySubscriptionState(
           row.userId,
           row.customerId,
           row.status,
-          row.priceId,
+          nextPriceId,
           row.product,
           periodEnd,
           cancelAtPeriodEnd,
+          pendingPriceId,
+          pendingEffectiveAt,
           row.occurredAt,
           row.now,
           row.subscriptionId,

@@ -1,6 +1,7 @@
 /** Server-authoritative plan limits. Frontend claims are never trusted. */
 
 import type { R2KeyClass } from "./tokens";
+import { settlePendingPlanChanges } from "./billing/pending";
 
 /** Covers 4K/5K PNG screenshots. Not Catbox-scale; Workers still buffer+strip. */
 export const FREE_MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
@@ -223,6 +224,7 @@ export async function entitlementsFor(
   userId: string,
 ): Promise<Entitlements> {
   const flags = flagsFromEnv(env);
+  await settlePendingPlanChanges(env.DB, { userId });
   const subscription = await loadSubscription(env.DB, userId);
   return resolveEntitlements({ userId, subscription, flags });
 }
