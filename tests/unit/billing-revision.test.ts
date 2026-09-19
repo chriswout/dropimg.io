@@ -190,8 +190,12 @@ describe("dunningEmail", () => {
       productLabel: "Web Assets Developer — $9.00/month",
       manageUrl: "https://www.paypal.com/myaccount/autopay",
     });
-    expect(msg.subject).toBe("Payment issue with your DropIMG subscription");
+    expect(msg.subject).toBe("We couldn't take your DropIMG payment");
     expect(msg.text).toContain("Web Assets Developer");
     expect(msg.text).not.toMatch(/urgent|immediately|legal action/i);
+    expect(msg.html).toContain("https://dropimg.io/brand/logo-64.png");
+    expect(msg.html).toContain("Update payment in PayPal");
+    expect(msg.html).not.toMatch(/paid access|needs attention/i);
   });
 });
+

@@ -540,6 +540,64 @@ describe("PayPal billing webhook", () => {
     expect(payments?.amount).toBe("2.99");
     expect(payments?.currency).toBe("EUR");
     expect(payments?.status).toBe("paid");
+    const receipts = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM billing_notifications
+       WHERE event_id = ? AND notification_type = 'payment_receipt'`,
+    )
+      .bind("WH-hist-sale")
+      .first<{ n: number }>();
+    expect(Number(receipts?.n)).toBe(1);
+  });
+
+  it("records a refunded payment and one refund receipt notice", async () => {
+    const { env, now } = await seedUser("refund@example.com");
+    await signedRequest(
+      JSON.stringify({
+        id: "WH-ref-act",
+        event_type: "BILLING.SUBSCRIPTION.ACTIVATED",
+        create_time: isoFromUnix(now),
+        resource: subscriptionResource({ id: "I-ref" }),
+      }),
+    );
+    await signedRequest(
+      JSON.stringify({
+        id: "WH-ref-sale",
+        event_type: "PAYMENT.SALE.COMPLETED",
+        create_time: isoFromUnix(now),
+        resource: {
+          id: "SALEREF1",
+          custom: USER_ID,
+          billing_agreement_id: "I-ref",
+          amount: { total: "2.99", currency: "EUR" },
+        },
+      }),
+    );
+    const refund = JSON.stringify({
+      id: "WH-ref-back",
+      event_type: "PAYMENT.SALE.REFUNDED",
+      create_time: isoFromUnix(now + 10),
+      resource: {
+        id: "SALEREF1",
+        custom: USER_ID,
+        billing_agreement_id: "I-ref",
+        amount: { total: "2.99", currency: "EUR" },
+      },
+    });
+    expect((await signedRequest(refund)).status).toBe(200);
+    expect((await signedRequest(refund)).status).toBe(200);
+    const row = await env.DB.prepare(
+      `SELECT status FROM billing_payments WHERE provider_transaction_id = ?`,
+    )
+      .bind("SALEREF1")
+      .first<{ status: string }>();
+    expect(row?.status).toBe("refunded");
+    const notes = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM billing_notifications
+       WHERE event_id = ? AND notification_type = 'payment_refunded'`,
+    )
+      .bind("WH-ref-back")
+      .first<{ n: number }>();
+    expect(Number(notes?.n)).toBe(1);
   });
 
   it("sends one failed-payment notification and ignores replay", async () => {

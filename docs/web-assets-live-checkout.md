@@ -73,7 +73,8 @@ See also [paypal-subscription-lifecycle.md](paypal-subscription-lifecycle.md).
 ### H–I. Receipts and failed payment
 
 21. Re-check payment history after subscribe. A webhook replay must not
-    duplicate the row.
+    duplicate the row. Confirm one `payment_receipt` notification is recorded
+    (this is a receipt, not an invoice).
 22. Failed-payment handling: only where PayPal sandbox can safely simulate
     `PAYMENT.FAILED` / `SUSPENDED`. Confirm one dunning email attempt is
     recorded in `billing_notifications` and a replay does not insert a second

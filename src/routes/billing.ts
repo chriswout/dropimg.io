@@ -10,7 +10,7 @@ import {
   reserveCheckout,
 } from "../lib/billing/checkout-guard";
 import { billingLog } from "../lib/billing/log";
-import { maybeSendDunningEmail } from "../lib/billing/notifications";
+import { maybeSendDunningEmail, maybeSendReceiptEmail } from "../lib/billing/notifications";
 import { recordPaymentFromSaleEvent } from "../lib/billing/payments";
 import { getSubscriptionEntitlementState } from "../lib/billing/lifecycle";
 import {
@@ -600,7 +600,9 @@ billingRoutes.post("/api/billing/paypal/webhook", async (c) => {
   }
 
   const resource = event.resource;
-  const subId = strFrom(resource.id) || strFrom(resource.billing_agreement_id);
+  const subId = event.event_type.startsWith("PAYMENT.SALE.")
+    ? strFrom(resource.billing_agreement_id) || strFrom(resource.id)
+    : strFrom(resource.id) || strFrom(resource.billing_agreement_id);
   const previous = subId
     ? await c.env.DB.prepare(
         `SELECT status, user_id, product, price_id FROM subscriptions
@@ -646,6 +648,7 @@ billingRoutes.post("/api/billing/paypal/webhook", async (c) => {
   const userId = upserted.userId || previous?.user_id || strFrom(resource.custom_id) || strFrom(resource.custom);
   const manageUrl = createPortalUrl(asBillingEnv(c.env)) || "https://www.paypal.com/myaccount/autopay";
   const mappedStatus = upserted.status?.toLowerCase() || status;
+  const saleTxnId = strFrom(resource.id) || strFrom(resource.sale_id);
 
   billingLog("webhook", {
     userId,
@@ -656,6 +659,28 @@ billingRoutes.post("/api/billing/paypal/webhook", async (c) => {
     transition: event.event_type,
     result: mappedStatus,
   });
+
+  if (event.event_type === "PAYMENT.SALE.COMPLETED") {
+    await maybeSendReceiptEmail(c.env, c.env.DB, {
+      eventId: event.id,
+      kind: "paid",
+      userId,
+      subscriptionId: upserted.subscriptionId || subId,
+      transactionId: saleTxnId,
+      now,
+    });
+  }
+
+  if (event.event_type === "PAYMENT.SALE.REFUNDED") {
+    await maybeSendReceiptEmail(c.env, c.env.DB, {
+      eventId: event.id,
+      kind: "refunded",
+      userId,
+      subscriptionId: upserted.subscriptionId || subId,
+      transactionId: saleTxnId,
+      now,
+    });
+  }
 
   if (
     event.event_type === "BILLING.SUBSCRIPTION.PAYMENT.FAILED" ||

@@ -111,5 +111,6 @@ The return URL never grants access.
 | Reactivate | **Not offered** for cancelled rows (PayPal cannot activate them). Suspended: send the buyer to PayPal to fix payment. |
 | Payment method | PayPal wallet only (`Manage payment in PayPal`). No vault. |
 | Payment history | Durable `billing_payments` rows from sale webhooks (hybrid: portal may backfill from the transactions API). Labeled **Payment history / Receipts**, not invoices. |
+| Receipt email | Branded receipt on `PAYMENT.SALE.COMPLETED`, refund notice on `PAYMENT.SALE.REFUNDED`. Never labeled invoice — PayPal Subscriptions do not return invoice objects. |
 | Dunning | Transactional email via the existing Cloudflare `EMAIL` binding. Deduped on `(provider, event_id, notification_type)`. Delivery is not guaranteed. |
 | Catalogs | Drops Pro and Web Assets never share SKUs, plan ids, entitlements, history, or revise logic. |

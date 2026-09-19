@@ -659,7 +659,7 @@ export async function upsertSubscriptionFromEvent(
     return { userId, subscriptionId, product, priceId, status };
   }
 
-  if (eventType === "PAYMENT.SALE.COMPLETED") {
+  if (eventType.startsWith("PAYMENT.SALE.")) {
     const subscriptionId = str(resource.billing_agreement_id);
     const customerId = str(asRecord(resource.payer)?.payer_id) || subscriberId(resource);
     let userId = customUserId(resource);
@@ -674,29 +674,28 @@ export async function upsertSubscriptionFromEvent(
         .first<{ user_id: string }>();
       userId = existing?.user_id ?? null;
     }
-    if (!userId || !subscriptionId) {
-      return { userId, subscriptionId, product: null, priceId: null, status: null };
+    if (eventType === "PAYMENT.SALE.COMPLETED" && userId && subscriptionId) {
+      /**
+       * A sale names who paid but not the billing period, so it only
+       * establishes the link and never overwrites a status the subscription
+       * events have already settled.
+       */
+      await applySubscriptionState(db, {
+        userId,
+        customerId,
+        subscriptionId,
+        status: "active",
+        priceId: null,
+        product: null,
+        periodEnd: null,
+        cancelAtPeriodEnd: 0,
+        occurredAt,
+        now,
+        authoritative: false,
+      });
+      return { userId, subscriptionId, product: null, priceId: null, status: "active" };
     }
-
-    /**
-     * A sale names who paid but not the billing period, so it only
-     * establishes the link and never overwrites a status the subscription
-     * events have already settled.
-     */
-    await applySubscriptionState(db, {
-      userId,
-      customerId,
-      subscriptionId,
-      status: "active",
-      priceId: null,
-      product: null,
-      periodEnd: null,
-      cancelAtPeriodEnd: 0,
-      occurredAt,
-      now,
-      authoritative: false,
-    });
-    return { userId, subscriptionId, product: null, priceId: null, status: "active" };
+    return { userId, subscriptionId, product: null, priceId: null, status: null };
   }
 
   return {
