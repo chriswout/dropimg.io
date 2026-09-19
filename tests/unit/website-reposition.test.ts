@@ -97,9 +97,11 @@ describe("homepage Web Assets reposition (KON-79)", () => {
 
   it("shows a replacement story with real assets instead of a path list", () => {
     expect(html).toContain("story-swap");
-    expect(html).toContain("stable-v-label");
     expect(html).toContain("Version 12 · AVIF");
     expect(html).toContain("Version 13 · WebP");
+    expect(html).not.toContain("stable-v-label");
+    expect(html).not.toContain(">v12<");
+    expect(html).not.toContain(">v13<");
     expect(html).toContain("https://dropimg.io/m/o9eamt653257/website/marketing/home/hero-v1");
     expect(html).toContain("https://dropimg.io/m/o9eamt653257/website/marketing/home/hero-v2");
     expect(html).not.toContain("path-examples");

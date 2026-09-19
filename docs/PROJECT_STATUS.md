@@ -1,6 +1,6 @@
 # DropIMG Project Status
 
-Canonical snapshot as of **paid Web Assets production launch** on `main`. Prefer this file over git history and over [`docs/plans/media-backend-for-ai-websites.md`](plans/media-backend-for-ai-websites.md).
+Canonical snapshot as of **2026-09-19** on `main` (pre-launch hardening). Prefer this file over git history and over [`docs/plans/media-backend-for-ai-websites.md`](plans/media-backend-for-ai-websites.md).
 
 ---
 
@@ -41,7 +41,7 @@ One Cloudflare Worker ([`src/index.ts`](../src/index.ts)): Hono app + OAuth prov
 | Plane | Identity | Storage | Delivery | Cleanup |
 |---|---|---|---|---|
 | Drops | Optional `users.id`; integration tokens `dropimg_it_*` / `dropimg_api_*` | `images` + R2 `o/{24h\|7d\|30d\|pro}/…` | `/:slug.ext`, `/i/:slug`, share `/:slug` | D1 `expires_at` + cron + R2 lifecycle on `o/` prefixes |
-| Media | Personal org + project; keys `dropimg_pk_*`; MCP intents `dropimg_ui_*` | `assets` / `asset_versions` / `asset_aliases` + R2 `p/…/original` | `GET /m/…` | Soft-delete + immediate R2 delete of that asset’s originals. No cron, no R2 lifecycle on `p/` |
+| Web Assets | Personal org + project; keys `dropimg_pk_*`; MCP intents `dropimg_ui_*` | `assets` / `asset_versions` / `asset_aliases` + R2 `p/…/original` | `GET /m/…` | Soft-delete + immediate R2 delete of that asset’s originals. No cron, no R2 lifecycle on `p/` |
 
 Auth for humans is passwordless (magic link, Google, GitHub). Billing is PayPal REST Subscriptions. Two products, never mixed:
 
@@ -60,19 +60,19 @@ Paid Web Assets are **live** on `https://dropimg.io`.
 
 | Item | Value |
 |---|---|
-| Feature commit | `45cb22f987777fa91101b67843215d871037aa5e` |
-| Worker version | `9f9f0c07-9f1a-438c-a246-1d27f33cff87` (2026-09-17T12:50:08Z) |
+| Repo snapshot | 2026-09-19 pre-launch hardening on `main` |
+| Production Worker | `e74b3390-5517-437c-be90-7f980149652f` (2026-09-19T15:44:25Z) — branded receipts/dunning. Later `main` commits may not be in this Worker until the next production deploy. |
 | Production D1 | `0adba959-a9d1-42ee-af0c-e62f96e3e0c1` (`dropimg`) |
-| Applied migrations | `0001`–`0016` (including `0013`, `0014`, `0015`, `0016_web_assets_billing`) |
+| Applied migrations | `0001`–`0017` (including `0016_web_assets_billing`, `0017_billing_portal`) |
 | Pre-migration snapshot | `.backup/prod-20260917-1249.sql` (gitignored), taken while D1 was still at `0012` |
 | `GET /api/site-config` | `mediaEnabled=true`, `mediaDeliveryEnabled=true`, `webAssetsCheckout=true` |
-| Deploy path | Local authenticated Wrangler (GitHub Actions Cloudflare token still fails KON-41) |
+| Deploy path | Local authenticated Wrangler for production (GitHub Actions Cloudflare token still fails KON-41). Push to `main` deploys staging. |
 
 ---
 
 ## Current Staging State
 
-Staging remains Media-on with PayPal sandbox Web Assets SKUs. Format expansion qualification on `https://dropimg-staging.christenwout.workers.dev` still stands (AVIF/ICO/SVG/WOFF2, sanitizer 422, replace MIME, `@font-face`).
+Staging remains Web Assets-on with PayPal sandbox Web Assets SKUs. Format expansion qualification on `https://dropimg-staging.christenwout.workers.dev` still stands (AVIF/ICO/SVG/WOFF2, sanitizer 422, replace MIME, `@font-face`).
 
 ---
 
@@ -81,7 +81,7 @@ Staging remains Media-on with PayPal sandbox Web Assets SKUs. Format expansion q
 | Flag | Development | Staging | Production | Gates |
 |---|---|---|---|---|
 | `MEDIA_ENABLED` | `false` | `true` | `true` | Legacy alias for control plane |
-| `MEDIA_CONTROL_PLANE_ENABLED` | `false` | `true` | `true` | `/api/v1/media/*`, `/app/media`, Media MCP tools, project keys, uploads |
+| `MEDIA_CONTROL_PLANE_ENABLED` | `false` | `true` | `true` | `/api/v1/media/*`, `/app/media`, Web Assets MCP tools, project keys, uploads |
 | `MEDIA_DELIVERY_ENABLED` | `false` | `true` | `true` | Public `GET /m/*` |
 | `BILLING_ENABLED` | `false` | `true` | `true` | PayPal checkout, sync, portal |
 | `LONG_TTL_ENABLED` | `false` | `true` | `true` | Expiry allowlist beyond legacy 24h |
@@ -134,6 +134,8 @@ Checkout:
 
 Drops Pro checkout (`POST /api/billing/checkout`) is unchanged.
 
+First-party portal: `/app/billing` (plans, deferred next-renewal PayPal `revise`, cancel renewal, payment history). Dunning and receipts go through Cloudflare EMAIL (`signin@dropimg.io`). Webhook list: [`docs/paypal.md`](paypal.md) and [`docs/paypal-subscription-lifecycle.md`](paypal-subscription-lifecycle.md).
+
 ---
 
 ## Completed
@@ -149,7 +151,8 @@ Paid Web Assets launch:
 - Project / storage / key / delivery quotas on app, REST, and MCP
 - Usage UI in `/app/media`; Drops vs Web Assets billing on `/app/billing`
 - Live pricing CTAs (`Start free` / `Choose Developer` / `Choose Pro`)
-- Production D1 `0013`–`0016`, Media flags on, Worker `9f9f0c07-9f1a-438c-a246-1d27f33cff87`
+- Production D1 `0013`–`0017`, Web Assets flags on
+- First-party `/app/billing` portal, payment history, dunning email, receipts, next-renewal plan revision
 
 ---
 
@@ -157,7 +160,7 @@ Paid Web Assets launch:
 
 **7. Paid Web Assets production launch**
 
-Local/CI gates at feature commit: **59 files, 434 tests, 0 failed**. Production Media is on. KON-60 marketplace is **not** started. KON-41 remains open.
+Local/CI gates at this snapshot: **509 Vitest tests, 0 failed**. Production Web Assets are on. Cursor plugin is in-repo (KON-84); marketplace submission is not complete. KON-41 and KON-82 remain open.
 
 ---
 
@@ -183,7 +186,7 @@ Local/CI gates at feature commit: **59 files, 434 tests, 0 failed**. Production 
 | Rank | Issue |
 |---|---|
 | LOW | Production moderation is shadow-only. |
-| INFORMATIONAL | Linear MCP is not connected in this environment; launch issues were not updated from here. |
+| INFORMATIONAL | Linear status lives in Linear. Do not infer issue state from this file. |
 
 Isolation (`images` / cron / `o/` vs media tables / `p/`) remains intact.
 
@@ -198,7 +201,7 @@ Isolation (`images` / cron / `o/` vs media tables / `p/`) remains intact.
 | `/pricing` | Live Web Assets plans + PayPal checkout for Developer/Pro |
 | `/developers` | Agent onboarding (Cursor / Claude Code / Codex / MCP) plus Drop API |
 | `/drops` | Dedicated temporary Drop page; homepage widget remains |
-| `/app/media` | Authenticated Media app + usage |
+| `/app/media` | Authenticated Web Assets app + usage |
 | `/app/billing` | Drops Pro and Web Assets shown separately |
 
 ---
@@ -234,9 +237,9 @@ R2 lifecycle JSON has **no** `p/` delete rule. Do not add one.
 
 ## Next Milestone
 
-**8. Cursor Marketplace plugin / KON-84** (first distribution target under KON-60). Canonical skill: [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md). Plugin manifest: [`.cursor-plugin/plugin.json`](../.cursor-plugin/plugin.json). Do not add a second MCP endpoint. Do not mark KON-60 / KON-83 / KON-85 / KON-86 complete from this pass.
+**8. Cursor Marketplace plugin / KON-84** (first distribution target under KON-60). Canonical skill: [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md). Plugin manifest: [`.cursor-plugin/plugin.json`](../.cursor-plugin/plugin.json). Plugin work is **in progress** in the repo. Do not add a second MCP endpoint. Do not mark KON-60 / KON-83 / KON-85 / KON-86 complete from a copy pass.
 
-Also remaining: mint a durable Cloudflare API token for Actions (KON-41). Live paid-plan charges still need a controlled confirmation when you want them. Marketplace submission is manual at [cursor.com/marketplace/publish](https://cursor.com/marketplace/publish) after local plugin validation.
+Also remaining: mint a durable Cloudflare API token for Actions (KON-41). Live paid-plan charges still need a controlled confirmation (KON-82). Marketplace submission is manual at [cursor.com/marketplace/publish](https://cursor.com/marketplace/publish) after local plugin validation.
 
 ### Explicitly Deferred
 

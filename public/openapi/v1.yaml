@@ -23,7 +23,8 @@ security:
   - bearerAuth: []
 tags:
   - name: Images
-  - name: Media
+  - name: Web Assets
+    description: Permanent application assets at stable `/m/...` aliases. REST paths remain `/api/v1/media`.
 paths:
   /api/v1/images:
     post:
@@ -136,17 +137,19 @@ paths:
           $ref: "#/components/responses/Forbidden"
   /api/v1/media/orgs:
     post:
-      tags: [Media]
+      tags: [Web Assets]
       summary: Bootstrap the signed-in user's personal organization
       operationId: bootstrapMediaOrg
-      security: []
+      description: Requires a signed-in browser session (`dropimg_session` cookie). Not available anonymously. Project keys cannot bootstrap an org.
+      security:
+        - sessionCookie: []
       responses:
         "200":
           description: Personal organization
         "401":
           $ref: "#/components/responses/Unauthorized"
     get:
-      tags: [Media]
+      tags: [Web Assets]
       summary: List organizations you can access
       operationId: listMediaOrgs
       responses:
@@ -159,14 +162,14 @@ paths:
         required: true
         schema: { type: string, format: uuid }
     get:
-      tags: [Media]
+      tags: [Web Assets]
       summary: List projects
       operationId: listMediaProjects
       responses:
         "200":
           description: Projects, including the public /m/{org}/{project}/ namespace URL
     post:
-      tags: [Media]
+      tags: [Web Assets]
       summary: Create a project
       operationId: createMediaProject
       requestBody:
@@ -188,7 +191,7 @@ paths:
         required: true
         schema: { type: string, format: uuid }
     get:
-      tags: [Media]
+      tags: [Web Assets]
       summary: List project keys (session only)
       operationId: listMediaProjectKeys
       description: Returns id, label, prefix, dates, and status. Never returns hashes or raw tokens.
@@ -196,7 +199,7 @@ paths:
         "200":
           description: Key metadata
     post:
-      tags: [Media]
+      tags: [Web Assets]
       summary: Create a project key
       operationId: createMediaProjectKey
       description: Raw `dropimg_pk_*` token is returned once.
@@ -213,7 +216,7 @@ paths:
           description: Key created
   /api/v1/media/projects/{projectId}/keys/{keyId}/revoke:
     post:
-      tags: [Media]
+      tags: [Web Assets]
       summary: Revoke a project key
       operationId: revokeMediaProjectKey
       parameters:
@@ -243,7 +246,7 @@ paths:
           keys are rejected with 400. Reusing the same key for a different
           operation returns 409.
     get:
-      tags: [Media]
+      tags: [Web Assets]
       summary: List live assets
       operationId: listMediaAssets
       responses:
@@ -259,7 +262,7 @@ paths:
                     items:
                       $ref: "#/components/schemas/MediaAsset"
     post:
-      tags: [Media]
+      tags: [Web Assets]
       summary: Upload a permanent Web Asset
       operationId: createMediaAsset
       description: >
@@ -294,14 +297,14 @@ paths:
         required: true
         schema: { type: string, format: uuid }
     get:
-      tags: [Media]
+      tags: [Web Assets]
       summary: Get an asset and its versions
       operationId: getMediaAsset
       responses:
         "200":
           description: Asset plus immutable versions (`?v=` URLs)
     delete:
-      tags: [Media]
+      tags: [Web Assets]
       summary: Soft-delete an asset
       operationId: deleteMediaAsset
       description: >
@@ -312,7 +315,7 @@ paths:
           description: Deleted
   /api/v1/media/assets/{assetId}/versions:
     post:
-      tags: [Media]
+      tags: [Web Assets]
       summary: Replace an asset (new immutable version, same alias)
       operationId: replaceMediaAsset
       parameters:
@@ -339,7 +342,7 @@ paths:
           description: Concurrent replace lost the alias race
   /api/v1/media/projects/{projectId}/intents:
     post:
-      tags: [Media]
+      tags: [Web Assets]
       summary: Create a short-lived upload intent
       operationId: createMediaUploadIntent
       description: >
@@ -367,7 +370,7 @@ paths:
           description: Intent with upload URL, method, headers, and expiry
   /api/v1/media/intents/{intentId}:
     post:
-      tags: [Media]
+      tags: [Web Assets]
       summary: Upload bytes for an intent
       operationId: executeMediaUploadIntent
       parameters:
@@ -394,7 +397,7 @@ paths:
           description: Intent already used
   /m/{orgSlug}/{projectSlug}/{path}:
     get:
-      tags: [Media]
+      tags: [Web Assets]
       summary: Public stable alias
       operationId: getMediaAlias
       description: >
@@ -424,13 +427,18 @@ paths:
         "200":
           description: Web Asset bytes (image, SVG, ICO, or font)
         "404":
-          description: Unknown, deleted, or Media disabled
+          description: Unknown, deleted, or Web Assets disabled
 components:
   securitySchemes:
     bearerAuth:
       type: http
       scheme: bearer
       bearerFormat: dropimg_api_
+    sessionCookie:
+      type: apiKey
+      in: cookie
+      name: dropimg_session
+      description: Signed-in browser session. Required for personal-org bootstrap.
   parameters:
     ImageId:
       name: id

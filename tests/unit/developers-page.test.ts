@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { DEVELOPERS_PAGE } from "../../marketing/developers";
 import { CHROME_WEB_STORE_URL, EXTENSION_PAGE } from "../../marketing/extension";
@@ -60,5 +63,19 @@ describe("developers and mcp product pages", () => {
     expect(ext).toContain(CHROME_WEB_STORE_URL);
     expect(ext).toContain(EXTENSION_PAGE.storeCta);
     expect(ext).not.toContain("coming soon");
+  });
+
+  it("labels OpenAPI Web Assets without a Media category", () => {
+    const spec = readFileSync(
+      join(dirname(fileURLToPath(import.meta.url)), "../../public/openapi/v1.yaml"),
+      "utf8",
+    );
+    expect(spec).toContain("- name: Web Assets");
+    expect(spec).not.toContain("- name: Media");
+    expect(spec).toContain("Requires a signed-in browser session");
+    expect(spec).toContain("sessionCookie");
+    expect(spec).toContain("operationId: createMediaAsset");
+    expect(spec).toContain("/api/v1/media/orgs");
+    expect(spec).not.toContain("Media disabled");
   });
 });

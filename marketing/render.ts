@@ -574,11 +574,11 @@ function homepageStoryHtml(copy: (typeof HOME)[Locale]): string {
                 <div class="story-swap">
                   <figure>
                     <img src="${esc(HOME_STORY_ASSETS.heroV1)}" width="1280" height="720" alt="${esc(copy.storyHeroV1Alt)}" decoding="async" fetchpriority="high" />
-                    <figcaption><span class="stable-v-label">v12</span> ${esc(copy.stableV1)}</figcaption>
+                    <figcaption>${esc(copy.stableV1)}</figcaption>
                   </figure>
                   <figure>
                     <img src="${esc(HOME_STORY_ASSETS.heroV2)}" width="1280" height="720" alt="${esc(copy.storyHeroV2Alt)}" decoding="async" />
-                    <figcaption><span class="stable-v-label">v13</span> ${esc(copy.stableV2)}</figcaption>
+                    <figcaption>${esc(copy.stableV2)}</figcaption>
                   </figure>
                 </div>
               </div>

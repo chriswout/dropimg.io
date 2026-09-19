@@ -15,6 +15,7 @@ test("homepage hero, nav, and dropzone stay usable on desktop", async ({
   ).toBeVisible();
   await expect(page.getByText("Version 12 · AVIF")).toBeVisible();
   await expect(page.getByText("Version 13 · WebP")).toBeVisible();
+  await expect(page.locator(".stable-v-label")).toHaveCount(0);
   await expect(page.getByText("/m/acme/site/homepage/hero").first()).toBeVisible();
   await expect(page.getByText("hero-v1.avif")).toHaveCount(0);
   const overflow = await page.evaluate(

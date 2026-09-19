@@ -32,23 +32,23 @@ app first, then again for **Live**.
 3. Webhook URL:
    - staging: `https://<staging-host>/api/billing/paypal/webhook`
    - production: `https://dropimg.io/api/billing/paypal/webhook`
-4. Subscribe at least:
+4. Subscribe at least (must match [paypal-subscription-lifecycle.md](paypal-subscription-lifecycle.md)):
 
    - `BILLING.SUBSCRIPTION.ACTIVATED`
    - `BILLING.SUBSCRIPTION.UPDATED`
    - `BILLING.SUBSCRIPTION.CANCELLED`
    - `BILLING.SUBSCRIPTION.EXPIRED`
    - `BILLING.SUBSCRIPTION.SUSPENDED`
-   - `PAYMENT.SALE.COMPLETED`
-
-   Optional for observability only (does not change entitlements):
-
-   - `BILLING.SUBSCRIPTION.PAYMENT.FAILED`
+   - `BILLING.SUBSCRIPTION.PAYMENT.FAILED` (dunning; does not change entitlement by itself)
+   - `PAYMENT.SALE.COMPLETED` (receipt)
+   - `PAYMENT.SALE.REFUNDED` (refund notice)
+   - `PAYMENT.SALE.DENIED` (observability)
 
 Copy the webhook id (`WH-…` / dashboard id) as `PAYPAL_WEBHOOK_ID`.
 
-The live catalog does not exist until you create it. Production keeps
-`BILLING_ENABLED=false` until then.
+Live catalog IDs are below. Production `wrangler.jsonc` sets
+`BILLING_ENABLED=true` and `PAYPAL_ENV=live`. Development stays
+`BILLING_ENABLED=false`.
 
 ## Sandbox catalog
 
@@ -125,8 +125,8 @@ npx wrangler secret put PAYPAL_CLIENT_SECRET --env staging
 npx wrangler secret put PAYPAL_WEBHOOK_ID --env staging
 ```
 
-Put the two plan ids and `PAYPAL_ENV=sandbox` in `env.staging.vars`. Repeat
-for production with `PAYPAL_ENV=live` once the live app and catalog exist.
+Put the two plan ids and `PAYPAL_ENV=sandbox` in `env.staging.vars`. Production
+already uses `PAYPAL_ENV=live` and the live plan IDs in `env.production.vars`.
 
 For local webhook work, integration tests (and only tests) can set
 `PAYPAL_WEBHOOK_SECRET` and omit `PAYPAL_WEBHOOK_ID`. That path accepts an
@@ -179,7 +179,12 @@ does not grant access.
 Account deletion is different: it cancels the PayPal subscription immediately
 and closes the account.
 
-## Failed payments
+## Sales, refunds, and failed payments
+
+`PAYMENT.SALE.COMPLETED` records payment history and may send a branded
+receipt. `PAYMENT.SALE.REFUNDED` records the refund and may send a refund
+notice. `PAYMENT.SALE.DENIED` is observability only. None of those sale events
+grant entitlement by themselves.
 
 PayPal retry exhaustion typically yields `SUSPENDED`. Suspended rows do **not**
 grant Drops Pro or a paid Web Assets plan. There is no `past_due` mapping.

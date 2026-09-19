@@ -5,7 +5,7 @@ Live DropIMG billing is **PayPal only**. See [paypal.md](paypal.md).
 
 This file distinguishes what PayPal’s API actually does from what DropIMG
 implements on top of it. Do not assume Stripe-style proration, invoices, or a
-customer portal.
+Stripe Customer Portal. `/app/billing` is DropIMG’s first-party PayPal portal.
 
 ## PAYPAL SUPPORTS
 

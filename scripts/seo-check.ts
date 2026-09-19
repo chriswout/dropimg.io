@@ -450,6 +450,9 @@ ok(`${intentPageCount} intent pages present`);
   }
   if (!home.includes("Version 12 · AVIF")) fail("homepage: missing version caption");
   if (home.includes("hero-v1.avif")) fail("homepage: versioned filename caption");
+  if (home.includes("stable-v-label") || home.includes(">v12<")) {
+    fail("homepage: duplicate version labels");
+  }
   if (!home.includes('id="dropzone"')) fail("homepage: missing dropzone");
   if (!home.includes("Drops vs Web Assets")) fail("homepage: missing comparison");
   if (!home.includes("WOFF2")) fail("homepage: missing font format");
