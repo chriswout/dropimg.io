@@ -221,6 +221,11 @@ else {
   const locs = extractAll(sm, /<loc>([^<]*)<\/loc>/g);
   const dup = locs.filter((u, i) => locs.indexOf(u) !== i);
   if (dup.length) fail(`sitemap duplicates: ${[...new Set(dup)].join(", ")}`);
+  const today = new Date().toISOString().slice(0, 10);
+  const lastmods = extractAll(sm, /<lastmod>([^<]*)<\/lastmod>/g);
+  if (!lastmods.includes(today)) {
+    fail(`sitemap lastmod is not the build date (${today})`);
+  }
   ok(`sitemap has ${locs.length} URLs`);
 }
 
@@ -405,9 +410,24 @@ ok(`${intentPageCount} intent pages present`);
     if (!html.includes("$29")) fail("pricing: missing Pro $29");
     if (!html.includes("$90/year")) fail("pricing: missing annual Developer");
     if (!html.includes("$290/year")) fail("pricing: missing annual Pro");
-    if (!html.includes("100K asset deliveries")) fail("pricing: missing Free deliveries");
+    if (!html.includes("100K deliveries")) fail("pricing: missing Free deliveries");
     if (/unlimited/i.test(html)) fail("pricing: must not say unlimited");
     ok("pricing page present");
+  }
+}
+
+{
+  const path = join(root, "mcp/index.html");
+  if (!existsSync(path)) fail("missing mcp/index.html");
+  else {
+    const html = readFileSync(path, "utf8");
+    if (!html.includes("Give your coding agent stable web assets.")) {
+      fail("mcp: missing Web Assets H1");
+    }
+    if (html.includes("Ask your agent for a temporary image URL")) {
+      fail("mcp: stale temporary-screenshot H1");
+    }
+    ok("mcp page present");
   }
 }
 
@@ -425,6 +445,11 @@ ok(`${intentPageCount} intent pages present`);
 {
   const home = readFileSync(join(root, "index.html"), "utf8");
   if (!home.includes("Your AI builds the site.")) fail("homepage: missing Web Assets H1");
+  if (!home.includes("Web Assets for AI Coding Agents | dropimg.io")) {
+    fail("homepage: title drift");
+  }
+  if (!home.includes("Version 12 · AVIF")) fail("homepage: missing version caption");
+  if (home.includes("hero-v1.avif")) fail("homepage: versioned filename caption");
   if (!home.includes('id="dropzone"')) fail("homepage: missing dropzone");
   if (!home.includes("Drops vs Web Assets")) fail("homepage: missing comparison");
   if (!home.includes("WOFF2")) fail("homepage: missing font format");

@@ -314,8 +314,8 @@ export const HOME: Record<Locale, HomeCopy> = {
     stableTitle: "Stable semantic URLs",
     stableBody: "Replace the file — even JPEG to AVIF — and the path stays put.",
     stablePath: "/m/acme/site/homepage/hero",
-    stableV1: "hero-v1.avif",
-    stableV2: "hero-v2.webp",
+    stableV1: "Version 12 · AVIF",
+    stableV2: "Version 13 · WebP",
     stableExamples: [
       "branding/logo",
       "branding/favicon",
@@ -458,8 +458,8 @@ export const HOME: Record<Locale, HomeCopy> = {
     stableTitle: "URLs semánticas estables",
     stableBody: "Sustituye el archivo — incluso de JPEG a AVIF — y el path se queda.",
     stablePath: "/m/acme/site/homepage/hero",
-    stableV1: "hero-v1.avif",
-    stableV2: "hero-v2.webp",
+    stableV1: "Version 12 · AVIF",
+    stableV2: "Version 13 · WebP",
     stableExamples: [
       "branding/logo",
       "branding/favicon",
@@ -602,8 +602,8 @@ export const HOME: Record<Locale, HomeCopy> = {
     stableTitle: "URLs semânticas estáveis",
     stableBody: "Troque o arquivo — até de JPEG para AVIF — e o path fica.",
     stablePath: "/m/acme/site/homepage/hero",
-    stableV1: "hero-v1.avif",
-    stableV2: "hero-v2.webp",
+    stableV1: "Version 12 · AVIF",
+    stableV2: "Version 13 · WebP",
     stableExamples: [
       "branding/logo",
       "branding/favicon",
@@ -746,8 +746,8 @@ export const HOME: Record<Locale, HomeCopy> = {
     stableTitle: "Stabile semantische URLs",
     stableBody: "Ersetze die Datei — auch JPEG durch AVIF — der Pfad bleibt.",
     stablePath: "/m/acme/site/homepage/hero",
-    stableV1: "hero-v1.avif",
-    stableV2: "hero-v2.webp",
+    stableV1: "Version 12 · AVIF",
+    stableV2: "Version 13 · WebP",
     stableExamples: [
       "branding/logo",
       "branding/favicon",

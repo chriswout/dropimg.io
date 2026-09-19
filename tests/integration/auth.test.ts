@@ -115,6 +115,19 @@ describe("Auth magic link", () => {
     expect(badBody.user).toBeNull();
   });
 
+  it("sends a signed-in visitor from Create project login next to /app/media", async () => {
+    const started = await startLogin("media-cta@example.com");
+    const cb = await worker.fetch(started.devMagicUrl!, { redirect: "manual" });
+    const cookie = cookieFrom(cb);
+
+    const bounce = await worker.fetch("https://dropimg.io/login?next=/app/media", {
+      headers: { Cookie: cookie },
+      redirect: "manual",
+    });
+    expect(bounce.status).toBe(302);
+    expect(bounce.headers.get("Location")).toBe("/app/media");
+  });
+
   it("rejects expired magic links", async () => {
     const started = await startLogin("expire@example.com");
     const env = await worker.getEnv();

@@ -27,7 +27,7 @@ Cursor
 
 ## Supported formats
 
-**Media / Web Assets:** JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, WOFF2.
+**Web Assets:** JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, WOFF2.
 
 **Drops (temporary):** PNG, JPEG, WebP, GIF.
 
@@ -37,7 +37,7 @@ Cursor
 
 1. Install **DropIMG Web Assets** from the Cursor Marketplace, or load this repository as a local plugin.
 2. Connect MCP. Cursor uses DropIMG's existing OAuth flow against `https://dropimg.io/mcp` (dynamic client registration). Sign in on dropimg.io when prompted.
-3. Create a Media project at [dropimg.io/app/media](https://dropimg.io/app/media) if you do not have one yet.
+3. Create a Web Assets project at [dropimg.io/app/media](https://dropimg.io/app/media) if you do not have one yet.
 
 You should not need to paste a token for a normal install.
 
@@ -49,9 +49,9 @@ Account API tokens (`dropimg_api_*`) work as a Bearer fallback if OAuth is unava
 
 Drops: `upload_image`, `get_image`, `list_images`, `delete_image`
 
-Media: `list_media_projects`, `create_media_project`, `list_media_assets`, `get_media_asset`, `upload_media_asset`, `replace_media_asset`
+Web Assets: `list_media_projects`, `create_media_project`, `list_media_assets`, `get_media_asset`, `upload_media_asset`, `replace_media_asset`
 
-Agent behavior lives in the DropIMG Web Assets skill. Media writes use upload intents — bytes go over HTTP, not JSON-RPC.
+Agent behavior lives in the DropIMG Web Assets skill. Web Assets writes use upload intents — bytes go over HTTP, not JSON-RPC.
 
 ## Security
 

@@ -22,12 +22,12 @@ export const DEVELOPERS_ONBOARDING = {
     "Create a Web Assets project — website",
     "Connect MCP at https://dropimg.io/mcp",
     "Ask the agent: Upload this logo as branding/logo.",
-    "Use the returned stable URL in the app",
+    "Use the returned stable URL in the app (not a ?v= snapshot)",
   ] as const,
   launchNote: "",
   cursorHeading: "Cursor",
   cursorBody:
-    "Add the DropIMG MCP server (https://dropimg.io/mcp). Cursor opens OAuth after install. Ask the agent to create a project, then upload branding/logo as a Web Asset. Do not invent a /m/… URL — use the JSON url after the HTTP upload.",
+    "Add the DropIMG MCP server (https://dropimg.io/mcp). Cursor opens OAuth after install. Ask the agent to create a project, then upload branding/logo as a Web Asset. Do not invent a /m/… URL — use the JSON url (stable alias) after the HTTP upload. Pin ?v= only when you need immutable historical bytes.",
   cursorCta: "Add to Cursor",
   claudeHeading: "Claude Code",
   claudeBody:

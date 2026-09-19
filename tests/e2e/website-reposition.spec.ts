@@ -13,6 +13,10 @@ test("homepage hero, nav, and dropzone stay usable on desktop", async ({
   await expect(
     page.getByRole("heading", { name: /Give your coding agent permanent web assets/i }),
   ).toBeVisible();
+  await expect(page.getByText("Version 12 · AVIF")).toBeVisible();
+  await expect(page.getByText("Version 13 · WebP")).toBeVisible();
+  await expect(page.getByText("/m/acme/site/homepage/hero").first()).toBeVisible();
+  await expect(page.getByText("hero-v1.avif")).toHaveCount(0);
   const overflow = await page.evaluate(
     () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
   );
@@ -50,6 +54,13 @@ test("pricing and web-assets pages render launch-safe CTAs", async ({ page }) =>
   await expect(page.getByRole("button", { name: "Web Assets" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Drops" })).toBeVisible();
   await expect(page.locator(".code-box").first()).toBeVisible();
+
+  await page.goto("/mcp");
+  await expect(
+    page.getByRole("heading", { name: /Give your coding agent stable web assets/i }),
+  ).toBeVisible();
+  await expect(page.getByText("Temporary Drops are available from the same MCP server.")).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Ask your agent for a temporary image URL/i })).toHaveCount(0);
 });
 
 for (const width of [390, 768, 1280] as const) {

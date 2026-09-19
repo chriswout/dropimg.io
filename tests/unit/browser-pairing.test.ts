@@ -13,12 +13,17 @@ describe("browser pairing helpers", () => {
     expect(PAIRING_HANDOFF_TTL_SECONDS).toBe(60);
   });
 
-  it("allows only the pairing approval path as a login next", () => {
+  it("allows pairing, OAuth, and first-party app screens as login next", () => {
     const id = "11111111-2222-4333-8444-555555555555";
     expect(safeNextPath(`/connect/browser/${id}`)).toBe(`/connect/browser/${id}`);
     expect(safeNextPath("/connect/browser/not-a-uuid")).toBeNull();
     expect(safeNextPath("/connect/browser/../../admin")).toBeNull();
     expect(safeNextPath("/app/integrations")).toBeNull();
+    expect(safeNextPath("/app/media")).toBe("/app/media");
+    expect(safeNextPath("/app")).toBe("/app");
+    expect(safeNextPath("/pricing")).toBe("/pricing");
+    expect(safeNextPath("/app/media?x=1")).toBeNull();
+    expect(safeNextPath("https://evil.example/app/media")).toBeNull();
     expect(safeNextPath("/oauth/authorize?client_id=x")).toContain("/oauth/authorize");
   });
 

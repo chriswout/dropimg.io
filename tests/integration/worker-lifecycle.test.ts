@@ -160,6 +160,21 @@ describe("Worker integration", () => {
     expect(res.headers.get("Location")).toBe("https://dropimg.io/privacy");
   });
 
+  it("301s legal .html URLs onto the extensionless canonicals", async () => {
+    for (const [from, to] of [
+      ["/privacy.html", "/privacy"],
+      ["/terms.html", "/terms"],
+      ["/contact.html", "/contact"],
+      ["/refunds.html", "/refunds"],
+    ] as const) {
+      const res = await worker.fetch(`https://dropimg.io${from}`, {
+        redirect: "manual",
+      });
+      expect(res.status, from).toBe(301);
+      expect(res.headers.get("Location"), from).toBe(to);
+    }
+  });
+
   it("does not upgrade localhost http", async () => {
     const res = await worker.fetch("http://127.0.0.1/health", {
       redirect: "manual",

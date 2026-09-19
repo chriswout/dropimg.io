@@ -14,7 +14,7 @@ Unprotected drops copy a **direct image URL** with the real extension (`https://
 
 Drops do **not** accept SVG, AVIF, ICO, or fonts.
 
-### DropIMG Media (Web Assets)
+### DropIMG Web Assets
 
 Permanent **Web Asset infrastructure** for AI-built websites and applications. Broader than an image host, narrower than a blob store:
 
@@ -85,7 +85,7 @@ Staging remains Media-on with PayPal sandbox Web Assets SKUs. Format expansion q
 | `MEDIA_DELIVERY_ENABLED` | `false` | `true` | `true` | Public `GET /m/*` |
 | `BILLING_ENABLED` | `false` | `true` | `true` | PayPal checkout, sync, portal |
 | `LONG_TTL_ENABLED` | `false` | `true` | `true` | Expiry allowlist beyond legacy 24h |
-| `PRO_50MB_ENABLED` | `false` | `true` | `false` | Drop Pro 50MB upload cap |
+| `PRO_50MB_ENABLED` | `false` | `true` | `false` | Drops Pro 50MB upload cap |
 | `MODERATION_ENABLED` | `false` | `false` | `true` | Post-strip Workers AI classify |
 | `MODERATION_ENFORCE` | `false` | `false` | `false` | Hard-block vs shadow |
 | `UGC_SHARE_ADS_ENABLED` | `false` | `false` | `false` | Ads on share pages |
@@ -96,7 +96,7 @@ Do **not** set `MEDIA_DELIVERY_ENABLED=false` to stop new uploads. That would 40
 
 Emergency rollback:
 
-1. `MEDIA_CONTROL_PLANE_ENABLED=false` — stops projects, uploads, replacements, keys, MCP Media writes, `/app/media`
+1. `MEDIA_CONTROL_PLANE_ENABLED=false` — stops projects, uploads, replacements, keys, MCP Web Assets writes, `/app/media`
 2. Keep `MEDIA_DELIVERY_ENABLED=true` — existing public aliases keep serving
 
 Covered by [`tests/integration/media-delivery-rollback.test.ts`](../tests/integration/media-delivery-rollback.test.ts).
@@ -132,7 +132,7 @@ Checkout:
 - Monthly and annual supported
 - Entitlement flips only after verified webhook (`product = web_assets`, plan id mapped in env)
 
-Drop Pro checkout (`POST /api/billing/checkout`) is unchanged.
+Drops Pro checkout (`POST /api/billing/checkout`) is unchanged.
 
 ---
 

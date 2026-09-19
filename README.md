@@ -98,12 +98,12 @@ npx wrangler r2 bucket lifecycle add dropimg-images --name expire-o-prefix --pre
 - Choose 1 hour, 24 hours, 7 days, or 30 days (default 7 days), 25 MB, PNG / JPEG / WebP / GIF (no SVG)
 - Share pages are `noindex`
 
-**DropIMG Pro** (€2.99/mo or €24.99/yr — save 30%, $2.08/mo billed annually)
+**Drops Pro** (€2.99/mo or €24.99/yr — save 30%, $2.08/mo billed annually)
 
 - Links up to 180 days, password protection, My drops history, extension + ShareX account uploads, ad-free
 - 50 MB uploads only when `PRO_50MB_ENABLED` is on (off in production)
 - Drops stay temporary. Permanent files are Web Assets.
 
-Optional passwordless accounts (`/login`, `/app`, `/account`) are live. Temporary Drops stay free; Drop Pro is €2.99/month. Permanent Web Assets are a separate Free / Developer / Pro product — see [pricing](https://dropimg.io/pricing).
+Optional passwordless accounts (`/login`, `/app`, `/account`) are live. Temporary Drops stay free; Drops Pro is €2.99/month. Permanent Web Assets are a separate Free / Developer / Pro product — see [pricing](https://dropimg.io/pricing).
 
 ShareX authenticated uploads stay on a 25 MB multipart cap. Extension image passwords are deferred.

@@ -140,8 +140,8 @@
           <h2>Semantic paths</h2>
           <p>Aliases are extensionless and named for the role they play. The application references the path, not a version UUID.</p>
           <p class="demo-url"><code>/m/acme/site/branding/logo</code></p>
-          <h2>Immutable versions, stable aliases</h2>
-          <p>Each replace writes a new object and version row. The public URL stays the same. MIME may change: an SVG logo can become a PNG.</p>
+          <h2>Stable alias vs immutable version</h2>
+          <p>Put the normal /m/… alias in application code — &lt;img&gt;, favicons, CSS, @font-face. Replacing the file changes the bytes; the URL stays. ?v={versionId} is an immutable snapshot for audits, reproducible builds, and old deploys. Default to the alias. Do not pin a version URL just to avoid caching. MIME may change on replace: an SVG logo can become a PNG.</p>
           <h2>Supported formats</h2>
           <ul>
               <li>Raster: JPEG, PNG, WebP, GIF, AVIF</li>

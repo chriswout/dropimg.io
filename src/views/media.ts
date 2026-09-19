@@ -71,7 +71,7 @@ export function mediaHtmlResponse(opts: {
         <h3>REST</h3>
         <p>Create a project, mint a <code>dropimg_pk_*</code> key, then:</p>
         <pre id="media-rest-snippet" class="media-snippet"></pre>
-        <p>Replacement keeps the same <code>/m/…</code> URL. Delete the asset before you can close the account if this is your last live file.</p>
+        <p>Put the stable <code>/m/…</code> alias in application code. <code>?v={versionId}</code> is an immutable snapshot for audits, reproducible builds, and old deploys — not the default. Replacement keeps the same alias. Delete the asset before you can close the account if this is your last live file.</p>
       </div>
     </section>
     <div id="media-token-modal" class="modal" hidden>

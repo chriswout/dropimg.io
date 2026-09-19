@@ -41,8 +41,9 @@ import {
 } from "../marketing/render";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
-const LASTMOD = "2026-09-16";
-const LEGAL_LASTMOD = "2026-08-29";
+/** Sitemap lastmod for marketing pages — the UTC date this generator ran. */
+const LASTMOD = new Date().toISOString().slice(0, 10);
+const LEGAL_LASTMOD = "2026-09-19";
 
 function htmlOutPath(pageId: PageId, locale: (typeof LOCALES)[number]): string {
   const dir = pageDir(pageId, locale);

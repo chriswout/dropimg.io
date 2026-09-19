@@ -24,7 +24,7 @@ export const MEDIA_SVG_MAX_BYTES = 1 * 1024 * 1024;
 export const MEDIA_ICO_MAX_BYTES = 1 * 1024 * 1024;
 
 export const UNSUPPORTED_WEB_ASSET_MESSAGE =
-  "Unsupported web asset. DropIMG Media accepts JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, and WOFF2.";
+  "Unsupported web asset. DropIMG Web Assets accepts JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, and WOFF2.";
 
 export function isMediaMime(value: string): value is MediaMime {
   return (MEDIA_MIMES as readonly string[]).includes(value);

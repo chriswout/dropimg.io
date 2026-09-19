@@ -4,9 +4,9 @@ description: >-
   Use DropIMG whenever a coding agent needs to upload, host, add, reference,
   or replace a visual asset: website/app images, logos, heroes, favicons,
   illustrations, product images, SVGs, or WOFF/WOFF2 fonts, and whenever a
-  temporary screenshot or image needs a shareable URL. Choose permanent Media
-  when the file will be referenced by application code, temporary Drops for
-  disposable human sharing, and replace an existing Media asset instead of
+  temporary screenshot or image needs a shareable URL. Choose permanent Web
+  Assets when the file will be referenced by application code, temporary Drops
+  for disposable human sharing, and replace an existing Web Asset instead of
   changing its stable application URL.
 ---
 
@@ -24,18 +24,18 @@ Account/OAuth credentials can list and create projects. A project key is one pro
 | Screenshot for GitHub issue | **Drop** |
 | Image pasted into chat / Slack | **Drop** |
 | Debugging / disposable visual | **Drop** |
-| Logo used by the website | **Media** |
-| Homepage hero | **Media** |
-| Product photo in the app | **Media** |
-| favicon.ico | **Media** |
-| logo.svg | **Media** |
-| Inter.woff2 (or other WOFF/WOFF2) | **Media** |
+| Logo used by the website | **Web Assets** |
+| Homepage hero | **Web Assets** |
+| Product photo in the app | **Web Assets** |
+| favicon.ico | **Web Assets** |
+| logo.svg | **Web Assets** |
+| Inter.woff2 (or other WOFF/WOFF2) | **Web Assets** |
 | PDF brochure | **unsupported** |
 | ZIP / archive | **unsupported** |
 | Video, audio, HTML, JS, CSS, EXE | **unsupported** |
 | Private API credential / secret | **unsupported** — `/m/...` is public |
 
-If the file will be **referenced by application or site code**, it is Media.
+If the file will be **referenced by application or site code**, it is a Web Asset.
 If it is a **temporary share for humans** (issue, PR, Slack, debug), it is a Drop.
 
 ## Killer workflow: replace, don't mint a new URL
@@ -56,7 +56,7 @@ If intent is ambiguous ("upload another hero" while `homepage/hero` exists), **a
 
 ## Formats
 
-**Media (Web Assets):** JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, WOFF2.
+**Web Assets:** JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, WOFF2.
 
 **Drops:** PNG, JPEG, WebP, GIF only. No SVG.
 
@@ -72,15 +72,15 @@ On unsupported: explain once and stop. Do not retry with misleading MIME types. 
 
 `upload_image` takes workspace bytes as base64 / data URL. That flow is Drop-only.
 
-### Media (permanent)
+### Web Assets (permanent)
 
 `list_media_projects` · `create_media_project` · `list_media_assets` · `get_media_asset` · `upload_media_asset` · `replace_media_asset`
 
 No `upload_svg` / `upload_font` / `upload_avif`. HTTP ingest detects the type.
 
-## Media write path (mandatory)
+## Web Assets write path (mandatory)
 
-Never put Media binaries or base64 in MCP JSON-RPC.
+Never put Web Asset binaries or base64 in MCP JSON-RPC.
 
 Create:
 
@@ -105,15 +105,33 @@ Without `confirm: true`, replacement is refused. Retry with confirm only when th
 
 Intents are one-use, ~10 minutes. Expired/replayed intent → mint a fresh one. Do not reuse.
 
-## Stable alias invariant
+## Stable alias vs immutable version
 
-Aliases look like `/m/{org}/{project}/{path}`.
+Use only URLs DropIMG returns. Never invent `/m/...` paths or guess org/project/path from filenames.
 
-Use only the URL returned by DropIMG. The alias is server-owned and stable across replacements, so constructing or rewriting it can break project isolation and defeats the replacement workflow.
+### Stable alias
 
-- Never invent `/m/...` paths.
-- Never guess org/project/path from filenames.
-- Use the upload HTTP `url` or `get_media_asset`.
+Use the normal `/m/...` asset URL (`url` in JSON) in application code.
+
+Example: `https://dropimg.io/m/acme/site/homepage/hero`
+
+The alias is intentionally mutable. Replacing the asset changes the bytes served at this URL while the URL itself stays the same.
+
+Use it for `<img>`, favicons, CSS references, `@font-face`, and normal application assets.
+
+### Immutable version
+
+Use the versioned URL (`versionUrl`, or `url` + `?v={versionId}`) when the caller needs the exact historical bytes to never change: audit/history, reproducible builds, debugging an old deployment, snapshots, comparing previous versions.
+
+Versioned URLs must remain immutable. Do not strip `?v=`.
+
+### Agent rule
+
+Default to the stable alias for application code.
+
+Use an immutable version URL only when the user explicitly needs fixed historical content or reproducibility.
+
+Do not replace a stable alias with a version URL in normal app code just to avoid caching.
 
 ## Project scope
 
@@ -126,7 +144,7 @@ Always pass `project_id`. There is no implicit project.
 - Cross-project probing is forbidden.
 - Revoked/expired credentials → stop and request valid auth. Do not work around auth.
 
-## Path names (new Media assets)
+## Path names (new Web Assets)
 
 Semantic role, no extension required:
 

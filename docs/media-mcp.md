@@ -1,26 +1,28 @@
-# DropIMG Media — MCP
+# DropIMG Web Assets — MCP
 
 One server: `https://dropimg.io/mcp`. There is no second MCP endpoint.
 
-Media is permanent **Web Assets** for application code. Temporary screenshots, debugging, and tickets use Drop tools.
+Web Assets are permanent files for application code. Temporary screenshots, debugging, and tickets use Drop tools.
 
 | Job | Plane | Tool |
 |---|---|---|
 | Screenshot for a bug report | Drop | `upload_image` |
-| Logo used by a website | Media | `upload_media_asset` |
-| Hero image in generated code | Media | `upload_media_asset` |
-| Favicon | Media | `upload_media_asset` (`path` like `favicon`) |
-| Web font (WOFF/WOFF2) | Media | `upload_media_asset` (`path` like `fonts/inter`) |
+| Logo used by a website | Web Assets | `upload_media_asset` |
+| Hero image in generated code | Web Assets | `upload_media_asset` |
+| Favicon | Web Assets | `upload_media_asset` (`path` like `favicon`) |
+| Web font (WOFF/WOFF2) | Web Assets | `upload_media_asset` (`path` like `fonts/inter`) |
 | PDF download | — | unsupported |
 | ZIP / archive | — | unsupported |
 
-The agent must **never invent** a `/m/...` URL. Read the `url` from the HTTP upload JSON or `get_media_asset`.
+The agent must **never invent** a `/m/...` URL. Read the `url` from the HTTP upload JSON or `get_media_asset`. That `url` is the **stable alias** — put it in application code (`<img>`, favicons, CSS, `@font-face`). Replacing the asset changes the bytes; the alias does not.
 
-Supported Media bytes: JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, WOFF2. There are no format-specific tools (`upload_svg`, `upload_font`, …). The HTTP ingest path detects the type.
+`version_id` identifies an immutable snapshot (`/m/...?v={versionId}`). Use a versioned URL only when the user explicitly needs historical bytes (audit, reproducible build, old deploy). Do not pin `?v=` in normal app code to avoid caching.
+
+Supported Web Assets bytes: JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, WOFF2. There are no format-specific tools (`upload_svg`, `upload_font`, …). The HTTP ingest path detects the type.
 
 ## Auth
 
-| Token | Media | Drops |
+| Token | Web Assets | Drops |
 |---|---|---|
 | OAuth / `dropimg_api_*` | Yes, across the user’s projects (explicit `project_id`) | Yes |
 | `dropimg_pk_*` | Yes, that project only | Missing image scopes |
@@ -55,8 +57,8 @@ Asset responses look like:
 
 1. Call `upload_media_asset` with `project_id` and `path` (no file extension required).
 2. POST bytes to `upload_url` (`Content-Type: application/octet-stream`) using the intent bearer.
-3. Read `asset.url` from the HTTP JSON. That is the stable alias.
-4. To replace: `replace_media_asset` with `confirm: true`, then POST bytes to the new intent.
+3. Read `asset.url` from the HTTP JSON. That is the stable alias for application code.
+4. To replace: `replace_media_asset` with `confirm: true`, then POST bytes to the new intent. Leave the alias in the app unchanged.
 
 Intents are one-use, 10 minutes, scoped to org/project/operation/path or asset. They do not mint unaudited R2 write URLs.
 

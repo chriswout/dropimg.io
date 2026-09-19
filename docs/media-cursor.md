@@ -1,4 +1,4 @@
-# DropIMG Media — Cursor
+# DropIMG Web Assets — Cursor
 
 Permanent **Web Assets** at `/m/{org}/{project}/{path}` for code you are generating (logos, heroes, favicons, illustrations, web fonts). Temporary screenshots still use Drop tools (`upload_image`).
 
@@ -21,7 +21,7 @@ create_media_project (account / OAuth)
   → list_media_projects
   → upload_media_asset { project_id, path: "branding/logo" }
   → POST the file bytes to upload_url (do not put bytes in the tool)
-  → paste the returned /m/... URL into the codebase
+  → paste the returned /m/... alias into the codebase (not a ?v= snapshot unless you need historical bytes)
   → replace_media_asset { project_id, asset_id, confirm: true } when the file changes
 ```
 
@@ -29,4 +29,4 @@ If `homepage/hero` or `branding/logo` already exists, replace it. Do not mint `h
 
 Supported: JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, WOFF2. PDFs, video, audio, archives, and code files are rejected. The HTTP ingest path detects the format — there is no `upload_svg` tool.
 
-The DropIMG Web Assets skill teaches the agent when to use Drops vs permanent Media. Canonical file: [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md).
+The DropIMG Web Assets skill teaches the agent when to use Drops vs permanent Web Assets. Canonical file: [`.agents/skills/dropimg-web-assets/SKILL.md`](../.agents/skills/dropimg-web-assets/SKILL.md).

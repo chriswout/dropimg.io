@@ -866,7 +866,7 @@ async function startWebAssetsCheckout(plan: "developer" | "pro", interval: "mont
     const body = (await res.json().catch(() => null)) as { error?: string } | null;
     show(
       body?.error ||
-        "You already have a live Web Assets subscription. Cancel renewal in PayPal and wait until the paid period ends before starting a different plan.",
+        "You already have a live Web Assets subscription. Change plan from Billing — DropIMG will not start a second subscription or prorate unused time.",
     );
     return;
   }

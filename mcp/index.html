@@ -3,8 +3,8 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <title>DropIMG MCP — Temporary image URLs from Cursor | dropimg.io</title>
-    <meta name="description" content="Ask Cursor to upload a screenshot and get a temporary URL for GitHub issues, PRs, Slack, and tickets. Add to Cursor. OAuth. Links expire." />
+    <title>DropIMG MCP — Stable web assets for coding agents | dropimg.io</title>
+    <meta name="description" content="Give Cursor and other coding agents stable /m/… URLs for logos, heroes, icons, SVGs, and fonts. Replace without changing application URLs. Temporary Drops from the same MCP server." />
     <link rel="canonical" href="https://dropimg.io/mcp" />
     <meta name="robots" content="index, follow" />
     <meta name="theme-color" content="#F7F7FB" media="(prefers-color-scheme: light)" />
@@ -24,13 +24,13 @@
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:url" content="https://dropimg.io/mcp" />
-    <meta property="og:title" content="DropIMG MCP | Screenshot to URL for agents" />
-    <meta property="og:description" content="Upload a workspace image from Cursor and get a temporary public URL. Add to Cursor, or any MCP client." />
+    <meta property="og:title" content="DropIMG MCP | Stable web assets for agents" />
+    <meta property="og:description" content="Upload and replace logos, heroes, icons, SVGs, and fonts without changing application URLs. Temporary Drops from the same MCP server." />
     <meta property="og:site_name" content="dropimg.io" />
     <meta property="og:image" content="https://dropimg.io/og.png" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Ask your agent for a temporary image URL" />
-    <meta name="twitter:description" content="DropIMG MCP for GitHub issues, PRs, and Slack. Add to Cursor. Links expire." />
+    <meta name="twitter:title" content="Give your coding agent stable web assets" />
+    <meta name="twitter:description" content="Upload and replace logos, heroes, icons, SVGs, and fonts. Temporary Drops for GitHub, PRs, and Slack." />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <script src="/consent.js" defer></script>
   </head>
@@ -123,13 +123,13 @@
         <section class="ext-hero ext-hero-solo">
           <div class="ext-hero-copy">
             <p class="ext-kicker">Model Context Protocol</p>
-            <h1 class="ext-title">Ask your agent for a temporary image URL</h1>
-            <p class="ext-tagline">Screenshot → URL, from Cursor</p>
-            <p class="sub ext-lede">Point Cursor at dropimg.io. The agent reads a PNG from your workspace, uploads it, and returns a real link — for a GitHub issue, a PR, Slack, or a ticket. The same MCP server also uploads and replaces Web Assets at stable /m/… URLs. Same write path as the site.</p>
+            <h1 class="ext-title">Give your coding agent stable web assets.</h1>
+            <p class="ext-tagline">Stable /m/… URLs, from Cursor</p>
+            <p class="sub ext-lede">Upload and replace logos, heroes, icons, SVGs, and fonts without changing application URLs. Temporary Drops are available from the same MCP server.</p>
             <ul class="ext-facts">
               <li>Add to Cursor — OAuth, no API key</li>
-              <li>GitHub issues, PRs, Slack, tickets</li>
-              <li>Links expire — 7d default, up to 180d</li>
+              <li>Stable /m/… URLs — replace without rewriting code</li>
+              <li>Temporary Drops for GitHub, PRs, and Slack</li>
             </ul>
             <div class="ext-actions">
               <a class="btn primary" href="https://cursor.com/en/install-mcp?name=dropimg&amp;config=eyJ1cmwiOiJodHRwczovL2Ryb3BpbWcuaW8vbWNwIn0=" rel="noopener" target="_blank">Add to Cursor</a>
@@ -181,11 +181,11 @@
               </details>
               <details>
                 <summary>What should I ask the agent?</summary>
-                <p>“Upload this screenshot and give me a link for the GitHub issue.” “Put screenshot.png on the PR.” “Replace the homepage hero in my Web Assets project.” The agent must read the file and call the matching tool — it must not invent a URL.</p>
+                <p>“Upload this logo as branding/logo.” “Replace the homepage hero.” “Give me a temporary link for this screenshot.” The agent must read the file and call the matching tool — it must not invent a URL.</p>
               </details>
               <details>
                 <summary>Which tools exist?</summary>
-                <p>Drops: upload_image (base64 or data URL, optional expiry), get_image, list_images, and delete_image. List is one text line per live drop, not the REST JSON envelope. Web Assets: list_media_projects, create_media_project, list_media_assets, get_media_asset, upload_media_asset, and replace_media_asset (confirm: true). Web Assets uploads send bytes over HTTP, not JSON-RPC.</p>
+                <p>Web Assets: list_media_projects, create_media_project, list_media_assets, get_media_asset, upload_media_asset, and replace_media_asset (confirm: true). Web Assets uploads send bytes over HTTP, not JSON-RPC. Drops: upload_image (base64 or data URL, optional expiry), get_image, list_images, and delete_image. List is one text line per live drop, not the REST JSON envelope.</p>
               </details>
               <details>
                 <summary>Do uploads show in My Drops?</summary>

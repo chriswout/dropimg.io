@@ -1,10 +1,52 @@
-# DropIMG Media — REST
+# DropIMG Web Assets — REST
 
-DropIMG Media is **permanent Web Asset infrastructure** for AI-built websites and applications. Broader than an image host, narrower than a blob store. The differentiator is a stable alias agents can upload, replace, and manage without changing application code:
+DropIMG Web Assets is **permanent infrastructure** for AI-built websites and applications. Broader than an image host, narrower than a blob store. The differentiator is a stable alias agents can upload, replace, and manage without changing application code:
 
 `https://dropimg.io/m/{orgSlug}/{projectSlug}/{path}`
 
-Example: `/m/acme/site/branding/logo`. Underlying versions may change. The alias does not.
+Example: `/m/acme/site/homepage/hero`. Underlying versions may change. The alias does not.
+
+## Stable alias vs immutable version
+
+### Stable alias
+
+Use the normal `/m/...` asset URL (`url` in JSON) in application code.
+
+Example: `https://dropimg.io/m/acme/site/homepage/hero`
+
+The alias is intentionally mutable. Replacing the asset changes the bytes served at this URL while the URL itself stays the same.
+
+Use it for:
+
+- `<img>`
+- favicons
+- CSS references
+- `@font-face`
+- normal application assets
+
+### Immutable version
+
+Use `versionUrl` when the caller needs the exact historical bytes to never change:
+
+`https://dropimg.io/m/acme/site/homepage/hero?v={versionId}`
+
+Examples:
+
+- audit/history
+- reproducible builds
+- debugging an old deployment
+- snapshots
+- comparing previous versions
+
+Versioned URLs must remain immutable. They send `Cache-Control: public, max-age=31536000, immutable`.
+
+### Default
+
+Default to the stable alias for application code.
+
+Use an immutable version URL only when you explicitly need fixed historical content or reproducibility.
+
+Do not replace a stable alias with a version URL in normal app code just to avoid caching.
 
 Temporary My Drops stay on `/api/v1/images` and `/o/...`. Permanent objects stay under `p/...`.
 
@@ -37,7 +79,7 @@ SVG is parsed with a real XML sanitizer (not regex). Active constructs (`script`
 
 AVIF is validated as ISO BMFF (`ftyp` brand `avif`/`avis` + `ispe` dimensions). The Worker does not decode AV1, so EXIF-style stripping is not applied to AVIF. PNG/JPEG/WebP/GIF still go through the existing metadata strip + moderation path.
 
-WOFF/WOFF2 are identified by container bytes. TTF, OTF, and EOT are rejected. Fonts have a 2 MB cap; SVG and ICO 1 MB; overall Media upload cap remains 10 MB.
+WOFF/WOFF2 are identified by container bytes. TTF, OTF, and EOT are rejected. Fonts have a 2 MB cap; SVG and ICO 1 MB; overall Web Assets upload cap remains 10 MB.
 
 Plan limits are enforced on every surface (app, REST, MCP):
 

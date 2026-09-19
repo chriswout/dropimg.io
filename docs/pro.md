@@ -1,4 +1,4 @@
-# DropIMG Pro
+# Drops Pro
 
 One personal plan. Production V2 (billing, long TTL, 50 MB) stays **gated off**
 until the [launch runbook](launch.md) turns each gate on in order.

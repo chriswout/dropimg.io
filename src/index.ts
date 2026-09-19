@@ -39,9 +39,16 @@ const app = new Hono<Env>();
 
 /**
  * One public origin: https://dropimg.io/…
- * HTTP and www both 301 here so Search Console does not treat them as
- * alternates. Local wrangler (127.0.0.1) is left alone.
+ * HTTP, www, and legal *.html URLs 301 here so Search Console does not treat
+ * them as alternates. Local wrangler (127.0.0.1) is left alone.
  */
+const LEGAL_HTML_REDIRECTS: Record<string, string> = {
+  "/privacy.html": "/privacy",
+  "/terms.html": "/terms",
+  "/contact.html": "/contact",
+  "/refunds.html": "/refunds",
+};
+
 app.use("*", async (c, next) => {
   const url = new URL(c.req.url);
   const publicHost =
@@ -54,6 +61,10 @@ app.use("*", async (c, next) => {
   if (url.hostname === "www.dropimg.io") {
     url.hostname = "dropimg.io";
     return c.redirect(url.toString(), 301);
+  }
+  const legalDest = LEGAL_HTML_REDIRECTS[url.pathname.toLowerCase()];
+  if (legalDest) {
+    return c.redirect(legalDest + url.search, 301);
   }
   await next();
 });

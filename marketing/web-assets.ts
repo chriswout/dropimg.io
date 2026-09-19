@@ -59,9 +59,9 @@ export const WEB_ASSETS_PAGE: PageSeo & {
   pathBody:
     "Aliases are extensionless and named for the role they play. The application references the path, not a version UUID.",
   pathExample: "/m/acme/site/branding/logo",
-  versionHeading: "Immutable versions, stable aliases",
+  versionHeading: "Stable alias vs immutable version",
   versionBody:
-    "Each replace writes a new object and version row. The public URL stays the same. MIME may change: an SVG logo can become a PNG.",
+    "Put the normal /m/… alias in application code — <img>, favicons, CSS, @font-face. Replacing the file changes the bytes; the URL stays. ?v={versionId} is an immutable snapshot for audits, reproducible builds, and old deploys. Default to the alias. Do not pin a version URL just to avoid caching. MIME may change on replace: an SVG logo can become a PNG.",
   formatsHeading: "Supported formats",
   formatsSupported: [
     "Raster: JPEG, PNG, WebP, GIF, AVIF",

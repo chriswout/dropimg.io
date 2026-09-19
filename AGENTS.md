@@ -5,7 +5,8 @@
 - PayPal is the only live subscription processor.
 - Paddle and Stripe are **not** part of the live billing path.
 - `.agents/skills/paddle-*` and `docs/stripe-underwriting.md` are archival / reference-only. Do not follow them for DropIMG.
-- Do not migrate processors. Do not invent a Stripe-style billing portal, in-app invoices, proration, credits, or dunning.
+- Do not migrate processors. Do not invent a Stripe-style billing portal, in-app invoices, proration, or credits.
+- Dunning and payment receipts are first-party email via the Cloudflare EMAIL binding (`signin@dropimg.io`). Do not add a Stripe invoice product or a second processor.
 
 Two catalogs must never mix SKUs or entitlements:
 

@@ -25,24 +25,24 @@ export const CURSOR_INSTALL_URL =
   "https://cursor.com/en/install-mcp?name=dropimg&config=eyJ1cmwiOiJodHRwczovL2Ryb3BpbWcuaW8vbWNwIn0=";
 
 export const MCP_PAGE: McpCopy = {
-  title: "DropIMG MCP — Temporary image URLs from Cursor | dropimg.io",
+  title: "DropIMG MCP — Stable web assets for coding agents | dropimg.io",
   description:
-    "Ask Cursor to upload a screenshot and get a temporary URL for GitHub issues, PRs, Slack, and tickets. Add to Cursor. OAuth. Links expire.",
-  ogTitle: "DropIMG MCP | Screenshot to URL for agents",
+    "Give Cursor and other coding agents stable /m/… URLs for logos, heroes, icons, SVGs, and fonts. Replace without changing application URLs. Temporary Drops from the same MCP server.",
+  ogTitle: "DropIMG MCP | Stable web assets for agents",
   ogDescription:
-    "Upload a workspace image from Cursor and get a temporary public URL. Add to Cursor, or any MCP client.",
-  twitterTitle: "Ask your agent for a temporary image URL",
+    "Upload and replace logos, heroes, icons, SVGs, and fonts without changing application URLs. Temporary Drops from the same MCP server.",
+  twitterTitle: "Give your coding agent stable web assets",
   twitterDescription:
-    "DropIMG MCP for GitHub issues, PRs, and Slack. Add to Cursor. Links expire.",
-  h1: "Ask your agent for a temporary image URL",
-  lede: "Point Cursor at dropimg.io. The agent reads a PNG from your workspace, uploads it, and returns a real link — for a GitHub issue, a PR, Slack, or a ticket. The same MCP server also uploads and replaces Web Assets at stable /m/… URLs. Same write path as the site.",
+    "Upload and replace logos, heroes, icons, SVGs, and fonts. Temporary Drops for GitHub, PRs, and Slack.",
+  h1: "Give your coding agent stable web assets.",
+  lede: "Upload and replace logos, heroes, icons, SVGs, and fonts without changing application URLs. Temporary Drops are available from the same MCP server.",
   heroKicker: "Model Context Protocol",
-  heroTitle: "Ask your agent for a temporary image URL",
-  heroTagline: "Screenshot → URL, from Cursor",
+  heroTitle: "Give your coding agent stable web assets.",
+  heroTagline: "Stable /m/… URLs, from Cursor",
   heroFacts: [
     "Add to Cursor — OAuth, no API key",
-    "GitHub issues, PRs, Slack, tickets",
-    "Links expire — 7d default, up to 180d",
+    "Stable /m/… URLs — replace without rewriting code",
+    "Temporary Drops for GitHub, PRs, and Slack",
   ],
   skip: "Skip to setup",
   detailsHeading: "Setup",
@@ -54,11 +54,11 @@ export const MCP_PAGE: McpCopy = {
     },
     {
       q: "What should I ask the agent?",
-      a: "“Upload this screenshot and give me a link for the GitHub issue.” “Put screenshot.png on the PR.” “Replace the homepage hero in my Web Assets project.” The agent must read the file and call the matching tool — it must not invent a URL.",
+      a: "“Upload this logo as branding/logo.” “Replace the homepage hero.” “Give me a temporary link for this screenshot.” The agent must read the file and call the matching tool — it must not invent a URL.",
     },
     {
       q: "Which tools exist?",
-      a: "Drops: upload_image (base64 or data URL, optional expiry), get_image, list_images, and delete_image. List is one text line per live drop, not the REST JSON envelope. Web Assets: list_media_projects, create_media_project, list_media_assets, get_media_asset, upload_media_asset, and replace_media_asset (confirm: true). Web Assets uploads send bytes over HTTP, not JSON-RPC.",
+      a: "Web Assets: list_media_projects, create_media_project, list_media_assets, get_media_asset, upload_media_asset, and replace_media_asset (confirm: true). Web Assets uploads send bytes over HTTP, not JSON-RPC. Drops: upload_image (base64 or data URL, optional expiry), get_image, list_images, and delete_image. List is one text line per live drop, not the REST JSON envelope.",
     },
     {
       q: "Do uploads show in My Drops?",

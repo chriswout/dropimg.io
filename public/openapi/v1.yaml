@@ -3,12 +3,12 @@ info:
   title: DropIMG API
   version: "1.0.0"
   description: >
-    Temporary image hosting API plus optional permanent Media (flag-gated).
-    DropIMG Media is Web Asset infrastructure for AI-built websites: JPEG, PNG,
+    Temporary Drops API plus permanent Web Assets.
+    DropIMG Web Assets is infrastructure for AI-built websites: JPEG, PNG,
     WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, and WOFF2. It is not a blob store.
     PDFs, video, audio, archives, HTML/JS/CSS, and generic files are rejected.
     Image in, URL out. Bearer API keys required for /api/v1/images.
-    Media uses session cookies or project keys `dropimg_pk_*`.
+    Web Assets uses session cookies or project keys `dropimg_pk_*`.
     Public `/m/...` aliases provide no confidentiality. Knowledge of the URL
     is sufficient to fetch the asset.
     Anonymous REST is not available. API and MCP share one programmatic daily
@@ -494,7 +494,11 @@ components:
         url:
           type: string
           format: uri
-          description: Stable extensionless alias `/m/{org}/{project}/{path}`
+          description: >-
+            Stable extensionless alias `/m/{org}/{project}/{path}`. Put this in
+            application code (`<img>`, favicons, CSS, `@font-face`). Replacing
+            the asset changes the bytes; this URL stays. Do not swap it for
+            versionUrl just to avoid caching.
         mime:
           type: string
           enum:
@@ -516,6 +520,10 @@ components:
         versionUrl:
           type: string
           format: uri
+          description: >-
+            Immutable snapshot of this version (`/m/...?v={versionId}`). Use
+            only for audits, reproducible builds, old deployments, or comparing
+            versions. Must not be rewritten.
         size:
           type: integer
         width:

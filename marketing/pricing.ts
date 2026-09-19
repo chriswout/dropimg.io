@@ -265,8 +265,8 @@ export const PRICING_PAGE: PageSeo & {
       a: "No. There is no bandwidth or egress surcharge on top of the plan. Fair-use and plan limits still apply.",
     },
     {
-      q: "Can I switch Web Assets plans instantly?",
-      a: "Not while a paid Web Assets subscription is live. Cancel renewal in PayPal, keep access until the paid period ends, then subscribe to the new plan. DropIMG does not prorate, credit unused time, or start a second subscription.",
+      q: "Can I switch Web Assets plans?",
+      a: "Yes. Change plan from Billing. PayPal revises the same subscription; the new price starts at the next renewal. There is no prorated charge today and no second subscription.",
     },
   ],
   closeHeading: "Ready to give your coding agent permanent web assets?",

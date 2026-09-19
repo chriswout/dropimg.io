@@ -32,9 +32,9 @@ describe("developers and mcp product pages", () => {
     expect(html).not.toContain("when Media is enabled");
   });
 
-  it("sells MCP as a temporary image URL for agents", () => {
+  it("sells MCP as stable web assets for coding agents", () => {
     const html = renderMcpPage();
-    expect(html).toContain("Ask your agent for a temporary image URL");
+    expect(html).toContain("Give your coding agent stable web assets.");
     expect(html).toContain("data-page-intent=\"mcp\"");
     expect(html).toContain("https://dropimg.io/mcp");
     expect(html).toContain("Add to Cursor");
@@ -47,7 +47,9 @@ describe("developers and mcp product pages", () => {
     expect(html).not.toContain("when Media is enabled");
     expect(html).toContain("Free 20 uploads / 50 MB");
     expect(MCP_PAGE.heroFacts[0]).toContain("Add to Cursor");
-    expect(MCP_PAGE.heroFacts[1]).toMatch(/GitHub|PR|Slack/);
+    expect(MCP_PAGE.heroFacts[1]).toMatch(/stable \/m/i);
+    expect(MCP_PAGE.heroFacts[2]).toMatch(/GitHub|PR|Slack/);
+    expect(html).not.toContain("Ask your agent for a temporary image URL");
   });
 
   it("sends homepage and extension page installs to the Chrome Web Store listing", () => {

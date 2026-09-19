@@ -26,7 +26,7 @@ Do this in [PayPal Developer](https://developer.paypal.com/) for a **Sandbox**
 app first, then again for **Live**.
 
 1. Create a REST API app. Copy the client id and secret.
-2. Catalog: one Product **DropIMG Pro**, two Billing Plans — monthly €2.99 and
+2. Catalog: one Product **DropIMG Pro** (public name: **Drops Pro**), two Billing Plans — monthly €2.99 and
    annual €24.99, same amounts as this site advertises. Plan IDs look like
    `P-…`.
 3. Webhook URL:
@@ -63,7 +63,7 @@ app. Amounts match the site: €2.99 / month and €24.99 / year, tax included.
 
 ### Sandbox Web Assets (USD)
 
-Distinct product from Drop Pro. Created 2026-09-17.
+Distinct product from Drops Pro. Created 2026-09-17.
 
 | Thing | Sandbox ID |
 |-------|------------|
@@ -73,13 +73,13 @@ Distinct product from Drop Pro. Created 2026-09-17.
 | Pro monthly, $29 | `P-3JV643758U3795743NKV6BCQ` |
 | Pro annual, $290 | `P-6M302061UF3384325NKV6BCY` |
 
-Both Drop Pro plan IDs are in `env.staging.vars` and local `.dev.vars`. Staging still
+Both Drops Pro plan IDs are in `env.staging.vars` and local `.dev.vars`. Staging still
 needs `PAYPAL_CLIENT_ID`, `PAYPAL_CLIENT_SECRET`, and `PAYPAL_WEBHOOK_ID` as
 secrets.
 
 ## Live catalog
 
-Same Drop Pro product and amounts, created against the live REST app.
+Same Drops Pro product and amounts, created against the live REST app.
 
 | Thing | Live ID |
 |-------|---------|
@@ -106,8 +106,8 @@ Same Drop Pro product and amounts, created against the live REST app.
 | secret | `PAYPAL_CLIENT_SECRET` | REST app secret |
 | secret | `PAYPAL_WEBHOOK_ID` | Dashboard webhook id for `verify-webhook-signature` |
 | var | `PAYPAL_ENV` | `sandbox` or `live` only — picks the API host |
-| var | `PAYPAL_PLAN_MONTHLY` | Drop Pro plan id `P-…` |
-| var | `PAYPAL_PLAN_ANNUAL` | Drop Pro plan id `P-…` |
+| var | `PAYPAL_PLAN_MONTHLY` | Drops Pro plan id `P-…` |
+| var | `PAYPAL_PLAN_ANNUAL` | Drops Pro plan id `P-…` |
 | var | `PAYPAL_WA_DEVELOPER_MONTHLY` | Web Assets Developer $9 |
 | var | `PAYPAL_WA_DEVELOPER_ANNUAL` | Web Assets Developer $90 |
 | var | `PAYPAL_WA_PRO_MONTHLY` | Web Assets Pro $29 |

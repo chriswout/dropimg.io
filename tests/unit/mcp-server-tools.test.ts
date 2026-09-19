@@ -24,7 +24,7 @@ describe("MCP tool descriptions", () => {
     expect(MCP_TOOL_META.delete_image.description).toMatch(/list_images/);
   });
 
-  it("teaches agents that Media is Web Assets, not Drops", () => {
+  it("teaches agents that Web Assets are not Drops", () => {
     expect(MCP_TOOL_META.upload_media_asset.description).toMatch(/Web Asset/i);
     expect(MCP_TOOL_META.upload_media_asset.description).toMatch(/AVIF/);
     expect(MCP_TOOL_META.upload_media_asset.description).toMatch(/WOFF2/);
@@ -33,5 +33,8 @@ describe("MCP tool descriptions", () => {
     expect(MCP_TOOL_META.upload_media_asset.description).toMatch(/PDFs/);
     expect(MCP_TOOL_META.list_media_projects.description).toMatch(/Temporary screenshots/);
     expect(MCP_TOOL_META.replace_media_asset.description).toMatch(/MIME may change/);
+    expect(MCP_TOOL_META.upload_media_asset.description).toMatch(/stable alias/);
+    expect(MCP_TOOL_META.get_media_asset.description).toMatch(/historical bytes/);
+    expect(MCP_TOOL_META.replace_media_asset.description).toMatch(/stable alias/);
   });
 });

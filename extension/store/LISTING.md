@@ -52,7 +52,7 @@ searchable — a link only works for someone you gave it to.
 
 Without an account your captures use the site's default lifetime. Connect a
 free DropIMG account and you can choose 1 hour, 24 hours, 7 days or 30 days per
-capture. DropIMG Pro adds 90 and 180 days, larger uploads, and full upload history at
+capture. Drops Pro adds 90 and 180 days, larger uploads, and full upload history at
 dropimg.io.
 
 RECENT DROPS

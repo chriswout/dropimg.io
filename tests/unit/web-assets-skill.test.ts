@@ -48,9 +48,9 @@ describe("DropIMG Web Assets skill", () => {
   it("is a Cursor-compatible SKILL.md with an intent-oriented description", () => {
     expect(skill).toMatch(/^---\nname: dropimg-web-assets\n/);
     expect(skill).toMatch(/description: >-/);
-    expect(skill).toMatch(/permanent Media/);
+    expect(skill).toMatch(/permanent Web\s+Assets/);
     expect(skill).toMatch(/temporary Drops/);
-    expect(skill).toMatch(/replace an existing Media asset/);
+    expect(skill).toMatch(/replace an existing Web Asset/);
     expect(skill).not.toMatch(/dropimg_pk_YOUR_KEY/);
     expect(skill).not.toMatch(/Production Media may be flagged off/);
     expect(skill).not.toMatch(/Do not copy this skill into a second MCP server/);
@@ -66,7 +66,7 @@ describe("DropIMG Web Assets skill", () => {
     expect(realpathSync(plugin)).toBe(realpathSync(canonical));
   });
 
-  it("teaches Drops vs Media vs unsupported", () => {
+  it("teaches Drops vs Web Assets vs unsupported", () => {
     expect(skill).toMatch(/Screenshot for a bug report/);
     expect(skill).toMatch(/Screenshot for GitHub issue/);
     expect(skill).toMatch(/Slack/);
@@ -78,13 +78,15 @@ describe("DropIMG Web Assets skill", () => {
     expect(skill).toMatch(/PDF brochure/);
     expect(skill).toMatch(/ZIP \/ archive/);
     expect(skill).toMatch(/Never invent `\/m\/\.\.\.` paths/);
+    expect(skill).toMatch(/Default to the stable alias/);
+    expect(skill).toMatch(/Do not replace a stable alias with a version URL/);
   });
 
   it("teaches replace-before-create, stable aliases, quotas, and the intent upload path", () => {
     expect(skill).toMatch(/upload_media_asset/);
     expect(skill).toMatch(/replace_media_asset/);
     expect(skill).toMatch(/confirm: true/);
-    expect(skill).toMatch(/Never put Media binaries or base64 in MCP JSON-RPC/);
+    expect(skill).toMatch(/Never put Web Asset binaries or base64 in MCP JSON-RPC/);
     expect(skill).toMatch(/upload_image/);
     expect(skill).toMatch(/project_id/);
     expect(skill).toMatch(/leave application URL\/code unchanged/);
@@ -92,7 +94,7 @@ describe("DropIMG Web Assets skill", () => {
     expect(skill).toMatch(/sanitizes/);
     expect(skill).toMatch(/quota_exceeded/);
     expect(skill).toMatch(/Do not create `branding\/logo-new`/);
-    expect(skill).toMatch(/server-owned and stable across replacements/);
+    expect(skill).toMatch(/intentionally mutable/);
     expect(skill).toMatch(/credentials supplied by the installed DropIMG MCP connection/);
     expect(skill).toMatch(/Do not introduce a second DropIMG MCP backend/);
   });

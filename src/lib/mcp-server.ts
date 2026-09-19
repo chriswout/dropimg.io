@@ -88,35 +88,35 @@ export const MCP_TOOL_META = {
   },
   list_media_projects: {
     description:
-      "List DropIMG Media projects. Media is permanent Web Assets for application code (logos, heroes, favicons, illustrations, web fonts) at stable /m/{org}/{project}/... aliases. Temporary screenshots and tickets use Drop tools instead. Pass project_id explicitly later — there is no implicit current project.",
+      "List DropIMG Web Assets projects. Web Assets are permanent files for application code (logos, heroes, favicons, illustrations, web fonts) at stable /m/{org}/{project}/... aliases. Temporary screenshots and tickets use Drop tools instead. Pass project_id explicitly later — there is no implicit current project.",
   },
   create_media_project: {
     description:
-      "Create a DropIMG Media project in the signed-in user's personal organization. Use a slug like website or storefront. Project keys cannot create projects.",
+      "Create a DropIMG Web Assets project in the signed-in user's personal organization. Use a slug like website or storefront. Project keys cannot create projects.",
     slug: "URL slug: lowercase letters, digits, hyphen. Example: website",
     name: "Optional display name. Defaults to the slug.",
   },
   list_media_assets: {
     description:
-      "List live Web Assets in one Media project. Returns asset_id, path, stable url, version, asset_type, mime, size. Never invent a /m/... URL.",
+      "List live Web Assets in one project. Returns asset_id, path, stable url (use in app code), version_id, asset_type, mime, size. Never invent a /m/... URL. Do not put ?v= version URLs in normal application code.",
     project_id: "Project UUID from list_media_projects or create_media_project.",
   },
   get_media_asset: {
     description:
-      "Get one live Web Asset by project_id and asset_id. Returns asset_type and mime from stored bytes, not the filename.",
+      "Get one live Web Asset by project_id and asset_id. Returns url (stable alias for <img>, favicons, CSS, @font-face) plus version_id. Use url in app code. Pin ?v={version_id} only when the user needs immutable historical bytes.",
     project_id: "Project UUID.",
     asset_id: "Asset UUID.",
   },
   upload_media_asset: {
     description:
-      "Start a permanent Web Asset upload (JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, WOFF2). Returns a short-lived upload URL. POST the file bytes over HTTP — do not send bytes or base64 in this tool. Do not invent a /m/... URL; use the JSON url after the HTTP upload. Temporary screenshots belong in upload_image (Drops), not here. PDFs, video, audio, archives, and code files are rejected.",
+      "Start a permanent Web Asset upload (JPEG, PNG, WebP, GIF, AVIF, sanitized SVG, ICO, WOFF, WOFF2). Returns a short-lived upload URL. POST the file bytes over HTTP — do not send bytes or base64 in this tool. Do not invent a /m/... URL; use the JSON url after the HTTP upload as the stable alias in application code. Use a ?v= version URL only when the user explicitly needs fixed historical bytes. Temporary screenshots belong in upload_image (Drops), not here. PDFs, video, audio, archives, and code files are rejected.",
     project_id: "Project UUID.",
     path: "Stable alias path inside the project, e.g. branding/logo or fonts/inter. No file extension required.",
     name: "Optional display name.",
   },
   replace_media_asset: {
     description:
-      "Start a replacement of an existing Web Asset. Requires confirm=true. The public /m/... URL does not change; MIME may change (SVG logo can become PNG). POST the new bytes to the returned upload URL.",
+      "Start a replacement of an existing Web Asset. Requires confirm=true. The public /m/... alias does not change; MIME may change (SVG logo can become PNG). POST the new bytes to the returned upload URL. Leave application code on the stable alias — do not switch it to a version URL.",
     project_id: "Project UUID.",
     asset_id: "Asset UUID to replace.",
     confirm: "Must be true to create a replacement upload intent.",

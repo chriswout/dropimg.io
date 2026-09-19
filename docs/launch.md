@@ -50,7 +50,7 @@ record and PayPal as the processor.
 ## The PayPal catalog
 
 Use the REST-API-integratie app (not shopping-cart, Braintree, or NVP/SOAP).
-Sandbox first, then live. Product **DropIMG Pro**, monthly €2.99 and annual
+Sandbox first, then live. Product **DropIMG Pro** (public name: **Drops Pro**), monthly €2.99 and annual
 €24.99, tax inclusive. Webhook to `/api/billing/paypal/webhook`. Steps and
 env vars are in [paypal.md](paypal.md).
 
