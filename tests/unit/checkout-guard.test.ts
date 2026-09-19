@@ -54,6 +54,7 @@ describe("checkoutBlockForRows", () => {
       { product: "drops_pro", now },
     );
     expect(block?.code).toBe("checkout_in_progress");
+    expect(block?.error).toMatch(/cancelled on PayPal/i);
   });
 
   it("does not block on a stale approval_pending row", () => {

@@ -139,7 +139,10 @@ Production must set `PAYPAL_WEBHOOK_ID` and never rely on the HMAC secret.
 anonymous buyers. Before minting a PayPal `I-…`, the Worker inserts an
 `approval_pending` reservation row. A second click, an already-live
 subscription, or a canceled-but-still-paid-through row returns **409** and
-does not call PayPal.
+does not call PayPal. PayPal `cancel_url` hits
+`GET /api/billing/checkout/cancelled`, which drops that reservation so the
+buyer can start again immediately. A pricing/Pro retry also
+`POST /api/billing/checkout/abandon` before minting a new `I-…`.
 
 - Drops Pro: `already_subscribed` or `checkout_in_progress`
 - Web Assets: `plan_change_blocked` or `checkout_in_progress`

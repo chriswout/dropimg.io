@@ -31,18 +31,23 @@
     setStatus(copy("waiting", "Opening checkout\u2026"));
     let res;
     try {
-      res = await fetch("/api/billing/checkout", {
-        method: "POST",
-        credentials: "same-origin",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ interval })
-      });
+      res = await postDropsCheckout(interval);
+      if (res.status === 401) {
+        location.href = "/login";
+        return;
+      }
+      if (res.status === 409) {
+        const first = await res.json().catch(() => null);
+        if (first?.code === "checkout_in_progress") {
+          await abandonDropsCheckout();
+          res = await postDropsCheckout(interval);
+        } else {
+          setStatus(first?.error || copy("already", "You already have Drops Pro. Manage it in PayPal."));
+          return;
+        }
+      }
     } catch {
       setStatus(copy("unavailable", "Checkout isn\u2019t available right now. Try again shortly."));
-      return;
-    }
-    if (res.status === 401) {
-      location.href = "/login";
       return;
     }
     if (res.status === 409) {
@@ -60,6 +65,22 @@
       return;
     }
     location.href = data.url;
+  }
+  function postDropsCheckout(interval) {
+    return fetch("/api/billing/checkout", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ interval })
+    });
+  }
+  function abandonDropsCheckout() {
+    return fetch("/api/billing/checkout/abandon", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ product: "drops_pro" })
+    }).catch(() => void 0);
   }
   async function pollUntilPro() {
     if (root()?.getAttribute("data-plan") === "pro") {

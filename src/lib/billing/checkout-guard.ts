@@ -40,7 +40,7 @@ export function checkoutBlockMessage(
   product: BillingProduct,
 ): string {
   if (code === "checkout_in_progress") {
-    return "Checkout is already in progress. Finish PayPal approval or wait a few minutes.";
+    return "Checkout is already in progress. If you cancelled on PayPal, try again to start a new checkout.";
   }
   if (product === "web_assets") {
     return "You already have a live Web Assets subscription. Change plan from Billing — DropIMG will not start a second subscription or prorate unused time.";
@@ -210,4 +210,44 @@ export async function releaseCheckoutReservation(
     )
     .bind(reservationId)
     .run();
+}
+
+/**
+ * Buyer bounced from PayPal (cancel_url or a second pricing click).
+ * Drop the reservation and cancel any minted I-… that never activated.
+ * Live / paid-through rows are left alone.
+ */
+export async function abandonPendingCheckout(
+  env: BillingEnv,
+  db: D1Database,
+  opts: { userId: string; product: BillingProduct },
+  fetchImpl: typeof fetch = fetch,
+): Promise<{ abandoned: boolean }> {
+  const rows = await loadProductSubscriptionRows(db, opts.userId, opts.product);
+  const pending = rows.filter(
+    (row) => row.status.trim().toLowerCase() === "approval_pending",
+  );
+  if (!pending.length) return { abandoned: false };
+
+  for (const row of pending) {
+    const paypalId = parsePaypalSubscriptionId(row.provider_subscription_id);
+    if (paypalId) {
+      await cancelPaypalSubscriptionImmediately(
+        env,
+        paypalId,
+        fetchImpl,
+        "Buyer cancelled PayPal checkout",
+      );
+    }
+  }
+
+  await db
+    .prepare(
+      `DELETE FROM subscriptions
+       WHERE user_id = ? AND provider = 'paypal' AND product = ?
+         AND status = 'approval_pending'`,
+    )
+    .bind(opts.userId, opts.product)
+    .run();
+  return { abandoned: true };
 }

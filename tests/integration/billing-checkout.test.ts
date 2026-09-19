@@ -208,4 +208,76 @@ describe("PayPal checkout guards", () => {
     expect(await subscriptionCount(userId, "web_assets")).toBe(1);
     expect(await subscriptionCount(userId, "drops_pro")).toBe(0);
   });
+
+  it("releases a pending Web Assets checkout after PayPal cancel_url", async () => {
+    const { cookie, userId } = await signIn("wa-cancel-return@example.com");
+    const now = Math.floor(Date.now() / 1000);
+    await seedSubscription(userId, {
+      id: `pending:web_assets:${userId}`,
+      product: "web_assets",
+      status: "approval_pending",
+      priceId: "P-wa-dev-m",
+      periodEnd: null,
+      updatedAt: now,
+    });
+
+    const cancelled = await worker.fetch(
+      "https://dropimg.io/api/billing/checkout/cancelled?product=web_assets",
+      { headers: { Cookie: cookie }, redirect: "manual" },
+    );
+    expect(cancelled.status).toBe(302);
+    expect(cancelled.headers.get("Location")).toContain("/pricing?checkout=cancelled");
+    expect(await subscriptionCount(userId, "web_assets")).toBe(0);
+
+    const retry = await checkout(cookie, "/api/billing/web-assets/checkout", {
+      plan: "developer",
+      interval: "monthly",
+    });
+    expect(retry.status).not.toBe(409);
+  });
+
+  it("POST abandon clears a stuck reservation and leaves live rows alone", async () => {
+    const pending = await signIn("drops-abandon@example.com");
+    const now = Math.floor(Date.now() / 1000);
+    await seedSubscription(pending.userId, {
+      id: `pending:drops_pro:${pending.userId}`,
+      product: "drops_pro",
+      status: "approval_pending",
+      priceId: "P-monthly",
+      periodEnd: null,
+      updatedAt: now,
+    });
+
+    const abandoned = await worker.fetch("https://dropimg.io/api/billing/checkout/abandon", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Origin: "https://dropimg.io",
+        Cookie: pending.cookie,
+      },
+      body: JSON.stringify({ product: "drops_pro" }),
+    });
+    expect(abandoned.status).toBe(200);
+    expect(await subscriptionCount(pending.userId, "drops_pro")).toBe(0);
+
+    const live = await signIn("drops-abandon-active@example.com");
+    await seedSubscription(live.userId, {
+      id: "I-keepactive",
+      product: "drops_pro",
+      status: "active",
+      priceId: "P-monthly",
+      periodEnd: now + 86400,
+    });
+    const skipped = await worker.fetch("https://dropimg.io/api/billing/checkout/abandon", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Origin: "https://dropimg.io",
+        Cookie: live.cookie,
+      },
+      body: JSON.stringify({ product: "drops_pro" }),
+    });
+    expect(skipped.status).toBe(200);
+    expect(await subscriptionCount(live.userId, "drops_pro")).toBe(1);
+  });
 });

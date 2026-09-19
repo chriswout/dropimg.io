@@ -5,6 +5,7 @@ import { resolveRequestLocale } from "../lib/auth/locale-cookie";
 import { resolveSession } from "../lib/auth/session";
 import { cookieSecure } from "../lib/auth/crypto";
 import {
+  abandonPendingCheckout,
   attachPaypalSubscriptionId,
   releaseCheckoutReservation,
   reserveCheckout,
@@ -52,6 +53,7 @@ import {
 } from "../lib/web-assets-entitlements";
 import type { WebAssetsPlanId } from "../lib/web-assets-plans";
 import { sha256Hex } from "../lib/auth/crypto";
+import type { Locale } from "../../marketing/locales";
 import { localeFromProPath, proPath } from "../../marketing/pro";
 import { renderProPage } from "../views/pro";
 
@@ -95,6 +97,24 @@ function checkoutCookieHeader(
 
 function clearCheckoutCookie(env: { ENVIRONMENT?: string }): string {
   return checkoutCookieHeader("", env, 0);
+}
+
+function appendClearedCheckoutCookies(headers: Headers, env: { ENVIRONMENT?: string }) {
+  headers.append("Set-Cookie", checkoutCookieHeader("", env, 0, CHECKOUT_COOKIE));
+  headers.append("Set-Cookie", checkoutCookieHeader("", env, 0, WA_CHECKOUT_COOKIE));
+}
+
+function paypalCheckoutCancelUrl(origin: string, product: BillingProduct): string {
+  return `${origin}/api/billing/checkout/cancelled?product=${product}`;
+}
+
+function paypalCheckoutCancelNext(
+  origin: string,
+  product: BillingProduct,
+  locale: Locale,
+): string {
+  if (product === "web_assets") return `${origin}/pricing?checkout=cancelled`;
+  return `${origin}${proPath(locale)}?checkout=cancelled`;
 }
 
 async function servePro(c: { req: { raw: Request; header: (n: string) => string | undefined }; env: Cloudflare.Env }) {
@@ -151,6 +171,46 @@ billingRoutes.get("/es/pro", (c) => servePro(c));
 billingRoutes.get("/pt-br/pro", (c) => servePro(c));
 billingRoutes.get("/de/pro", (c) => servePro(c));
 
+billingRoutes.get("/api/billing/checkout/cancelled", async (c) => {
+  const product = parseProduct(c.req.query("product")) ?? "web_assets";
+  const origin = new URL(c.req.raw.url).origin;
+  const locale = resolveRequestLocale(c.req.raw);
+  const next = paypalCheckoutCancelNext(origin, product, locale);
+  const session = await resolveSession(c.env.DB, c.req.header("cookie"));
+  if (session) {
+    await abandonPendingCheckout(asBillingEnv(c.env), c.env.DB, {
+      userId: session.id,
+      product,
+    });
+  }
+  const res = c.redirect(next, 302);
+  appendClearedCheckoutCookies(res.headers, c.env);
+  return res;
+});
+
+billingRoutes.post("/api/billing/checkout/abandon", async (c) => {
+  if (!csrfOriginOk(c.req.raw)) return c.json({ error: "Invalid origin" }, 403);
+  const session = await resolveSession(c.env.DB, c.req.header("cookie"));
+  if (!session) return c.json({ error: "Unauthorized" }, 401);
+
+  let product: BillingProduct | null = null;
+  try {
+    const body = (await c.req.json()) as { product?: string };
+    product = parseProduct(body.product);
+  } catch {
+    return c.json({ error: "Invalid payload" }, 400);
+  }
+  if (!product) return c.json({ error: "That plan isn’t available." }, 400);
+
+  await abandonPendingCheckout(asBillingEnv(c.env), c.env.DB, {
+    userId: session.id,
+    product,
+  });
+  const res = c.json({ ok: true });
+  appendClearedCheckoutCookies(res.headers, c.env);
+  return res;
+});
+
 billingRoutes.get("/api/billing/config", (c) => {
   const config = billingConfig(asBillingEnv(c.env));
   if (!config) return c.json({ error: "Billing is not available." }, 404);
@@ -201,7 +261,7 @@ billingRoutes.post("/api/billing/checkout", async (c) => {
     email: session.email,
     priceId,
     successUrl: `${returnPath}?checkout=success`,
-    cancelUrl: returnPath,
+    cancelUrl: paypalCheckoutCancelUrl(origin, "drops_pro"),
   });
   if (!created.ok) {
     await releaseCheckoutReservation(c.env.DB, reserved.reservationId);
@@ -266,7 +326,7 @@ billingRoutes.post("/api/billing/web-assets/checkout", async (c) => {
     email: session.email,
     priceId,
     successUrl: `${origin}/app/billing?checkout=success&product=web_assets`,
-    cancelUrl: `${origin}/pricing`,
+    cancelUrl: paypalCheckoutCancelUrl(origin, "web_assets"),
   });
   if (!created.ok) {
     await releaseCheckoutReservation(c.env.DB, reserved.reservationId);

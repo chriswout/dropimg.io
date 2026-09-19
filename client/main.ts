@@ -811,6 +811,16 @@ function setupPricingCheckout() {
   const buttons = document.querySelectorAll<HTMLButtonElement>("[data-wa-checkout]");
   const intervalBtns = document.querySelectorAll<HTMLButtonElement>("[data-select-interval]");
   if (!buttons.length) return;
+  const status = document.getElementById("pricing-billing-status");
+  const show = (message: string) => {
+    if (!status) return;
+    status.hidden = false;
+    status.textContent = message;
+  };
+
+  if (new URLSearchParams(location.search).get("checkout") === "cancelled") {
+    show("PayPal checkout was cancelled. Choose a plan when you're ready.");
+  }
 
   const selectInterval = (interval: "monthly" | "annual") => {
     intervalBtns.forEach((btn) => {
@@ -834,48 +844,78 @@ function setupPricingCheckout() {
     btn.addEventListener("click", () => {
       const plan = btn.getAttribute("data-wa-checkout") === "pro" ? "pro" : "developer";
       const interval = btn.getAttribute("data-interval") === "annual" ? "annual" : "monthly";
-      void startWebAssetsCheckout(plan, interval);
+      void startWebAssetsCheckout(plan, interval, { buttons, show });
     });
   });
 }
 
-async function startWebAssetsCheckout(plan: "developer" | "pro", interval: "monthly" | "annual") {
+async function startWebAssetsCheckout(
+  plan: "developer" | "pro",
+  interval: "monthly" | "annual",
+  ui: { buttons: NodeListOf<HTMLButtonElement>; show: (message: string) => void },
+) {
   trackEvent("web_assets_checkout_started", { plan, interval, reason: plan });
-  let res: Response;
+  ui.buttons.forEach((btn) => {
+    btn.disabled = true;
+  });
   try {
-    res = await fetch("/api/billing/web-assets/checkout", {
-      method: "POST",
-      credentials: "same-origin",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ plan, interval }),
-    });
+    let res = await postWebAssetsCheckout(plan, interval);
+    if (res.status === 401) {
+      location.href = `/login?next=${encodeURIComponent("/pricing")}`;
+      return;
+    }
+    if (res.status === 409) {
+      const first = (await res.json().catch(() => null)) as { error?: string; code?: string } | null;
+      if (first?.code === "checkout_in_progress") {
+        await abandonWebAssetsCheckout();
+        res = await postWebAssetsCheckout(plan, interval);
+      } else {
+        ui.show(
+          first?.error ||
+            "You already have a live Web Assets subscription. Change plan from Billing — DropIMG will not start a second subscription or prorate unused time.",
+        );
+        return;
+      }
+    }
+    if (res.status === 409) {
+      const body = (await res.json().catch(() => null)) as { error?: string } | null;
+      ui.show(
+        body?.error ||
+          "You already have a live Web Assets subscription. Change plan from Billing — DropIMG will not start a second subscription or prorate unused time.",
+      );
+      return;
+    }
+    if (!res.ok) {
+      ui.show("Checkout isn’t available right now. Try again shortly.");
+      return;
+    }
+    const data = (await res.json()) as { url?: string };
+    if (data.url) location.href = data.url;
   } catch {
-    return;
+    ui.show("Checkout isn’t available right now. Try again shortly.");
+  } finally {
+    ui.buttons.forEach((btn) => {
+      btn.disabled = false;
+    });
   }
-  if (res.status === 401) {
-    location.href = `/login?next=${encodeURIComponent("/pricing")}`;
-    return;
-  }
-  const status = document.getElementById("pricing-billing-status");
-  const show = (message: string) => {
-    if (!status) return;
-    status.hidden = false;
-    status.textContent = message;
-  };
-  if (res.status === 409) {
-    const body = (await res.json().catch(() => null)) as { error?: string } | null;
-    show(
-      body?.error ||
-        "You already have a live Web Assets subscription. Change plan from Billing — DropIMG will not start a second subscription or prorate unused time.",
-    );
-    return;
-  }
-  if (!res.ok) {
-    show("Checkout isn’t available right now. Try again shortly.");
-    return;
-  }
-  const data = (await res.json()) as { url?: string };
-  if (data.url) location.href = data.url;
+}
+
+function postWebAssetsCheckout(plan: "developer" | "pro", interval: "monthly" | "annual") {
+  return fetch("/api/billing/web-assets/checkout", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ plan, interval }),
+  });
+}
+
+function abandonWebAssetsCheckout() {
+  return fetch("/api/billing/checkout/abandon", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ product: "web_assets" }),
+  }).catch(() => undefined);
 }
 
 function setupMediaCtas() {
