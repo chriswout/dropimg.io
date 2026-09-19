@@ -1,7 +1,10 @@
 ---
 name: paddle-webhooks
-description: Receive and verify Paddle webhooks in a Next.js Route Handler — signature verification, idempotency, retry semantics, and local testing.
+description: ARCHIVAL / NOT USED BY DROPIMG. Live subscription billing is PayPal REST Subscriptions only. Do not follow this skill for this repo. Receive and verify Paddle webhooks in a Next.js Route Handler — signature verification, idempotency, retry semantics, and local testing.
 ---
+
+
+> **Archival:** DropIMG live billing is PayPal. Do not use this skill in this repository. See `docs/paypal.md` and `.agents/skills/ARCHIVAL-PADDLE.md`.
 
 # Receive Paddle webhooks securely in Next.js
 

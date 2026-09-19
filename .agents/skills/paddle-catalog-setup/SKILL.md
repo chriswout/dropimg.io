@@ -1,7 +1,10 @@
 ---
 name: paddle-catalog-setup
-description: Create the Paddle products and prices that other Paddle skills depend on — try MCP tools first, fall back to a Node SDK seed script, or dictate dashboard steps as a last resort.
+description: ARCHIVAL / NOT USED BY DROPIMG. Live subscription billing is PayPal REST Subscriptions only. Do not follow this skill for this repo. Create the Paddle products and prices that other Paddle skills depend on — try MCP tools first, fall back to a Node SDK seed script, or dictate dashboard steps as a last resort.
 ---
+
+
+> **Archival:** DropIMG live billing is PayPal. Do not use this skill in this repository. See `docs/paypal.md` and `.agents/skills/ARCHIVAL-PADDLE.md`.
 
 # Create Paddle products and prices
 

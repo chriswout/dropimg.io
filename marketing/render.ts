@@ -1941,6 +1941,7 @@ ${topBar("home", locale, chrome)}
         <section id="plans" class="price-grid" aria-label="Web Assets plans">
 ${cards}
         </section>
+        <p id="pricing-billing-status" class="pricing-trust" hidden aria-live="polite"></p>
         <p class="pricing-trust">${esc(copy.trustLine)}</p>
 
         <aside class="pricing-protect" aria-labelledby="overage-heading">

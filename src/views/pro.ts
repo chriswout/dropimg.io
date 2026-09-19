@@ -32,6 +32,7 @@ type Copy = {
   activatingTimeout: string;
   checkoutUnavailable: string;
   checkoutCouldNotOpen: string;
+  alreadySubscribed: string;
   billingOff: string;
   skip: string;
   note: string;
@@ -51,7 +52,7 @@ export const PRO_COPY: Record<Locale, Copy> = {
     lede: "More control for people who use DropIMG every day.",
     ledeMore:
       "Keep links longer, manage your uploads across devices, and protect what you share.",
-    memberLede: "Cancel anytime from billing.",
+    memberLede: "Cancel or update payment in your PayPal wallet.",
     monthly: "Monthly",
     annual: "Annual",
     monthlyPrice: "€2.99",
@@ -65,13 +66,14 @@ export const PRO_COPY: Record<Locale, Copy> = {
     annualHint: "Pay yearly and save 30%.",
     getPro: "Pay with PayPal",
     signIn: "Sign in to get Drops Pro",
-    manage: "Manage billing",
+    manage: "Manage in PayPal",
     waiting: "Opening PayPal…",
     activating: "Payment received. Activating Drops Pro…",
     activatingTimeout:
       "Your payment was received. Drops Pro is still activating. Refresh My Drops in a moment.",
     checkoutUnavailable: "Checkout isn’t available right now. Try again shortly.",
     checkoutCouldNotOpen: "Checkout could not open. Try again shortly.",
+    alreadySubscribed: "You already have Drops Pro. Manage it in PayPal.",
     billingOff: "Billing isn’t available right now.",
     skip: "Skip to plans",
     note: "Drops stay temporary. Even Drops Pro links expire after a maximum of 180 days.",
@@ -95,7 +97,7 @@ export const PRO_COPY: Record<Locale, Copy> = {
     lede: "Más control si usas DropIMG a diario.",
     ledeMore:
       "Conserva enlaces más tiempo, gestiona tus envíos en todos tus dispositivos y protege lo que compartes.",
-    memberLede: "Cancela cuando quieras desde facturación.",
+    memberLede: "Cancela o actualiza el pago en tu cuenta de PayPal.",
     monthly: "Mensual",
     annual: "Anual",
     monthlyPrice: "€2.99",
@@ -109,13 +111,14 @@ export const PRO_COPY: Record<Locale, Copy> = {
     annualHint: "Paga al año y ahorra un 30%.",
     getPro: "Pagar con PayPal",
     signIn: "Entra para obtener Drops Pro",
-    manage: "Gestionar facturación",
+    manage: "Gestionar en PayPal",
     waiting: "Abriendo PayPal…",
     activating: "Pago recibido. Activando Drops Pro…",
     activatingTimeout:
       "Recibimos el pago. Drops Pro se está activando. Actualiza Mis Drops en un momento.",
     checkoutUnavailable: "El pago no está disponible ahora. Prueba en un momento.",
     checkoutCouldNotOpen: "No se pudo abrir el pago. Prueba en un momento.",
+    alreadySubscribed: "Ya tienes Drops Pro. Gestionalo en PayPal.",
     billingOff: "La facturación no está disponible ahora.",
     skip: "Ir a los planes",
     note: "Los Drops siguen siendo temporales. Incluso los enlaces de Drops Pro caducan a los 180 días como máximo.",
@@ -139,7 +142,7 @@ export const PRO_COPY: Record<Locale, Copy> = {
     lede: "Mais controle pra quem usa o DropIMG todo dia.",
     ledeMore:
       "Mantenha links por mais tempo, gerencie envios em todos os dispositivos e proteja o que você compartilha.",
-    memberLede: "Cancele quando quiser na cobrança.",
+    memberLede: "Cancele ou atualize o pagamento na sua conta PayPal.",
     monthly: "Mensal",
     annual: "Anual",
     monthlyPrice: "€2.99",
@@ -153,13 +156,14 @@ export const PRO_COPY: Record<Locale, Copy> = {
     annualHint: "Pague por ano e economize 30%.",
     getPro: "Pagar com PayPal",
     signIn: "Entre para assinar Drops Pro",
-    manage: "Gerenciar cobrança",
+    manage: "Gerenciar no PayPal",
     waiting: "Abrindo o PayPal…",
     activating: "Pagamento recebido. Ativando Drops Pro…",
     activatingTimeout:
       "Seu pagamento foi recebido. O Drops Pro ainda está ativando. Atualize Meus Drops daqui a pouco.",
     checkoutUnavailable: "O pagamento não está disponível agora. Tente em instantes.",
     checkoutCouldNotOpen: "Não deu pra abrir o pagamento. Tente de novo.",
+    alreadySubscribed: "Você já tem Drops Pro. Gerencie no PayPal.",
     billingOff: "A cobrança não está disponível agora.",
     skip: "Ir para os planos",
     note: "Os Drops continuam temporários. Até links Drops Pro expiram no máximo em 180 dias.",
@@ -183,7 +187,7 @@ export const PRO_COPY: Record<Locale, Copy> = {
     lede: "Mehr Kontrolle für alle, die DropIMG täglich nutzen.",
     ledeMore:
       "Links länger behalten, Uploads auf allen Geräten verwalten und Freigaben schützen.",
-    memberLede: "Jederzeit in der Abrechnung kündbar.",
+    memberLede: "Zahlung in deinem PayPal-Konto kündigen oder aktualisieren.",
     monthly: "Monatlich",
     annual: "Jährlich",
     monthlyPrice: "€2.99",
@@ -197,13 +201,14 @@ export const PRO_COPY: Record<Locale, Copy> = {
     annualHint: "Jährlich zahlen und 30% sparen.",
     getPro: "Mit PayPal bezahlen",
     signIn: "Anmelden für Drops Pro",
-    manage: "Abrechnung verwalten",
+    manage: "In PayPal verwalten",
     waiting: "PayPal wird geöffnet…",
     activating: "Zahlung erhalten. Drops Pro wird aktiviert…",
     activatingTimeout:
       "Deine Zahlung ist da. Drops Pro wird noch aktiviert. Meine Drops gleich neu laden.",
     checkoutUnavailable: "Checkout ist gerade nicht verfügbar. Bitte gleich nochmal.",
     checkoutCouldNotOpen: "Checkout ließ sich nicht öffnen. Bitte gleich nochmal.",
+    alreadySubscribed: "Du hast Drops Pro schon. In PayPal verwalten.",
     billingOff: "Abrechnung ist gerade nicht verfügbar.",
     skip: "Zu den Plänen",
     note: "Drops bleiben temporär. Auch Drops-Pro-Links laufen nach höchstens 180 Tagen ab.",
@@ -306,7 +311,8 @@ export function renderProPage(opts: {
     data-activating="${esc(t.activating)}"
     data-timeout="${esc(t.activatingTimeout)}"
     data-unavailable="${esc(t.checkoutUnavailable)}"
-    data-open-fail="${esc(t.checkoutCouldNotOpen)}">
+    data-open-fail="${esc(t.checkoutCouldNotOpen)}"
+    data-already="${esc(t.alreadySubscribed)}">
     ${hero}
     ${isPro ? "" : offer}
     ${isPro ? "" : `<p class="pro-fineprint">${esc(t.note)}</p>`}

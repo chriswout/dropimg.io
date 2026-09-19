@@ -135,6 +135,32 @@ describe("resolveEntitlements", () => {
     ).toBe(true);
   });
 
+  it("expired PayPal status is Free even with a future timestamp", () => {
+    expect(
+      isProSubscription(
+        {
+          status: "expired",
+          current_period_end: now + 100,
+          cancel_at_period_end: 0,
+        },
+        now,
+      ),
+    ).toBe(false);
+  });
+
+  it("suspended PayPal status is Free", () => {
+    expect(
+      isProSubscription(
+        {
+          status: "suspended",
+          current_period_end: now + 100,
+          cancel_at_period_end: 0,
+        },
+        now,
+      ),
+    ).toBe(false);
+  });
+
   it("expired Pro is Free", () => {
     const e = resolveEntitlements({
       userId: "u1",

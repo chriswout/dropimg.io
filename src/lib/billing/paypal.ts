@@ -40,6 +40,30 @@ export function paypalApiBase(env: BillingEnv): string | null {
   return null;
 }
 
+/** Configured PayPal plan IDs. Empty values are ignored. */
+export function paypalPlanIds(env: BillingEnv): string[] {
+  return [
+    env.PAYPAL_PLAN_MONTHLY,
+    env.PAYPAL_PLAN_ANNUAL,
+    env.PAYPAL_WA_DEVELOPER_MONTHLY,
+    env.PAYPAL_WA_DEVELOPER_ANNUAL,
+    env.PAYPAL_WA_PRO_MONTHLY,
+    env.PAYPAL_WA_PRO_ANNUAL,
+  ]
+    .map((value) => value?.trim() ?? "")
+    .filter(Boolean);
+}
+
+/**
+ * Sandbox and live catalogs must never share an ID, and Drops Pro must never
+ * share an ID with Web Assets. A collision disables checkout rather than
+ * guessing which product a webhook should grant.
+ */
+export function paypalCatalogCollision(env: BillingEnv): boolean {
+  const ids = paypalPlanIds(env);
+  return new Set(ids).size !== ids.length;
+}
+
 export function billingConfig(env: BillingEnv): BillingConfig | null {
   if (!billingEnabled(env)) return null;
   const mode = paypalMode(env);
@@ -47,6 +71,7 @@ export function billingConfig(env: BillingEnv): BillingConfig | null {
   if (!env.PAYPAL_CLIENT_ID?.trim() || !env.PAYPAL_CLIENT_SECRET?.trim()) {
     return null;
   }
+  if (paypalCatalogCollision(env)) return null;
   const priceMonthly = env.PAYPAL_PLAN_MONTHLY?.trim() || "";
   const priceAnnual = env.PAYPAL_PLAN_ANNUAL?.trim() || "";
   if (!priceMonthly || !priceAnnual) return null;
@@ -60,6 +85,7 @@ export function webAssetsBillingConfig(env: BillingEnv): WebAssetsBillingConfig 
   if (!env.PAYPAL_CLIENT_ID?.trim() || !env.PAYPAL_CLIENT_SECRET?.trim()) {
     return null;
   }
+  if (paypalCatalogCollision(env)) return null;
   const developerMonthly = env.PAYPAL_WA_DEVELOPER_MONTHLY?.trim() || "";
   const developerAnnual = env.PAYPAL_WA_DEVELOPER_ANNUAL?.trim() || "";
   const proMonthly = env.PAYPAL_WA_PRO_MONTHLY?.trim() || "";
@@ -301,6 +327,7 @@ export const LIVE_PAYPAL_STATUSES = new Set([
   "approved",
   "past_due",
   "suspended",
+  "approval_pending",
 ]);
 
 export function isLivePaypalStatus(status: string | null | undefined): boolean {
@@ -346,7 +373,10 @@ export async function syncSubscriptionFromPaypal(
   }
 
   const rawStatus = str(resource.status);
-  const status = mapPaypalStatus(rawStatus, "BILLING.SUBSCRIPTION.UPDATED");
+  const status = mapPaypalSubscriptionStatus(
+    rawStatus,
+    "BILLING.SUBSCRIPTION.UPDATED",
+  );
   if (status !== "active") {
     return { ok: false, error: "not_active" };
   }
@@ -383,18 +413,46 @@ function unixFromIso(value: unknown): number | null {
   return Math.floor(ms / 1000);
 }
 
-function mapPaypalStatus(raw: string | null, eventType: string): string {
-  if (
-    eventType === "BILLING.SUBSCRIPTION.CANCELLED" ||
-    eventType === "BILLING.SUBSCRIPTION.EXPIRED"
-  ) {
-    return "canceled";
-  }
+export function mapPaypalSubscriptionStatus(
+  raw: string | null,
+  eventType: string,
+): string {
+  if (eventType === "BILLING.SUBSCRIPTION.EXPIRED") return "expired";
+  if (eventType === "BILLING.SUBSCRIPTION.CANCELLED") return "canceled";
   const status = (raw ?? "").trim().toUpperCase();
   if (status === "ACTIVE" || status === "APPROVED") return "active";
   if (status === "SUSPENDED") return "suspended";
-  if (status === "CANCELLED" || status === "EXPIRED") return "canceled";
+  if (status === "APPROVAL_PENDING") return "approval_pending";
+  if (status === "CANCELLED") return "canceled";
+  if (status === "EXPIRED") return "expired";
   return status.toLowerCase() || "unknown";
+}
+
+/**
+ * PayPal often omits `next_billing_time` on CANCELLED. Keep the prepaid
+ * period end we already stored so access continues until that timestamp.
+ * EXPIRED means the term is over — do not keep a future end.
+ */
+export function resolvePaidThroughPeriodEnd(opts: {
+  incoming: number | null;
+  previous: number | null;
+  status: string;
+  now: number;
+}): number | null {
+  if (opts.status === "expired") {
+    if (opts.incoming != null && opts.incoming <= opts.now) return opts.incoming;
+    if (opts.previous != null && opts.previous <= opts.now) return opts.previous;
+    return opts.now;
+  }
+  if (opts.incoming != null) return opts.incoming;
+  if (
+    opts.status === "canceled" &&
+    opts.previous != null &&
+    opts.previous > opts.now
+  ) {
+    return opts.previous;
+  }
+  return opts.incoming;
 }
 
 function subscriberId(resource: Record<string, unknown>): string | null {
@@ -511,10 +569,26 @@ export async function upsertSubscriptionFromEvent(
     if (!subscriptionId) {
       return { userId: null, subscriptionId: null, product: null, priceId: null, status: null };
     }
-    const customerId = subscriberId(resource);
-    const status = mapPaypalStatus(str(resource.status), eventType);
     const priceId = str(resource.plan_id);
-    const product = (env ? billingProductForPriceId(env, priceId) : null) ?? "drops_pro";
+    const product = env ? billingProductForPriceId(env, priceId) : null;
+    if (
+      eventType === "BILLING.SUBSCRIPTION.PAYMENT.FAILED" ||
+      eventType.endsWith(".PAYMENT.FAILED")
+    ) {
+      return {
+        userId: customUserId(resource),
+        subscriptionId,
+        product,
+        priceId,
+        status: str(resource.status),
+      };
+    }
+    if (!product) {
+      return { userId: null, subscriptionId, product: null, priceId, status: null };
+    }
+
+    const customerId = subscriberId(resource);
+    const status = mapPaypalSubscriptionStatus(str(resource.status), eventType);
 
     let userId = customUserId(resource);
     if (!userId) {
@@ -619,11 +693,11 @@ async function applySubscriptionState(
 ): Promise<boolean> {
   const existing = await db
     .prepare(
-      `SELECT provider_occurred_at FROM subscriptions
+      `SELECT provider_occurred_at, current_period_end FROM subscriptions
        WHERE provider_subscription_id = ? LIMIT 1`,
     )
     .bind(row.subscriptionId)
-    .first<{ provider_occurred_at: number | null }>();
+    .first<{ provider_occurred_at: number | null; current_period_end: number | null }>();
 
   /**
    * Only snapshots are ordered against each other. A sale is often delivered
@@ -638,6 +712,19 @@ async function applySubscriptionState(
   ) {
     return false;
   }
+
+  const periodEnd = row.authoritative
+    ? resolvePaidThroughPeriodEnd({
+        incoming: row.periodEnd,
+        previous: existing?.current_period_end ?? null,
+        status: row.status,
+        now: row.now,
+      })
+    : row.periodEnd;
+  const cancelAtPeriodEnd =
+    row.status === "canceled" && periodEnd != null && periodEnd > row.now
+      ? 1
+      : row.cancelAtPeriodEnd;
 
   if (existing) {
     if (row.authoritative) {
@@ -661,8 +748,8 @@ async function applySubscriptionState(
           row.status,
           row.priceId,
           row.product,
-          row.periodEnd,
-          row.cancelAtPeriodEnd,
+          periodEnd,
+          cancelAtPeriodEnd,
           row.occurredAt,
           row.now,
           row.subscriptionId,
@@ -699,8 +786,8 @@ async function applySubscriptionState(
       row.status,
       row.priceId,
       row.product ?? "drops_pro",
-      row.periodEnd,
-      row.cancelAtPeriodEnd,
+      periodEnd,
+      cancelAtPeriodEnd,
       row.authoritative ? row.occurredAt : null,
       row.now,
       row.now,

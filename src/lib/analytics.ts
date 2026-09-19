@@ -23,6 +23,7 @@ export type AnalyticsEvent =
   | "checkout_started"
   | "checkout_completed_client"
   | "billing_webhook_ok"
+  | "billing_payment_failed"
   | "account_deleted"
   | "integration_token_created"
   | "integration_token_revoked"

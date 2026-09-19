@@ -55,6 +55,11 @@ async function startCheckout(interval: "monthly" | "annual") {
     location.href = "/login";
     return;
   }
+  if (res.status === 409) {
+    const body = (await res.json().catch(() => null)) as { error?: string; code?: string } | null;
+    setStatus(body?.error || copy("already", "You already have Drops Pro. Manage it in PayPal."));
+    return;
+  }
   if (!res.ok) {
     setStatus(copy("unavailable", "Checkout isn’t available right now. Try again shortly."));
     return;

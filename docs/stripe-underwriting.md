@@ -1,3 +1,9 @@
+# Stripe underwriting — ARCHIVAL / REFERENCE ONLY
+
+**LIVE SUBSCRIPTION BILLING = PAYPAL.** Do not implement Stripe for DropIMG.
+This file is the category brief prepared when Stripe declined DropIMG. Keep it
+for underwriting history. See [paypal.md](paypal.md).
+
 # Stripe underwriting — the category question
 
 **Outcome:** Stripe declined the same filesharing / cyberlocker category

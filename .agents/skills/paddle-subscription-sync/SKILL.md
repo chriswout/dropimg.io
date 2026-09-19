@@ -1,7 +1,10 @@
 ---
 name: paddle-subscription-sync
-description: Mirror Paddle subscription and customer state into your database via webhooks — schema, upsert pattern, status semantics, scheduled changes, and access gating.
+description: ARCHIVAL / NOT USED BY DROPIMG. Live subscription billing is PayPal REST Subscriptions only. Do not follow this skill for this repo. Mirror Paddle subscription and customer state into your database via webhooks — schema, upsert pattern, status semantics, scheduled changes, and access gating.
 ---
+
+
+> **Archival:** DropIMG live billing is PayPal. Do not use this skill in this repository. See `docs/paypal.md` and `.agents/skills/ARCHIVAL-PADDLE.md`.
 
 # Sync Paddle subscription state into your database
 

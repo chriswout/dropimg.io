@@ -77,7 +77,8 @@ describe("Web Assets pricing page redesign", () => {
     expect(html).toContain("We don't suddenly break your live assets.");
     expect(html).toContain("Pricing questions");
     expect(html).toContain("Can I buy Developer or Pro today?");
-    expect(html).toContain("Are Drops included?");
+    expect(html).toContain("Can I switch Web Assets plans instantly?");
+    expect(html).toContain("pricing-billing-status");
     expect(html).toContain("Is there a per-MCP-call fee?");
     expect(html).toContain("Ready to give your coding agent permanent web assets?");
   });

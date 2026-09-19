@@ -30,6 +30,7 @@ const FUNNEL_EVENTS: AnalyticsEvent[] = [
   "checkout_completed_client",
   "pro_activated",
   "pro_canceled",
+  "billing_payment_failed",
   "dashboard_open",
   "dashboard_copy",
   "dashboard_delete",

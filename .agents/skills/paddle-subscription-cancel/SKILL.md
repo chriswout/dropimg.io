@@ -1,7 +1,10 @@
 ---
 name: paddle-subscription-cancel
-description: Cancel a Paddle subscription from a Next.js Server Action — auth, ownership check, safe `effectiveFrom` default, revalidation, and the `canceled` vs `scheduledChange` distinction.
+description: ARCHIVAL / NOT USED BY DROPIMG. Live subscription billing is PayPal REST Subscriptions only. Do not follow this skill for this repo. Cancel a Paddle subscription from a Next.js Server Action — auth, ownership check, safe `effectiveFrom` default, revalidation, and the `canceled` vs `scheduledChange` distinction.
 ---
+
+
+> **Archival:** DropIMG live billing is PayPal. Do not use this skill in this repository. See `docs/paypal.md` and `.agents/skills/ARCHIVAL-PADDLE.md`.
 
 # Cancel a Paddle subscription from Next.js
 

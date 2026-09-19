@@ -28,7 +28,7 @@ permanent storage, storage quota, or team plan.
 
 ## Who can buy
 
-Checkout is a signed-in redirect to PayPal's hosted approval page. Anonymous visitors are sent to `/login`. Active Pro subscribers see **You're on DropIMG Pro** and **Manage billing** — no purchase CTAs.
+Checkout is a signed-in redirect to PayPal's hosted approval page. Anonymous visitors are sent to `/login`. Active Pro subscribers see **You're on Drops Pro** and **Manage in PayPal** — no purchase CTAs.
 
 Pro is granted only from a verified PayPal webhook. The browser never grants Pro from checkout UI state.
 

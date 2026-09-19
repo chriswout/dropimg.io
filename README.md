@@ -2,6 +2,8 @@
 
 Permanent **Web Assets** for AI-built apps, plus a fast temporary Drop when you need one.
 
+**Live subscription billing is PayPal only.** See [docs/paypal.md](docs/paypal.md) and [AGENTS.md](AGENTS.md). Paddle and Stripe are not live processors.
+
 **Live:** https://dropimg.io · **Web Assets:** https://dropimg.io/web-assets · **Pricing:** https://dropimg.io/pricing  
 **Current state:** [docs/PROJECT_STATUS.md](docs/PROJECT_STATUS.md)
 

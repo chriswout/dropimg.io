@@ -1,17 +1,24 @@
 # PayPal REST Subscriptions
 
+**LIVE SUBSCRIPTION BILLING = PAYPAL.** Paddle and Stripe are not live
+processors. See [AGENTS.md](../AGENTS.md).
+
 Billing runs on **PayPal REST Subscriptions** (the middle card on PayPal’s
 credentials screen: *REST-API-integratie*). DropIMG is the **merchant of
 record**. PayPal is the processor: it collects the payment and holds the
-payment method. Tax, receipts, and refunds are ours. Advertised totals stay
-**€2.99 / month** and **€24.99 / year**, tax inclusive, same as before.
+payment method. Tax, receipts, and refunds are ours.
+
+Two catalogs, never mixed:
+
+| Product | Checkout | Advertised totals (tax inclusive) |
+|---------|----------|-----------------------------------|
+| Drops Pro | `POST /api/billing/checkout` | €2.99 / month, €24.99 / year |
+| Web Assets | `POST /api/billing/web-assets/checkout` | Developer $9 / $90, Pro $29 / $290 |
 
 Paddle and Stripe both declined the same filesharing / cyberlocker category.
-Confirm with PayPal that temporary image hosting is allowed **before the first
-live charge**. They can decline this category too. The earlier Stripe write-up
-is in [stripe-underwriting.md](stripe-underwriting.md).
+The earlier Stripe write-up is archival: [stripe-underwriting.md](stripe-underwriting.md).
 
-Do not use shopping-cart, Braintree, or NVP/SOAP.
+Do not use shopping-cart, Braintree, NVP/SOAP, Paddle, or Stripe.
 
 ## Dashboard setup
 
@@ -33,6 +40,10 @@ app first, then again for **Live**.
    - `BILLING.SUBSCRIPTION.EXPIRED`
    - `BILLING.SUBSCRIPTION.SUSPENDED`
    - `PAYMENT.SALE.COMPLETED`
+
+   Optional for observability only (does not change entitlements):
+
+   - `BILLING.SUBSCRIPTION.PAYMENT.FAILED`
 
 Copy the webhook id (`WH-…` / dashboard id) as `PAYPAL_WEBHOOK_ID`.
 
@@ -124,33 +135,76 @@ Production must set `PAYPAL_WEBHOOK_ID` and never rely on the HMAC secret.
 
 ## Flow
 
-`POST /api/billing/checkout` creates a PayPal subscription with
-`custom_id = userId` and returns the `rel=approve` URL. The browser navigates
-there. Success and cancel both return to `/pro`, which polls
-`/api/account/me` until the entitlement flips.
+`POST /api/billing/checkout` and `POST /api/billing/web-assets/checkout` refuse
+anonymous buyers. Before minting a PayPal `I-…`, the Worker inserts an
+`approval_pending` reservation row. A second click, an already-live
+subscription, or a canceled-but-still-paid-through row returns **409** and
+does not call PayPal.
 
-Pro is granted only from a verified webhook at
+- Drops Pro: `already_subscribed` or `checkout_in_progress`
+- Web Assets: `plan_change_blocked` or `checkout_in_progress`
+
+Launch does **not** start a second Web Assets subscription to “change plan”.
+There is no PayPal proration or invented credit. Cancel renewal in PayPal, keep
+access until `current_period_end`, then subscribe to the new plan.
+
+`custom_id = userId`. The browser is sent to the `rel=approve` URL. Success
+pages may sync the mint we created; they never grant entitlement by themselves.
+
+Entitlement is granted only from a **verified** webhook at
 `POST /api/billing/paypal/webhook`. Production verification is PayPal’s
-`verify-webhook-signature` API. Unsigned JSON is rejected.
+`verify-webhook-signature` API. Unsigned JSON is rejected. Replay is
+idempotent via `billing_events(provider, event_id)`.
+
+Unknown PayPal `plan_id` values fail closed: no `subscriptions` upsert, no
+entitlement. Drops Pro plan IDs cannot grant Web Assets, and the reverse is
+also true. Overlapping catalog IDs disable checkout.
 
 `provider` on `subscriptions` is `paypal`. `provider_subscription_id` is the
-PayPal `I-…`. `provider_customer_id` is the payer / subscriber id.
+PayPal `I-…`. `product` is `drops_pro` or `web_assets`.
 
-PayPal has no Stripe Customer Portal. **Manage billing** opens the PayPal
-wallet (`/myaccount/autopay`). Account deletion cancels the live subscription
-immediately via the Subscriptions API before the user row is tombstoned.
+**Manage in PayPal** opens the PayPal wallet (`/myaccount/autopay`). There is
+no in-app invoice list and no DropIMG customer portal. Account deletion cancels
+every live PayPal row (both products) before the user is tombstoned.
+
+## Cancellation and paid-through access
+
+PayPal `BILLING.SUBSCRIPTION.CANCELLED` maps to `canceled`. If the event omits
+`billing_info.next_billing_time`, DropIMG keeps the previously stored
+`current_period_end`. `isProSubscription` (and Web Assets paid mapping) stay
+true until that timestamp. `BILLING.SUBSCRIPTION.EXPIRED` maps to `expired` and
+does not grant access.
+
+Account deletion is different: it cancels the PayPal subscription immediately
+and closes the account.
+
+## Failed payments
+
+PayPal retry exhaustion typically yields `SUSPENDED`. Suspended rows do **not**
+grant Drops Pro or a paid Web Assets plan. There is no `past_due` mapping and
+no dunning email. `BILLING.SUBSCRIPTION.PAYMENT.FAILED`, if subscribed, is
+recorded for observability and does not change entitlement by itself. The
+billing UI must not claim retries DropIMG does not perform. Update the payment
+method in PayPal.
 
 ## Customer-facing checkout states
 
 - Opening PayPal…
 - Payment received. Activating Pro… (back from PayPal, entitlements still Free)
 - Your payment was received. Pro is still activating. Refresh My drops in a moment. (poll timeout)
+- You already have Drops Pro. Manage it in PayPal. (409)
+- You already have a live Web Assets subscription… (409)
 - Billing isn’t available right now. (flags off or config missing)
 
 Do not say payment succeeded on frontend state alone, and never grant Pro from it.
 
+Controlled live Web Assets purchase walkthrough (do not auto-charge):
+[web-assets-live-checkout.md](web-assets-live-checkout.md).
+
 ## What we will not do
 
-- Braintree, NVP/SOAP, or a second Stripe path
+- Braintree, NVP/SOAP, Paddle, or a second Stripe path
 - Anonymous PayPal charges
-- Changing Pro prices or entitlements
+- Fake proration, account credits, or a second overlapping paid subscription
+- In-app invoice history or a custom billing portal
+- Changing advertised prices or mixing Drops Pro with Web Assets SKUs

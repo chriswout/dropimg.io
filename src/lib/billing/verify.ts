@@ -1,4 +1,4 @@
-/** Same 300s window Stripe used; PayPal deliveries can be retried. */
+/** 300s replay window; PayPal deliveries can be retried. */
 export const WEBHOOK_SIGNATURE_MAX_SKEW_SECONDS = 300;
 
 export type VerifyResult =

@@ -1,7 +1,10 @@
 ---
 name: paddle-billing-history
-description: Render the authenticated user's billing history in Next.js — listing transactions via the Paddle Node SDK, the mandatory customer-id filter, pagination via `.next()`/`.hasMore`, status filtering, and formatting raw transaction totals (lowest-unit conversion + Intl.NumberFormat, with the zero-decimal currency special case for JPY/KRW/CLP).
+description: ARCHIVAL / NOT USED BY DROPIMG. Live subscription billing is PayPal REST Subscriptions only. Do not follow this skill for this repo. Render the authenticated user's billing history in Next.js — listing transactions via the Paddle Node SDK, the mandatory customer-id filter, pagination via `.next()`/`.hasMore`, status filtering, and formatting raw transaction totals (lowest-unit conversion + Intl.NumberFormat, with the zero-decimal currency special case for JPY/KRW/CLP).
 ---
+
+
+> **Archival:** DropIMG live billing is PayPal. Do not use this skill in this repository. See `docs/paypal.md` and `.agents/skills/ARCHIVAL-PADDLE.md`.
 
 # Render the user's billing history in Next.js
 

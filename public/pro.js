@@ -45,6 +45,11 @@
       location.href = "/login";
       return;
     }
+    if (res.status === 409) {
+      const body = await res.json().catch(() => null);
+      setStatus(body?.error || copy("already", "You already have Drops Pro. Manage it in PayPal."));
+      return;
+    }
     if (!res.ok) {
       setStatus(copy("unavailable", "Checkout isn\u2019t available right now. Try again shortly."));
       return;

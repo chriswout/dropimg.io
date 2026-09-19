@@ -1,7 +1,10 @@
 ---
 name: paddle-customer-portal
-description: Mint a Paddle customer portal session URL from a Next.js Server Action — the portal-vs-custom-billing-screen trade-off, auth, ownership, URL structure (overview vs deep links), and the security model.
+description: ARCHIVAL / NOT USED BY DROPIMG. Live subscription billing is PayPal REST Subscriptions only. Do not follow this skill for this repo. Mint a Paddle customer portal session URL from a Next.js Server Action — the portal-vs-custom-billing-screen trade-off, auth, ownership, URL structure (overview vs deep links), and the security model.
 ---
+
+
+> **Archival:** DropIMG live billing is PayPal. Do not use this skill in this repository. See `docs/paypal.md` and `.agents/skills/ARCHIVAL-PADDLE.md`.
 
 # Mint Paddle Customer Portal session URLs from Next.js
 

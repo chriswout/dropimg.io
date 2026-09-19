@@ -1,7 +1,10 @@
 ---
 name: paddle-sandbox-testing
-description: Test a Paddle integration end-to-end using the sandbox environment, test cards, the webhook simulator, and local tunnels — without taking real money.
+description: ARCHIVAL / NOT USED BY DROPIMG. Live subscription billing is PayPal REST Subscriptions only. Do not follow this skill for this repo. Test a Paddle integration end-to-end using the sandbox environment, test cards, the webhook simulator, and local tunnels — without taking real money.
 ---
+
+
+> **Archival:** DropIMG live billing is PayPal. Do not use this skill in this repository. See `docs/paypal.md` and `.agents/skills/ARCHIVAL-PADDLE.md`.
 
 # Test a Paddle integration in the sandbox
 

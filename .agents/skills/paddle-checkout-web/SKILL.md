@@ -1,7 +1,10 @@
 ---
 name: paddle-checkout-web
-description: Add a Paddle Checkout to a Next.js web app — overlay or inline, with event handling, customer pre-fill, and dynamic line item updates.
+description: ARCHIVAL / NOT USED BY DROPIMG. Live subscription billing is PayPal REST Subscriptions only. Do not follow this skill for this repo. Add a Paddle Checkout to a Next.js web app — overlay or inline, with event handling, customer pre-fill, and dynamic line item updates.
 ---
+
+
+> **Archival:** DropIMG live billing is PayPal. Do not use this skill in this repository. See `docs/paypal.md` and `.agents/skills/ARCHIVAL-PADDLE.md`.
 
 # Build a Paddle Checkout in Next.js
 

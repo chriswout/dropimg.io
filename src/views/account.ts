@@ -1,5 +1,6 @@
 import { CHROME_WEB_STORE_URL } from "../../marketing/extension";
 import { LOCALE_CONFIG, type Locale } from "../../marketing/locales";
+import { mediaEnabled } from "../lib/media-config";
 import { renderAppShellPage } from "./app-shell";
 import { siteHtmlResponse } from "./site-page";
 
@@ -34,6 +35,20 @@ type Copy = {
   ends: (date: string) => string;
   viewPlans: string;
   manage: string;
+  managePaypal: string;
+  dropsProMonthly: string;
+  dropsProAnnual: string;
+  waFreeLabel: string;
+  waDeveloperMonthly: string;
+  waDeveloperAnnual: string;
+  waProMonthly: string;
+  waProAnnual: string;
+  intervalMonthly: string;
+  intervalAnnual: string;
+  waSeparate: string;
+  waPlanChangeHint: string;
+  waViewPlans: string;
+  suspendedHint: string;
   sectionSecurity: string;
   sessionsHint: string;
   signOutAll: string;
@@ -57,6 +72,9 @@ type Copy = {
   apiBody: string;
   createApi: string;
   apiDocs: string;
+  apiScopesToggle: string;
+  apiWebAssetsHint: string;
+  recommended: string;
   apiScopeWrite: string;
   apiScopeRead: string;
   apiScopeDelete: string;
@@ -122,7 +140,8 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     socialFailed: "Could not connect that account. Try again.",
     accountGone: "This account is no longer available.",
     plan: "Plan",
-    manageHint: "Cancel or change payment in your PayPal wallet.",
+    manageHint:
+      "Cancel or update payment in your PayPal wallet. Receipts come from PayPal; DropIMG does not list invoices here.",
     freePlanHint: "25 MB uploads, 1 hour to 30 days, last 10 drops.",
     planFree: "Drops Free",
     planPro: "Drops Pro",
@@ -130,33 +149,53 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     ends: (date) => `Ends ${date}`,
     viewPlans: "View plans",
     manage: "Manage billing",
+    managePaypal: "Manage in PayPal",
+    dropsProMonthly: "Drops Pro — €2.99/month",
+    dropsProAnnual: "Drops Pro — €24.99/year",
+    waFreeLabel: "Web Assets Free — $0",
+    waDeveloperMonthly: "Web Assets Developer — $9/month",
+    waDeveloperAnnual: "Web Assets Developer — $90/year",
+    waProMonthly: "Web Assets Pro — $29/month",
+    waProAnnual: "Web Assets Pro — $290/year",
+    intervalMonthly: "Monthly",
+    intervalAnnual: "Annual",
+    waSeparate:
+      "Projects, storage, and deliveries for permanent /m/… URLs. Separate from Drops Pro.",
+    waPlanChangeHint:
+      "To switch Web Assets plan or interval, cancel renewal in PayPal, wait until the paid period ends, then subscribe to the new plan from Pricing. DropIMG does not prorate, credit unused time, or start a second subscription.",
+    waViewPlans: "View Web Assets plans",
+    suspendedHint:
+      "PayPal marked this subscription as suspended after payment failed. Update the payment method in PayPal. DropIMG does not send payment-retry emails.",
     sectionSecurity: "Security",
     sessionsHint: "Sign out everywhere this account is open.",
     signOutAll: "Sign out of all devices",
     integrations: "Integrations",
     integrationsHint: "Connect DropIMG to tools you already use.",
     extensionTitle: "Browser extension",
-    extensionBody: "Capture screenshots and save them directly to My Drops.",
-    extensionPairHint: "Connect from the DropIMG extension — no token to copy.",
+    extensionBody: "Capture a tab, region, or full page. Uploads land in My Drops.",
+    extensionPairHint: "Already installed? Connect from the extension popup — no token to copy.",
     connectExtension: "Create a token manually",
     kindExtension: "Browser Extension",
     kindSharex: "ShareX",
     kindApi: "API key",
     kindOther: "Integration",
     connectedOn: "Connected",
-    chromeStore: "Available on the Chrome Web Store",
+    chromeStore: "Chrome Web Store",
     sharexTitle: "ShareX",
-    sharexBody: "Send ShareX screenshots directly to your DropIMG account.",
+    sharexBody: "Send screenshots from ShareX into this DropIMG account.",
     sharexHelp: "Anonymous config (no account)",
     createSharex: "Create ShareX config",
-    apiTitle: "API key",
-    apiBody: "Upload, list, and delete images from scripts and agents.",
+    apiTitle: "Drops API key",
+    apiBody: "Upload, list, and delete Drops from scripts and agents.",
     createApi: "Create API key",
-    apiDocs: "Docs",
+    apiDocs: "API docs",
+    apiScopesToggle: "Customize permissions",
+    apiWebAssetsHint: "Web Assets keys",
+    recommended: "Recommended",
     apiScopeWrite: "Upload",
     apiScopeRead: "Read and list",
     apiScopeDelete: "Delete",
-    connectedDevices: "Connected integrations",
+    connectedDevices: "Active credentials",
     neverUsed: "Never used",
     created: "Created",
     lastUsed: "Last used",
@@ -165,9 +204,9 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     hoursAgo: (n) => (n === 1 ? "1 hour ago" : `${n} hours ago`),
     revoke: "Revoke",
     noDevices: "No connected tools yet.",
-    lostConfig: "Already lost the config? Revoke the old token and create a new one.",
-    tokenTitle: "Integration connected",
-    tokenBody: "Copy this token now. DropIMG will not show it again.",
+    lostConfig: "Lost the secret? Revoke it here and create a new one.",
+    tokenTitle: "Save this token",
+    tokenBody: "Copy it now. DropIMG will not show it again.",
     copyToken: "Copy token",
     tokenCopied: "Copied",
     downloadSharex: "Download ShareX config",
@@ -217,7 +256,8 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     socialFailed: "No se pudo conectar esa cuenta. Inténtalo de nuevo.",
     accountGone: "Esta cuenta ya no está disponible.",
     plan: "Plan",
-    manageHint: "Cancela o cambia el pago en tu cuenta de PayPal.",
+    manageHint:
+      "Cancela o actualiza el pago en tu cuenta de PayPal. Los recibos llegan de PayPal; DropIMG no lista facturas aquí.",
     freePlanHint: "Subidas de 25 MB, enlaces de 1 h a 30 días, últimos 10 envíos.",
     planFree: "Drops gratis",
     planPro: "Drops Pro",
@@ -225,33 +265,53 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     ends: (date) => `Termina el ${date}`,
     viewPlans: "Ver planes",
     manage: "Gestionar facturación",
+    managePaypal: "Gestionar en PayPal",
+    dropsProMonthly: "Drops Pro — €2.99/month",
+    dropsProAnnual: "Drops Pro — €24.99/year",
+    waFreeLabel: "Web Assets Free — $0",
+    waDeveloperMonthly: "Web Assets Developer — $9/month",
+    waDeveloperAnnual: "Web Assets Developer — $90/year",
+    waProMonthly: "Web Assets Pro — $29/month",
+    waProAnnual: "Web Assets Pro — $290/year",
+    intervalMonthly: "Mensual",
+    intervalAnnual: "Anual",
+    waSeparate:
+      "Proyectos, almacenamiento y entregas para URLs permanentes /m/…. Independiente de Drops Pro.",
+    waPlanChangeHint:
+      "Para cambiar de plan o intervalo de Web Assets, cancela la renovación en PayPal, espera a que termine el periodo pagado y luego suscríbete al plan nuevo desde Precios. DropIMG no prorratea, no acredita tiempo no usado ni abre una segunda suscripción.",
+    waViewPlans: "Ver planes de Web Assets",
+    suspendedHint:
+      "PayPal marcó esta suscripción como suspendida tras un pago fallido. Actualiza el método de pago en PayPal. DropIMG no envía correos de reintento de cobro.",
     sectionSecurity: "Seguridad",
     sessionsHint: "Cierra sesión en todos los dispositivos.",
     signOutAll: "Salir de todos los dispositivos",
     integrations: "Integraciones",
     integrationsHint: "Conecta DropIMG a las herramientas que ya usas.",
     extensionTitle: "Extensión del navegador",
-    extensionBody: "Captura pantallas y guárdalas directo en Mis envíos.",
-    extensionPairHint: "Conéctala desde la extensión DropIMG — sin copiar tokens.",
+    extensionBody: "Captura una pestaña, una región o la página. Los envíos van a Mis envíos.",
+    extensionPairHint: "¿Ya la instalaste? Conéctala desde el popup — sin copiar tokens.",
     connectExtension: "Crear un token a mano",
     kindExtension: "Extensión del navegador",
     kindSharex: "ShareX",
     kindApi: "Clave API",
     kindOther: "Integración",
     connectedOn: "Conectada",
-    chromeStore: "Disponible en Chrome Web Store",
+    chromeStore: "Chrome Web Store",
     sharexTitle: "ShareX",
-    sharexBody: "Envía capturas de ShareX directo a tu cuenta DropIMG.",
+    sharexBody: "Envía capturas de ShareX a esta cuenta DropIMG.",
     sharexHelp: "Config anónima (sin cuenta)",
     createSharex: "Crear config de ShareX",
-    apiTitle: "Clave API",
-    apiBody: "Sube, lista y borra imágenes desde scripts y agentes.",
+    apiTitle: "Clave API de Drops",
+    apiBody: "Sube, lista y borra Drops desde scripts y agentes.",
     createApi: "Crear clave API",
-    apiDocs: "Docs",
+    apiDocs: "Docs de la API",
+    apiScopesToggle: "Personalizar permisos",
+    apiWebAssetsHint: "Claves de Web Assets",
+    recommended: "Recomendado",
     apiScopeWrite: "Subir",
     apiScopeRead: "Leer y listar",
     apiScopeDelete: "Borrar",
-    connectedDevices: "Integraciones conectadas",
+    connectedDevices: "Credenciales activas",
     neverUsed: "Sin uso",
     created: "Creado",
     lastUsed: "Último uso",
@@ -260,9 +320,9 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     hoursAgo: (n) => (n === 1 ? "hace 1 hora" : `hace ${n} horas`),
     revoke: "Revocar",
     noDevices: "Aún no hay herramientas conectadas.",
-    lostConfig: "¿Perdiste la config? Revoca el token viejo y crea uno nuevo.",
-    tokenTitle: "Integración conectada",
-    tokenBody: "Copia este token ahora. DropIMG no lo volverá a mostrar.",
+    lostConfig: "¿Perdiste el secreto? Revócalo aquí y crea uno nuevo.",
+    tokenTitle: "Guarda este token",
+    tokenBody: "Cópialo ahora. DropIMG no lo volverá a mostrar.",
     copyToken: "Copiar token",
     tokenCopied: "Copiado",
     downloadSharex: "Descargar config de ShareX",
@@ -312,7 +372,8 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     socialFailed: "Não deu pra conectar essa conta. Tente de novo.",
     accountGone: "Esta conta não está mais disponível.",
     plan: "Plano",
-    manageHint: "Cancele ou altere o pagamento na sua conta PayPal.",
+    manageHint:
+      "Cancele ou atualize o pagamento na sua conta PayPal. Os recibos vêm do PayPal; o DropIMG não lista faturas aqui.",
     freePlanHint: "Envios de 25 MB, links de 1 h a 30 dias, últimos 10 envios.",
     planFree: "Drops grátis",
     planPro: "Drops Pro",
@@ -320,33 +381,53 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     ends: (date) => `Termina em ${date}`,
     viewPlans: "Ver planos",
     manage: "Gerenciar cobrança",
+    managePaypal: "Gerenciar no PayPal",
+    dropsProMonthly: "Drops Pro — €2.99/month",
+    dropsProAnnual: "Drops Pro — €24.99/year",
+    waFreeLabel: "Web Assets Free — $0",
+    waDeveloperMonthly: "Web Assets Developer — $9/month",
+    waDeveloperAnnual: "Web Assets Developer — $90/year",
+    waProMonthly: "Web Assets Pro — $29/month",
+    waProAnnual: "Web Assets Pro — $290/year",
+    intervalMonthly: "Mensal",
+    intervalAnnual: "Anual",
+    waSeparate:
+      "Projetos, armazenamento e entregas para URLs permanentes /m/…. Separado do Drops Pro.",
+    waPlanChangeHint:
+      "Para mudar o plano ou o intervalo de Web Assets, cancele a renovação no PayPal, espere o período pago terminar e então assine o plano novo em Preços. O DropIMG não faz rateio, não credita tempo não usado e não abre uma segunda assinatura.",
+    waViewPlans: "Ver planos de Web Assets",
+    suspendedHint:
+      "O PayPal marcou esta assinatura como suspensa depois de um pagamento recusado. Atualize o pagamento no PayPal. O DropIMG não envia e-mails de nova tentativa de cobrança.",
     sectionSecurity: "Segurança",
     sessionsHint: "Sair de todos os dispositivos desta conta.",
     signOutAll: "Sair de todos os dispositivos",
     integrations: "Integrações",
     integrationsHint: "Conecte o DropIMG às ferramentas que você já usa.",
     extensionTitle: "Extensão do navegador",
-    extensionBody: "Capture prints e salve direto em Meus envios.",
-    extensionPairHint: "Conecte pela extensão DropIMG — sem copiar token.",
+    extensionBody: "Capture uma aba, uma região ou a página. Os envios vão para Meus envios.",
+    extensionPairHint: "Já instalou? Conecte pelo popup da extensão — sem copiar token.",
     connectExtension: "Criar um token na mão",
     kindExtension: "Extensão do navegador",
     kindSharex: "ShareX",
     kindApi: "Chave de API",
     kindOther: "Integração",
     connectedOn: "Conectada",
-    chromeStore: "Disponível na Chrome Web Store",
+    chromeStore: "Chrome Web Store",
     sharexTitle: "ShareX",
-    sharexBody: "Envie capturas do ShareX direto para sua conta DropIMG.",
+    sharexBody: "Envie capturas do ShareX para esta conta DropIMG.",
     sharexHelp: "Config anônima (sem conta)",
     createSharex: "Criar config do ShareX",
-    apiTitle: "Chave de API",
-    apiBody: "Envie, liste e apague imagens a partir de scripts e agentes.",
+    apiTitle: "Chave de API de Drops",
+    apiBody: "Envie, liste e apague Drops a partir de scripts e agentes.",
     createApi: "Criar chave de API",
-    apiDocs: "Docs",
+    apiDocs: "Docs da API",
+    apiScopesToggle: "Personalizar permissões",
+    apiWebAssetsHint: "Chaves de Web Assets",
+    recommended: "Recomendado",
     apiScopeWrite: "Enviar",
     apiScopeRead: "Ler e listar",
     apiScopeDelete: "Apagar",
-    connectedDevices: "Integrações conectadas",
+    connectedDevices: "Credenciais ativas",
     neverUsed: "Nunca usado",
     created: "Criado",
     lastUsed: "Último uso",
@@ -355,9 +436,9 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     hoursAgo: (n) => (n === 1 ? "há 1 hora" : `há ${n} horas`),
     revoke: "Revogar",
     noDevices: "Nenhuma ferramenta conectada ainda.",
-    lostConfig: "Perdeu a config? Revogue o token antigo e crie outro.",
-    tokenTitle: "Integração conectada",
-    tokenBody: "Copie este token agora. O DropIMG não mostra de novo.",
+    lostConfig: "Perdeu o segredo? Revogue aqui e crie outro.",
+    tokenTitle: "Salve este token",
+    tokenBody: "Copie agora. O DropIMG não mostra de novo.",
     copyToken: "Copiar token",
     tokenCopied: "Copiado",
     downloadSharex: "Baixar config do ShareX",
@@ -407,7 +488,8 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     socialFailed: "Konto konnte nicht verbunden werden. Bitte nochmal versuchen.",
     accountGone: "Dieses Konto ist nicht mehr verfügbar.",
     plan: "Plan",
-    manageHint: "Zahlung in deinem PayPal-Konto ändern oder kündigen.",
+    manageHint:
+      "Zahlung in deinem PayPal-Konto ändern oder kündigen. Belege kommen von PayPal; DropIMG listet hier keine Rechnungen.",
     freePlanHint: "25 MB pro Upload, 1 Stunde bis 30 Tage, letzte 10 Drops.",
     planFree: "Drops kostenlos",
     planPro: "Drops Pro",
@@ -415,33 +497,53 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     ends: (date) => `Endet am ${date}`,
     viewPlans: "Pläne ansehen",
     manage: "Abrechnung verwalten",
+    managePaypal: "In PayPal verwalten",
+    dropsProMonthly: "Drops Pro — €2.99/month",
+    dropsProAnnual: "Drops Pro — €24.99/year",
+    waFreeLabel: "Web Assets Free — $0",
+    waDeveloperMonthly: "Web Assets Developer — $9/month",
+    waDeveloperAnnual: "Web Assets Developer — $90/year",
+    waProMonthly: "Web Assets Pro — $29/month",
+    waProAnnual: "Web Assets Pro — $290/year",
+    intervalMonthly: "Monatlich",
+    intervalAnnual: "Jährlich",
+    waSeparate:
+      "Projekte, Speicher und Auslieferungen für permanente /m/…-URLs. Getrennt von Drops Pro.",
+    waPlanChangeHint:
+      "Um den Web-Assets-Plan oder das Intervall zu wechseln, kündige die Verlängerung in PayPal, warte bis das bezahlte Ende, und abonniere dann den neuen Plan unter Preise. DropIMG rechnet nicht anteilig, schreibt ungenutzte Zeit nicht gut und startet kein zweites Abo.",
+    waViewPlans: "Web-Assets-Pläne ansehen",
+    suspendedHint:
+      "PayPal hat dieses Abo nach einem fehlgeschlagenen Zahlung als gesperrt markiert. Zahlungsmittel in PayPal aktualisieren. DropIMG schickt keine Mahn-E-Mails.",
     sectionSecurity: "Sicherheit",
     sessionsHint: "Überall abmelden, wo dieses Konto offen ist.",
     signOutAll: "Auf allen Geräten abmelden",
     integrations: "Integrationen",
     integrationsHint: "Verbinde DropIMG mit Tools, die du schon nutzt.",
     extensionTitle: "Browser-Erweiterung",
-    extensionBody: "Screenshots aufnehmen und direkt in Meine Drops speichern.",
-    extensionPairHint: "Verbinden in der DropIMG-Erweiterung — kein Token zum Kopieren.",
+    extensionBody: "Tab, Bereich oder ganze Seite aufnehmen. Uploads landen in Meine Drops.",
+    extensionPairHint: "Schon installiert? Im Popup verbinden — kein Token zum Kopieren.",
     connectExtension: "Token manuell erstellen",
     kindExtension: "Browser-Erweiterung",
     kindSharex: "ShareX",
     kindApi: "API-Schlüssel",
     kindOther: "Integration",
     connectedOn: "Verbunden",
-    chromeStore: "Im Chrome Web Store",
+    chromeStore: "Chrome Web Store",
     sharexTitle: "ShareX",
-    sharexBody: "ShareX-Aufnahmen direkt in dein DropIMG-Konto senden.",
+    sharexBody: "ShareX-Aufnahmen in dieses DropIMG-Konto senden.",
     sharexHelp: "Anonyme Config (kein Konto)",
     createSharex: "ShareX-Config erstellen",
-    apiTitle: "API-Schlüssel",
-    apiBody: "Bilder aus Skripten und Agenten hochladen, listen und löschen.",
+    apiTitle: "Drops-API-Schlüssel",
+    apiBody: "Drops aus Skripten und Agenten hochladen, listen und löschen.",
     createApi: "API-Schlüssel erstellen",
-    apiDocs: "Docs",
+    apiDocs: "API-Docs",
+    apiScopesToggle: "Berechtigungen anpassen",
+    apiWebAssetsHint: "Web-Assets-Schlüssel",
+    recommended: "Empfohlen",
     apiScopeWrite: "Hochladen",
     apiScopeRead: "Lesen und listen",
     apiScopeDelete: "Löschen",
-    connectedDevices: "Verbundene Integrationen",
+    connectedDevices: "Aktive Zugangsdaten",
     neverUsed: "Noch nicht genutzt",
     created: "Erstellt",
     lastUsed: "Zuletzt genutzt",
@@ -450,9 +552,9 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
     hoursAgo: (n) => (n === 1 ? "vor 1 Stunde" : `vor ${n} Stunden`),
     revoke: "Widerrufen",
     noDevices: "Noch keine verbundenen Tools.",
-    lostConfig: "Config weg? Alten Token widerrufen und einen neuen erstellen.",
-    tokenTitle: "Integration verbunden",
-    tokenBody: "Token jetzt kopieren. DropIMG zeigt ihn nicht noch einmal.",
+    lostConfig: "Geheimnis weg? Hier widerrufen und einen neuen erstellen.",
+    tokenTitle: "Token jetzt sichern",
+    tokenBody: "Jetzt kopieren. DropIMG zeigt ihn nicht noch einmal.",
     copyToken: "Token kopieren",
     tokenCopied: "Kopiert",
     downloadSharex: "ShareX-Config herunterladen",
@@ -482,16 +584,19 @@ export const ACCOUNT_COPY: Record<Locale, Copy> = {
 
 type SettingsProps = {
   locale: Locale;
-  env: { ENVIRONMENT?: string };
+  env: { ENVIRONMENT?: string; MEDIA_ENABLED?: string };
   email: string;
   plan: "free" | "pro";
   periodEnd: number | null;
   cancelAtPeriodEnd: boolean;
+  dropsInterval?: "monthly" | "annual" | null;
+  dropsStatus?: string | null;
   webAssets?: {
     plan: "free" | "developer" | "pro";
     interval: "monthly" | "annual" | null;
     periodEnd: number | null;
     cancelAtPeriodEnd: boolean;
+    status?: string | null;
   };
   identities?: Array<"google" | "github">;
   socialEnabled?: { google?: boolean; github?: boolean };
@@ -515,19 +620,33 @@ export function accountLinkError(
 export function renderBillingPage(opts: SettingsProps): string {
   const t = ACCOUNT_COPY[opts.locale];
   const period =
-    opts.periodEnd && opts.plan === "pro"
+    opts.periodEnd && (opts.plan === "pro" || opts.cancelAtPeriodEnd)
       ? opts.cancelAtPeriodEnd
         ? t.ends(formatDay(opts.periodEnd, opts.locale))
         : t.renews(formatDay(opts.periodEnd, opts.locale))
       : "";
 
+  const dropsLabel =
+    opts.plan === "pro"
+      ? opts.dropsInterval === "annual"
+        ? t.dropsProAnnual
+        : opts.dropsInterval === "monthly"
+          ? t.dropsProMonthly
+          : t.planPro
+      : t.planFree;
+  const dropsSuspended = opts.dropsStatus?.trim().toLowerCase() === "suspended";
+
   const wa = opts.webAssets;
   const waLabel =
     wa?.plan === "developer"
-      ? "Web Assets Developer — $9/month"
+      ? wa.interval === "annual"
+        ? t.waDeveloperAnnual
+        : t.waDeveloperMonthly
       : wa?.plan === "pro"
-        ? "Web Assets Pro — $29/month"
-        : "Web Assets Free — $0";
+        ? wa.interval === "annual"
+          ? t.waProAnnual
+          : t.waProMonthly
+        : t.waFreeLabel;
   const waPeriod =
     wa?.periodEnd && wa.plan !== "free"
       ? wa.cancelAtPeriodEnd
@@ -535,17 +654,29 @@ export function renderBillingPage(opts: SettingsProps): string {
         : t.renews(formatDay(wa.periodEnd, opts.locale))
       : "";
   const waCadence =
-    wa?.interval === "annual" ? "Annual" : wa?.interval === "monthly" ? "Monthly" : "";
+    wa?.interval === "annual"
+      ? t.intervalAnnual
+      : wa?.interval === "monthly"
+        ? t.intervalMonthly
+        : "";
+  const waSuspended = wa?.status?.trim().toLowerCase() === "suspended";
+  const waPaid = Boolean(wa && wa.plan !== "free");
 
   const main = `<section class="settings-card">
       <p class="settings-eyebrow">Drops</p>
-      <p class="settings-value settings-value-lg">${esc(opts.plan === "pro" ? t.planPro : t.planFree)}</p>
+      <p class="settings-value settings-value-lg">${esc(dropsLabel)}</p>
       ${period ? `<p class="account-muted">${esc(period)}</p>` : ""}
-      <p class="account-muted">${esc(opts.plan === "pro" ? t.manageHint : t.freePlanHint)}</p>
+      <p class="account-muted">${esc(
+        dropsSuspended
+          ? t.suspendedHint
+          : opts.plan === "pro"
+            ? t.manageHint
+            : t.freePlanHint,
+      )}</p>
       <div class="settings-actions">
         ${
-          opts.plan === "pro"
-            ? `<button type="button" class="btn secondary" id="account-portal">${esc(t.manage)}</button>`
+          opts.plan === "pro" || dropsSuspended
+            ? `<button type="button" class="btn secondary" id="account-portal">${esc(t.managePaypal)}</button>`
             : `<a class="btn primary" href="/pro">${esc(t.viewPlans)}</a>`
         }
       </div>
@@ -555,13 +686,17 @@ export function renderBillingPage(opts: SettingsProps): string {
       <p class="settings-value settings-value-lg">${esc(waLabel)}</p>
       ${waCadence ? `<p class="account-muted">${esc(waCadence)}</p>` : ""}
       ${waPeriod ? `<p class="account-muted">${esc(waPeriod)}</p>` : ""}
-      <p class="account-muted">Projects, storage, and deliveries for permanent /m/… URLs. Separate from Drops Pro.</p>
+      <p class="account-muted">${esc(t.waSeparate)}</p>
+      ${
+        waPaid || waSuspended
+          ? `<p class="account-muted">${esc(waSuspended ? t.suspendedHint : t.waPlanChangeHint)}</p>`
+          : ""
+      }
       <div class="settings-actions">
         ${
-          wa && wa.plan !== "free"
-            ? `<button type="button" class="btn secondary" id="account-portal-wa">${esc(t.manage)}</button>
-               <a class="btn secondary" href="/pricing">Change plan</a>`
-            : `<a class="btn primary" href="/pricing">View Web Assets plans</a>`
+          waPaid || waSuspended
+            ? `<button type="button" class="btn secondary" id="account-portal-wa">${esc(t.managePaypal)}</button>`
+            : `<a class="btn primary" href="/pricing">${esc(t.waViewPlans)}</a>`
         }
       </div>
       <p id="wa-billing-status" class="account-muted" hidden></p>
@@ -582,42 +717,61 @@ export function renderBillingPage(opts: SettingsProps): string {
 /** Extension and ShareX tokens. `/account` also lands here, see routes. */
 export function renderIntegrationsPage(opts: SettingsProps): string {
   const t = ACCOUNT_COPY[opts.locale];
+  const waKeys = mediaEnabled(opts.env)
+    ? `<a href="/app/media">${esc(t.apiWebAssetsHint)}</a>
+            <span aria-hidden="true">·</span>
+            `
+    : "";
 
-  const main = `<section class="settings-card">
-      <div class="integ-tools">
-        <article class="integ-tool">
-          <h2>${esc(t.extensionTitle)}</h2>
+  const main = `<section class="settings-card integ-catalog">
+      <article class="integ-item">
+        <div class="integ-item-copy">
+          <p class="integ-kicker">${esc(t.recommended)}</p>
+          <h2 class="integ-item-title">${esc(t.extensionTitle)}</h2>
           <p>${esc(t.extensionBody)}</p>
           <p class="account-muted">${esc(t.extensionPairHint)}</p>
-          <div class="settings-actions">
-            <a class="btn primary" href="${esc(CHROME_WEB_STORE_URL)}" rel="noopener" target="_blank">${esc(t.chromeStore)}</a>
-            <button type="button" class="btn secondary" id="integ-extension">${esc(t.connectExtension)}</button>
-          </div>
-        </article>
-        <article class="integ-tool">
-          <h2>${esc(t.sharexTitle)}</h2>
+        </div>
+        <div class="integ-item-actions">
+          <a class="btn primary" href="${esc(CHROME_WEB_STORE_URL)}" rel="noopener" target="_blank">${esc(t.chromeStore)}</a>
+          <button type="button" class="btn ghost" id="integ-extension">${esc(t.connectExtension)}</button>
+        </div>
+      </article>
+      <article class="integ-item">
+        <div class="integ-item-copy">
+          <h2 class="integ-item-title">${esc(t.sharexTitle)}</h2>
           <p>${esc(t.sharexBody)}</p>
-          <button type="button" class="btn primary" id="integ-sharex">${esc(t.createSharex)}</button>
           <p class="account-muted"><a href="/sharex">${esc(t.sharexHelp)}</a></p>
-        </article>
-        <article class="integ-tool">
-          <h2>${esc(t.apiTitle)}</h2>
+        </div>
+        <div class="integ-item-actions">
+          <button type="button" class="btn secondary" id="integ-sharex">${esc(t.createSharex)}</button>
+        </div>
+      </article>
+      <article class="integ-item">
+        <div class="integ-item-copy">
+          <h2 class="integ-item-title">${esc(t.apiTitle)}</h2>
           <p>${esc(t.apiBody)}</p>
-          <fieldset class="integ-scopes">
-            <legend class="sr-only">${esc(t.apiTitle)}</legend>
-            <label><input type="checkbox" id="scope-write" checked /> ${esc(t.apiScopeWrite)}</label>
-            <label><input type="checkbox" id="scope-read" checked /> ${esc(t.apiScopeRead)}</label>
-            <label><input type="checkbox" id="scope-delete" checked /> ${esc(t.apiScopeDelete)}</label>
-          </fieldset>
-          <button type="button" class="btn primary" id="integ-api">${esc(t.createApi)}</button>
-          <p class="account-muted"><a href="/developers">${esc(t.apiDocs)}</a></p>
-        </article>
-      </div>
+          <p class="integ-item-links account-muted">
+            ${waKeys}<a href="/developers">${esc(t.apiDocs)}</a>
+          </p>
+          <details class="integ-scopes-wrap">
+            <summary>${esc(t.apiScopesToggle)}</summary>
+            <fieldset class="integ-scopes">
+              <legend class="sr-only">${esc(t.apiTitle)}</legend>
+              <label><input type="checkbox" id="scope-write" checked /> ${esc(t.apiScopeWrite)}</label>
+              <label><input type="checkbox" id="scope-read" checked /> ${esc(t.apiScopeRead)}</label>
+              <label><input type="checkbox" id="scope-delete" checked /> ${esc(t.apiScopeDelete)}</label>
+            </fieldset>
+          </details>
+        </div>
+        <div class="integ-item-actions">
+          <button type="button" class="btn secondary" id="integ-api">${esc(t.createApi)}</button>
+        </div>
+      </article>
     </section>
     <section class="settings-card">
       <h2>${esc(t.connectedDevices)}</h2>
       <div id="integ-list" class="integ-list"></div>
-      <p class="account-muted">${esc(t.lostConfig)}</p>
+      <p id="integ-lost" class="account-muted" hidden>${esc(t.lostConfig)}</p>
     </section>`;
 
   return renderAppShellPage({
@@ -639,13 +793,11 @@ function integrationsExtraBody(t: Copy, locale: Locale): string {
       <p>${esc(t.tokenBody)}</p>
       <label class="sr-only" for="token-value">${esc(t.copyToken)}</label>
       <input id="token-value" class="token-box" type="text" readonly autocomplete="off" spellcheck="false" />
-      <div class="settings-actions">
-        <button type="button" class="btn primary" id="token-copy">${esc(t.copyToken)}</button>
-        <button type="button" class="btn secondary" id="token-download" hidden>${esc(t.downloadSharex)}</button>
-      </div>
       <p class="account-muted" id="token-warn">${esc(t.tokenWarn)}</p>
       <div class="dialog-actions">
-        <button type="button" class="btn secondary" id="token-done">${esc(t.done)}</button>
+        <button type="button" class="btn ghost" id="token-done">${esc(t.done)}</button>
+        <button type="button" class="btn secondary" id="token-download" hidden>${esc(t.downloadSharex)}</button>
+        <button type="button" class="btn primary" id="token-copy">${esc(t.copyToken)}</button>
       </div>
     </div>
   </div>
@@ -767,6 +919,7 @@ function integrationsScript(t: Copy, locale: Locale): string {
       const minAgo = ${JSON.stringify({ one: t.minutesAgo(1), many: t.minutesAgo(9) })};
       const hrAgo = ${JSON.stringify({ one: t.hoursAgo(1), many: t.hoursAgo(9) })};
       const list = document.getElementById("integ-list");
+      const lostHint = document.getElementById("integ-lost");
       const tokenModal = document.getElementById("token-modal");
       const tokenInput = document.getElementById("token-value");
       const tokenCopy = document.getElementById("token-copy");
@@ -796,9 +949,10 @@ function integrationsScript(t: Copy, locale: Locale): string {
         const body = await res.json();
         const tokens = body.tokens || [];
         list.innerHTML = "";
+        if (lostHint) lostHint.hidden = tokens.length === 0;
         if (!tokens.length) {
           const empty = document.createElement("p");
-          empty.className = "account-muted";
+          empty.className = "account-muted integ-empty";
           empty.textContent = labels.noDevices;
           list.append(empty);
           return;
@@ -807,8 +961,9 @@ function integrationsScript(t: Copy, locale: Locale): string {
           const item = document.createElement("div");
           item.className = "integ-row";
           const meta = document.createElement("div");
+          meta.className = "integ-row-main";
           const title = document.createElement("p");
-          title.className = "settings-value";
+          title.className = "integ-row-title";
           title.textContent = row.kind === "extension"
             ? labels.kindExtension
             : row.kind === "sharex"
@@ -817,20 +972,15 @@ function integrationsScript(t: Copy, locale: Locale): string {
                 ? labels.kindApi
                 : labels.kindOther;
           const sub = document.createElement("p");
-          sub.className = "account-muted";
-          sub.textContent = row.label;
-          const created = document.createElement("p");
-          created.className = "account-muted";
-          created.textContent = labels.connectedOn + " " + formatWhen(row.createdAt, labels.neverUsed);
-          const used = document.createElement("p");
-          used.className = "account-muted";
-          used.textContent = row.lastUsedAt
+          sub.className = "integ-row-meta";
+          const when = row.lastUsedAt
             ? labels.lastUsed + " " + formatWhen(row.lastUsedAt, labels.neverUsed)
             : labels.neverUsed;
-          meta.append(title, sub, created, used);
+          sub.textContent = (row.label || "") + " · " + when;
+          meta.append(title, sub);
           const btn = document.createElement("button");
           btn.type = "button";
-          btn.className = "btn secondary";
+          btn.className = "btn secondary btn-sm";
           btn.textContent = labels.revoke;
           btn.setAttribute("data-id", row.id);
           btn.addEventListener("click", () => {
@@ -861,7 +1011,19 @@ function integrationsScript(t: Copy, locale: Locale): string {
         tokenModal.hidden = false;
         tokenInput.focus();
         tokenInput.select();
+        if (kind === "sharex") downloadSharex();
         await loadTokens();
+      }
+
+      function downloadSharex() {
+        if (!lastSharex) return;
+        const blob = new Blob([JSON.stringify(lastSharex, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "dropimg-sharex.sxcu";
+        a.click();
+        URL.revokeObjectURL(url);
       }
 
       function closeToken() {
@@ -893,16 +1055,7 @@ function integrationsScript(t: Copy, locale: Locale): string {
           setTimeout(() => { tokenCopy.textContent = labels.copyToken; }, 1600);
         } catch {}
       });
-      tokenDownload?.addEventListener("click", () => {
-        if (!lastSharex) return;
-        const blob = new Blob([JSON.stringify(lastSharex, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "dropimg-sharex.sxcu";
-        a.click();
-        URL.revokeObjectURL(url);
-      });
+      tokenDownload?.addEventListener("click", downloadSharex);
       tokenDone?.addEventListener("click", closeToken);
       tokenModal?.addEventListener("click", (e) => { if (e.target === tokenModal) closeToken(); });
       revokeCancel?.addEventListener("click", () => {

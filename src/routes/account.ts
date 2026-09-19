@@ -26,6 +26,7 @@ import {
   PRO_HISTORY_PAGE,
   resolveEntitlements,
 } from "../lib/entitlements";
+import { intervalForPrice } from "../lib/billing/paypal";
 import { webAssetsEntitlementsFor } from "../lib/web-assets-entitlements";
 import {
   hashImagePassword,
@@ -119,11 +120,14 @@ async function settingsPage(
     plan: entitlements.plan === "pro" ? "pro" : "free",
     periodEnd: subscription?.current_period_end ?? null,
     cancelAtPeriodEnd: Boolean(subscription?.cancel_at_period_end),
+    dropsInterval: intervalForPrice(c.env, subscription?.price_id),
+    dropsStatus: subscription?.status ?? null,
     webAssets: {
       plan: webAssets.plan,
       interval: webAssets.interval,
       periodEnd: webAssets.periodEnd,
       cancelAtPeriodEnd: webAssets.cancelAtPeriodEnd,
+      status: webAssets.status,
     },
     identities,
     socialEnabled: enabledSocialProviders(c.env),

@@ -192,7 +192,7 @@ export const PRICING_PAGE: PageSeo & {
   dropProCta: string;
   dropProSeparate: string;
   faqHeading: string;
-  faqs: [FaqItem, FaqItem, FaqItem, FaqItem, FaqItem, FaqItem];
+  faqs: [FaqItem, FaqItem, FaqItem, FaqItem, FaqItem, FaqItem, FaqItem];
   closeHeading: string;
   closeLede: string;
   closePrimary: string;
@@ -263,6 +263,10 @@ export const PRICING_PAGE: PageSeo & {
     {
       q: "Is there a bandwidth/egress charge?",
       a: "No. There is no bandwidth or egress surcharge on top of the plan. Fair-use and plan limits still apply.",
+    },
+    {
+      q: "Can I switch Web Assets plans instantly?",
+      a: "Not while a paid Web Assets subscription is live. Cancel renewal in PayPal, keep access until the paid period ends, then subscribe to the new plan. DropIMG does not prorate, credit unused time, or start a second subscription.",
     },
   ],
   closeHeading: "Ready to give your coding agent permanent web assets?",

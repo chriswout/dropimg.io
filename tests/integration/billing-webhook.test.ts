@@ -338,6 +338,172 @@ describe("PayPal billing webhook", () => {
     expect(Number(seen?.n)).toBe(0);
   });
 
+  it("fails closed on an unknown PayPal plan id", async () => {
+    const { env, now } = await seedUser("unknown-plan@example.com");
+    const res = await signedRequest(
+      JSON.stringify({
+        id: "WH-unknown-plan",
+        event_type: "BILLING.SUBSCRIPTION.ACTIVATED",
+        create_time: isoFromUnix(now),
+        resource: subscriptionResource({ plan_id: "P-not-in-catalog" }),
+      }),
+    );
+    expect(res.status).toBe(200);
+
+    const subs = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM subscriptions WHERE user_id = ?`,
+    )
+      .bind(USER_ID)
+      .first<{ n: number }>();
+    expect(Number(subs?.n)).toBe(0);
+
+    const events = await env.DB.prepare(
+      `SELECT status FROM billing_events WHERE event_id = ?`,
+    )
+      .bind("WH-unknown-plan")
+      .first<{ status: string }>();
+    expect(events?.status).toBe("processed");
+  });
+
+  it("does not map a Web Assets plan onto Drops Pro", async () => {
+    const { env, now } = await seedUser("mismatch@example.com");
+    const res = await signedRequest(
+      JSON.stringify({
+        id: "WH-wa-not-drops",
+        event_type: "BILLING.SUBSCRIPTION.ACTIVATED",
+        create_time: isoFromUnix(now),
+        resource: subscriptionResource({
+          id: "I-wa-not-drops",
+          plan_id: "P-wa-pro-m",
+        }),
+      }),
+    );
+    expect(res.status).toBe(200);
+    const row = await env.DB.prepare(
+      `SELECT product, price_id FROM subscriptions WHERE provider_subscription_id = ?`,
+    )
+      .bind("I-wa-not-drops")
+      .first<{ product: string; price_id: string }>();
+    expect(row?.product).toBe("web_assets");
+    expect(row?.price_id).toBe("P-wa-pro-m");
+    const drops = await env.DB.prepare(
+      `SELECT COUNT(*) AS n FROM subscriptions WHERE user_id = ? AND product = 'drops_pro'`,
+    )
+      .bind(USER_ID)
+      .first<{ n: number }>();
+    expect(Number(drops?.n)).toBe(0);
+  });
+
+  it("keeps paid-through access after CANCELLED without next_billing_time", async () => {
+    const { env, now } = await seedUser("paid-through@example.com");
+    const periodEnd = now + 20 * 86400;
+    await signedRequest(
+      JSON.stringify({
+        id: "WH-paid-activated",
+        event_type: "BILLING.SUBSCRIPTION.ACTIVATED",
+        create_time: isoFromUnix(now),
+        resource: subscriptionResource({
+          id: "I-paid-through",
+          billing_info: { next_billing_time: isoFromUnix(periodEnd) },
+        }),
+      }),
+    );
+    await signedRequest(
+      JSON.stringify({
+        id: "WH-paid-cancelled",
+        event_type: "BILLING.SUBSCRIPTION.CANCELLED",
+        create_time: isoFromUnix(now + 60),
+        resource: {
+          id: "I-paid-through",
+          status: "CANCELLED",
+          custom_id: USER_ID,
+          plan_id: "P-monthly",
+          subscriber: { payer_id: "PAYER01BILLING" },
+        },
+      }),
+    );
+
+    const row = await env.DB.prepare(
+      `SELECT status, current_period_end, cancel_at_period_end
+       FROM subscriptions WHERE provider_subscription_id = ?`,
+    )
+      .bind("I-paid-through")
+      .first<{
+        status: string;
+        current_period_end: number;
+        cancel_at_period_end: number;
+      }>();
+    expect(row?.status).toBe("canceled");
+    expect(row?.current_period_end).toBeGreaterThan(now);
+    expect(row?.cancel_at_period_end).toBe(1);
+  });
+
+  it("stores EXPIRED as expired and does not keep a future period end", async () => {
+    const { env, now } = await seedUser("expired-term@example.com");
+    await signedRequest(
+      JSON.stringify({
+        id: "WH-exp-activated",
+        event_type: "BILLING.SUBSCRIPTION.ACTIVATED",
+        create_time: isoFromUnix(now - 40),
+        resource: subscriptionResource({
+          id: "I-expired",
+          billing_info: { next_billing_time: isoFromUnix(now + 86400) },
+        }),
+      }),
+    );
+    await signedRequest(
+      JSON.stringify({
+        id: "WH-exp-expired",
+        event_type: "BILLING.SUBSCRIPTION.EXPIRED",
+        create_time: isoFromUnix(now),
+        resource: subscriptionResource({
+          id: "I-expired",
+          status: "EXPIRED",
+          billing_info: {},
+        }),
+      }),
+    );
+    const row = await env.DB.prepare(
+      `SELECT status, current_period_end FROM subscriptions
+       WHERE provider_subscription_id = ?`,
+    )
+      .bind("I-expired")
+      .first<{ status: string; current_period_end: number }>();
+    expect(row?.status).toBe("expired");
+    expect(row?.current_period_end).toBeLessThanOrEqual(now);
+  });
+
+  it("records PAYMENT.FAILED without changing entitlement", async () => {
+    const { env, now } = await seedUser("payfail@example.com");
+    await signedRequest(
+      JSON.stringify({
+        id: "WH-fail-activated",
+        event_type: "BILLING.SUBSCRIPTION.ACTIVATED",
+        create_time: isoFromUnix(now),
+        resource: subscriptionResource({ id: "I-payfail" }),
+      }),
+    );
+    const res = await signedRequest(
+      JSON.stringify({
+        id: "WH-fail-payment",
+        event_type: "BILLING.SUBSCRIPTION.PAYMENT.FAILED",
+        create_time: isoFromUnix(now + 1),
+        resource: {
+          id: "I-payfail",
+          custom_id: USER_ID,
+          plan_id: "P-monthly",
+        },
+      }),
+    );
+    expect(res.status).toBe(200);
+    const row = await env.DB.prepare(
+      `SELECT status FROM subscriptions WHERE provider_subscription_id = ?`,
+    )
+      .bind("I-payfail")
+      .first<{ status: string }>();
+    expect(row?.status).toBe("active");
+  });
+
   it("serves /pro and checkout 401 when signed out", async () => {
     const page = await worker.fetch("https://dropimg.io/pro");
     expect(page.status).toBe(200);

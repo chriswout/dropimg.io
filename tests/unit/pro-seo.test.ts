@@ -48,7 +48,7 @@ describe("localized /pro SEO", () => {
       cancelAtPeriodEnd: false,
     }).text();
     expect(html).toContain("You're on Drops Pro");
-    expect(html).toContain("Manage billing");
+    expect(html).toContain("Manage in PayPal");
     expect(html).not.toContain("data-interval");
     expect(html).not.toContain("Pay with PayPal");
   });

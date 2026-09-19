@@ -61,7 +61,7 @@ export const SHELL_COPY: Record<Locale, ShellCopy> = {
     billing: {
       nav: "Billing",
       title: "Plan and billing",
-      lede: "Your plan, renewal date, and invoices.",
+      lede: "Your Drops and Web Assets plans, and how they renew.",
     },
     account: {
       nav: "Account",
@@ -97,7 +97,7 @@ export const SHELL_COPY: Record<Locale, ShellCopy> = {
     billing: {
       nav: "Facturación",
       title: "Plan y facturación",
-      lede: "Tu plan, la fecha de renovación y las facturas.",
+      lede: "Tus planes de Drops y Web Assets, y cómo se renuevan.",
     },
     account: {
       nav: "Cuenta",
@@ -133,7 +133,7 @@ export const SHELL_COPY: Record<Locale, ShellCopy> = {
     billing: {
       nav: "Cobrança",
       title: "Plano e cobrança",
-      lede: "Seu plano, a data de renovação e as faturas.",
+      lede: "Seus planos de Drops e Web Assets, e como eles renovam.",
     },
     account: {
       nav: "Conta",
@@ -169,7 +169,7 @@ export const SHELL_COPY: Record<Locale, ShellCopy> = {
     billing: {
       nav: "Abrechnung",
       title: "Plan und Abrechnung",
-      lede: "Dein Plan, das Verlängerungsdatum und Rechnungen.",
+      lede: "Deine Drops- und Web-Assets-Pläne und wie sie sich verlängern.",
     },
     account: {
       nav: "Konto",

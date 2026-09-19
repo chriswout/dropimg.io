@@ -1,7 +1,10 @@
 ---
 name: paddle-pricing-pages
-description: Render country-localized prices on a Next.js pricing page using Paddle.js PricePreview — country detection, billing frequency toggle, and currency formatting.
+description: ARCHIVAL / NOT USED BY DROPIMG. Live subscription billing is PayPal REST Subscriptions only. Do not follow this skill for this repo. Render country-localized prices on a Next.js pricing page using Paddle.js PricePreview — country detection, billing frequency toggle, and currency formatting.
 ---
+
+
+> **Archival:** DropIMG live billing is PayPal. Do not use this skill in this repository. See `docs/paypal.md` and `.agents/skills/ARCHIVAL-PADDLE.md`.
 
 # Display localized pricing in Next.js
 

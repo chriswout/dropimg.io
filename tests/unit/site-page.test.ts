@@ -100,7 +100,7 @@ describe("Account pages share site chrome", () => {
   it("splits settings into account, billing, and integrations sections", () => {
     const props = {
       locale: "en",
-      env: { ENVIRONMENT: "staging" },
+      env: { ENVIRONMENT: "staging", MEDIA_ENABLED: "true" },
       email: "user@example.com",
       plan: "pro",
       periodEnd: 1_790_721_044,
@@ -123,13 +123,29 @@ describe("Account pages share site chrome", () => {
     expect(linked).toContain("/api/account/identities/google/connect");
 
     const billing = renderBillingPage(props);
-    expect(billing).toContain("Manage billing");
+    expect(billing).toContain("Manage in PayPal");
     expect(billing).toContain("/api/billing/portal");
+    expect(billing).not.toContain("Change plan");
+    expect(billing).toContain("does not list invoices");
+
+    const waAnnual = renderBillingPage({
+      ...props,
+      plan: "free",
+      webAssets: {
+        plan: "developer",
+        interval: "annual",
+        periodEnd: 1_790_721_044,
+        cancelAtPeriodEnd: false,
+      },
+    });
+    expect(waAnnual).toContain("Web Assets Developer — $90/year");
+    expect(waAnnual).toContain("does not prorate");
+    expect(waAnnual).not.toContain("$9/month");
 
     const integrations = renderIntegrationsPage(props);
     expect(integrations).toContain("Create a token manually");
-    expect(integrations).toContain("Connect from the DropIMG extension");
-    expect(integrations).toContain("Available on the Chrome Web Store");
+    expect(integrations).toContain("Connect from the extension popup");
+    expect(integrations).toContain("Chrome Web Store");
     expect(integrations).toContain(
       "https://chromewebstore.google.com/detail/dropimgio-screenshot-to-link/lhgmnekggpifejiphipjebjlcphabhib",
     );
@@ -137,8 +153,12 @@ describe("Account pages share site chrome", () => {
     expect(integrations).toContain("Create API key");
     expect(integrations).toContain('href="/sharex"');
     expect(integrations).toContain('href="/developers"');
+    expect(integrations).toContain('href="/app/media"');
+    expect(integrations).toContain("Customize permissions");
+    expect(integrations).toContain("Drops API key");
     expect(integrations).toContain('id="scope-write"');
     expect(integrations).toContain('id="revoke-modal"');
+    expect(integrations).toContain('id="integ-lost"');
 
     // Every section renders the same shell nav.
     for (const html of [account, billing, integrations]) {
@@ -177,7 +197,7 @@ describe("Account pages share site chrome", () => {
     });
     const memberHtml = await member.text();
     expect(memberHtml).toContain("You're on Drops Pro");
-    expect(memberHtml).toContain("Manage billing");
+    expect(memberHtml).toContain("Manage in PayPal");
     expect(memberHtml).not.toContain("Pay with PayPal");
   });
 

@@ -856,7 +856,24 @@ async function startWebAssetsCheckout(plan: "developer" | "pro", interval: "mont
     location.href = `/login?next=${encodeURIComponent("/pricing")}`;
     return;
   }
-  if (!res.ok) return;
+  const status = document.getElementById("pricing-billing-status");
+  const show = (message: string) => {
+    if (!status) return;
+    status.hidden = false;
+    status.textContent = message;
+  };
+  if (res.status === 409) {
+    const body = (await res.json().catch(() => null)) as { error?: string } | null;
+    show(
+      body?.error ||
+        "You already have a live Web Assets subscription. Cancel renewal in PayPal and wait until the paid period ends before starting a different plan.",
+    );
+    return;
+  }
+  if (!res.ok) {
+    show("Checkout isn’t available right now. Try again shortly.");
+    return;
+  }
   const data = (await res.json()) as { url?: string };
   if (data.url) location.href = data.url;
 }
@@ -864,20 +881,22 @@ async function startWebAssetsCheckout(plan: "developer" | "pro", interval: "mont
 function setupMediaCtas() {
   const nodes = document.querySelectorAll<HTMLAnchorElement>("[data-media-cta]");
   if (!nodes.length) return;
-  void fetch("/api/site-config")
-    .then((res) => (res.ok ? res.json() : null))
-    .then((raw) => {
-      const data = raw as { mediaEnabled?: boolean } | null;
-      const enabled = data?.mediaEnabled === true;
-      nodes.forEach((el) => {
-        el.href = enabled ? "/login?next=/app/media" : "/web-assets";
-      });
-    })
-    .catch(() => {
-      nodes.forEach((el) => {
-        el.href = "/web-assets";
-      });
+  void Promise.all([
+    fetch("/api/site-config")
+      .then((res) => (res.ok ? res.json() : null))
+      .catch(() => null),
+    accountReady,
+  ]).then(([raw]) => {
+    const enabled = (raw as { mediaEnabled?: boolean } | null)?.mediaEnabled === true;
+    const href = !enabled
+      ? "/web-assets"
+      : accountUser
+        ? "/app/media"
+        : "/login?next=/app/media";
+    nodes.forEach((el) => {
+      el.href = href;
     });
+  });
 }
 
 function setupDocsUi() {

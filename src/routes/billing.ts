@@ -5,6 +5,11 @@ import { resolveRequestLocale } from "../lib/auth/locale-cookie";
 import { resolveSession } from "../lib/auth/session";
 import { cookieSecure } from "../lib/auth/crypto";
 import {
+  attachPaypalSubscriptionId,
+  releaseCheckoutReservation,
+  reserveCheckout,
+} from "../lib/billing/checkout-guard";
+import {
   billingConfig,
   billingEnabled,
   billingProductForPriceId,
@@ -168,16 +173,31 @@ billingRoutes.post("/api/billing/checkout", async (c) => {
    */
   const origin = new URL(c.req.raw.url).origin;
   const returnPath = `${origin}${proPath(resolveRequestLocale(c.req.raw))}`;
+  const priceId = priceIdForInterval(config, interval);
+  const reserved = await reserveCheckout(asBillingEnv(c.env), c.env.DB, {
+    userId: session.id,
+    product: "drops_pro",
+    priceId,
+  });
+  if (!reserved.ok) {
+    return c.json(reserved.block, 409);
+  }
   const created = await createCheckoutSession(asBillingEnv(c.env), {
     userId: session.id,
     email: session.email,
-    priceId: priceIdForInterval(config, interval),
+    priceId,
     successUrl: `${returnPath}?checkout=success`,
     cancelUrl: returnPath,
   });
   if (!created.ok) {
+    await releaseCheckoutReservation(c.env.DB, reserved.reservationId);
     return c.json({ error: "Checkout isn’t available right now." }, 502);
   }
+  await attachPaypalSubscriptionId(
+    c.env.DB,
+    reserved.reservationId,
+    created.data.id,
+  );
 
   track(c.env.ANALYTICS, "checkout_started", {
     reason: interval,
@@ -218,16 +238,31 @@ billingRoutes.post("/api/billing/web-assets/checkout", async (c) => {
   }
 
   const origin = new URL(c.req.raw.url).origin;
+  const priceId = priceIdForWebAssetsPlan(config, plan, interval);
+  const reserved = await reserveCheckout(asBillingEnv(c.env), c.env.DB, {
+    userId: session.id,
+    product: "web_assets",
+    priceId,
+  });
+  if (!reserved.ok) {
+    return c.json(reserved.block, 409);
+  }
   const created = await createCheckoutSession(asBillingEnv(c.env), {
     userId: session.id,
     email: session.email,
-    priceId: priceIdForWebAssetsPlan(config, plan, interval),
+    priceId,
     successUrl: `${origin}/app/billing?checkout=success&product=web_assets`,
     cancelUrl: `${origin}/pricing`,
   });
   if (!created.ok) {
+    await releaseCheckoutReservation(c.env.DB, reserved.reservationId);
     return c.json({ error: "Checkout isn’t available right now." }, 502);
   }
+  await attachPaypalSubscriptionId(
+    c.env.DB,
+    reserved.reservationId,
+    created.data.id,
+  );
 
   track(c.env.ANALYTICS, "web_assets_checkout_started", {
     reason: plan,
@@ -412,6 +447,15 @@ billingRoutes.post("/api/billing/paypal/webhook", async (c) => {
         ? resource.custom
         : null;
 
+  if (
+    event.event_type === "BILLING.SUBSCRIPTION.PAYMENT.FAILED" ||
+    event.event_type === "PAYMENT.SALE.DENIED"
+  ) {
+    track(c.env.ANALYTICS, "billing_payment_failed", {
+      reason: event.event_type,
+    });
+  }
+
   if (event.event_type === "BILLING.SUBSCRIPTION.ACTIVATED" && product === "web_assets") {
     const subId = strFrom(resource.id);
     if (userId && subId) {
@@ -449,7 +493,7 @@ billingRoutes.post("/api/billing/paypal/webhook", async (c) => {
     }
   }
 
-  if (event.event_type === "BILLING.SUBSCRIPTION.ACTIVATED" && product !== "web_assets") {
+  if (event.event_type === "BILLING.SUBSCRIPTION.ACTIVATED" && product === "drops_pro") {
     track(c.env.ANALYTICS, "pro_activated", {
       reason: event.event_type,
       interval,
