@@ -28,7 +28,7 @@ const proSub = {
 };
 
 describe("resolveEntitlements", () => {
-  it("anonymous: 10 MB, 24h, no password, no history", () => {
+  it("anonymous: 25 MB, 24h, no password, no history", () => {
     const e = resolveEntitlements({ userId: null, now });
     expect(e.plan).toBe("anonymous");
     expect(e.maxUploadBytes).toBe(FREE_MAX_UPLOAD_BYTES);
@@ -45,7 +45,7 @@ describe("resolveEntitlements", () => {
     expect(e.passwordProtection).toBe(false);
   });
 
-  it("active Pro without flags stays 10 MB / 24h but ad-free + passwords", () => {
+  it("active Pro without flags stays 25 MB / 24h but ad-free + passwords", () => {
     const e = resolveEntitlements({
       userId: "u1",
       now,

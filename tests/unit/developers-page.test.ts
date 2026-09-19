@@ -44,6 +44,7 @@ describe("developers and mcp product pages", () => {
     expect(html).toContain("one text line per live drop");
     expect(html).toContain("must not invent a URL");
     expect(html).not.toContain("same envelope as REST");
+    expect(html).not.toContain("when Media is enabled");
     expect(html).toContain("Free 20 uploads / 50 MB");
     expect(MCP_PAGE.heroFacts[0]).toContain("Add to Cursor");
     expect(MCP_PAGE.heroFacts[1]).toMatch(/GitHub|PR|Slack/);

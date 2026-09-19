@@ -283,6 +283,11 @@ export const HOME: Record<Locale, HomeCopy> = {
     ],
     demoUrl: "/m/acme/site/homepage/hero",
     demoUnchanged: "Your app code does not change.",
+    storyBody:
+      "The agent uploads or replaces the file. The URL stays put — even when JPEG becomes AVIF.",
+    storyLogoAlt: "Example brand mark",
+    storyHeroV1Alt: "Previous homepage hero",
+    storyHeroV2Alt: "Replacement homepage hero",
     dropKicker: "Need a quick URL instead?",
     dropzoneAria: "Paste, drop, or choose an image to upload",
     trust: ["No account required", "You pick the expiry", "Metadata stripped"],
@@ -422,6 +427,11 @@ export const HOME: Record<Locale, HomeCopy> = {
     ],
     demoUrl: "/m/acme/site/homepage/hero",
     demoUnchanged: "El código de tu app no cambia.",
+    storyBody:
+      "El agente sube o sustituye el archivo. La URL no cambia — ni de JPEG a AVIF.",
+    storyLogoAlt: "Marca de ejemplo",
+    storyHeroV1Alt: "Hero anterior de la home",
+    storyHeroV2Alt: "Hero de recambio de la home",
     dropKicker: "¿Necesitas una URL rápida?",
     dropzoneAria: "Pega, arrastra o elige una imagen para subir",
     trust: ["Sin crear cuenta", "Tú eliges la caducidad", "Sin metadatos"],
@@ -561,6 +571,11 @@ export const HOME: Record<Locale, HomeCopy> = {
     ],
     demoUrl: "/m/acme/site/homepage/hero",
     demoUnchanged: "O código do seu app não muda.",
+    storyBody:
+      "O agente envia ou troca o arquivo. A URL permanece — mesmo de JPEG para AVIF.",
+    storyLogoAlt: "Marca de exemplo",
+    storyHeroV1Alt: "Hero anterior da home",
+    storyHeroV2Alt: "Hero novo da home",
     dropKicker: "Precisa de uma URL rápida?",
     dropzoneAria: "Cole, arraste ou escolha uma imagem para enviar",
     trust: ["Sem criar conta", "Você escolhe o prazo", "Sem metadados"],
@@ -700,6 +715,11 @@ export const HOME: Record<Locale, HomeCopy> = {
     ],
     demoUrl: "/m/acme/site/homepage/hero",
     demoUnchanged: "Dein App-Code ändert sich nicht.",
+    storyBody:
+      "Der Agent lädt die Datei hoch oder ersetzt sie. Die URL bleibt — auch von JPEG zu AVIF.",
+    storyLogoAlt: "Beispiel-Markenzeichen",
+    storyHeroV1Alt: "Vorheriger Homepage-Hero",
+    storyHeroV2Alt: "Ersetzter Homepage-Hero",
     dropKicker: "Brauchst du nur eine schnelle URL?",
     dropzoneAria: "Bild einfügen, ablegen oder auswählen",
     trust: ["Ohne Konto", "Laufzeit wählbar", "Ohne Metadaten"],
@@ -850,14 +870,14 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "Need longer? Drops Pro can choose 90 or 180 days, add a password, and upload up to 50 MB. Need it gone sooner? After upload you get a private delete control.",
+          text: "Need longer? Drops Pro can choose 90 or 180 days and add a password. Need it gone sooner? After upload you get a private delete control.",
         },
         { type: "h2", text: "What you can upload" },
         {
           type: "ul",
           items: [
             "PNG, JPEG, WebP, GIF",
-            "Up to 10\u00a0MB",
+            "Up to 25\u00a0MB",
             "No SVG (blocked for safety)",
           ],
         },
@@ -900,14 +920,14 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "¿Necesitas más tiempo? Con Drops Pro puedes elegir 90 o 180 días, poner contraseña y subir hasta 50 MB. ¿Hay que quitarla ya? Al subirla tienes un enlace privado para borrarla al momento.",
+          text: "¿Necesitas más tiempo? Con Drops Pro puedes elegir 90 o 180 días y poner contraseña. ¿Hay que quitarla ya? Al subirla tienes un enlace privado para borrarla al momento.",
         },
         { type: "h2", text: "Qué puedes subir" },
         {
           type: "ul",
           items: [
             "PNG, JPEG, WebP, GIF",
-            "Hasta 10\u00a0MB",
+            "Hasta 25\u00a0MB",
             "Sin SVG (por seguridad)",
           ],
         },
@@ -954,14 +974,14 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "Precisa de mais tempo? Com o Drops Pro dá pra escolher 90 ou 180 dias, colocar senha e enviar até 50 MB. Precisa sumir agora? Depois do envio você ganha um link privado pra excluir na hora.",
+          text: "Precisa de mais tempo? Com o Drops Pro dá pra escolher 90 ou 180 dias e colocar senha. Precisa sumir agora? Depois do envio você ganha um link privado pra excluir na hora.",
         },
         { type: "h2", text: "O que dá pra enviar" },
         {
           type: "ul",
           items: [
             "PNG, JPEG, WebP, GIF",
-            "Até 10\u00a0MB",
+            "Até 25\u00a0MB",
             "Sem SVG (por segurança)",
           ],
         },
@@ -1008,14 +1028,14 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "Länger nötig? Mit Drops Pro sind 90 oder 180 Tage, ein Passwort und bis zu 50 MB drin. Früher weg? Nach dem Upload gibt’s einen privaten Link zum Sofortlöschen.",
+          text: "Länger nötig? Mit Drops Pro sind 90 oder 180 Tage und ein Passwort drin. Früher weg? Nach dem Upload gibt’s einen privaten Link zum Sofortlöschen.",
         },
         { type: "h2", text: "Was du hochladen kannst" },
         {
           type: "ul",
           items: [
             "PNG, JPEG, WebP, GIF",
-            "Bis 10\u00a0MB",
+            "Bis 25\u00a0MB",
             "Kein SVG (Sicherheitsgrund)",
           ],
         },
@@ -1090,7 +1110,7 @@ export const LANDINGS: Record<
         { type: "h2", text: "Formats" },
         {
           type: "p",
-          text: "PNG and JPEG screenshots work best. WebP and GIF are fine too. Max 10\u00a0MB. SVG is not accepted.",
+          text: "PNG and JPEG screenshots work best. WebP and GIF are fine too. Max 25\u00a0MB. SVG is not accepted.",
         },
       ],
     },
@@ -1144,7 +1164,7 @@ export const LANDINGS: Record<
         { type: "h2", text: "Formatos" },
         {
           type: "p",
-          text: "PNG y JPEG van de lujo. WebP y GIF también. Máximo 10\u00a0MB. SVG no se acepta.",
+          text: "PNG y JPEG van de lujo. WebP y GIF también. Máximo 25\u00a0MB. SVG no se acepta.",
         },
       ],
     },
@@ -1198,7 +1218,7 @@ export const LANDINGS: Record<
         { type: "h2", text: "Formatos" },
         {
           type: "p",
-          text: "PNG e JPEG funcionam melhor. WebP e GIF também. Máximo 10\u00a0MB. SVG não entra.",
+          text: "PNG e JPEG funcionam melhor. WebP e GIF também. Máximo 25\u00a0MB. SVG não entra.",
         },
       ],
     },
@@ -1252,7 +1272,7 @@ export const LANDINGS: Record<
         { type: "h2", text: "Formate" },
         {
           type: "p",
-          text: "PNG und JPEG passen am besten. WebP und GIF auch. Maximal 10\u00a0MB. SVG wird nicht angenommen.",
+          text: "PNG und JPEG passen am besten. WebP und GIF auch. Maximal 25\u00a0MB. SVG wird nicht angenommen.",
         },
       ],
     },
@@ -1293,7 +1313,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "Links expire on the schedule you pick — 1 hour, 24 hours, 7 days, or 30 days, and up to 180 days with Drops Pro. Temporary by design: not a CMS, not a CDN for your brand assets.",
+          text: "Links expire on the schedule you pick — 1 hour, 24 hours, 7 days, or 30 days, and up to 180 days with Drops Pro. Drops are temporary by design: not a CMS. Brand assets and site files belong in Web Assets.",
         },
         { type: "h2", text: "What recipients see" },
         {
@@ -1303,7 +1323,7 @@ export const LANDINGS: Record<
         { type: "h2", text: "Quick sharing vs permanent hosting" },
         {
           type: "p",
-          text: "Use dropimg.io when the image is part of a conversation. Use a permanent host when the image is part of a product, docs site, or long-lived post.",
+          text: "Use a Drop when the image is part of a conversation. Use Web Assets when the image is part of a product, docs site, or long-lived post.",
         },
       ],
     },
@@ -1342,7 +1362,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "Los enlaces caducan cuando tú digas: 1 hora, 24 horas, 7 días o 30 días, y hasta 180 días con Drops Pro. Son temporales a propósito: no es un CMS ni un sitio para los assets de tu marca.",
+          text: "Los enlaces caducan cuando tú digas: 1 hora, 24 horas, 7 días o 30 días, y hasta 180 días con Drops Pro. Los Drops son temporales a propósito: no es un CMS. Los assets de marca y del sitio van en Web Assets.",
         },
         { type: "h2", text: "Qué ve quien recibe el enlace" },
         {
@@ -1352,7 +1372,7 @@ export const LANDINGS: Record<
         { type: "h2", text: "Compartir rápido vs dejarla publicada" },
         {
           type: "p",
-          text: "Usa dropimg.io cuando la imagen es parte de la conversación. Usa un host permanente cuando forma parte de un producto, una doc o un post que debe quedarse.",
+          text: "Usa un Drop cuando la imagen es parte de la conversación. Usa Web Assets cuando forma parte de un producto, una doc o un post que debe quedarse.",
         },
       ],
     },
@@ -1391,7 +1411,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "Os links expiram quando você quiser: 1 hora, 24 horas, 7 dias ou 30 dias, e até 180 dias com o Drops Pro. São temporários de propósito: não é CMS nem CDN pra asset de marca.",
+          text: "Os links expiram quando você quiser: 1 hora, 24 horas, 7 dias ou 30 dias, e até 180 dias com o Drops Pro. Drops são temporários de propósito: não é CMS. Assets de marca e do site ficam em Web Assets.",
         },
         { type: "h2", text: "O que quem recebe vê" },
         {
@@ -1401,7 +1421,7 @@ export const LANDINGS: Record<
         { type: "h2", text: "Compartilhar rápido vs deixar no ar" },
         {
           type: "p",
-          text: "Usa o dropimg.io quando a imagem faz parte da conversa. Usa host permanente quando ela faz parte de produto, docs ou post que precisa ficar.",
+          text: "Usa um Drop quando a imagem faz parte da conversa. Usa Web Assets quando ela faz parte de produto, docs ou post que precisa ficar.",
         },
       ],
     },
@@ -1440,7 +1460,7 @@ export const LANDINGS: Record<
         },
         {
           type: "p",
-          text: "Links laufen ab, wann du willst: 1 Stunde, 24 Stunden, 7 Tage oder 30 Tage, mit Drops Pro bis zu 180 Tage. Absichtlich temporär — kein CMS und kein CDN für Marken-Assets.",
+          text: "Links laufen ab, wann du willst: 1 Stunde, 24 Stunden, 7 Tage oder 30 Tage, mit Drops Pro bis zu 180 Tage. Drops sind absichtlich temporär — kein CMS. Marken-Assets und Site-Dateien gehören in Web Assets.",
         },
         { type: "h2", text: "Was Empfänger sehen" },
         {
@@ -1450,7 +1470,7 @@ export const LANDINGS: Record<
         { type: "h2", text: "Schnell teilen vs. dauerhaft hosten" },
         {
           type: "p",
-          text: "Nimm dropimg.io, wenn das Bild zur Unterhaltung gehört. Nimm einen dauerhaften Host, wenn es zu Produkt, Doku oder einem langlebigen Beitrag gehört.",
+          text: "Nimm einen Drop, wenn das Bild zur Unterhaltung gehört. Nimm Web Assets, wenn es zu Produkt, Doku oder einem langlebigen Beitrag gehört.",
         },
       ],
     },

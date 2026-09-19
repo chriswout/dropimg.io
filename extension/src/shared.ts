@@ -7,7 +7,7 @@ export const API_ORIGIN = "https://dropimg.io";
  * it, so anything account-shaped reads the limit off the profile instead —
  * this is only the floor we can assume without asking.
  */
-export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+export const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 
 export function formatBytes(bytes: number): string {
   const mb = bytes / (1024 * 1024);

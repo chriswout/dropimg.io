@@ -3,6 +3,7 @@ import {
   chooseExpirySeconds,
   EXPIRY_7D,
   mapError,
+  MAX_UPLOAD_BYTES,
   type AccountProfile,
   type CaptureResult,
   type PendingPairing,
@@ -108,7 +109,7 @@ export async function validateIntegrationToken(
       ok: true,
       emailMasked: body.user?.emailMasked || "",
       plan: body.entitlements?.plan === "pro" ? "pro" : "free",
-      maxUploadBytes: body.entitlements?.maxUploadBytes || 10 * 1024 * 1024,
+      maxUploadBytes: body.entitlements?.maxUploadBytes || MAX_UPLOAD_BYTES,
       allowedExpirySeconds,
       defaultExpirySeconds: chooseExpirySeconds(
         allowedExpirySeconds,
@@ -204,7 +205,7 @@ export async function pollBrowserPairing(
         profile: {
           emailMasked: body.user?.emailMasked || "",
           plan: body.entitlements?.plan === "pro" ? "pro" : "free",
-          maxUploadBytes: body.entitlements?.maxUploadBytes || 10 * 1024 * 1024,
+          maxUploadBytes: body.entitlements?.maxUploadBytes || MAX_UPLOAD_BYTES,
           allowedExpirySeconds,
           defaultExpirySeconds: chooseExpirySeconds(
             allowedExpirySeconds,

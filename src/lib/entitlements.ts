@@ -2,7 +2,8 @@
 
 import type { R2KeyClass } from "./tokens";
 
-export const FREE_MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
+/** Covers 4K/5K PNG screenshots. Not Catbox-scale; Workers still buffer+strip. */
+export const FREE_MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
 export const PRO_MAX_UPLOAD_BYTES = 50 * 1024 * 1024;
 
 export const EXPIRY_1H = 60 * 60;

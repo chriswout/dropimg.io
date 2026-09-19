@@ -14,7 +14,7 @@ Anonymous uploads stay available. An integration token is optional and is not re
 - Revoke from Account → Connected integrations. Existing share links stay live.
 - REST: [`/developers`](https://dropimg.io/developers) and [`/openapi/v1.yaml`](https://dropimg.io/openapi/v1.yaml)
 - MCP: [`/mcp`](https://dropimg.io/mcp)
-- Media (permanent, flag-gated): [`docs/media-rest.md`](media-rest.md), [`docs/media-mcp.md`](media-mcp.md), [`docs/media-cursor.md`](media-cursor.md), [`docs/media-claude.md`](media-claude.md), [`docs/media-codex.md`](media-codex.md)
+- Web Assets (permanent, live): [`docs/media-rest.md`](media-rest.md), [`docs/media-mcp.md`](media-mcp.md), [`docs/media-cursor.md`](media-cursor.md), [`docs/media-claude.md`](media-claude.md), [`docs/media-codex.md`](media-codex.md)
 - Project keys: `dropimg_pk_*`, mint/list/revoke at `/app/media` or `POST /api/v1/media/projects/:id/keys`
 
 The browser extension connects with one-click pairing (`POST /api/integrations/browser/start` + `/connect/browser/:id`). That still mints a `dropimg_it_*` token. A pending pairing lasts 120 seconds; after approve the extension has 60 seconds to retrieve the credential. An unused approved pairing then expires and the minted token is revoked. Browser disconnect removes the local copy only. Account-side Revoke invalidates the token.
@@ -32,10 +32,10 @@ The browser extension connects with one-click pairing (`POST /api/integrations/b
 - `POST /api/integrations/upload-intent` then `POST /api/integrations/upload/:intent` — Bearer
 - `POST /api/integrations/sharex` — anonymous multipart, or Bearer for an owned upload
 
-Free integrations: ownership, My drops, 1h/24h/7d/30d, 10 MB, no passwords.
-Pro integrations: those plus 90d and 180d, 50 MB on the intent path, and passwords where the client supports them.
+Free integrations: ownership, My drops, 1h/24h/7d/30d, 25 MB, no passwords.
+Pro integrations: those plus 90d and 180d, 50 MB on the intent path when `PRO_50MB_ENABLED` is on, and passwords where the client supports them.
 
-ShareX authenticated uploads stay on a conservative 10 MB multipart cap.
+ShareX authenticated uploads stay on a 25 MB multipart cap.
 
 ## Lost config
 

@@ -1,6 +1,6 @@
 /** Shared types used by Worker and client. */
 
-export const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10 MB
+export const MAX_UPLOAD_BYTES = 25 * 1024 * 1024; // 25 MB — Drops free/anonymous
 export const MAX_MEGAPIXELS = 50_000_000;
 /** Rolling window for the per-IP and per-user upload quota. Not an image TTL. */
 export const QUOTA_WINDOW_SECONDS = 24 * 60 * 60;

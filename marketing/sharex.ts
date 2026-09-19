@@ -60,7 +60,7 @@ export const SHAREX_PAGE: SharexCopy = {
   faqs: [
     {
       q: "Is this a free ShareX image host?",
-      a: "Yes. The anonymous custom uploader needs no account. Screenshots upload to dropimg.io and return a temporary URL. Max 10 MB. SVG is not accepted.",
+      a: "Yes. The anonymous custom uploader needs no account. Screenshots upload to dropimg.io and return a temporary URL. Max 25 MB. SVG is not accepted.",
     },
     {
       q: "How do I add the ShareX custom uploader?",
@@ -94,7 +94,7 @@ export const SHAREX_PAGE: SharexCopy = {
     },
     {
       type: "p",
-      text: "Anonymous: the public .sxcu. No token, no sign-in, 10 MB, 7-day default (or 1h, 24h, 30d). Uploads are not listed in an account. This is the free ShareX image host most people want.",
+      text: "Anonymous: the public .sxcu. No token, no sign-in, 25 MB, 7-day default (or 1h, 24h, 30d). Uploads are not listed in an account. This is the free ShareX image host most people want.",
     },
     {
       type: "p",

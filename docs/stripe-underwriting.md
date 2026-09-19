@@ -100,7 +100,7 @@ properties are enforced in code rather than policy:
   no feed, no public listing of any kind. Links are 8-character
   cryptographically random slugs. Share pages are served `noindex` and excluded
   from the sitemap, so uploads never enter search engines.
-- **Small files, rate-limited.** 10 MB per upload, rising to 50 MB for
+- **Small files, rate-limited.** 25 MB per Drop upload, rising to 50 MB for
   subscribers, against per-IP limits of 10 uploads per minute and 100 uploads or
   500 MB per day. Cloudflare WAF rules challenge high-risk uploads and block URL
   enumeration. These are screenshot-sized limits, not distribution-sized ones.

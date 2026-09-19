@@ -19,7 +19,7 @@ import {
   setupThemeToggle,
 } from "./chrome";
 
-const MAX_BYTES = 10 * 1024 * 1024;
+const MAX_BYTES = 25 * 1024 * 1024;
 const RECENT_KEY = "dropimg:recent";
 const LOCALE_KEY = "dropimg:locale";
 const LOCALE_DISMISS_KEY = "dropimg:locale-suggest-dismissed";

@@ -97,23 +97,23 @@ export const INTENT_PAGES: Record<
         {
           type: "ul",
           items: [
-            "PNG, JPEG, WebP, and GIF up to 10 MB.",
+            "PNG, JPEG, WebP, and GIF up to 25 MB.",
             "Metadata is stripped when supported.",
             "Delete early with the one-time delete control shown after upload.",
-            "Pro raises the limit to 50 MB and adds password-protected links.",
+            "Drops Pro adds password-protected links and expiries up to 180 days.",
           ],
         },
         { type: "h2", text: "Not permanent hosting" },
         {
           type: "p",
-          text: "Every link expires. dropimg.io is for sharing a screenshot now, not for storing one forever — there is no public gallery and no permanent storage tier.",
+          text: "Every Drop link expires. This page is for sharing a screenshot now, not storing one forever — there is no public gallery. Permanent application files belong in Web Assets.",
         },
       ],
       faqHeading: "Screenshot sharing questions",
       faqs: [
         {
           q: "Do I need an account to share a screenshot?",
-          a: "No. Pasting and sharing works without signing up. A free account is optional and keeps your last 10 active links in one place; Pro adds longer links, 50 MB uploads, and passwords.",
+          a: "No. Pasting and sharing works without signing up. A free account is optional and keeps your last 10 active links in one place; Drops Pro adds longer links and passwords.",
         },
         {
           q: "How long does the screenshot link work?",
@@ -183,23 +183,23 @@ export const INTENT_PAGES: Record<
         {
           type: "ul",
           items: [
-            "PNG, JPEG, WebP y GIF hasta 10 MB.",
+            "PNG, JPEG, WebP y GIF hasta 25 MB.",
             "Se eliminan los metadatos cuando el formato lo permite.",
             "Puedes borrarla antes de tiempo con el botón que aparece tras subirla.",
-            "Pro sube el límite a 50 MB y añade enlaces con contraseña.",
+            "Drops Pro añade enlaces con contraseña y caducidad de hasta 180 días.",
           ],
         },
         { type: "h2", text: "No es alojamiento permanente" },
         {
           type: "p",
-          text: "Todos los enlaces caducan. dropimg.io sirve para compartir una captura ahora, no para guardarla siempre: no hay galería pública ni plan de almacenamiento permanente.",
+          text: "Todos los enlaces de Drop caducan. Esta página sirve para compartir una captura ahora, no para guardarla siempre: no hay galería pública. Los archivos permanentes de una app van en Web Assets.",
         },
       ],
       faqHeading: "Preguntas sobre compartir capturas",
       faqs: [
         {
           q: "¿Necesito una cuenta para compartir una captura?",
-          a: "No. Pegar y compartir funciona sin registrarse. La cuenta gratuita es opcional y guarda tus 10 últimos enlaces activos; Pro añade enlaces más largos, subidas de 50 MB y contraseñas.",
+          a: "No. Pegar y compartir funciona sin registrarse. La cuenta gratuita es opcional y guarda tus 10 últimos enlaces activos; Drops Pro añade enlaces más largos y contraseñas.",
         },
         {
           q: "¿Cuánto tiempo funciona el enlace?",
@@ -268,23 +268,23 @@ export const INTENT_PAGES: Record<
         {
           type: "ul",
           items: [
-            "PNG, JPEG, WebP e GIF até 10 MB.",
+            "PNG, JPEG, WebP e GIF até 25 MB.",
             "Os metadados são removidos quando o formato permite.",
             "Dá para apagar antes da hora no botão que aparece depois do envio.",
-            "O Pro aumenta o limite para 50 MB e adiciona links com senha.",
+            "O Drops Pro adiciona links com senha e validade de até 180 dias.",
           ],
         },
         { type: "h2", text: "Não é hospedagem permanente" },
         {
           type: "p",
-          text: "Todo link expira. O dropimg.io serve para compartilhar um print agora, não para guardar para sempre: não existe galeria pública nem plano de armazenamento permanente.",
+          text: "Todo link de Drop expira. Esta página serve para compartilhar um print agora, não para guardar para sempre: não existe galeria pública. Arquivos permanentes de um app ficam em Web Assets.",
         },
       ],
       faqHeading: "Dúvidas sobre compartilhar prints",
       faqs: [
         {
           q: "Preciso de conta para compartilhar um print?",
-          a: "Não. Colar e compartilhar funciona sem cadastro. A conta gratuita é opcional e guarda os seus 10 últimos links ativos; o Pro adiciona links mais longos, envios de 50 MB e senhas.",
+          a: "Não. Colar e compartilhar funciona sem cadastro. A conta gratuita é opcional e guarda os seus 10 últimos links ativos; o Drops Pro adiciona links mais longos e senhas.",
         },
         {
           q: "Por quanto tempo o link funciona?",
@@ -349,25 +349,25 @@ export const INTENT_PAGES: Record<
             "A short public page for the image.",
             "A direct image URL under /i/… for embedding where allowed.",
             "Automatic deletion when the lifetime you chose runs out.",
-            "PNG, JPEG, WebP, and GIF up to 10 MB, with metadata stripped when supported.",
+            "PNG, JPEG, WebP, and GIF up to 25 MB, with metadata stripped when supported.",
           ],
         },
         { type: "h2", text: "Upload an image, get a URL — without an account" },
         {
           type: "p",
-          text: "Anonymous uploading is the default, not a trial. Signing in is optional: a free account keeps your last 10 active links in one place, and Pro adds links up to 180 days, 50 MB uploads, password protection, and browser extension and ShareX uploads.",
+          text: "Anonymous uploading is the default, not a trial. Signing in is optional: a free account keeps your last 10 active links in one place, and Drops Pro adds links up to 180 days, password protection, and browser extension and ShareX uploads.",
         },
         { type: "h2", text: "Not a CDN or a gallery" },
         {
           type: "p",
-          text: "dropimg.io converts an image to a link for temporary sharing. There is no public gallery and no permanent storage tier — if you need the file online indefinitely, use a host built for that.",
+          text: "dropimg.io Drops convert an image to a link for temporary sharing. There is no public gallery. If you need the file online indefinitely, use Web Assets.",
         },
       ],
       faqHeading: "Image to URL questions",
       faqs: [
         {
           q: "Do I need an account to turn an image into a URL?",
-          a: "No. Uploading and sharing works without signing up. An optional free account keeps your last 10 active links together, and Pro adds longer links, larger uploads, and passwords.",
+          a: "No. Uploading and sharing works without signing up. An optional free account keeps your last 10 active links together, and Drops Pro adds longer links and passwords.",
         },
         {
           q: "How long will the image URL work?",
@@ -375,11 +375,11 @@ export const INTENT_PAGES: Record<
         },
         {
           q: "Is this permanent image hosting?",
-          a: "No. Every dropimg.io URL expires and the file is deleted afterwards. It is built for temporary sharing, not permanent storage.",
+          a: "No. Every Drop URL expires and the file is deleted afterwards. It is built for temporary sharing, not permanent storage. Permanent application files belong in Web Assets.",
         },
         {
           q: "What files can I convert to a URL?",
-          a: "PNG, JPEG, WebP, and GIF up to 10 MB on the free tier, or up to 50 MB with Drops Pro. SVG is not accepted.",
+          a: "PNG, JPEG, WebP, and GIF up to 25 MB. SVG is not accepted on Drops.",
         },
       ],
       schemaHowtoName: "Convert an image to a URL",
@@ -429,25 +429,25 @@ export const INTENT_PAGES: Record<
             "Una página pública breve para la imagen.",
             "Una URL directa bajo /i/… para insertarla donde esté permitido.",
             "Borrado automático cuando se cumple el plazo que elegiste.",
-            "PNG, JPEG, WebP y GIF hasta 10 MB, sin metadatos cuando el formato lo permite.",
+            "PNG, JPEG, WebP y GIF hasta 25 MB, sin metadatos cuando el formato lo permite.",
           ],
         },
         { type: "h2", text: "Subir imagen y obtener enlace, sin cuenta" },
         {
           type: "p",
-          text: "Subir de forma anónima es lo normal aquí, no una prueba. Iniciar sesión es opcional: la cuenta gratuita reúne tus 10 últimos enlaces activos, y Pro añade enlaces de hasta 180 días, subidas de 50 MB, protección con contraseña y subidas desde la extensión y ShareX.",
+          text: "Subir de forma anónima es lo normal aquí, no una prueba. Iniciar sesión es opcional: la cuenta gratuita reúne tus 10 últimos enlaces activos, y Drops Pro añade enlaces de hasta 180 días, protección con contraseña y subidas desde la extensión y ShareX.",
         },
         { type: "h2", text: "No es una CDN ni una galería" },
         {
           type: "p",
-          text: "dropimg.io convierte una imagen en enlace para compartirla un rato. No hay galería pública ni plan de almacenamiento permanente: si necesitas el archivo en línea de forma indefinida, usa un servicio pensado para eso.",
+          text: "Los Drops de dropimg.io convierten una imagen en enlace para compartirla un rato. No hay galería pública. Si necesitas el archivo en línea de forma indefinida, usa Web Assets.",
         },
       ],
       faqHeading: "Preguntas sobre imagen a URL",
       faqs: [
         {
           q: "¿Necesito una cuenta para convertir una imagen en URL?",
-          a: "No. Subir y compartir funciona sin registrarse. La cuenta gratuita es opcional y reúne tus 10 últimos enlaces activos; Pro añade enlaces más largos, archivos más grandes y contraseñas.",
+          a: "No. Subir y compartir funciona sin registrarse. La cuenta gratuita es opcional y reúne tus 10 últimos enlaces activos; Drops Pro añade enlaces más largos y contraseñas.",
         },
         {
           q: "¿Cuánto tiempo funcionará la URL de la imagen?",
@@ -455,11 +455,11 @@ export const INTENT_PAGES: Record<
         },
         {
           q: "¿Esto es alojamiento permanente de imágenes?",
-          a: "No. Todas las URL de dropimg.io caducan y después el archivo se borra. Está pensado para compartir temporalmente, no para almacenar.",
+          a: "No. Todas las URL de Drop caducan y después el archivo se borra. Está pensado para compartir temporalmente, no para almacenar. Los archivos permanentes de una app van en Web Assets.",
         },
         {
           q: "¿Qué archivos puedo convertir en URL?",
-          a: "PNG, JPEG, WebP y GIF hasta 10 MB en el plan gratuito, o hasta 50 MB con Pro. No se aceptan SVG.",
+          a: "PNG, JPEG, WebP y GIF hasta 25 MB. No se aceptan SVG en Drops.",
         },
       ],
       schemaHowtoName: "Convertir una imagen en URL",
@@ -509,25 +509,25 @@ export const INTENT_PAGES: Record<
             "Uma página pública curta para a imagem.",
             "Uma URL direta em /i/… para incorporar onde for permitido.",
             "Exclusão automática quando o prazo escolhido termina.",
-            "PNG, JPEG, WebP e GIF até 10 MB, sem metadados quando o formato permite.",
+            "PNG, JPEG, WebP e GIF até 25 MB, sem metadados quando o formato permite.",
           ],
         },
         { type: "h2", text: "Gerar link para imagem sem criar conta" },
         {
           type: "p",
-          text: "Enviar sem conta é o padrão aqui, não um teste. Entrar é opcional: a conta gratuita reúne os seus 10 últimos links ativos, e o Pro acrescenta links de até 180 dias, envios de 50 MB, proteção por senha e envio pela extensão e pelo ShareX.",
+          text: "Enviar sem conta é o padrão aqui, não um teste. Entrar é opcional: a conta gratuita reúne os seus 10 últimos links ativos, e o Drops Pro acrescenta links de até 180 dias, proteção por senha e envio pela extensão e pelo ShareX.",
         },
         { type: "h2", text: "Não é CDN nem galeria" },
         {
           type: "p",
-          text: "O dropimg.io transforma imagem em link para compartilhar por um tempo. Não há galeria pública nem plano de armazenamento permanente: se você precisa do arquivo no ar por tempo indeterminado, use um serviço feito para isso.",
+          text: "Os Drops do dropimg.io transformam imagem em link para compartilhar por um tempo. Não há galeria pública. Se você precisa do arquivo no ar por tempo indeterminado, use Web Assets.",
         },
       ],
       faqHeading: "Dúvidas sobre imagem para URL",
       faqs: [
         {
           q: "Preciso de conta para transformar imagem em URL?",
-          a: "Não. Enviar e compartilhar funciona sem cadastro. A conta gratuita é opcional e reúne os seus 10 últimos links ativos; o Pro acrescenta links mais longos, arquivos maiores e senhas.",
+          a: "Não. Enviar e compartilhar funciona sem cadastro. A conta gratuita é opcional e reúne os seus 10 últimos links ativos; o Drops Pro acrescenta links mais longos e senhas.",
         },
         {
           q: "Por quanto tempo a URL da imagem funciona?",
@@ -535,11 +535,11 @@ export const INTENT_PAGES: Record<
         },
         {
           q: "Isso é hospedagem permanente de imagens?",
-          a: "Não. Toda URL do dropimg.io expira e o arquivo é apagado depois. Ele foi feito para compartilhar por um tempo, não para armazenar.",
+          a: "Não. Toda URL de Drop expira e o arquivo é apagado depois. Ele foi feito para compartilhar por um tempo, não para armazenar. Arquivos permanentes de um app ficam em Web Assets.",
         },
         {
           q: "Quais arquivos posso transformar em URL?",
-          a: "PNG, JPEG, WebP e GIF até 10 MB no plano gratuito, ou até 50 MB com o Pro. SVG não é aceito.",
+          a: "PNG, JPEG, WebP e GIF até 25 MB. SVG não é aceito em Drops.",
         },
       ],
       schemaHowtoName: "Transformar uma imagem em URL",
@@ -582,7 +582,7 @@ export const INTENT_PAGES: Record<
         { type: "h2", text: "No account required" },
         {
           type: "p",
-          text: "Upload from the page above without signing up. Accounts exist but are entirely optional: a free account only adds a list of your last 10 active links, and Pro adds longer links, larger uploads, and passwords. There are no public profiles and no searchable library of uploads.",
+          text: "Upload from the page above without signing up. Accounts exist but are entirely optional: a free account only adds a list of your last 10 active links, and Drops Pro adds longer links and passwords. There are no public profiles and no searchable library of uploads.",
         },
         { type: "h2", text: "What we do and do not keep" },
         {
@@ -605,7 +605,7 @@ export const INTENT_PAGES: Record<
           items: [
             "Free uploads last 1 hour, 24 hours, 7 days, or 30 days — 7 days by default.",
             "You can delete sooner with the delete control from your upload session.",
-            "There is no permanent storage option, anonymous or otherwise.",
+            "There is no permanent anonymous Drop option. Permanent application files belong in Web Assets, which need a signed-in project.",
             "Password-protected links and lifetimes up to 180 days require a Pro account.",
           ],
         },
@@ -614,7 +614,7 @@ export const INTENT_PAGES: Record<
       faqs: [
         {
           q: "Is an account ever required?",
-          a: "No. Anonymous uploading is the normal way to use dropimg.io. Accounts are optional and only add history, longer links, larger files, passwords, and integrations.",
+          a: "No. Anonymous uploading is the normal way to use dropimg.io. Accounts are optional and only add history, longer links, passwords, and integrations.",
         },
         {
           q: "How long does an anonymous link last?",
@@ -637,7 +637,7 @@ export const INTENT_PAGES: Record<
 
   "expiring-image-link": {
     en: {
-      title: "Expiring Image Link — Choose 1 Hour to 7 Days | dropimg.io",
+      title: "Expiring Image Link — Choose 1 Hour to 30 Days | dropimg.io",
       description:
         "Create an expiring image link in seconds. Paste a screenshot or drop a file, pick 1 hour, 24 hours, 7 days, or 30 days, and it auto-deletes. No account.",
       ogTitle: "Expiring image link | dropimg.io",
@@ -669,7 +669,7 @@ export const INTENT_PAGES: Record<
         { type: "h2", text: "Built to expire" },
         {
           type: "p",
-          text: "Every dropimg.io link has an end date, and you set it. When the time is up the image is removed from storage and the URL stops serving — no cleanup, no archive, nothing left behind.",
+          text: "Every Drop link has an end date, and you set it. When the time is up the image is removed from storage and the URL stops serving — no cleanup, no archive, nothing left behind. Need a URL that stays in your app? Use Web Assets.",
         },
         { type: "h2", text: "Choose the lifetime that fits" },
         {
@@ -678,6 +678,7 @@ export const INTENT_PAGES: Record<
             "1 hour for a password reset screenshot or a one-question answer.",
             "24 hours for something you are actively working through today.",
             "7 days for a thread, a review, or a ticket that stays open — this is the default.",
+            "30 days when a conversation might linger.",
             "Up to 90 or 180 days with Drops Pro, when a link has to outlive the month.",
           ],
         },

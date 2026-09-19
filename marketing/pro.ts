@@ -57,7 +57,7 @@ export const PRO_SEO: Record<Locale, ProSeo> = {
   en: {
     title: "Drops Pro — €2.99/month",
     description:
-      "More control for people who use DropIMG Drops every day. Keep links up to 180 days, upload larger images, protect shares, and manage uploads across devices.",
+      "More control for people who use DropIMG Drops every day. Keep links up to 180 days, protect shares, and manage uploads across devices.",
     ogTitle: "Drops Pro",
     ogDescription:
       "Keep links longer, manage uploads across devices, and protect what you share. €2.99/month or €24.99/year.",
@@ -65,7 +65,7 @@ export const PRO_SEO: Record<Locale, ProSeo> = {
   es: {
     title: "Drops Pro — €2.99/mes",
     description:
-      "Más control si usas Drops a diario. Enlaces de hasta 180 días, archivos más grandes, protección con contraseña e historial en todos tus dispositivos.",
+      "Más control si usas Drops a diario. Enlaces de hasta 180 días, protección con contraseña e historial en todos tus dispositivos.",
     ogTitle: "Drops Pro",
     ogDescription:
       "Enlaces más largos, historial en todos tus dispositivos y protección al compartir. €2.99/mes o €24.99/año.",
@@ -73,7 +73,7 @@ export const PRO_SEO: Record<Locale, ProSeo> = {
   "pt-BR": {
     title: "Drops Pro — €2.99/mês",
     description:
-      "Mais controle pra quem usa Drops todo dia. Links de até 180 dias, arquivos maiores, senha e histórico em todos os dispositivos.",
+      "Mais controle pra quem usa Drops todo dia. Links de até 180 dias, senha e histórico em todos os dispositivos.",
     ogTitle: "Drops Pro",
     ogDescription:
       "Links mais longos, histórico em todos os dispositivos e proteção ao compartilhar. €2.99/mês ou €24.99/ano.",
@@ -81,7 +81,7 @@ export const PRO_SEO: Record<Locale, ProSeo> = {
   de: {
     title: "Drops Pro — €2.99/Monat",
     description:
-      "Mehr Kontrolle für alle, die Drops täglich nutzen. Links bis 180 Tage, größere Dateien, Passwortschutz und Verlauf auf allen Geräten.",
+      "Mehr Kontrolle für alle, die Drops täglich nutzen. Links bis 180 Tage, Passwortschutz und Verlauf auf allen Geräten.",
     ogTitle: "Drops Pro",
     ogDescription:
       "Längere Links, Verlauf auf allen Geräten und Schutz beim Teilen. €2.99/Monat oder €24.99/Jahr.",

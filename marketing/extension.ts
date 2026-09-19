@@ -105,7 +105,7 @@ export const EXTENSION_PAGE: ExtensionCopy = {
     },
     {
       type: "p",
-      text: "No annotation tools, OCR, AI analysis, or cloud sync. One job: capture → link. Signing in is optional and only adds history, longer links, and larger uploads.",
+      text: "No annotation tools, OCR, AI analysis, or cloud sync. One job: capture → link. Signing in is optional and only adds history, longer links, and passwords.",
     },
   ],
 };

@@ -66,11 +66,11 @@
 
       <h2>1. What DropIMG is (and is not)</h2>
       <ul>
-        <li>An account is optional. Anonymous uploads still work, and expire after 7 days by default.</li>
+        <li>An account is optional for Drops. Anonymous Drop uploads still work, and expire after 7 days by default (or 1 hour, 24 hours, or 30 days if you choose).</li>
         <li>No public gallery or browseable library of uploads.</li>
-        <li>Share pages are marked <code>noindex</code> so they are not meant for search results.</li>
-        <li>Links are temporary. Free links expire after 1 hour, 24 hours, or 7 days, whichever you chose. Pro links expire after at most 90 days.</li>
-        <li>Anyone who has a working share link can view the image until it expires, is deleted, or (if protected) until they unlock it.</li>
+        <li>Share pages for Drops are marked <code>noindex</code> so they are not meant for search results.</li>
+        <li>Drops are temporary. Free Drop links expire after 1 hour, 24 hours, 7 days, or 30 days, whichever you chose. Drops Pro links expire after at most 180 days. Web Assets at <code>/m/…</code> stay until you replace or delete them and are public to anyone with the URL.</li>
+        <li>Anyone who has a working Drop share link can view the image until it expires, is deleted, or (if protected) until they unlock it.</li>
       </ul>
 
       <h2>2. Optional accounts</h2>
@@ -99,15 +99,16 @@
       </ul>
       <p>We do <strong>not</strong> store the original filename from your device.</p>
       <p>
-        Supported formats: PNG, JPEG, WebP, and GIF. Anonymous and Free uploads
-        are limited to 10&nbsp;MB. Pro uploads may be up to 50&nbsp;MB when that
-        limit is enabled. SVG and other formats are rejected.
+        Supported formats for Drops: PNG, JPEG, WebP, and GIF, up to 25&nbsp;MB.
+        SVG is rejected on Drops. Web Assets also accept AVIF, sanitized SVG, ICO,
+        WOFF, and WOFF2, at 10&nbsp;MB per file.
       </p>
 
       <h3>4.2 Retention</h3>
       <ul>
-        <li><strong>Anonymous and Free:</strong> 1 hour, 24 hours, or 7 days, depending on the expiry you choose at upload, or sooner if you delete the image. Seven days is the default.</li>
-        <li><strong>Pro:</strong> up to 30 or 90 days, depending on the expiry you choose, and never more than 90 days from the original upload even if the link is extended. Even Pro links expire. There is no permanent storage.</li>
+        <li><strong>Anonymous and Free Drops:</strong> 1 hour, 24 hours, 7 days, or 30 days, depending on the expiry you choose at upload, or sooner if you delete the image. Seven days is the default.</li>
+        <li><strong>Drops Pro:</strong> up to 90 or 180 days, depending on the expiry you choose, and never more than 180 days from the original upload even if the link is extended. Even Drops Pro links expire.</li>
+        <li><strong>Web Assets:</strong> stay until you replace or delete them. Public <code>/m/…</code> URLs are not confidential storage.</li>
         <li>Expired or deleted images are removed from active hosting. Cleanup is not always instantaneous; background jobs and storage lifecycle rules finish the removal.</li>
       </ul>
 

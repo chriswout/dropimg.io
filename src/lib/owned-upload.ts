@@ -4,6 +4,7 @@ import { toArrayBuffer } from "./d1-blob";
 import {
   entitlementsFor,
   EXPIRY_7D,
+  FREE_MAX_UPLOAD_BYTES,
   uploadIntentAllowed,
 } from "./entitlements";
 import {
@@ -225,7 +226,7 @@ export async function executeOwnedUploadFromRequest(
   return c.json(stored.body, 201);
 }
 
-export const SHAREX_MULTIPART_MAX_BYTES = 10 * 1024 * 1024;
+export const SHAREX_MULTIPART_MAX_BYTES = FREE_MAX_UPLOAD_BYTES;
 
 /**
  * ShareX sends expiry as a free-text form field, so accept the friendly labels

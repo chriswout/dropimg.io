@@ -554,11 +554,35 @@ function extensionMockHtml(): string {
           </div>`;
 }
 
-function homepageDemoHtml(copy: (typeof HOME)[Locale]): string {
-  return `          <section class="product-demo" aria-labelledby="demo-heading" data-enter>
+const HOME_STORY_ASSETS = {
+  logo: "https://dropimg.io/m/o9eamt653257/website/marketing/home/logo",
+  heroV1: "https://dropimg.io/m/o9eamt653257/website/marketing/home/hero-v1",
+  heroV2: "https://dropimg.io/m/o9eamt653257/website/marketing/home/hero-v2",
+} as const;
+
+function homepageStoryHtml(copy: (typeof HOME)[Locale]): string {
+  return `          <section class="product-demo story-block" aria-labelledby="demo-heading" data-enter>
+            <p class="feature-kicker">${esc(copy.agentsHeading)}</p>
             <h2 id="demo-heading">${esc(copy.demoHeading)}</h2>
-            <div class="demo-board">
-              <div class="demo-layout">
+            <p class="story-body">${esc(copy.storyBody)}</p>
+            <div class="story-board">
+              <div class="story-site">
+                <div class="story-chrome">
+                  <img class="story-logo" src="${esc(HOME_STORY_ASSETS.logo)}" width="56" height="56" alt="${esc(copy.storyLogoAlt)}" decoding="async" />
+                  <code>${esc(copy.demoUrl)}</code>
+                </div>
+                <div class="story-swap">
+                  <figure>
+                    <img src="${esc(HOME_STORY_ASSETS.heroV1)}" width="1280" height="720" alt="${esc(copy.storyHeroV1Alt)}" decoding="async" fetchpriority="high" />
+                    <figcaption><span class="stable-v-label">v1</span> <code>${esc(copy.stableV1)}</code></figcaption>
+                  </figure>
+                  <figure>
+                    <img src="${esc(HOME_STORY_ASSETS.heroV2)}" width="1280" height="720" alt="${esc(copy.storyHeroV2Alt)}" decoding="async" />
+                    <figcaption><span class="stable-v-label">v2</span> <code>${esc(copy.stableV2)}</code></figcaption>
+                  </figure>
+                </div>
+              </div>
+              <div class="story-turns">
                 <div class="demo-turn demo-you">
                   <p class="demo-who">${esc(copy.demoYou)}</p>
                   <p class="demo-prompt">${esc(copy.demoPrompt)}</p>
@@ -571,61 +595,9 @@ function homepageDemoHtml(copy: (typeof HOME)[Locale]): string {
                     <li>${esc(copy.demoSteps[2])}</li>
                   </ul>
                 </div>
+                <p class="demo-note">${esc(copy.demoUnchanged)}</p>
               </div>
-              <p class="demo-url-bar">
-                <svg class="demo-lock" viewBox="0 0 24 24" width="18" height="18" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  aria-hidden="true" focusable="false">
-                  <rect x="5" y="11" width="14" height="10" rx="2" />
-                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
-                </svg>
-                <code>${esc(copy.demoUrl)}</code>
-              </p>
-              <p class="demo-note">${esc(copy.demoUnchanged)}</p>
             </div>
-          </section>`;
-}
-
-function homepageStableHtml(copy: (typeof HOME)[Locale]): string {
-  return `          <section class="stable-block" aria-labelledby="stable-heading" data-enter>
-            <p class="feature-kicker">${esc(copy.stableKicker)}</p>
-            <h2 id="stable-heading">${esc(copy.stableTitle)}</h2>
-            <p class="stable-body">${esc(copy.stableBody)}</p>
-            <div class="stable-board">
-              <p class="demo-url-bar">
-                <svg class="demo-lock" viewBox="0 0 24 24" width="18" height="18" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  aria-hidden="true" focusable="false">
-                  <rect x="5" y="11" width="14" height="10" rx="2" />
-                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
-                </svg>
-                <code>${esc(copy.stablePath)}</code>
-              </p>
-              <p class="stable-swap">
-                <span class="stable-v"><span class="stable-v-label">v1</span> <code>${esc(copy.stableV1)}</code></span>
-                <span class="stable-arrow" aria-hidden="true">→</span>
-                <span class="stable-v"><span class="stable-v-label">v2</span> <code>${esc(copy.stableV2)}</code></span>
-              </p>
-            </div>
-          </section>`;
-}
-
-function homepageAgentsHtml(copy: (typeof HOME)[Locale]): string {
-  const steps = copy.agentsFlow
-    .map(
-      (step, i) => `              <li>
-                <span class="agent-step-n" aria-hidden="true">${i + 1}</span>
-                <strong>${esc(step)}</strong>
-              </li>`,
-    )
-    .join("\n");
-  return `          <section class="agents-block" aria-labelledby="agents-heading" data-enter>
-            <h2 id="agents-heading">${esc(copy.agentsHeading)}</h2>
-            <p>${esc(copy.agentsBody)}</p>
-            <ol class="agent-steps">
-${steps}
-            </ol>
-            <p class="works-with">${esc(copy.worksWith)}</p>
           </section>`;
 }
 
@@ -668,13 +640,11 @@ ${unsupported}
 }
 
 function homepagePricingHtml(copy: (typeof HOME)[Locale]): string {
-  const cards = PRICING_TIERS.map((tier, i) => {
-    const period = tier.period.startsWith("/") ? `<span>${esc(tier.period)}</span>` : "";
-    const teaser = copy.pricingTeasers[i] ?? tier.teaser;
+  const cards = PRICING_TIERS.map((tier) => {
+    const period = tier.id === "free" ? "" : "<span>/mo</span>";
     return `            <article class="price-card" data-tier="${esc(tier.id)}">
               <h3>${esc(tier.name)}</h3>
               <p class="price-amount">${esc(tier.price)}${period}</p>
-              <p class="price-teaser-note">${esc(teaser)}</p>
             </article>`;
   }).join("\n");
   return `          <section class="pricing-teaser" aria-labelledby="pricing-heading" data-enter>
@@ -812,20 +782,14 @@ ${topBar("home", locale, chrome)}
           <p class="works-with">${esc(copy.worksWith)}</p>
         </section>
 
-${homepageDemoHtml(copy)}
-
         <div class="home-band home-band-story">
-${homepageStableHtml(copy)}
-${homepageAgentsHtml(copy)}
+${homepageStoryHtml(copy)}
         </div>
 
         <div class="home-band home-band-drops">
-        <section class="hero drop-hero" id="drops" aria-labelledby="drop-heading">
+        <section class="drop-utility" id="drops" aria-labelledby="drop-heading">
           <p class="feature-kicker">${esc(copy.dropKicker)}</p>
-          <h2 id="drop-heading" class="tagline drop-heading">${esc(copy.h1)}</h2>
-          <p class="sub">
-            ${esc(ui.idleDesktop)}
-          </p>
+          <h2 id="drop-heading" class="drop-heading">${esc(copy.h1)}</h2>
 
 ${dropzoneHtml(locale, copy.dropzoneAria)}
 
@@ -850,15 +814,6 @@ ${homepagePricingHtml(copy)}
 ${homepageSecurityHtml(copy)}
 
         <section class="below" aria-label="${esc(chrome.aboutAria)}">
-          <section class="howto-compact howto-tight" aria-labelledby="howto-heading" data-enter>
-            <h2 id="howto-heading">${esc(copy.howtoHeading)}</h2>
-            <ol class="flow">
-${copy.howto.map((step, i) => flowStepHtml(i, step)).join("\n")}
-            </ol>
-          </section>
-
-${featureMomentHtml(copy)}
-
           <section class="faq-compact" id="faq" aria-labelledby="faq-heading" data-enter>
             <h2 id="faq-heading">${esc(copy.faqHeading)}</h2>
             <div class="faq-list">

@@ -9,7 +9,7 @@ describe("MCP tool descriptions", () => {
     expect(description).toMatch(/Do not invent a URL/i);
     expect(description).toMatch(/Do not pass a file path/i);
     expect(description).toMatch(/PNG, JPEG, WebP, or GIF/);
-    expect(description).toMatch(/10 MB/);
+    expect(description).toMatch(/25 MB/);
     expect(image).toMatch(/base64/);
     expect(image).not.toMatch(/file path/i);
     expect(expiry).toMatch(/1h/);

@@ -7,6 +7,7 @@ import {
   type ImageScope,
   type IntegrationAuth,
 } from "./integration-token";
+import { FREE_MAX_UPLOAD_BYTES } from "./entitlements";
 import { mediaEnabled } from "./media-config";
 import type { MediaScope } from "./media-config";
 import {
@@ -64,7 +65,7 @@ export function mcpAuthFromProps(props: McpAuthProps): IntegrationAuth {
 export const MCP_TOOL_META = {
   upload_image: {
     description:
-      "Upload a PNG, JPEG, WebP, or GIF and get a temporary public DropIMG URL for GitHub issues, PRs, Slack, Linear, or tickets. Read the image from the workspace first, then pass raw base64 or a data URL. Do not invent a URL. Do not pass a file path or http URL. SVG, PDF, and other types are rejected. Max 10 MB. The returned link is public until it expires.",
+      `Upload a PNG, JPEG, WebP, or GIF and get a temporary public DropIMG URL for GitHub issues, PRs, Slack, Linear, or tickets. Read the image from the workspace first, then pass raw base64 or a data URL. Do not invent a URL. Do not pass a file path or http URL. SVG, PDF, and other types are rejected. Max ${FREE_MAX_UPLOAD_BYTES / (1024 * 1024)} MB. The returned link is public until it expires.`,
     image:
       "Raw base64 of the file bytes, or a data:image/png|jpeg|webp|gif;base64 URL. Read the workspace file first.",
     expiry:

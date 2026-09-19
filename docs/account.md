@@ -4,7 +4,7 @@ Optional passwordless accounts (email magic link, plus Google and GitHub when co
 
 ## Ownership
 
-- Anonymous `POST /api/upload` still creates unowned 10 MB drops. The lifetime comes from the `X-Dropimg-Expiry` header (1h/24h/7d/30d) and defaults to 7 days.
+- Anonymous `POST /api/upload` still creates unowned 25 MB drops. The lifetime comes from the `X-Dropimg-Expiry` header (1h/24h/7d/30d) and defaults to 7 days.
 - Signed-in homepage uploads use `POST /api/account/upload-intent` then raw `POST /api/account/upload/:intent` so the row gets `user_id`.
 - `POST /api/account/claim` attaches local recent items (`slug` + `deleteToken`) to the session user. Wrong tokens and other owners are skipped.
 

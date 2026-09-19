@@ -5021,12 +5021,13 @@ html[data-theme="dark"] .auth-google-btn .auth-google-btn-dark {
 }
 
 .home-band-drops {
-  background: var(--surface);
-  border-block: 1px solid var(--border-soft);
+  background: var(--bg-deep);
+  border-block: 0;
+  padding-block: clamp(1.5rem, 4vh, 2.75rem);
 }
 
 .home-band-detail {
-  background: var(--bg-deep);
+  background: var(--surface);
 }
 
 .home-band-quiet {
@@ -5036,24 +5037,20 @@ html[data-theme="dark"] .auth-google-btn .auth-google-btn-dark {
 
 .home-band .product-demo,
 .home-band .compare-block,
-.home-band .stable-block,
 .home-band .formats-block,
-.home-band .agents-block,
 .home-band .security-block,
 .home-band .pricing-teaser {
   margin-bottom: clamp(2rem, 5vh, 3.25rem);
 }
 
 .home-band > :last-child,
-.home-band .drop-hero {
+.home-band .drop-utility {
   margin-bottom: 0;
 }
 
 .product-demo,
 .compare-block,
-.stable-block,
 .formats-block,
-.agents-block,
 .security-block,
 .pricing-teaser {
   max-width: 56rem;
@@ -5063,9 +5060,7 @@ html[data-theme="dark"] .auth-google-btn .auth-google-btn-dark {
 
 .product-demo h2,
 .compare-block h2,
-.stable-block h2,
 .formats-block h2,
-.agents-block h2,
 .security-block h2,
 .pricing-teaser h2 {
   margin: 0 0 1rem;
@@ -5075,6 +5070,99 @@ html[data-theme="dark"] .auth-google-btn .auth-google-btn-dark {
 
 .page-home .product-demo {
   text-align: center;
+  max-width: 64rem;
+}
+
+.page-home .story-body {
+  margin: 0 auto 1.5rem;
+  max-width: 38rem;
+  color: var(--text-soft);
+  font-size: 1.08rem;
+  line-height: 1.55;
+}
+
+.story-board {
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  gap: 1.25rem 1.5rem;
+  align-items: stretch;
+  text-align: left;
+}
+
+.story-site {
+  min-width: 0;
+  padding: 1rem 1rem 1.15rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background:
+    linear-gradient(
+      180deg,
+      var(--surface-elevated),
+      var(--surface)
+    );
+  box-shadow: var(--shadow-lg);
+}
+
+.story-chrome {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+  min-width: 0;
+}
+
+.story-logo {
+  width: 2.5rem;
+  height: 2.5rem;
+  object-fit: cover;
+  border-radius: 0.65rem;
+  border: 1px solid var(--border-soft);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.story-chrome code {
+  font-size: clamp(0.85rem, 1.8vw, 1.02rem);
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+  color: var(--text);
+}
+
+.story-swap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+}
+
+.story-swap figure {
+  margin: 0;
+  min-width: 0;
+}
+
+.story-swap img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  background: var(--surface-soft);
+}
+
+.story-swap figcaption {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.45rem;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+}
+
+.story-turns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  justify-content: center;
 }
 
 .page-home .demo-board {
@@ -5202,18 +5290,32 @@ html[data-theme="dark"] .auth-google-btn .auth-google-btn-dark {
   word-break: break-word;
 }
 
-.page-home .drop-hero {
-  max-width: 50rem;
-  padding-top: 0;
+.page-home .drop-utility {
+  max-width: 38rem;
+  margin: 0 auto;
+  padding: 1.35rem 1.25rem 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background: var(--surface-elevated);
+  box-shadow: var(--shadow-sm);
+  text-align: center;
+  scroll-margin-top: 5.5rem;
 }
 
-.page-home .drop-hero .tagline {
-  max-width: 18ch;
-  font-size: clamp(1.7rem, 3.4vw, 2.45rem);
+.page-home #dropzone {
+  scroll-margin-top: 5.5rem;
 }
 
-.page-home .drop-hero .dropzone {
-  min-height: 280px;
+.page-home .drop-utility .drop-heading {
+  margin: 0 0 1rem;
+  max-width: none;
+  font-size: clamp(1.35rem, 2.6vw, 1.7rem);
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.page-home .drop-utility .dropzone {
+  min-height: 210px;
 }
 
 .compare-grid {
@@ -5467,6 +5569,24 @@ html[data-theme="dark"] .auth-google-btn .auth-google-btn-dark {
 
 .pricing-teaser .price-grid {
   margin-bottom: 1.25rem;
+  max-width: 36rem;
+}
+
+.pricing-teaser .price-card {
+  text-align: center;
+  padding: 1rem 0.9rem 1.05rem;
+}
+
+.pricing-teaser .price-card h3 {
+  margin-bottom: 0.15rem;
+  font-size: 0.92rem;
+  font-weight: 650;
+  color: var(--text-muted);
+}
+
+.pricing-teaser .price-amount {
+  margin: 0;
+  font-size: 1.55rem;
 }
 
 .pricing-teaser-cta {
@@ -6131,6 +6251,7 @@ html[data-theme="dark"] .auth-google-btn .auth-google-btn-dark {
   }
 
   .demo-layout,
+  .story-board,
   .compare-grid,
   .agent-steps,
   .price-grid,

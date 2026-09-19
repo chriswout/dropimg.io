@@ -247,10 +247,29 @@
           <p class="works-with">Funktioniert mit Cursor · Claude Code · Codex · MCP</p>
         </section>
 
-          <section class="product-demo" aria-labelledby="demo-heading" data-enter>
+        <div class="home-band home-band-story">
+          <section class="product-demo story-block" aria-labelledby="demo-heading" data-enter>
+            <p class="feature-kicker">Für Coding-Agenten gebaut</p>
             <h2 id="demo-heading">Die Datei ändern, nicht den Code.</h2>
-            <div class="demo-board">
-              <div class="demo-layout">
+            <p class="story-body">Der Agent lädt die Datei hoch oder ersetzt sie. Die URL bleibt — auch von JPEG zu AVIF.</p>
+            <div class="story-board">
+              <div class="story-site">
+                <div class="story-chrome">
+                  <img class="story-logo" src="https://dropimg.io/m/o9eamt653257/website/marketing/home/logo" width="56" height="56" alt="Beispiel-Markenzeichen" decoding="async" />
+                  <code>/m/acme/site/homepage/hero</code>
+                </div>
+                <div class="story-swap">
+                  <figure>
+                    <img src="https://dropimg.io/m/o9eamt653257/website/marketing/home/hero-v1" width="1280" height="720" alt="Vorheriger Homepage-Hero" decoding="async" fetchpriority="high" />
+                    <figcaption><span class="stable-v-label">v1</span> <code>hero-v1.avif</code></figcaption>
+                  </figure>
+                  <figure>
+                    <img src="https://dropimg.io/m/o9eamt653257/website/marketing/home/hero-v2" width="1280" height="720" alt="Ersetzter Homepage-Hero" decoding="async" />
+                    <figcaption><span class="stable-v-label">v2</span> <code>hero-v2.webp</code></figcaption>
+                  </figure>
+                </div>
+              </div>
+              <div class="story-turns">
                 <div class="demo-turn demo-you">
                   <p class="demo-who">Du</p>
                   <p class="demo-prompt">Ersetze den Homepage-Hero durch dieses Bild.</p>
@@ -263,70 +282,16 @@
                     <li>Stabile URL unverändert</li>
                   </ul>
                 </div>
+                <p class="demo-note">Dein App-Code ändert sich nicht.</p>
               </div>
-              <p class="demo-url-bar">
-                <svg class="demo-lock" viewBox="0 0 24 24" width="18" height="18" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  aria-hidden="true" focusable="false">
-                  <rect x="5" y="11" width="14" height="10" rx="2" />
-                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
-                </svg>
-                <code>/m/acme/site/homepage/hero</code>
-              </p>
-              <p class="demo-note">Dein App-Code ändert sich nicht.</p>
             </div>
-          </section>
-
-        <div class="home-band home-band-story">
-          <section class="stable-block" aria-labelledby="stable-heading" data-enter>
-            <p class="feature-kicker">Warum das zählt</p>
-            <h2 id="stable-heading">Stabile semantische URLs</h2>
-            <p class="stable-body">Ersetze die Datei — auch JPEG durch AVIF — der Pfad bleibt.</p>
-            <div class="stable-board">
-              <p class="demo-url-bar">
-                <svg class="demo-lock" viewBox="0 0 24 24" width="18" height="18" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                  aria-hidden="true" focusable="false">
-                  <rect x="5" y="11" width="14" height="10" rx="2" />
-                  <path d="M8 11V8a4 4 0 0 1 8 0v3" />
-                </svg>
-                <code>/m/acme/site/homepage/hero</code>
-              </p>
-              <p class="stable-swap">
-                <span class="stable-v"><span class="stable-v-label">v1</span> <code>hero-v1.avif</code></span>
-                <span class="stable-arrow" aria-hidden="true">→</span>
-                <span class="stable-v"><span class="stable-v-label">v2</span> <code>hero-v2.webp</code></span>
-              </p>
-            </div>
-          </section>
-          <section class="agents-block" aria-labelledby="agents-heading" data-enter>
-            <h2 id="agents-heading">Für Coding-Agenten gebaut</h2>
-            <p>Ein MCP-Endpunkt. Der Agent holt einen Upload-Intent, sendet die Datei und bekommt eine stabile URL zurück.</p>
-            <ol class="agent-steps">
-              <li>
-                <span class="agent-step-n" aria-hidden="true">1</span>
-                <strong>Agent</strong>
-              </li>
-              <li>
-                <span class="agent-step-n" aria-hidden="true">2</span>
-                <strong>Upload-Intent</strong>
-              </li>
-              <li>
-                <span class="agent-step-n" aria-hidden="true">3</span>
-                <strong>Stabile URL</strong>
-              </li>
-            </ol>
-            <p class="works-with">Funktioniert mit Cursor · Claude Code · Codex · MCP</p>
           </section>
         </div>
 
         <div class="home-band home-band-drops">
-        <section class="hero drop-hero" id="drops" aria-labelledby="drop-heading">
+        <section class="drop-utility" id="drops" aria-labelledby="drop-heading">
           <p class="feature-kicker">Brauchst du nur eine schnelle URL?</p>
-          <h2 id="drop-heading" class="tagline drop-heading">Bild rein. Link raus.</h2>
-          <p class="sub">
-            Einfügen, ablegen oder Bild wählen
-          </p>
+          <h2 id="drop-heading" class="drop-heading">Bild rein. Link raus.</h2>
 
           <section
             id="dropzone"
@@ -362,7 +327,7 @@
                 <span class="hint-desktop"
                   ><kbd>⌘</kbd>/<kbd>Ctrl</kbd> + <kbd>V</kbd> ·
                 </span>
-                PNG, JPEG, WebP, GIF · max. 10 MB
+                PNG, JPEG, WebP, GIF · max. 25 MB
               </p>
               <button id="btn-choose" type="button" class="btn primary choose-btn">
                 Bild wählen
@@ -532,17 +497,14 @@
             <article class="price-card" data-tier="free">
               <h3>Free</h3>
               <p class="price-amount">$0</p>
-              <p class="price-teaser-note">3 Projekte</p>
             </article>
             <article class="price-card" data-tier="developer">
               <h3>Developer</h3>
-              <p class="price-amount">$9<span>/month</span></p>
-              <p class="price-teaser-note">10 GB · 2M Auslieferungen</p>
+              <p class="price-amount">$9<span>/mo</span></p>
             </article>
             <article class="price-card" data-tier="pro">
               <h3>Pro</h3>
-              <p class="price-amount">$29<span>/month</span></p>
-              <p class="price-teaser-note">100 GB · 10M Auslieferungen</p>
+              <p class="price-amount">$29<span>/mo</span></p>
             </article>
             </div>
             <p class="pricing-teaser-cta">
@@ -564,85 +526,6 @@
           </section>
 
         <section class="below" aria-label="Über dropimg.io">
-          <section class="howto-compact howto-tight" aria-labelledby="howto-heading" data-enter>
-            <h2 id="howto-heading">So funktioniert ein Drop</h2>
-            <ol class="flow">
-              <li>
-                <span class="flow-step" aria-hidden="true">01</span>
-                <span class="flow-visual" aria-hidden="true">
-                  <svg viewBox="0 0 104 64" width="104" height="64" fill="none" stroke="currentColor"
-                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
-                    <path d="M52 2v13m-5-5 5 5 5-5" stroke-width="1.9" />
-                    <rect x="15.5" y="21.5" width="73" height="39" rx="9" stroke-width="1.5"
-                      stroke-dasharray="5 4.5" opacity=".5" />
-                    <circle cx="35" cy="34" r="3.2" stroke-width="1.5" opacity=".85" />
-                    <path d="M23 53l11-10a3.4 3.4 0 0 1 4.6 0L47 51" stroke-width="1.5" opacity=".85" />
-                    <path d="M50 47l6.5-6a3.4 3.4 0 0 1 4.6 0L74 53" stroke-width="1.5" opacity=".85" />
-                  </svg>
-                </span>
-                <strong>Bild rein</strong>
-                <span class="flow-detail">Einfügen, ablegen oder Datei wählen</span>
-              </li>
-              <li>
-                <span class="flow-step" aria-hidden="true">02</span>
-                <span class="flow-visual" aria-hidden="true">
-                  <svg viewBox="0 0 104 64" width="104" height="64" fill="none" stroke="currentColor"
-                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
-                    <rect x="4.5" y="21.5" width="70" height="21" rx="10.5" stroke-width="1.5" opacity=".5" />
-                    <path d="M15 32h30" stroke-width="2.6" opacity=".4" />
-                    <path d="M50 32h13" stroke-width="2.6" opacity=".9" />
-                    <rect x="81.5" y="21.5" width="18" height="18" rx="5" stroke-width="1.5" />
-                    <path d="m86 30.5 3.2 3.2 6.3-6.4" stroke-width="1.9" />
-                  </svg>
-                </span>
-                <strong>Link kopieren</strong>
-                <span class="flow-detail">Kurz und sofort verschickbar</span>
-              </li>
-              <li>
-                <span class="flow-step" aria-hidden="true">03</span>
-                <span class="flow-visual" aria-hidden="true">
-                  <svg viewBox="0 0 104 64" width="104" height="64" fill="none" stroke="currentColor"
-                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
-                    <path d="M11 13h50a7 7 0 0 1 7 7v13a7 7 0 0 1-7 7H27l-11 8v-8h-5a7 7 0 0 1-7-7V20a7 7 0 0 1 7-7Z"
-                      stroke-width="1.5" opacity=".5" />
-                    <path d="M17 24h32" stroke-width="2.2" opacity=".4" />
-                    <path d="M17 31h19" stroke-width="2.2" opacity=".85" />
-                    <path d="M78 32h18m-6-6 6 6-6 6" stroke-width="1.9" />
-                  </svg>
-                </span>
-                <strong>Weitergeben</strong>
-                <span class="flow-detail">Chat, Mail, Ticket — fertig</span>
-              </li>
-            </ol>
-          </section>
-
-          <section class="feature-moment" aria-labelledby="feature-heading" data-enter>
-            <div class="feature-copy">
-              <p class="feature-kicker">Von Haus aus temporär</p>
-              <h2 id="feature-heading" class="feature-title">Teilen und vergessen.</h2>
-              <p class="feature-body">Jeder Drop-Link löscht sich selbst. Wähle vor dem Upload 1 Stunde, 24 Stunden, 7 Tage oder 30 Tage — kein Aufräumen, kein Archiv, nichts, das auf einem Server liegen bleibt.</p>
-            </div>
-            <div class="feature-visual">
-              <div class="fv-stage">
-                <div class="fv-card" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"
-                    stroke-linecap="round" stroke-linejoin="round" focusable="false">
-                    <rect x="3" y="3" width="18" height="18" rx="3" />
-                    <circle cx="9" cy="9.5" r="1.8" />
-                    <path d="m4 18 5.2-5.2a2 2 0 0 1 2.8 0L20 21" />
-                  </svg>
-                </div>
-                <div class="fv-timer" aria-hidden="true">
-                  <svg viewBox="0 0 48 48" focusable="false">
-                    <circle class="fv-timer-track" cx="24" cy="24" r="20" />
-                    <circle class="fv-timer-arc" cx="24" cy="24" r="20" />
-                  </svg>
-                </div>
-              </div>
-              <p class="feature-note">1 Stunde bis 30 Tage, gratis</p>
-            </div>
-          </section>
-
           <section class="faq-compact" id="faq" aria-labelledby="faq-heading" data-enter>
             <h2 id="faq-heading">Häufige Fragen</h2>
             <div class="faq-list">

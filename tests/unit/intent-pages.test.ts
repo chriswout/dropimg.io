@@ -174,6 +174,14 @@ describe("intent copy states the current product truth", () => {
     }
   });
 
+  it("does not sell 50 MB Drops as a live Pro feature", () => {
+    for (const copy of all) {
+      expect(text(copy)).not.toMatch(
+        /50 MB uploads|up to 50 MB with|raises the limit to 50 MB|subidas de 50 MB|envios de 50 MB/i,
+      );
+    }
+  });
+
   it("no longer claims accounts or passwords do not exist", () => {
     for (const copy of all) {
       const body = text(copy);

@@ -46,7 +46,7 @@ describe("extension shared helpers", () => {
   });
 
   it("names the caller's own upload limit rather than a fixed one", () => {
-    expect(formatBytes(MAX_UPLOAD_BYTES)).toBe("10 MB");
+    expect(formatBytes(MAX_UPLOAD_BYTES)).toBe("25 MB");
     expect(formatBytes(50 * 1024 * 1024)).toBe("50 MB");
     expect(formatBytes(1.5 * 1024 * 1024)).toBe("1.5 MB");
   });

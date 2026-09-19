@@ -28,7 +28,15 @@ uploadRoutes.post("/api/upload", async (c) => {
   const pageIntent = uploadPageIntent(c);
   const contentLength = Number(c.req.header("content-length") || 0);
   if (contentLength > MAX_UPLOAD_BYTES) {
-    return routeFail(c, 413, "too_large", "File exceeds 10 MB limit", undefined, client, pageIntent);
+    return routeFail(
+      c,
+      413,
+      "too_large",
+      `File exceeds ${MAX_UPLOAD_BYTES / (1024 * 1024)} MB limit`,
+      undefined,
+      client,
+      pageIntent,
+    );
   }
 
   const secretResolved = resolveIpHashSecret(c.env);

@@ -125,7 +125,7 @@
             <p class="ext-kicker">Model Context Protocol</p>
             <h1 class="ext-title">Ask your agent for a temporary image URL</h1>
             <p class="ext-tagline">Screenshot → URL, from Cursor</p>
-            <p class="sub ext-lede">Point Cursor at dropimg.io. The agent reads a PNG from your workspace, uploads it, and returns a real link — for a GitHub issue, a PR, Slack, or a ticket. Same write path as the site.</p>
+            <p class="sub ext-lede">Point Cursor at dropimg.io. The agent reads a PNG from your workspace, uploads it, and returns a real link — for a GitHub issue, a PR, Slack, or a ticket. The same MCP server also uploads and replaces Web Assets at stable /m/… URLs. Same write path as the site.</p>
             <ul class="ext-facts">
               <li>Add to Cursor — OAuth, no API key</li>
               <li>GitHub issues, PRs, Slack, tickets</li>
@@ -181,15 +181,15 @@
               </details>
               <details>
                 <summary>What should I ask the agent?</summary>
-                <p>“Upload this screenshot and give me a link for the GitHub issue.” “Put screenshot.png on the PR.” “Upload this PNG for 24 hours.” The agent must read the file and call upload_image — it must not invent a URL.</p>
+                <p>“Upload this screenshot and give me a link for the GitHub issue.” “Put screenshot.png on the PR.” “Replace the homepage hero in my Web Assets project.” The agent must read the file and call the matching tool — it must not invent a URL.</p>
               </details>
               <details>
                 <summary>Which tools exist?</summary>
-                <p>upload_image (base64 or data URL, optional expiry), get_image, list_images, and delete_image. List is one text line per live drop, not the REST JSON envelope. When Media is enabled: list_media_projects, create_media_project, list_media_assets, get_media_asset, upload_media_asset, and replace_media_asset (confirm: true). Media uploads send bytes over HTTP, not JSON-RPC.</p>
+                <p>Drops: upload_image (base64 or data URL, optional expiry), get_image, list_images, and delete_image. List is one text line per live drop, not the REST JSON envelope. Web Assets: list_media_projects, create_media_project, list_media_assets, get_media_asset, upload_media_asset, and replace_media_asset (confirm: true). Web Assets uploads send bytes over HTTP, not JSON-RPC.</p>
               </details>
               <details>
                 <summary>Do uploads show in My Drops?</summary>
-                <p>Yes. source=mcp, owned by your account, same history caps as the rest of DropIMG.</p>
+                <p>Drop uploads from upload_image do — source=mcp, owned by your account, same history caps as the rest of DropIMG. Web Assets show in the project, not in My Drops.</p>
               </details>
               <details>
                 <summary>Is MCP rate-limited?</summary>

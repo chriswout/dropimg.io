@@ -39,6 +39,10 @@ export type HomeCopy = PageSeo & {
   demoSteps: [string, string, string];
   demoUrl: string;
   demoUnchanged: string;
+  storyBody: string;
+  storyLogoAlt: string;
+  storyHeroV1Alt: string;
+  storyHeroV2Alt: string;
   dropKicker: string;
   dropzoneAria: string;
   trust: [string, string, string];

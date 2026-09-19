@@ -35,7 +35,7 @@ export const MCP_PAGE: McpCopy = {
   twitterDescription:
     "DropIMG MCP for GitHub issues, PRs, and Slack. Add to Cursor. Links expire.",
   h1: "Ask your agent for a temporary image URL",
-  lede: "Point Cursor at dropimg.io. The agent reads a PNG from your workspace, uploads it, and returns a real link — for a GitHub issue, a PR, Slack, or a ticket. Same write path as the site.",
+  lede: "Point Cursor at dropimg.io. The agent reads a PNG from your workspace, uploads it, and returns a real link — for a GitHub issue, a PR, Slack, or a ticket. The same MCP server also uploads and replaces Web Assets at stable /m/… URLs. Same write path as the site.",
   heroKicker: "Model Context Protocol",
   heroTitle: "Ask your agent for a temporary image URL",
   heroTagline: "Screenshot → URL, from Cursor",
@@ -54,15 +54,15 @@ export const MCP_PAGE: McpCopy = {
     },
     {
       q: "What should I ask the agent?",
-      a: "“Upload this screenshot and give me a link for the GitHub issue.” “Put screenshot.png on the PR.” “Upload this PNG for 24 hours.” The agent must read the file and call upload_image — it must not invent a URL.",
+      a: "“Upload this screenshot and give me a link for the GitHub issue.” “Put screenshot.png on the PR.” “Replace the homepage hero in my Web Assets project.” The agent must read the file and call the matching tool — it must not invent a URL.",
     },
     {
       q: "Which tools exist?",
-      a: "upload_image (base64 or data URL, optional expiry), get_image, list_images, and delete_image. List is one text line per live drop, not the REST JSON envelope. When Media is enabled: list_media_projects, create_media_project, list_media_assets, get_media_asset, upload_media_asset, and replace_media_asset (confirm: true). Media uploads send bytes over HTTP, not JSON-RPC.",
+      a: "Drops: upload_image (base64 or data URL, optional expiry), get_image, list_images, and delete_image. List is one text line per live drop, not the REST JSON envelope. Web Assets: list_media_projects, create_media_project, list_media_assets, get_media_asset, upload_media_asset, and replace_media_asset (confirm: true). Web Assets uploads send bytes over HTTP, not JSON-RPC.",
     },
     {
       q: "Do uploads show in My Drops?",
-      a: "Yes. source=mcp, owned by your account, same history caps as the rest of DropIMG.",
+      a: "Drop uploads from upload_image do — source=mcp, owned by your account, same history caps as the rest of DropIMG. Web Assets show in the project, not in My Drops.",
     },
     {
       q: "Is MCP rate-limited?",

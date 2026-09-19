@@ -23,6 +23,8 @@ describe("homepage Web Assets reposition (KON-79)", () => {
     expect(html).toContain("Drop an image. Get a link.");
     expect(html).toContain("Need a quick URL instead?");
     expect(html).toContain('href="#dropzone"');
+    expect(html).toContain('class="drop-utility"');
+    expect(html).not.toContain("hero drop-hero");
   });
 
   it("shows product nav, comparison, formats, and MCP-ready integrations", () => {
@@ -44,20 +46,17 @@ describe("homepage Web Assets reposition (KON-79)", () => {
   it("lands the Web Assets story before the Drop uploader", () => {
     const ids = [
       ...html.matchAll(
-        /id="(hero-heading|demo-heading|stable-heading|agents-heading|drop-heading|compare-heading|formats-heading|pricing-heading|security-heading|howto-heading|faq-heading|closing-heading)"/g,
+        /id="(hero-heading|demo-heading|drop-heading|compare-heading|formats-heading|pricing-heading|security-heading|faq-heading|closing-heading)"/g,
       ),
     ].map((match) => match[1]);
     expect(ids).toEqual([
       "hero-heading",
       "demo-heading",
-      "stable-heading",
-      "agents-heading",
       "drop-heading",
       "compare-heading",
       "formats-heading",
       "pricing-heading",
       "security-heading",
-      "howto-heading",
       "faq-heading",
       "closing-heading",
     ]);
@@ -72,15 +71,18 @@ describe("homepage Web Assets reposition (KON-79)", () => {
     expect(html).toContain("See full pricing");
     expect(html).toContain("$9");
     expect(html).toContain("$29");
-    expect(html).toContain("3 projects");
-    expect(html).toContain("10 GB · 2M deliveries");
-    expect(html).toContain("100 GB · 10M deliveries");
+    expect(html).toContain("/mo");
+    expect(html).not.toContain("3 projects");
+    expect(html).not.toContain("10 GB · 2M deliveries");
+    expect(html).not.toContain("How a Drop works");
+    expect(html).not.toContain("Share it. Forget it.");
+    expect(html).not.toContain("id=\"agents-heading\"");
+    expect(html).not.toContain("id=\"stable-heading\"");
     expect(html).toContain("Give your coding agent permanent web assets.");
     expect(html).toContain("Create a project");
     expect(html).toContain("Read the docs");
     expect(html).toContain("Agent");
-    expect(html).toContain("Upload intent");
-    expect(html).toContain("Stable URL");
+    expect(html).toContain("Stable URL unchanged");
   });
 
   it("keeps Chrome Web Store listing for the extension promo", () => {
@@ -93,12 +95,15 @@ describe("homepage Web Assets reposition (KON-79)", () => {
     expect(html).toContain('data-media-cta="create"');
   });
 
-  it("shows a single stable-path board instead of a path list", () => {
-    expect(html).toContain("stable-board");
+  it("shows a replacement story with real assets instead of a path list", () => {
+    expect(html).toContain("story-swap");
     expect(html).toContain("stable-v-label");
     expect(html).toContain("hero-v1.avif");
     expect(html).toContain("hero-v2.webp");
+    expect(html).toContain("https://dropimg.io/m/o9eamt653257/website/marketing/home/hero-v1");
+    expect(html).toContain("https://dropimg.io/m/o9eamt653257/website/marketing/home/hero-v2");
     expect(html).not.toContain("path-examples");
+    expect(html).not.toContain("stable-board");
     expect(html).toContain("Inspected on ingest");
     expect(html).not.toContain("Server-authoritative file inspection");
   });

@@ -117,7 +117,7 @@ export async function asAnonymous(page: Page) {
         user: null,
         entitlements: {
           plan: "anonymous",
-          maxUploadBytes: 10 * 1024 * 1024,
+          maxUploadBytes: 25 * 1024 * 1024,
           allowedExpirySeconds: [3600, 86400, 604800, 2592000],
           defaultExpirySeconds: 604800,
           passwordProtection: false,

@@ -5,6 +5,7 @@ import { PRICING_PAGE, PRICING_TIERS } from "../../marketing/pricing";
 import {
   renderDevelopersPage,
   renderHome,
+  renderMcpPage,
   renderPricingPage,
   renderWebAssetsPage,
 } from "../../marketing/render";
@@ -55,7 +56,7 @@ describe("pricing page scope", () => {
 
 describe("stale launch states", () => {
   it("does not ship coming-soon copy on live surfaces", () => {
-    const pages = [renderHome("en"), renderWebAssetsPage(), renderDevelopersPage()];
+    const pages = [renderHome("en"), renderWebAssetsPage(), renderDevelopersPage(), renderMcpPage()];
     for (const html of pages) {
       expect(html).not.toMatch(/coming soon/i);
       expect(html).not.toMatch(/launching soon/i);

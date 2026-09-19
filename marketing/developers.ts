@@ -1,5 +1,6 @@
 import type { FaqItem, LandingCopy } from "./types";
 import { WEB_ASSETS_PLANS } from "../src/lib/web-assets-plans";
+import { FREE_MAX_UPLOAD_BYTES } from "../src/lib/entitlements";
 import {
   FREE_PROGRAMMATIC_DAILY_BYTES,
   FREE_PROGRAMMATIC_DAILY_UPLOADS,
@@ -269,13 +270,13 @@ export const WEB_ASSETS_LIMIT_ROWS = (
 export const DROPS_LIMIT_ROWS = [
   {
     name: "Drops Free",
-    file: "10 MB",
+    file: `${FREE_MAX_UPLOAD_BYTES / (1024 * 1024)} MB`,
     expiry: "1h · 24h · 7d · 30d",
     api: `${FREE_PROGRAMMATIC_DAILY_UPLOADS} uploads / ${FREE_PROGRAMMATIC_DAILY_BYTES / (1024 * 1024)} MB per day`,
   },
   {
     name: "Drops Pro",
-    file: "10 MB (50 MB when enabled)",
+    file: `${FREE_MAX_UPLOAD_BYTES / (1024 * 1024)} MB (50 MB when enabled)`,
     expiry: "plus 90d · 180d",
     api: `${PRO_PROGRAMMATIC_DAILY_UPLOADS} uploads / ${PRO_PROGRAMMATIC_DAILY_BYTES / (1024 * 1024)} MB per day`,
   },
