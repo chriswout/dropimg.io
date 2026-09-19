@@ -73,5 +73,10 @@ for (const width of [320, 390, 768, 1280, 1440] as const) {
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1,
     );
     expect(overflow).toBe(false);
+    const chip = page.locator(".account-get-started");
+    await expect(chip).toBeVisible();
+    const box = await chip.boundingBox();
+    expect(box).toBeTruthy();
+    expect(box!.height).toBeLessThan(48);
   });
 }

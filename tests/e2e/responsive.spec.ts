@@ -8,6 +8,13 @@ const PAGES = [
   "/pro",
   "/de/pro",
   "/login",
+  "/web-assets",
+  "/drops",
+  "/pricing",
+  "/developers",
+  "/mcp",
+  "/browser-extension",
+  "/sharex",
   "/image-to-url",
   "/es/imagen-a-url",
   "/pt-br/imagem-para-url",
@@ -15,6 +22,8 @@ const PAGES = [
   "/es/captura-de-pantalla-a-enlace",
   "/pt-br/colar-print-online",
 ] as const;
+
+const LEGAL_PAGES = ["/privacy", "/terms", "/contact", "/refunds"] as const;
 
 async function assertNoHorizontalOverflow(page: import("@playwright/test").Page) {
   const overflow = await page.evaluate(() => {
@@ -38,6 +47,17 @@ for (const width of WIDTHS) {
     }
   });
 }
+
+test("legal pages fit 320px and 390px", async ({ page }) => {
+  for (const width of [320, 390] as const) {
+    await page.setViewportSize({ width, height: 720 });
+    for (const path of LEGAL_PAGES) {
+      await page.goto(path);
+      await expect(page.locator(".brand-logo").first()).toBeVisible();
+      await assertNoHorizontalOverflow(page);
+    }
+  }
+});
 
 /**
  * A long address must truncate inside the account chip rather than push the
