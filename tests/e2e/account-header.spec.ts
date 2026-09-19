@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { postDevLogin } from "./dev-login";
 
 test("login page uses the same chrome as the homepage", async ({ page }) => {
   await page.goto("/login");
@@ -32,18 +33,11 @@ test("homepage header shows Sign in, then email after magic link", async ({
   await expect(signin).toBeVisible();
   await expect(signin).toHaveText(/sign in/i);
 
-  const started = await request.post("/login", {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    data: { email: `header-e2e-${Date.now()}@example.com` },
-  });
-  expect(started.ok()).toBeTruthy();
-  const body = (await started.json()) as { devMagicUrl?: string };
-  expect(body.devMagicUrl).toBeTruthy();
-
-  await page.goto(new URL(body.devMagicUrl!).pathname + new URL(body.devMagicUrl!).search);
+  const { devMagicUrl } = await postDevLogin(
+    request,
+    `header-e2e-${Date.now()}@example.com`,
+  );
+  await page.goto(new URL(devMagicUrl).pathname + new URL(devMagicUrl).search);
   await expect(page.locator("#account-app")).toBeVisible();
   await expect(page.locator("#account-app")).toHaveText(/dashboard/i);
   await expect(signin).toBeHidden();

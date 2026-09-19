@@ -1,6 +1,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test } from "@playwright/test";
+import { postDevLogin } from "./dev-login";
 
 const PNG_1x1 = Buffer.from([
   0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d, 0x49,
@@ -17,18 +18,11 @@ test("signed-in upload appears on My drops", async ({ page, request }) => {
   const fixture = join(fixtureDir, "pixel.png");
   writeFileSync(fixture, PNG_1x1);
 
-  const started = await request.post("/login", {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    data: { email: `mydrops-${Date.now()}@example.com` },
-  });
-  expect(started.ok()).toBeTruthy();
-  const body = (await started.json()) as { devMagicUrl?: string };
-  await page.goto(
-    new URL(body.devMagicUrl!).pathname + new URL(body.devMagicUrl!).search,
+  const { devMagicUrl } = await postDevLogin(
+    request,
+    `mydrops-${Date.now()}@example.com`,
   );
+  await page.goto(new URL(devMagicUrl).pathname + new URL(devMagicUrl).search);
   await expect(page.locator("#account-email-full")).toHaveText(/@example\.com$/);
 
   await page.locator("#file-input").setInputFiles(fixture);

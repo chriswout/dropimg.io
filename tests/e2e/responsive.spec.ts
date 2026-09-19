@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { postDevLogin } from "./dev-login";
 
 const WIDTHS = [320, 375, 390, 430, 768, 1024, 1280, 1440] as const;
 
@@ -91,18 +92,11 @@ test("a long signed-in email never widens the header", async ({ page }) => {
 
 test("signed-in app and account fit 390px", async ({ page, request }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  const started = await request.post("/login", {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    data: { email: `responsive-${Date.now()}@example.com` },
-  });
-  expect(started.ok()).toBeTruthy();
-  const body = (await started.json()) as { devMagicUrl?: string };
-  await page.goto(
-    new URL(body.devMagicUrl!).pathname + new URL(body.devMagicUrl!).search,
+  const { devMagicUrl } = await postDevLogin(
+    request,
+    `responsive-${Date.now()}@example.com`,
   );
+  await page.goto(new URL(devMagicUrl).pathname + new URL(devMagicUrl).search);
   for (const path of ["/app", "/app/integrations", "/app/billing"]) {
     await page.goto(path);
     await expect(page.locator("h1")).toBeVisible();

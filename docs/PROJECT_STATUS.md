@@ -171,7 +171,6 @@ Local/CI gates at this snapshot: **509 Vitest tests, 0 failed**. Production Web 
 | Rank | Issue |
 |---|---|
 | MEDIUM | Live PayPal Developer/Pro subscriptions were not completed end-to-end (no real $9/$90/$29/$290 charges). Checkout URL minting works; webhook/entitlement coverage is CI. KON-82. |
-| MEDIUM | Push-to-`main` deploys currently die in Playwright (`billing-portal` magic-link sign-in) before `wrangler whoami` / remote migrate. Staging/production Actions deploys wait on that e2e. |
 
 ### Security
 

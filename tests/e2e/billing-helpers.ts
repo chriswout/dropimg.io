@@ -1,29 +1,18 @@
 import { execFileSync } from "node:child_process";
 import { expect, type APIRequestContext, type Page } from "@playwright/test";
-
-let ipCounter = 40;
+import { postDevLogin } from "./dev-login";
 
 export async function signInBilling(page: Page, request: APIRequestContext, email: string) {
-  const ip = `203.0.113.${(ipCounter++ % 200) + 20}`;
+  const { ip, devMagicUrl } = await postDevLogin(request, email);
   await page.context().setExtraHTTPHeaders({ "CF-Connecting-IP": ip });
-  const started = await request.post("/login", {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      "CF-Connecting-IP": ip,
-    },
-    data: { email },
-  });
-  expect(started.ok()).toBeTruthy();
-  const body = (await started.json()) as { devMagicUrl?: string };
-  await page.goto(new URL(body.devMagicUrl!).pathname + new URL(body.devMagicUrl!).search);
+  await page.goto(new URL(devMagicUrl).pathname + new URL(devMagicUrl).search);
   const me = await page.request.get("/api/account/me");
   const json = (await me.json()) as { user: { id: string } };
   expect(json.user?.id).toBeTruthy();
   return json.user.id;
 }
 
-/** Sandbox catalog IDs from local `.dev.vars` / docs/paypal.md. */
+/** Sandbox catalog IDs from wrangler.jsonc development vars / docs/paypal.md. */
 export const E2E_PLANS = {
   dropsMonthly: "P-15G50054531033903NKPD7ZI",
   dropsAnnual: "P-7F863114YW191224BNKPD7ZQ",
@@ -33,12 +22,28 @@ export const E2E_PLANS = {
   waProAnnual: "P-6M302061UF3384325NKV6BCY",
 } as const;
 
+function sleepMs(ms: number) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+}
+
 export function seedLocalBilling(sql: string) {
-  execFileSync(
-    "npx",
-    ["wrangler", "d1", "execute", "dropimg", "--local", "--command", sql],
-    { stdio: "pipe" },
-  );
+  let last: unknown;
+  for (let attempt = 0; attempt < 8; attempt++) {
+    try {
+      execFileSync(
+        "npx",
+        ["wrangler", "d1", "execute", "dropimg", "--local", "--command", sql],
+        { stdio: "pipe" },
+      );
+      return;
+    } catch (err) {
+      last = err;
+      const msg = err instanceof Error ? err.message : String(err);
+      if (!/SQLITE_BUSY|database is locked/i.test(msg)) throw err;
+      sleepMs(50 * (attempt + 1));
+    }
+  }
+  throw last;
 }
 
 export function insertSubscription(opts: {

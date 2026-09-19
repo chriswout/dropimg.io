@@ -1,18 +1,9 @@
 import { expect, test } from "@playwright/test";
+import { postDevLogin } from "./dev-login";
 
 test("account integrations create and revoke a token", async ({ page, request }) => {
-  const started = await request.post("/login", {
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    data: { email: `integ-${Date.now()}@example.com` },
-  });
-  expect(started.ok()).toBeTruthy();
-  const body = (await started.json()) as { devMagicUrl?: string };
-  await page.goto(
-    new URL(body.devMagicUrl!).pathname + new URL(body.devMagicUrl!).search,
-  );
+  const { devMagicUrl } = await postDevLogin(request, `integ-${Date.now()}@example.com`);
+  await page.goto(new URL(devMagicUrl).pathname + new URL(devMagicUrl).search);
   await page.goto("/account");
   await expect(
     page.getByRole("heading", { name: "Integrations", exact: true }),
